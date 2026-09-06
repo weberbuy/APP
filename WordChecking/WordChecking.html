@@ -1,1 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WordChecking | 1200 單字小工具 - 數字 1-100 啟動篇</title>
+  <!-- Tailwind CSS CDN for modern, clean UI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-800/80 backdrop-blur border-b border-slate-200 dark:border-slate-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+          <i class="fa-solid fa-spell-check text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-bold text-lg text-slate-900 dark:text-white">WordChecking</h1>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300">v1.0 數字 1-100</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字基礎奠基系列</p>
+        </div>
+      </div>
+
+      <!-- Actions: Theme toggle & Back to Portal -->
+      <div class="flex items-center space-x-2">
+        <button id="themeToggle" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="切換深色/淺色">
+          <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+          <i class="fa-solid fa-sun hidden dark:inline text-lg text-amber-400"></i>
+        </button>
+        <button onclick="window.history.length > 1 ? window.history.back() : window.location.href='index.html'" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition flex items-center space-x-1">
+          <i class="fa-solid fa-house"></i>
+          <span class="hidden sm:inline">工作台首頁</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- Progress & Overview Banner -->
+    <section class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center">
+        <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+          <div class="text-xs text-slate-500 dark:text-slate-400">總單字庫</div>
+          <div class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1" id="statTotal">100</div>
+        </div>
+        <div class="bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-xl border border-emerald-100 dark:border-emerald-800/40">
+          <div class="text-xs text-emerald-600 dark:text-emerald-400">已完全掌握 (Mastered)</div>
+          <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="statMastered">0</div>
+        </div>
+        <div class="bg-amber-50 dark:bg-amber-950/30 p-3 rounded-xl border border-amber-100 dark:border-amber-800/40">
+          <div class="text-xs text-amber-600 dark:text-amber-400">待加強複習 (Weak)</div>
+          <div class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1" id="statWeak">0</div>
+        </div>
+        <div class="bg-indigo-50 dark:bg-indigo-950/30 p-3 rounded-xl border border-indigo-100 dark:border-indigo-800/40">
+          <div class="text-xs text-indigo-600 dark:text-indigo-400">今日測驗正確率</div>
+          <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1" id="statAccuracy">--%</div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div>
+        <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+          <span>掌握進度</span>
+          <span id="progressText">0%</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden flex">
+          <div id="progressBarMastered" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+          <div id="progressBarWeak" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scope Filter & Mode Selection -->
+    <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+      <!-- Mode Tabs -->
+      <div class="flex bg-slate-200 dark:bg-slate-700/80 p-1 rounded-xl w-full md:w-auto text-sm font-medium">
+        <button onclick="switchMode('card')" id="tabCard" class="flex-1 md:flex-initial px-4 py-2 rounded-lg transition active-tab shadow-sm bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>翻轉卡片</span>
+        </button>
+        <button onclick="switchMode('quiz')" id="tabQuiz" class="flex-1 md:flex-initial px-4 py-2 rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>四選一測驗</span>
+        </button>
+        <button onclick="switchMode('spelling')" id="tabSpelling" class="flex-1 md:flex-initial px-4 py-2 rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-keyboard"></i>
+          <span>拼字挑戰</span>
+        </button>
+        <button onclick="switchMode('speaking')" id="tabSpeaking" class="flex-1 md:flex-initial px-4 py-2 rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-microphone"></i>
+          <span>口語跟讀</span>
+        </button>
+        <button onclick="switchMode('list')" id="tabList" class="flex-1 md:flex-initial px-4 py-2 rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-list-check"></i>
+          <span>總表清單</span>
+        </button>
+      </div>
+
+      <!-- Scope Selector -->
+      <div class="flex items-center space-x-2 w-full md:w-auto">
+        <label for="scopeFilter" class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">練習範圍：</label>
+        <select id="scopeFilter" onchange="onScopeChange()" class="w-full md:w-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm rounded-xl px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500">
+          <option value="all">全部 1-100 (100字)</option>
+          <option value="1-12">1-12 基礎字群 (12字)</option>
+          <option value="13-19">13-19 teen 家族 (7字)</option>
+          <option value="20-99">20-99 複合數字 (80字)</option>
+          <option value="tens">整十位數 (20, 30, 40...90)</option>
+          <option value="weak">★ 專攻待加強清單</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ==================== MODE 1: FLASHCARDS ==================== -->
+    <section id="modeCard" class="space-y-4">
+      <div class="relative w-full max-w-lg mx-auto h-80 perspective-1000 cursor-pointer" onclick="flipCard()">
+        <div id="flashcardInner" class="relative w-full h-full transition-transform duration-500 transform-style-3d shadow-lg rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 flex flex-col justify-between">
+          
+          <!-- Front Face -->
+          <div id="cardFront" class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white dark:bg-slate-800 rounded-3xl">
+            <div class="flex justify-between items-center text-xs text-slate-400">
+              <span id="cardCategory">1-12 基礎數字</span>
+              <span id="cardIndex">1 / 100</span>
+            </div>
+            
+            <div class="text-center my-auto">
+              <div class="text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight" id="cardDigit">1</div>
+              <div class="text-sm text-slate-400 mt-2 flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-hand-pointer text-xs"></i>
+                <span>點擊翻轉看英文拼寫</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/60">
+              <span class="text-xs text-slate-400">提示：正面阿拉伯數字</span>
+              <button onclick="event.stopPropagation(); playVoiceCurrent()" class="p-2 rounded-full hover:bg-sky-50 dark:hover:bg-slate-700 text-sky-500 transition">
+                <i class="fa-solid fa-volume-high text-lg"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Back Face -->
+          <div id="cardBack" class="absolute inset-0 backface-hidden rotate-y-180 p-6 flex flex-col justify-between bg-gradient-to-b from-sky-50/50 to-white dark:from-slate-800 dark:to-slate-800/90 rounded-3xl border-2 border-sky-300 dark:border-sky-600">
+            <div class="flex justify-between items-center text-xs text-slate-400">
+              <span class="text-sky-600 dark:text-sky-400 font-semibold" id="cardBackCategory">1-12 基礎數字</span>
+              <span class="font-mono" id="cardBackDigit">#1</span>
+            </div>
+
+            <div class="text-center my-auto">
+              <div class="text-4xl font-extrabold text-sky-600 dark:text-sky-400 tracking-wide" id="cardEnglish">one</div>
+              <div class="text-lg text-slate-500 dark:text-slate-400 font-mono mt-1" id="cardPhonetic">[wʌn]</div>
+              
+              <div id="cardNoteBox" class="mt-4 px-3 py-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded-xl text-xs text-amber-800 dark:text-amber-300 inline-block text-left max-w-xs">
+                <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>
+                <span id="cardNote">規則說明</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center space-x-4 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+              <button onclick="event.stopPropagation(); playVoiceCurrent(0.8)" class="text-xs text-slate-600 dark:text-slate-300 hover:text-sky-600 flex items-center space-x-1 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <i class="fa-solid fa-play text-[10px]"></i>
+                <span>慢速 0.8x</span>
+              </button>
+              <button onclick="event.stopPropagation(); playVoiceCurrent(1.0)" class="text-xs text-white bg-sky-500 hover:bg-sky-600 flex items-center space-x-1 px-3 py-1.5 rounded-lg shadow-sm">
+                <i class="fa-solid fa-volume-high text-[10px]"></i>
+                <span>真人示範發音</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-center space-x-4 max-w-lg mx-auto">
+        <button onclick="markCurrent(false)" class="flex-1 py-3 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 font-medium text-sm flex items-center justify-center space-x-2 transition">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>還不熟 (加強)</span>
+        </button>
+        <button onclick="markCurrent(true)" class="flex-1 py-3 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 font-medium text-sm flex items-center justify-center space-x-2 transition">
+          <i class="fa-solid fa-check"></i>
+          <span>已記住 (精通)</span>
+        </button>
+      </div>
+
+      <!-- Nav navigation -->
+      <div class="flex items-center justify-center space-x-6 text-sm text-slate-500 dark:text-slate-400">
+        <button onclick="prevCard()" class="hover:text-sky-500 flex items-center space-x-1">
+          <i class="fa-solid fa-chevron-left"></i>
+          <span>上一個</span>
+        </button>
+        <span class="text-xs">快捷鍵：[空白鍵] 翻面，[←/→] 切換</span>
+        <button onclick="nextCard()" class="hover:text-sky-500 flex items-center space-x-1">
+          <span>下一個</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== MODE 2: QUIZ ==================== -->
+    <section id="modeQuiz" class="hidden max-w-xl mx-auto space-y-5">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-md">
+        
+        <div class="flex justify-between items-center text-xs text-slate-400 mb-4">
+          <span class="px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-semibold">四選一小測驗</span>
+          <span id="quizScoreText">第 1 題</span>
+        </div>
+
+        <!-- Question Body -->
+        <div class="text-center py-6">
+          <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">請問下列數字的正確英文拼法是？</div>
+          <div class="text-6xl font-black text-slate-900 dark:text-white font-mono" id="quizQuestionDigit">40</div>
+          <button onclick="playVoiceText(currentQuizItem.word)" class="mt-3 inline-flex items-center space-x-1 text-xs text-sky-600 dark:text-sky-400 hover:underline">
+            <i class="fa-solid fa-volume-high"></i>
+            <span>點我聽音輔助</span>
+          </button>
+        </div>
+
+        <!-- 4 Options -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" id="quizOptionsContainer">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Quiz Feedback banner -->
+        <div id="quizFeedback" class="hidden mt-5 p-4 rounded-2xl text-sm transition">
+          <div class="flex items-start space-x-3">
+            <div id="quizFeedbackIcon" class="text-xl mt-0.5"></div>
+            <div>
+              <div id="quizFeedbackTitle" class="font-bold"></div>
+              <div id="quizFeedbackDetail" class="text-xs mt-1"></div>
+            </div>
+          </div>
+          <button onclick="nextQuizQuestion()" class="w-full mt-3 py-2 bg-sky-500 text-white rounded-xl font-medium text-xs hover:bg-sky-600 transition">
+            下一題 <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== MODE 3: SPELLING ==================== -->
+    <section id="modeSpelling" class="hidden max-w-xl mx-auto space-y-5">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-md">
+        <div class="flex justify-between items-center text-xs text-slate-400 mb-4">
+          <span class="px-2.5 py-1 rounded-md bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 font-semibold">精準拼字挑戰</span>
+          <span id="spellCounter">第 1 題</span>
+        </div>
+
+        <div class="text-center py-4">
+          <div class="text-xs text-slate-400">請拼寫出這個數字的英文：</div>
+          <div class="text-6xl font-black text-slate-900 dark:text-white font-mono my-3" id="spellDigit">12</div>
+          <div class="flex items-center justify-center space-x-2">
+            <button onclick="playVoiceText(currentSpellItem.word)" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-xs text-slate-600 dark:text-slate-300 flex items-center space-x-1">
+              <i class="fa-solid fa-volume-high text-sky-500"></i>
+              <span>播放讀音</span>
+            </button>
+            <button onclick="toggleSpellHint()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-xs text-slate-600 dark:text-slate-300 flex items-center space-x-1">
+              <i class="fa-solid fa-eye text-amber-500"></i>
+              <span>提示長度</span>
+            </button>
+          </div>
+          <div id="spellHintBox" class="hidden text-xs text-slate-400 tracking-widest font-mono mt-2"></div>
+        </div>
+
+        <!-- Input Box -->
+        <form onsubmit="checkSpelling(event)" class="space-y-4">
+          <div class="relative">
+            <input type="text" id="spellInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="在此輸入英文單字 (如：twelve)..." class="w-full text-center font-mono text-xl py-3 px-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+          </div>
+          <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-sm shadow-md transition">
+            檢查答案 <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </form>
+
+        <!-- Spelling Feedback -->
+        <div id="spellFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm">
+          <div class="flex items-start space-x-3">
+            <div id="spellFeedbackIcon" class="text-xl mt-0.5"></div>
+            <div>
+              <div id="spellFeedbackTitle" class="font-bold"></div>
+              <div id="spellFeedbackDetail" class="text-xs mt-1"></div>
+            </div>
+          </div>
+          <button onclick="nextSpellQuestion()" class="w-full mt-3 py-2 bg-purple-600 text-white rounded-xl font-medium text-xs hover:bg-purple-700 transition">
+            進入下一題
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== MODE 4: SPEAKING ==================== -->
+    <section id="modeSpeaking" class="hidden max-w-xl mx-auto space-y-5">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-md">
+        <div class="flex justify-between items-center text-xs text-slate-400 mb-4">
+          <span class="px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 font-semibold">AI 口說發音挑戰</span>
+          <span id="speakCounter">第 1 題</span>
+        </div>
+
+        <div class="text-center py-4">
+          <div class="text-xs text-slate-400">請跟著唸出這個數字的英文：</div>
+          <div class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2 mb-1" id="speakEnglish">fourteen</div>
+          <div class="text-sm font-mono text-slate-400" id="speakPhonetic">[ˋforˋtin]</div>
+          <div class="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">數字：<span id="speakDigit">14</span></div>
+
+          <div class="mt-4 flex justify-center space-x-3">
+            <button onclick="playVoiceText(currentSpeakItem.word)" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-xs text-slate-600 dark:text-slate-300 flex items-center space-x-1">
+              <i class="fa-solid fa-volume-high text-emerald-500"></i>
+              <span>聆聽正確發音</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Microphone Trigger -->
+        <div class="flex flex-col items-center justify-center my-6">
+          <button id="micBtn" onclick="toggleSpeechRecognition()" class="w-20 h-20 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 transition transform active:scale-95">
+            <i class="fa-solid fa-microphone text-2xl" id="micIcon"></i>
+          </button>
+          <div class="text-xs text-slate-400 mt-3" id="micStatus">點擊麥克風後對著手機或電腦說出單字</div>
+        </div>
+
+        <!-- Recognition Result -->
+        <div id="speakFeedback" class="hidden p-4 rounded-2xl text-sm border">
+          <div class="flex items-start space-x-3">
+            <div id="speakFeedbackIcon" class="text-xl mt-0.5"></div>
+            <div>
+              <div id="speakFeedbackTitle" class="font-bold"></div>
+              <div id="speakFeedbackDetail" class="text-xs mt-1"></div>
+            </div>
+          </div>
+          <button onclick="nextSpeakQuestion()" class="w-full mt-3 py-2 bg-emerald-600 text-white rounded-xl font-medium text-xs hover:bg-emerald-700 transition">
+            挑戰下一題
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== MODE 5: WORD LIST ==================== -->
+    <section id="modeList" class="hidden space-y-4">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+          <div>
+            <h2 class="font-bold text-slate-800 dark:text-slate-100 text-base">1-100 數字單字庫清單</h2>
+            <p class="text-xs text-slate-400">掌握度狀態由本地儲存自動同步，可隨時手動標記與聽音</p>
+          </div>
+          <div class="flex space-x-2">
+            <button onclick="resetAllProgress()" class="px-3 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-lg transition">
+              <i class="fa-solid fa-rotate-left mr-1"></i>重置所有進度
+            </button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-400 bg-slate-50 dark:bg-slate-900/40">
+                <th class="py-3 px-3">數字</th>
+                <th class="py-3 px-3">英文單字</th>
+                <th class="py-3 px-3">KK音標</th>
+                <th class="py-3 px-3">易錯與考點提醒</th>
+                <th class="py-3 px-3 text-center">發音</th>
+                <th class="py-3 px-3 text-center">掌握狀態</th>
+              </tr>
+            </thead>
+            <tbody id="wordTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Data & Logic script -->
+  <script>
+    const RAW_VOCAB = [{"num": 1, "word": "one", "chinese": "1", "kk": "[wʌn]", "note": "", "category": "1-12 基礎數字"}, {"num": 2, "word": "two", "chinese": "2", "kk": "[tu]", "note": "", "category": "1-12 基礎數字"}, {"num": 3, "word": "three", "chinese": "3", "kk": "[θri]", "note": "", "category": "1-12 基礎數字"}, {"num": 4, "word": "four", "chinese": "4", "kk": "[for]", "note": "", "category": "1-12 基礎數字"}, {"num": 5, "word": "five", "chinese": "5", "kk": "[faɪv]", "note": "", "category": "1-12 基礎數字"}, {"num": 6, "word": "six", "chinese": "6", "kk": "[sɪks]", "note": "", "category": "1-12 基礎數字"}, {"num": 7, "word": "seven", "chinese": "7", "kk": "[ˋsɛvn]", "note": "", "category": "1-12 基礎數字"}, {"num": 8, "word": "eight", "chinese": "8", "kk": "[et]", "note": "", "category": "1-12 基礎數字"}, {"num": 9, "word": "nine", "chinese": "9", "kk": "[naɪn]", "note": "", "category": "1-12 基礎數字"}, {"num": 10, "word": "ten", "chinese": "10", "kk": "[tɛn]", "note": "", "category": "1-12 基礎數字"}, {"num": 11, "word": "eleven", "chinese": "11", "kk": "[ɪˋlɛvn]", "note": "不規則：eleven，國中必考", "category": "1-12 基礎數字"}, {"num": 12, "word": "twelve", "chinese": "12", "kk": "[twɛlv]", "note": "不規則：twelve，結尾是 ve", "category": "1-12 基礎數字"}, {"num": 13, "word": "thirteen", "chinese": "13", "kk": "[ˋθɝˋtin]", "note": "thirteen (由 three 轉為 thir- + teen)", "category": "13-19 teen 族群"}, {"num": 14, "word": "fourteen", "chinese": "14", "kk": "[ˋforˋtin]", "note": "fourteen (注意四是 four，這裡保留 u)", "category": "13-19 teen 族群"}, {"num": 15, "word": "fifteen", "chinese": "15", "kk": "[ˋfɪfˋtin]", "note": "fifteen (由 five 轉為 fif- + teen，常考)", "category": "13-19 teen 族群"}, {"num": 16, "word": "sixteen", "chinese": "16", "kk": "[ˋsɪksˋtin]", "note": "", "category": "13-19 teen 族群"}, {"num": 17, "word": "seventeen", "chinese": "17", "kk": "[ˋsɛvnˋtin]", "note": "", "category": "13-19 teen 族群"}, {"num": 18, "word": "eighteen", "chinese": "18", "kk": "[ˋeˋtin]", "note": "eighteen (eight 結尾已有 t，不重複寫成 eightteen)", "category": "13-19 teen 族群"}, {"num": 19, "word": "nineteen", "chinese": "19", "kk": "[ˋnaɪnˋtin]", "note": "", "category": "13-19 teen 族群"}, {"num": 20, "word": "twenty", "chinese": "20", "kk": "[ˋtwɛntɪ]", "note": "twenty (twen- + ty)", "category": "20-99 複合數字"}, {"num": 21, "word": "twenty-one", "chinese": "21", "kk": "", "note": "十位數(twenty)與個位數(one)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 22, "word": "twenty-two", "chinese": "22", "kk": "", "note": "十位數(twenty)與個位數(two)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 23, "word": "twenty-three", "chinese": "23", "kk": "", "note": "十位數(twenty)與個位數(three)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 24, "word": "twenty-four", "chinese": "24", "kk": "", "note": "十位數(twenty)與個位數(four)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 25, "word": "twenty-five", "chinese": "25", "kk": "", "note": "十位數(twenty)與個位數(five)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 26, "word": "twenty-six", "chinese": "26", "kk": "", "note": "十位數(twenty)與個位數(six)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 27, "word": "twenty-seven", "chinese": "27", "kk": "", "note": "十位數(twenty)與個位數(seven)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 28, "word": "twenty-eight", "chinese": "28", "kk": "", "note": "十位數(twenty)與個位數(eight)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 29, "word": "twenty-nine", "chinese": "29", "kk": "", "note": "十位數(twenty)與個位數(nine)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 30, "word": "thirty", "chinese": "30", "kk": "[ˋθɝtɪ]", "note": "thirty (thir- + ty，注意音標與拼法)", "category": "20-99 複合數字"}, {"num": 31, "word": "thirty-one", "chinese": "31", "kk": "", "note": "十位數(thirty)與個位數(one)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 32, "word": "thirty-two", "chinese": "32", "kk": "", "note": "十位數(thirty)與個位數(two)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 33, "word": "thirty-three", "chinese": "33", "kk": "", "note": "十位數(thirty)與個位數(three)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 34, "word": "thirty-four", "chinese": "34", "kk": "", "note": "十位數(thirty)與個位數(four)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 35, "word": "thirty-five", "chinese": "35", "kk": "", "note": "十位數(thirty)與個位數(five)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 36, "word": "thirty-six", "chinese": "36", "kk": "", "note": "十位數(thirty)與個位數(six)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 37, "word": "thirty-seven", "chinese": "37", "kk": "", "note": "十位數(thirty)與個位數(seven)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 38, "word": "thirty-eight", "chinese": "38", "kk": "", "note": "十位數(thirty)與個位數(eight)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 39, "word": "thirty-nine", "chinese": "39", "kk": "", "note": "十位數(thirty)與個位數(nine)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 40, "word": "forty", "chinese": "40", "kk": "[ˋfɔrtɪ]", "note": "forty (★大魔王：沒有 u！不是 fourty)", "category": "20-99 複合數字"}, {"num": 41, "word": "forty-one", "chinese": "41", "kk": "", "note": "十位數(forty)與個位數(one)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 42, "word": "forty-two", "chinese": "42", "kk": "", "note": "十位數(forty)與個位數(two)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 43, "word": "forty-three", "chinese": "43", "kk": "", "note": "十位數(forty)與個位數(three)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 44, "word": "forty-four", "chinese": "44", "kk": "", "note": "十位數(forty)與個位數(four)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 45, "word": "forty-five", "chinese": "45", "kk": "", "note": "十位數(forty)與個位數(five)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 46, "word": "forty-six", "chinese": "46", "kk": "", "note": "十位數(forty)與個位數(six)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 47, "word": "forty-seven", "chinese": "47", "kk": "", "note": "十位數(forty)與個位數(seven)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 48, "word": "forty-eight", "chinese": "48", "kk": "", "note": "十位數(forty)與個位數(eight)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 49, "word": "forty-nine", "chinese": "49", "kk": "", "note": "十位數(forty)與個位數(nine)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 50, "word": "fifty", "chinese": "50", "kk": "[ˋfɪftɪ]", "note": "fifty (由 five 轉為 fif- + ty)", "category": "20-99 複合數字"}, {"num": 51, "word": "fifty-one", "chinese": "51", "kk": "", "note": "十位數(fifty)與個位數(one)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 52, "word": "fifty-two", "chinese": "52", "kk": "", "note": "十位數(fifty)與個位數(two)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 53, "word": "fifty-three", "chinese": "53", "kk": "", "note": "十位數(fifty)與個位數(three)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 54, "word": "fifty-four", "chinese": "54", "kk": "", "note": "十位數(fifty)與個位數(four)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 55, "word": "fifty-five", "chinese": "55", "kk": "", "note": "十位數(fifty)與個位數(five)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 56, "word": "fifty-six", "chinese": "56", "kk": "", "note": "十位數(fifty)與個位數(six)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 57, "word": "fifty-seven", "chinese": "57", "kk": "", "note": "十位數(fifty)與個位數(seven)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 58, "word": "fifty-eight", "chinese": "58", "kk": "", "note": "十位數(fifty)與個位數(eight)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 59, "word": "fifty-nine", "chinese": "59", "kk": "", "note": "十位數(fifty)與個位數(nine)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 60, "word": "sixty", "chinese": "60", "kk": "[ˋsɪkstɪ]", "note": "", "category": "20-99 複合數字"}, {"num": 61, "word": "sixty-one", "chinese": "61", "kk": "", "note": "十位數(sixty)與個位數(one)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 62, "word": "sixty-two", "chinese": "62", "kk": "", "note": "十位數(sixty)與個位數(two)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 63, "word": "sixty-three", "chinese": "63", "kk": "", "note": "十位數(sixty)與個位數(three)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 64, "word": "sixty-four", "chinese": "64", "kk": "", "note": "十位數(sixty)與個位數(four)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 65, "word": "sixty-five", "chinese": "65", "kk": "", "note": "十位數(sixty)與個位數(five)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 66, "word": "sixty-six", "chinese": "66", "kk": "", "note": "十位數(sixty)與個位數(six)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 67, "word": "sixty-seven", "chinese": "67", "kk": "", "note": "十位數(sixty)與個位數(seven)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 68, "word": "sixty-eight", "chinese": "68", "kk": "", "note": "十位數(sixty)與個位數(eight)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 69, "word": "sixty-nine", "chinese": "69", "kk": "", "note": "十位數(sixty)與個位數(nine)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 70, "word": "seventy", "chinese": "70", "kk": "[ˋsɛvntɪ]", "note": "", "category": "20-99 複合數字"}, {"num": 71, "word": "seventy-one", "chinese": "71", "kk": "", "note": "十位數(seventy)與個位數(one)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 72, "word": "seventy-two", "chinese": "72", "kk": "", "note": "十位數(seventy)與個位數(two)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 73, "word": "seventy-three", "chinese": "73", "kk": "", "note": "十位數(seventy)與個位數(three)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 74, "word": "seventy-four", "chinese": "74", "kk": "", "note": "十位數(seventy)與個位數(four)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 75, "word": "seventy-five", "chinese": "75", "kk": "", "note": "十位數(seventy)與個位數(five)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 76, "word": "seventy-six", "chinese": "76", "kk": "", "note": "十位數(seventy)與個位數(six)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 77, "word": "seventy-seven", "chinese": "77", "kk": "", "note": "十位數(seventy)與個位數(seven)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 78, "word": "seventy-eight", "chinese": "78", "kk": "", "note": "十位數(seventy)與個位數(eight)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 79, "word": "seventy-nine", "chinese": "79", "kk": "", "note": "十位數(seventy)與個位數(nine)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 80, "word": "eighty", "chinese": "80", "kk": "[ˋetɪ]", "note": "eighty (eight 結尾已具 t，直接加 y)", "category": "20-99 複合數字"}, {"num": 81, "word": "eighty-one", "chinese": "81", "kk": "", "note": "十位數(eighty)與個位數(one)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 82, "word": "eighty-two", "chinese": "82", "kk": "", "note": "十位數(eighty)與個位數(two)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 83, "word": "eighty-three", "chinese": "83", "kk": "", "note": "十位數(eighty)與個位數(three)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 84, "word": "eighty-four", "chinese": "84", "kk": "", "note": "十位數(eighty)與個位數(four)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 85, "word": "eighty-five", "chinese": "85", "kk": "", "note": "十位數(eighty)與個位數(five)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 86, "word": "eighty-six", "chinese": "86", "kk": "", "note": "十位數(eighty)與個位數(six)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 87, "word": "eighty-seven", "chinese": "87", "kk": "", "note": "十位數(eighty)與個位數(seven)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 88, "word": "eighty-eight", "chinese": "88", "kk": "", "note": "十位數(eighty)與個位數(eight)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 89, "word": "eighty-nine", "chinese": "89", "kk": "", "note": "十位數(eighty)與個位數(nine)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 90, "word": "ninety", "chinese": "90", "kk": "[ˋnaɪntɪ]", "note": "ninety (保留 e：nine + ty)", "category": "20-99 複合數字"}, {"num": 91, "word": "ninety-one", "chinese": "91", "kk": "", "note": "十位數(ninety)與個位數(one)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 92, "word": "ninety-two", "chinese": "92", "kk": "", "note": "十位數(ninety)與個位數(two)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 93, "word": "ninety-three", "chinese": "93", "kk": "", "note": "十位數(ninety)與個位數(three)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 94, "word": "ninety-four", "chinese": "94", "kk": "", "note": "十位數(ninety)與個位數(four)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 95, "word": "ninety-five", "chinese": "95", "kk": "", "note": "十位數(ninety)與個位數(five)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 96, "word": "ninety-six", "chinese": "96", "kk": "", "note": "十位數(ninety)與個位數(six)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 97, "word": "ninety-seven", "chinese": "97", "kk": "", "note": "十位數(ninety)與個位數(seven)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 98, "word": "ninety-eight", "chinese": "98", "kk": "", "note": "十位數(ninety)與個位數(eight)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 99, "word": "ninety-nine", "chinese": "99", "kk": "", "note": "十位數(ninety)與個位數(nine)中間必須加連字符號 (-)", "category": "20-99 複合數字"}, {"num": 100, "word": "one hundred", "chinese": "100", "kk": "[wʌn ˋhʌndrəd]", "note": "one hundred (百，不可直接加 s 除非指數以百計 hundreds of)", "category": "百位數字"}];
+
+    // State
+    let currentScope = 'all';
+    let filteredList = [...RAW_VOCAB];
+    let currentIndex = 0;
+    let cardFlipped = false;
+
+    // Quiz State
+    let currentQuizItem = null;
+    let quizStats = { total: 0, correct: 0 };
+
+    // Spelling State
+    let currentSpellItem = null;
+
+    // Speaking State
+    let currentSpeakItem = null;
+    let isRecording = false;
+    let recognition = null;
+
+    // Storage keys
+    const STORAGE_KEY = 'wordchecking_progress_v1';
+    let userProgress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+    // Init App
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      updateFilteredList();
+      renderCurrentCard();
+      renderStats();
+      initSpeechRecognition();
+
+      // Keyboard shortcuts for Flashcard
+      document.addEventListener('keydown', (e) => {
+        const activeMode = getActiveMode();
+        if (activeMode === 'card') {
+          if (e.code === 'Space') {
+            e.preventDefault();
+            flipCard();
+          } else if (e.code === 'ArrowRight') {
+            nextCard();
+          } else if (e.code === 'ArrowLeft') {
+            prevCard();
+          }
+        }
+      });
+    });
+
+    function getActiveMode() {
+      if (!document.getElementById('modeCard').classList.contains('hidden')) return 'card';
+      if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
+      if (!document.getElementById('modeSpelling').classList.contains('hidden')) return 'spelling';
+      if (!document.getElementById('modeSpeaking').classList.contains('hidden')) return 'speaking';
+      return 'list';
+    }
+
+    // Theme initialization
+    function initTheme() {
+      const isDark = localStorage.getItem('theme') === 'dark' || 
+                     (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      document.getElementById('themeToggle').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const darkActive = document.documentElement.classList.contains('dark');
+        localStorage.setItem('theme', darkActive ? 'dark' : 'light');
+      });
+    }
+
+    // Scope change handler
+    function onScopeChange() {
+      currentScope = document.getElementById('scopeFilter').value;
+      updateFilteredList();
+      currentIndex = 0;
+      renderCurrentCard();
+      if (getActiveMode() === 'quiz') startNewQuiz();
+      if (getActiveMode() === 'spelling') startNewSpelling();
+      if (getActiveMode() === 'speaking') startNewSpeaking();
+      if (getActiveMode() === 'list') renderWordTable();
+    }
+
+    function updateFilteredList() {
+      if (currentScope === 'all') {
+        filteredList = [...RAW_VOCAB];
+      } else if (currentScope === '1-12') {
+        filteredList = RAW_VOCAB.filter(x => x.num <= 12);
+      } else if (currentScope === '13-19') {
+        filteredList = RAW_VOCAB.filter(x => x.num >= 13 && x.num <= 19);
+      } else if (currentScope === '20-99') {
+        filteredList = RAW_VOCAB.filter(x => x.num >= 20 && x.num <= 99);
+      } else if (currentScope === 'tens') {
+        filteredList = RAW_VOCAB.filter(x => x.num % 10 === 0 && x.num >= 20 && x.num <= 90);
+      } else if (currentScope === 'weak') {
+        filteredList = RAW_VOCAB.filter(x => userProgress[x.num] === 'weak');
+        if (filteredList.length === 0) {
+          alert('目前沒有標記為「待加強」的單字！已為您自動切換回全部單字。');
+          document.getElementById('scopeFilter').value = 'all';
+          currentScope = 'all';
+          filteredList = [...RAW_VOCAB];
+        }
+      }
+    }
+
+    // Stats calculations
+    function renderStats() {
+      let mastered = 0;
+      let weak = 0;
+      RAW_VOCAB.forEach(item => {
+        if (userProgress[item.num] === 'mastered') mastered++;
+        else if (userProgress[item.num] === 'weak') weak++;
+      });
+
+      document.getElementById('statTotal').innerText = RAW_VOCAB.length;
+      document.getElementById('statMastered').innerText = mastered;
+      document.getElementById('statWeak').innerText = weak;
+
+      const pct = Math.round((mastered / RAW_VOCAB.length) * 100);
+      document.getElementById('progressText').innerText = `${pct}% (${mastered}/${RAW_VOCAB.length})`;
+      document.getElementById('progressBarMastered').style.width = `${(mastered / RAW_VOCAB.length) * 100}%`;
+      document.getElementById('progressBarWeak').style.width = `${(weak / RAW_VOCAB.length) * 100}%`;
+
+      if (quizStats.total > 0) {
+        const acc = Math.round((quizStats.correct / quizStats.total) * 100);
+        document.getElementById('statAccuracy').innerText = `${acc}%`;
+      } else {
+        document.getElementById('statAccuracy').innerText = '--%';
+      }
+    }
+
+    // Flashcard Rendering
+    function renderCurrentCard() {
+      if (filteredList.length === 0) return;
+      const item = filteredList[currentIndex];
+      
+      // Reset flip
+      cardFlipped = false;
+      document.getElementById('flashcardInner').classList.remove('rotate-y-180');
+
+      document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
+      document.getElementById('cardCategory').innerText = item.category;
+      document.getElementById('cardDigit').innerText = item.num;
+
+      document.getElementById('cardBackCategory').innerText = item.category;
+      document.getElementById('cardBackDigit').innerText = `#${item.num}`;
+      document.getElementById('cardEnglish').innerText = item.word;
+      document.getElementById('cardPhonetic').innerText = item.kk || '';
+
+      const noteBox = document.getElementById('cardNoteBox');
+      if (item.note) {
+        noteBox.classList.remove('hidden');
+        document.getElementById('cardNote').innerText = item.note;
+      } else {
+        noteBox.classList.add('hidden');
+      }
+    }
+
+    function flipCard() {
+      cardFlipped = !cardFlipped;
+      const inner = document.getElementById('flashcardInner');
+      if (cardFlipped) {
+        inner.classList.add('rotate-y-180');
+        playVoiceCurrent(1.0);
+      } else {
+        inner.classList.remove('rotate-y-180');
+      }
+    }
+
+    function nextCard() {
+      if (currentIndex < filteredList.length - 1) {
+        currentIndex++;
+      } else {
+        currentIndex = 0;
+      }
+      renderCurrentCard();
+    }
+
+    function prevCard() {
+      if (currentIndex > 0) {
+        currentIndex--;
+      } else {
+        currentIndex = filteredList.length - 1;
+      }
+      renderCurrentCard();
+    }
+
+    function markCurrent(isMastered) {
+      const item = filteredList[currentIndex];
+      userProgress[item.num] = isMastered ? 'mastered' : 'weak';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      renderStats();
+      nextCard();
+    }
+
+    // Text to Speech
+    function playVoiceText(text, rate = 1.0) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = rate;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function playVoiceCurrent(rate = 1.0) {
+      const item = filteredList[currentIndex];
+      if (item) playVoiceText(item.word, rate);
+    }
+
+    // Mode Switching
+    function switchMode(mode) {
+      const modes = ['card', 'quiz', 'spelling', 'speaking', 'list'];
+      modes.forEach(m => {
+        const sec = document.getElementById('mode' + capitalize(m));
+        const tab = document.getElementById('tab' + capitalize(m));
+        if (m === mode) {
+          sec.classList.remove('hidden');
+          tab.className = "flex-1 md:flex-initial px-4 py-2 rounded-lg transition active-tab shadow-sm bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 flex items-center justify-center space-x-2";
+        } else {
+          sec.classList.add('hidden');
+          tab.className = "flex-1 md:flex-initial px-4 py-2 rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-2";
+        }
+      });
+
+      if (mode === 'quiz') startNewQuiz();
+      if (mode === 'spelling') startNewSpelling();
+      if (mode === 'speaking') startNewSpeaking();
+      if (mode === 'list') renderWordTable();
+    }
+
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    // ==================== QUIZ LOGIC ====================
+    function startNewQuiz() {
+      document.getElementById('quizFeedback').classList.add('hidden');
+      if (filteredList.length === 0) return;
+
+      // Pick question item: prioritize 'weak' words if any
+      const weakItems = filteredList.filter(x => userProgress[x.num] === 'weak');
+      if (weakItems.length > 0 && Math.random() < 0.6) {
+        currentQuizItem = weakItems[Math.floor(Math.random() * weakItems.length)];
+      } else {
+        currentQuizItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+      }
+
+      document.getElementById('quizQuestionDigit').innerText = currentQuizItem.num;
+      document.getElementById('quizScoreText').innerText = `已作答 ${quizStats.total} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
+
+      // Generate 4 options (1 correct + 3 distractor)
+      let options = [currentQuizItem];
+      let distractors = RAW_VOCAB.filter(x => x.num !== currentQuizItem.num);
+      
+      // Try to pick similar number distractors (e.g. 14 -> 40, 4, 15)
+      distractors.sort((a, b) => {
+        let aSim = (Math.abs(a.num - currentQuizItem.num) < 15 || a.num % 10 === currentQuizItem.num % 10) ? -1 : 1;
+        let bSim = (Math.abs(b.num - currentQuizItem.num) < 15 || b.num % 10 === currentQuizItem.num % 10) ? -1 : 1;
+        return aSim - bSim;
+      });
+
+      for (let d of distractors) {
+        if (options.length >= 4) break;
+        if (!options.some(o => o.num === d.num)) options.push(d);
+      }
+
+      // Shuffle options
+      options.sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('quizOptionsContainer');
+      container.innerHTML = '';
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "p-4 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 hover:border-sky-500 font-bold text-slate-800 dark:text-slate-100 transition shadow-sm";
+        btn.innerText = opt.word;
+        btn.onclick = () => checkQuizAnswer(opt, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(selectedOpt, btnElement) {
+      const isCorrect = selectedOpt.num === currentQuizItem.num;
+      quizStats.total++;
+      if (isCorrect) quizStats.correct++;
+
+      // Update progress
+      userProgress[currentQuizItem.num] = isCorrect ? 'mastered' : 'weak';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      renderStats();
+
+      // Disable all option buttons
+      const container = document.getElementById('quizOptionsContainer');
+      Array.from(container.children).forEach(b => {
+        b.disabled = true;
+        if (b.innerText === currentQuizItem.word) {
+          b.className = "p-4 text-center rounded-2xl border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-bold";
+        } else if (b === btnElement && !isCorrect) {
+          b.className = "p-4 text-center rounded-2xl border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 font-bold";
+        }
+      });
+
+      const feedback = document.getElementById('quizFeedback');
+      feedback.classList.remove('hidden');
+      if (isCorrect) {
+        feedback.className = "mt-5 p-4 rounded-2xl text-sm bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200";
+        document.getElementById('quizFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+        document.getElementById('quizFeedbackTitle').innerText = '答對了！太棒了！';
+        document.getElementById('quizFeedbackDetail').innerText = `${currentQuizItem.word} ${currentQuizItem.kk || ''} ${currentQuizItem.note ? '・考點提醒：' + currentQuizItem.note : ''}`;
+        playVoiceText(currentQuizItem.word);
+      } else {
+        feedback.className = "mt-5 p-4 rounded-2xl text-sm bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200";
+        document.getElementById('quizFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-500"></i>';
+        document.getElementById('quizFeedbackTitle').innerText = '答錯囉，已加入待加強清單！';
+        document.getElementById('quizFeedbackDetail').innerText = `正確答案是：${currentQuizItem.word} ${currentQuizItem.kk || ''} ${currentQuizItem.note ? '・' + currentQuizItem.note : ''}`;
+      }
+    }
+
+    function nextQuizQuestion() {
+      startNewQuiz();
+    }
+
+    // ==================== SPELLING LOGIC ====================
+    function startNewSpelling() {
+      document.getElementById('spellFeedback').classList.add('hidden');
+      document.getElementById('spellHintBox').classList.add('hidden');
+      document.getElementById('spellInput').value = '';
+      document.getElementById('spellInput').disabled = false;
+      document.getElementById('spellInput').focus();
+
+      if (filteredList.length === 0) return;
+      currentSpellItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+      document.getElementById('spellDigit').innerText = currentSpellItem.num;
+    }
+
+    function toggleSpellHint() {
+      const hintBox = document.getElementById('spellHintBox');
+      hintBox.classList.toggle('hidden');
+      if (!hintBox.classList.contains('hidden')) {
+        // Show length and dashes
+        const target = currentSpellItem.word;
+        const masked = target.split('').map(c => (c === '-' ? '-' : '_')).join(' ');
+        hintBox.innerText = `字數提示：${masked} (共 ${target.replace(/-/g,'').length} 個字母)`;
+      }
+    }
+
+    function checkSpelling(e) {
+      e.preventDefault();
+      const inputVal = document.getElementById('spellInput').value.trim().toLowerCase();
+      const target = currentSpellItem.word.toLowerCase();
+      
+      const isCorrect = (inputVal === target);
+      document.getElementById('spellInput').disabled = true;
+
+      userProgress[currentSpellItem.num] = isCorrect ? 'mastered' : 'weak';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      renderStats();
+
+      const feedback = document.getElementById('spellFeedback');
+      feedback.classList.remove('hidden');
+
+      if (isCorrect) {
+        feedback.className = "mt-4 p-4 rounded-2xl text-sm bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200";
+        document.getElementById('spellFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+        document.getElementById('spellFeedbackTitle').innerText = '拼字完全正確！';
+        document.getElementById('spellFeedbackDetail').innerText = `${currentSpellItem.word} ${currentSpellItem.kk || ''} ${currentSpellItem.note ? '・' + currentSpellItem.note : ''}`;
+        playVoiceText(currentSpellItem.word);
+      } else {
+        feedback.className = "mt-4 p-4 rounded-2xl text-sm bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200";
+        document.getElementById('spellFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-500"></i>';
+        document.getElementById('spellFeedbackTitle').innerText = '拼字有誤，請仔細比對：';
+        document.getElementById('spellFeedbackDetail').innerText = `正確答案：${currentSpellItem.word} (您輸入：${inputVal || '空白'}) ${currentSpellItem.note ? '・' + currentSpellItem.note : ''}`;
+      }
+    }
+
+    function nextSpellQuestion() {
+      startNewSpelling();
+    }
+
+    // ==================== SPEAKING LOGIC ====================
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 3;
+
+        recognition.onstart = () => {
+          isRecording = true;
+          document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition animate-pulse";
+          document.getElementById('micStatus').innerText = "請說出單字... (正在聆聽中)";
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript.trim().toLowerCase();
+          handleSpeechResult(transcript);
+        };
+
+        recognition.onerror = (event) => {
+          stopRecordingUI();
+          document.getElementById('micStatus').innerText = "辨識失敗或無聲音，請再試一次";
+        };
+
+        recognition.onend = () => {
+          stopRecordingUI();
+        };
+      } else {
+        document.getElementById('micStatus').innerText = "您的瀏覽器不支援 Web Speech API 語音辨識 (建議使用 Chrome/Edge)";
+      }
+    }
+
+    function stopRecordingUI() {
+      isRecording = false;
+      document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 transition transform active:scale-95";
+    }
+
+    function toggleSpeechRecognition() {
+      if (!recognition) {
+        alert('此瀏覽器未啟用 Web Speech 語音辨識功能，請使用 Chrome 測試。');
+        return;
+      }
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    }
+
+    function startNewSpeaking() {
+      document.getElementById('speakFeedback').classList.add('hidden');
+      if (filteredList.length === 0) return;
+      currentSpeakItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+
+      document.getElementById('speakEnglish').innerText = currentSpeakItem.word;
+      document.getElementById('speakPhonetic').innerText = currentSpeakItem.kk || '';
+      document.getElementById('speakDigit').innerText = currentSpeakItem.num;
+      document.getElementById('micStatus').innerText = "點擊麥克風後對著手機或電腦說出單字";
+    }
+
+    function handleSpeechResult(spokenText) {
+      const target = currentSpeakItem.word.toLowerCase().replace(/-/g, ' ');
+      const cleanSpoken = spokenText.toLowerCase().replace(/-/g, ' ');
+      
+      // Some recognizers return digit like "40" instead of "forty"
+      const isMatch = (cleanSpoken === target || cleanSpoken === String(currentSpeakItem.num));
+
+      const feedback = document.getElementById('speakFeedback');
+      feedback.classList.remove('hidden');
+
+      if (isMatch) {
+        userProgress[currentSpeakItem.num] = 'mastered';
+        feedback.className = "p-4 rounded-2xl text-sm bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200";
+        document.getElementById('speakFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+        document.getElementById('speakFeedbackTitle').innerText = '發音辨識成功！音準極佳！';
+        document.getElementById('speakFeedbackDetail').innerText = `系統辨識為：${spokenText} (目標：${currentSpeakItem.word})`;
+      } else {
+        userProgress[currentSpeakItem.num] = 'weak';
+        feedback.className = "p-4 rounded-2xl text-sm bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200";
+        document.getElementById('speakFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-exclamation text-amber-500"></i>';
+        document.getElementById('speakFeedbackTitle').innerText = '發音稍有差異，可以再練習一次：';
+        document.getElementById('speakFeedbackDetail').innerText = `系統聽到了：「${spokenText}」，目標應為：「${currentSpeakItem.word}」`;
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      renderStats();
+    }
+
+    function nextSpeakQuestion() {
+      startNewSpeaking();
+    }
+
+    // ==================== WORD TABLE LOGIC ====================
+    function renderWordTable() {
+      const tbody = document.getElementById('wordTableBody');
+      tbody.innerHTML = '';
+
+      filteredList.forEach(item => {
+        const status = userProgress[item.num] || 'none';
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition";
+        
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-mono font-bold text-slate-900 dark:text-white">${item.num}</td>
+          <td class="py-2.5 px-3 font-bold text-sky-600 dark:text-sky-400 font-mono">${item.word}</td>
+          <td class="py-2.5 px-3 font-mono text-slate-500">${item.kk || '-'}</td>
+          <td class="py-2.5 px-3 text-slate-600 dark:text-slate-300">${item.note || '<span class="text-slate-400">標準十位組合</span>'}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="playVoiceText('${item.word}')" class="p-1 rounded text-sky-500 hover:bg-sky-50 dark:hover:bg-slate-700">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="px-2 py-0.5 rounded-full text-[11px] font-medium ${
+              status === 'mastered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
+              (status === 'weak' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400')
+            }">
+              ${status === 'mastered' ? '已精通' : (status === 'weak' ? '待加強' : '未學習')}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function resetAllProgress() {
+      if (confirm('確定要清空這 100 個單字的掌握進度嗎？')) {
+        userProgress = {};
+        localStorage.removeItem(STORAGE_KEY);
+        renderStats();
+        renderWordTable();
+        alert('已成功重置！');
+      }
+    }
+  </script>
+</body>
+</html>
 
