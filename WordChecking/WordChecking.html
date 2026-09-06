@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 數字 1-100 貓咪陪伴版 (v1.1.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 數字 1-100 貓咪陪伴版 (v1.2.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -77,7 +77,6 @@
         <!-- Cute Cat Icon -->
         <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-rose-400 to-pink-500 flex items-center justify-center text-white shadow-md shadow-rose-400/20 cat-ear-wiggle">
           <i class="fa-solid fa-cat text-2xl"></i>
-          <!-- Tiny Paw Badge -->
           <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-[10px] text-rose-500 shadow">🐾</span>
         </div>
         <div>
@@ -86,7 +85,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.1.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.2.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴陪伴背單字 (數字 1-100)</p>
         </div>
@@ -139,7 +138,7 @@
               <polygon points="77,38 84,18 62,28" fill="#fda4af" />
               <!-- Cat Head -->
               <ellipse cx="50" cy="55" rx="38" ry="32" fill="#fbbf24" />
-              <!-- Calico / Stripes Patch -->
+              <!-- Calico Patch -->
               <path d="M 30,28 Q 50,38 70,28 Q 65,42 50,42 Q 35,42 30,28 Z" fill="#f97316" />
               <!-- Eyes -->
               <ellipse cx="36" cy="52" rx="4.5" ry="6" fill="#1e293b" id="catEyeLeft" />
@@ -169,7 +168,7 @@
               <span>🐱 咪咪（Mimi 學伴）：</span>
               <span id="catMood" class="text-[11px] font-normal text-slate-500 dark:text-slate-400">元氣滿滿</span>
             </div>
-            <p id="catSpeech" class="text-sm font-medium text-slate-800 dark:text-slate-100">喵～今天想背背哪幾個數字呢？摸摸我還可以聽可愛貓叫聲喔！🐾</p>
+            <p id="catSpeech" class="text-sm font-medium text-slate-800 dark:text-slate-100">喵～今天想背背哪幾個數字呢？我們新增了「聽寫模考」功能，可以測驗10或20題看能拿幾分喔！🐾</p>
           </div>
         </div>
       </div>
@@ -202,7 +201,7 @@
         <div class="bg-rose-50 dark:bg-rose-950/30 p-3 rounded-2xl border border-rose-100 dark:border-rose-800/40">
           <div class="text-xs text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1">
             <span>🎯</span>
-            <span>測驗正確率</span>
+            <span>練習正確率</span>
           </div>
           <div class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1" id="statAccuracy">--%</div>
         </div>
@@ -226,7 +225,7 @@
 
     <!-- Scope Filter & Mode Selection -->
     <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
-      <!-- Mode Tabs -->
+      <!-- Mode Tabs (Including Exam) -->
       <div class="flex bg-slate-200/80 dark:bg-slate-700/80 p-1.5 rounded-2xl w-full md:w-auto text-xs sm:text-sm font-semibold overflow-x-auto">
         <button onclick="switchMode('card')" id="tabCard" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5">
           <span>🐾</span>
@@ -234,15 +233,20 @@
         </button>
         <button onclick="switchMode('quiz')" id="tabQuiz" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
           <i class="fa-solid fa-circle-question"></i>
-          <span>四選一測驗</span>
+          <span>四選一</span>
         </button>
         <button onclick="switchMode('spelling')" id="tabSpelling" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
           <i class="fa-solid fa-keyboard"></i>
-          <span>拼字挑戰</span>
+          <span>拼字練習</span>
         </button>
         <button onclick="switchMode('speaking')" id="tabSpeaking" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
           <i class="fa-solid fa-microphone"></i>
           <span>口語跟讀</span>
+        </button>
+        <!-- NEW TAB: MOCK EXAM -->
+        <button onclick="switchMode('exam')" id="tabExam" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5 bg-amber-100/60 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
+          <i class="fa-solid fa-file-pen text-amber-500"></i>
+          <span>聽寫模考 📝</span>
         </button>
         <button onclick="switchMode('list')" id="tabList" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
           <i class="fa-solid fa-list-check"></i>
@@ -361,7 +365,6 @@
           <span id="quizScoreText">第 1 題</span>
         </div>
 
-        <!-- Question Body -->
         <div class="text-center py-5">
           <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">請問這個數字的正確英文拼法是？</div>
           <div class="text-6xl font-black text-slate-900 dark:text-white font-mono" id="quizQuestionDigit">40</div>
@@ -371,12 +374,8 @@
           </button>
         </div>
 
-        <!-- 4 Options -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" id="quizOptionsContainer">
-          <!-- Populated by JS -->
-        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" id="quizOptionsContainer"></div>
 
-        <!-- Quiz Feedback banner -->
         <div id="quizFeedback" class="hidden mt-5 p-4 rounded-2xl text-sm transition">
           <div class="flex items-start space-x-3">
             <div id="quizFeedbackIcon" class="text-2xl mt-0.5"></div>
@@ -397,7 +396,7 @@
     <section id="modeSpelling" class="hidden max-w-xl mx-auto space-y-5">
       <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border-2 border-amber-200/80 dark:border-slate-700 shadow-md">
         <div class="flex justify-between items-center text-xs text-slate-400 mb-4">
-          <span class="px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 font-bold">🐾 拼字挑戰</span>
+          <span class="px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 font-bold">🐾 拼字練習</span>
           <span id="spellCounter">第 1 題</span>
         </div>
 
@@ -417,7 +416,6 @@
           <div id="spellHintBox" class="hidden text-xs text-slate-400 tracking-widest font-mono mt-2 bg-slate-50 dark:bg-slate-700/50 py-1.5 px-3 rounded-lg inline-block"></div>
         </div>
 
-        <!-- Input Box -->
         <form onsubmit="checkSpelling(event)" class="space-y-4">
           <div>
             <input type="text" id="spellInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="在此輸入英文單字 (例如: twelve)..." class="w-full text-center font-mono text-xl py-3 px-4 rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-300 transition">
@@ -427,7 +425,6 @@
           </button>
         </form>
 
-        <!-- Spelling Feedback -->
         <div id="spellFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm">
           <div class="flex items-start space-x-3">
             <div id="spellFeedbackIcon" class="text-2xl mt-0.5"></div>
@@ -466,7 +463,6 @@
           </div>
         </div>
 
-        <!-- Microphone Trigger -->
         <div class="flex flex-col items-center justify-center my-6">
           <button id="micBtn" onclick="toggleSpeechRecognition()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95">
             <i class="fa-solid fa-microphone text-2xl" id="micIcon"></i>
@@ -474,7 +470,6 @@
           <div class="text-xs text-slate-500 dark:text-slate-400 mt-3" id="micStatus">點擊麥克風後說出英文單字給咪咪聽 🐾</div>
         </div>
 
-        <!-- Recognition Result -->
         <div id="speakFeedback" class="hidden p-4 rounded-2xl text-sm border">
           <div class="flex items-start space-x-3">
             <div id="speakFeedbackIcon" class="text-2xl mt-0.5"></div>
@@ -491,7 +486,191 @@
       </div>
     </section>
 
-    <!-- ==================== MODE 5: WORD LIST ==================== -->
+    <!-- ==================== MODE 5: MOCK EXAM (NEW!) ==================== -->
+    <section id="modeExam" class="hidden max-w-2xl mx-auto space-y-5">
+      
+      <!-- 1. Exam Setup View -->
+      <div id="examSetupBox" class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700/60 shadow-lg text-center space-y-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 text-3xl shadow-sm mb-1">
+          📝
+        </div>
+        <div>
+          <h2 class="text-2xl font-black text-slate-900 dark:text-white">數字聽寫模擬考</h2>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">聽取發音並拼寫出單字，測驗結束即刻出分與錯題解析 🐾</p>
+        </div>
+
+        <!-- Exam Options Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-lg mx-auto">
+          <!-- Question Count Selection -->
+          <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-700/50 border border-amber-200/80 dark:border-slate-600">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">
+              <i class="fa-solid fa-list-ol text-amber-500 mr-1"></i>測驗題數：
+            </label>
+            <div class="flex space-x-2">
+              <button type="button" onclick="setExamQuestionCount(10)" id="btnCount10" class="flex-1 py-2 px-3 rounded-xl border-2 border-amber-500 bg-amber-500 text-white font-bold text-xs transition shadow-sm">
+                10 題 (快速測)
+              </button>
+              <button type="button" onclick="setExamQuestionCount(20)" id="btnCount20" class="flex-1 py-2 px-3 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition hover:border-amber-400">
+                20 題 (完整考)
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2" id="examScoreRateText">每題 10 分，滿分 100 分</p>
+          </div>
+
+          <!-- Prompt Mode -->
+          <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-700/50 border border-amber-200/80 dark:border-slate-600">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">
+              <i class="fa-solid fa-headphones text-rose-500 mr-1"></i>輔助提示：
+            </label>
+            <div class="flex space-x-2">
+              <button type="button" onclick="setExamPromptMode('audio_digit')" id="btnPromptBoth" class="flex-1 py-2 px-2 rounded-xl border-2 border-rose-500 bg-rose-500 text-white font-bold text-xs transition shadow-sm">
+                發音 + 數字
+              </button>
+              <button type="button" onclick="setExamPromptMode('audio_only')" id="btnPromptAudio" class="flex-1 py-2 px-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition hover:border-rose-400">
+                純聽力盲聽
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2" id="examPromptDesc">顯示題目數字，並播放發音</p>
+          </div>
+        </div>
+
+        <button onclick="startExamSession()" class="w-full max-w-md mx-auto py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-pink-500 text-white font-black text-base shadow-lg shadow-rose-500/25 hover:opacity-95 transform active:scale-98 transition flex items-center justify-center space-x-2">
+          <span>開始模擬測驗</span>
+          <span>🐾</span>
+        </button>
+      </div>
+
+      <!-- 2. Exam Running View -->
+      <div id="examRunningBox" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700/60 shadow-lg space-y-5">
+        
+        <!-- Exam Header / Progress Bar -->
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-3 py-1 rounded-xl" id="examProgressBadge">第 1 / 10 題</span>
+          <span class="text-slate-400" id="examRemainText">剩餘 9 題</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+          <div id="examRunningProgressBar" class="bg-gradient-to-r from-amber-500 to-rose-500 h-full transition-all duration-300" style="width: 10%"></div>
+        </div>
+
+        <!-- Question Area -->
+        <div class="text-center py-5 space-y-4">
+          <div class="text-xs text-slate-400">🎧 請聽發音並輸入英文單字拼寫：</div>
+          
+          <div id="examDigitDisplay" class="text-6xl sm:text-7xl font-black font-mono text-slate-900 dark:text-white">
+            15
+          </div>
+
+          <!-- Audio Player Buttons -->
+          <div class="flex items-center justify-center space-x-3 pt-2">
+            <button onclick="playExamAudio(1.0)" class="px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow transition">
+              <i class="fa-solid fa-volume-high"></i>
+              <span>播放讀音</span>
+            </button>
+            <button onclick="playExamAudio(0.8)" class="px-3.5 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium flex items-center space-x-1.5 transition">
+              <i class="fa-solid fa-play text-[10px]"></i>
+              <span>慢速 0.8x</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Input Form -->
+        <form onsubmit="submitExamAnswer(event)" class="space-y-4 max-w-md mx-auto">
+          <div>
+            <input type="text" id="examInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="在此拼寫英文單字 (如: fifteen)..." class="w-full text-center font-mono text-xl py-3.5 px-4 rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-300 transition">
+          </div>
+          <div class="flex space-x-3">
+            <button type="button" onclick="skipExamQuestion()" class="py-3 px-4 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-xs font-bold transition">
+              略過此題
+            </button>
+            <button type="submit" class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-sm font-bold shadow-md transition flex items-center justify-center space-x-1.5">
+              <span>確認送出</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+          </div>
+        </form>
+
+      </div>
+
+      <!-- 3. Exam Result View (Report Card) -->
+      <div id="examResultBox" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border-2 border-rose-300 dark:border-rose-700/60 shadow-xl space-y-6">
+        
+        <!-- Score Banner -->
+        <div class="text-center space-y-2">
+          <div class="text-5xl" id="examCatEmoji">🐱</div>
+          <h3 class="text-xl font-black text-slate-900 dark:text-white" id="examResultTitle">測驗結算成績</h3>
+          
+          <!-- Big Score -->
+          <div class="py-3">
+            <div class="text-6xl sm:text-7xl font-black font-mono text-rose-500 dark:text-rose-400 tracking-tight" id="examScoreNumber">
+              90
+            </div>
+            <div class="text-xs font-bold text-slate-400 mt-1">滿分 100 分</div>
+          </div>
+
+          <!-- Score Metrics -->
+          <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto text-center py-2">
+            <div class="bg-slate-50 dark:bg-slate-700/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700">
+              <div class="text-[11px] text-slate-400">答對題數</div>
+              <div class="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5" id="examCorrectText">9 / 10</div>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-700/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700">
+              <div class="text-[11px] text-slate-400">正確率</div>
+              <div class="text-lg font-black text-rose-500 dark:text-rose-400 mt-0.5" id="examAccText">90%</div>
+            </div>
+            <div class="bg-amber-50 dark:bg-amber-950/40 p-2.5 rounded-xl border border-amber-200/60 dark:border-amber-800/40">
+              <div class="text-[11px] text-amber-700 dark:text-amber-400">獲得獎勵</div>
+              <div class="text-lg font-black text-amber-600 dark:text-amber-300 mt-0.5" id="examFishEarned">+9 🐟</div>
+            </div>
+          </div>
+
+          <!-- Cat Comment -->
+          <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-slate-700 border border-amber-200 dark:border-slate-600 text-xs text-amber-900 dark:text-amber-200 max-w-md mx-auto text-left" id="examCatFeedback">
+            喵嗚！太厲害了～這次測驗表現超好，咪咪送妳滿滿的魚乾獎勵！🐾
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown Table -->
+        <div>
+          <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span>題目作答明細與錯題解析</span>
+            <span class="text-[11px] text-rose-500 font-normal">★ 錯題已自動標記為待加強</span>
+          </h4>
+          <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-700 text-slate-400">
+                <tr>
+                  <th class="py-2.5 px-3">題號</th>
+                  <th class="py-2.5 px-3">數字</th>
+                  <th class="py-2.5 px-3">您的輸入</th>
+                  <th class="py-2.5 px-3">正確英文拼法</th>
+                  <th class="py-2.5 px-3 text-center">結果</th>
+                </tr>
+              </thead>
+              <tbody id="examResultTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <button onclick="retryExamSameScope()" class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-bold shadow transition text-center">
+            <i class="fa-solid fa-rotate mr-1"></i>再測一次 (重新抽題)
+          </button>
+          <button onclick="retryExamWeakOnly()" id="btnExamRetryWeak" class="flex-1 py-3 px-4 rounded-2xl bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 hover:bg-amber-200 text-xs font-bold transition text-center">
+            <i class="fa-solid fa-fire mr-1"></i>專攻本次錯題
+          </button>
+          <button onclick="switchMode('card')" class="py-3 px-4 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 text-xs font-semibold transition text-center">
+            返回卡片
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ==================== MODE 6: WORD LIST ==================== -->
     <section id="modeList" class="hidden space-y-4">
       <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
@@ -508,7 +687,6 @@
           </div>
         </div>
 
-        <!-- Table -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm border-collapse">
             <thead>
@@ -554,6 +732,16 @@
     let isRecording = false;
     let recognition = null;
 
+    // Exam State
+    let examConfig = {
+      count: 10,
+      promptMode: 'audio_digit' // 'audio_digit' or 'audio_only'
+    };
+    let examQuestions = [];
+    let examIndex = 0;
+    let examResults = []; // { num, word, input, isCorrect, note }
+    let lastExamWeakItems = [];
+
     // Cat Dialogues
     const CAT_SPEECHES = [
       "喵～今天也要一起把 1-100 數字全部背熟喔！🐾",
@@ -561,7 +749,7 @@
       "喵～十四是 fourteen，四十四是 forty-four，要加連字符號喔！",
       "呼嚕呼嚕～每背熟一個單字，我就多一條小魚乾可以吃耶！🐟",
       "喵嗚！妳今天好認真，國一英文會考一定難不倒妳的！✨",
-      "別擔心記不住，貓貓我會幫妳把不會的挑出來多練幾次喵！🐾"
+      "試試看聽寫模考！看妳 10 題或 20 題能拿幾分喵～🐾"
     ];
 
     // Storage keys
@@ -580,7 +768,6 @@
         const gain = audioCtx.createGain();
         osc.type = 'sine';
         
-        // Pitch envelope mimicking a soft cute meow
         const now = audioCtx.currentTime;
         osc.frequency.setValueAtTime(550, now);
         osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
@@ -608,12 +795,12 @@
         playCatMeowSound();
       } else {
         icon.className = "fa-solid fa-bell-slash text-base text-slate-400";
-        sayCatSpeech("音效已靜音，專心讀書喵～");
+        sayCatSpeech("音效已靜音，專心考試喵～");
       }
     }
 
-    function addFish() {
-      fishCount++;
+    function addFish(amount = 1) {
+      fishCount += amount;
       localStorage.setItem(FISH_STORAGE_KEY, fishCount);
       document.getElementById('fishCount').innerText = fishCount;
     }
@@ -622,7 +809,6 @@
       playCatMeowSound();
       const randomSpeech = CAT_SPEECHES[Math.floor(Math.random() * CAT_SPEECHES.length)];
       sayCatSpeech(randomSpeech, "開心呼嚕中 🐾");
-      // Animate cat eyes wink
       const eyeL = document.getElementById('catEyeLeft');
       const eyeR = document.getElementById('catEyeRight');
       if (eyeL && eyeR) {
@@ -670,10 +856,10 @@
       if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
       if (!document.getElementById('modeSpelling').classList.contains('hidden')) return 'spelling';
       if (!document.getElementById('modeSpeaking').classList.contains('hidden')) return 'speaking';
+      if (!document.getElementById('modeExam').classList.contains('hidden')) return 'exam';
       return 'list';
     }
 
-    // Theme initialization
     function initTheme() {
       const isDark = localStorage.getItem('theme') === 'dark' || 
                      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -690,7 +876,6 @@
       });
     }
 
-    // Scope change handler
     function onScopeChange() {
       currentScope = document.getElementById('scopeFilter').value;
       updateFilteredList();
@@ -724,7 +909,6 @@
       }
     }
 
-    // Stats calculations
     function renderStats() {
       let mastered = 0;
       let weak = 0;
@@ -742,7 +926,6 @@
       document.getElementById('progressBarMastered').style.width = `${(mastered / RAW_VOCAB.length) * 100}%`;
       document.getElementById('progressBarWeak').style.width = `${(weak / RAW_VOCAB.length) * 100}%`;
 
-      // Update cat favor title
       const catFavor = document.getElementById('catFavorText');
       if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
       else if (pct < 50) catFavor.innerText = "（友善踏踏貓 🐱）";
@@ -762,7 +945,6 @@
       if (filteredList.length === 0) return;
       const item = filteredList[currentIndex];
       
-      // Reset flip
       cardFlipped = false;
       document.getElementById('flashcardInner').classList.remove('rotate-y-180');
 
@@ -847,7 +1029,7 @@
 
     // Mode Switching
     function switchMode(mode) {
-      const modes = ['card', 'quiz', 'spelling', 'speaking', 'list'];
+      const modes = ['card', 'quiz', 'spelling', 'speaking', 'exam', 'list'];
       modes.forEach(m => {
         const sec = document.getElementById('mode' + capitalize(m));
         const tab = document.getElementById('tab' + capitalize(m));
@@ -864,6 +1046,7 @@
       if (mode === 'quiz') startNewQuiz();
       if (mode === 'spelling') startNewSpelling();
       if (mode === 'speaking') startNewSpeaking();
+      if (mode === 'exam') initExamSetup();
       if (mode === 'list') renderWordTable();
     }
 
@@ -878,7 +1061,6 @@
 
       sayCatSpeech("四選一小測驗！找出最正確的英文拼法，別掉進相近字陷阱喵～🐾");
 
-      // Pick question item: prioritize 'weak' words if any
       const weakItems = filteredList.filter(x => userProgress[x.num] === 'weak');
       if (weakItems.length > 0 && Math.random() < 0.6) {
         currentQuizItem = weakItems[Math.floor(Math.random() * weakItems.length)];
@@ -889,7 +1071,6 @@
       document.getElementById('quizQuestionDigit').innerText = currentQuizItem.num;
       document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
 
-      // Generate 4 options (1 correct + 3 distractor)
       let options = [currentQuizItem];
       let distractors = RAW_VOCAB.filter(x => x.num !== currentQuizItem.num);
       
@@ -1118,6 +1299,231 @@
 
     function nextSpeakQuestion() {
       startNewSpeaking();
+    }
+
+    // ==================== MODE 5: MOCK EXAM LOGIC (NEW!) ====================
+    function initExamSetup() {
+      document.getElementById('examSetupBox').classList.remove('hidden');
+      document.getElementById('examRunningBox').classList.add('hidden');
+      document.getElementById('examResultBox').classList.add('hidden');
+      sayCatSpeech("歡迎來到模擬聽寫考試！選擇 10 題或 20 題，來看看能拿幾分喵～🐾", "認真監考");
+    }
+
+    function setExamQuestionCount(cnt) {
+      examConfig.count = cnt;
+      const b10 = document.getElementById('btnCount10');
+      const b20 = document.getElementById('btnCount20');
+      const scoreRate = document.getElementById('examScoreRateText');
+      if (cnt === 10) {
+        b10.className = "flex-1 py-2 px-3 rounded-xl border-2 border-amber-500 bg-amber-500 text-white font-bold text-xs transition shadow-sm";
+        b20.className = "flex-1 py-2 px-3 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition hover:border-amber-400";
+        scoreRate.innerText = "每題 10 分，滿分 100 分";
+      } else {
+        b20.className = "flex-1 py-2 px-3 rounded-xl border-2 border-amber-500 bg-amber-500 text-white font-bold text-xs transition shadow-sm";
+        b10.className = "flex-1 py-2 px-3 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition hover:border-amber-400";
+        scoreRate.innerText = "每題 5 分，滿分 100 分";
+      }
+    }
+
+    function setExamPromptMode(mode) {
+      examConfig.promptMode = mode;
+      const bBoth = document.getElementById('btnPromptBoth');
+      const bAudio = document.getElementById('btnPromptAudio');
+      const desc = document.getElementById('examPromptDesc');
+      if (mode === 'audio_digit') {
+        bBoth.className = "flex-1 py-2 px-2 rounded-xl border-2 border-rose-500 bg-rose-500 text-white font-bold text-xs transition shadow-sm";
+        bAudio.className = "flex-1 py-2 px-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition hover:border-rose-400";
+        desc.innerText = "顯示題目數字，並播放發音";
+      } else {
+        bAudio.className = "flex-1 py-2 px-2 rounded-xl border-2 border-rose-500 bg-rose-500 text-white font-bold text-xs transition shadow-sm";
+        bBoth.className = "flex-1 py-2 px-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition hover:border-rose-400";
+        desc.innerText = "隱藏數字，完全靠純聽力作答！";
+      }
+    }
+
+    function startExamSession(customList = null) {
+      let pool = customList ? [...customList] : [...filteredList];
+      if (pool.length === 0) pool = [...RAW_VOCAB];
+
+      // Shuffle pool
+      pool.sort(() => Math.random() - 0.5);
+
+      const targetCount = Math.min(examConfig.count, pool.length);
+      examQuestions = pool.slice(0, targetCount);
+      examIndex = 0;
+      examResults = [];
+
+      document.getElementById('examSetupBox').classList.add('hidden');
+      document.getElementById('examResultBox').classList.add('hidden');
+      document.getElementById('examRunningBox').classList.remove('hidden');
+
+      loadExamQuestion();
+    }
+
+    function loadExamQuestion() {
+      const current = examQuestions[examIndex];
+      const total = examQuestions.length;
+
+      document.getElementById('examProgressBadge').innerText = `第 ${examIndex + 1} / ${total} 題`;
+      document.getElementById('examRemainText').innerText = `剩餘 ${total - (examIndex + 1)} 題`;
+      document.getElementById('examRunningProgressBar').style.width = `${((examIndex + 1) / total) * 100}%`;
+
+      const digitEl = document.getElementById('examDigitDisplay');
+      if (examConfig.promptMode === 'audio_only') {
+        digitEl.innerHTML = '<span class="text-4xl text-amber-500">🎧 盲聽模式</span>';
+      } else {
+        digitEl.innerText = current.num;
+      }
+
+      document.getElementById('examInput').value = '';
+      document.getElementById('examInput').focus();
+
+      // Auto play audio once
+      setTimeout(() => {
+        playExamAudio(1.0);
+      }, 300);
+
+      sayCatSpeech(`第 ${examIndex + 1} 題聽寫！仔細聽發音拼寫出來喵～🐾`, "監考計時");
+    }
+
+    function playExamAudio(rate = 1.0) {
+      const current = examQuestions[examIndex];
+      if (current) playVoiceText(current.word, rate);
+    }
+
+    function submitExamAnswer(e) {
+      if (e) e.preventDefault();
+      const current = examQuestions[examIndex];
+      const inputVal = document.getElementById('examInput').value.trim();
+      
+      const cleanInput = inputVal.toLowerCase().replace(/\s+/g, '-');
+      const cleanTarget = current.word.toLowerCase();
+      const isCorrect = (cleanInput === cleanTarget);
+
+      // Record in examResults
+      examResults.push({
+        num: current.num,
+        targetWord: current.word,
+        inputWord: inputVal,
+        isCorrect: isCorrect,
+        note: current.note
+      });
+
+      // Update userProgress in storage: if wrong, mark weak immediately
+      userProgress[current.num] = isCorrect ? 'mastered' : 'weak';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+
+      examIndex++;
+      if (examIndex < examQuestions.length) {
+        loadExamQuestion();
+      } else {
+        finishExam();
+      }
+    }
+
+    function skipExamQuestion() {
+      const current = examQuestions[examIndex];
+      examResults.push({
+        num: current.num,
+        targetWord: current.word,
+        inputWord: '(未作答)',
+        isCorrect: false,
+        note: current.note
+      });
+      userProgress[current.num] = 'weak';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+
+      examIndex++;
+      if (examIndex < examQuestions.length) {
+        loadExamQuestion();
+      } else {
+        finishExam();
+      }
+    }
+
+    function finishExam() {
+      document.getElementById('examRunningBox').classList.add('hidden');
+      document.getElementById('examResultBox').classList.remove('hidden');
+
+      renderStats();
+
+      const total = examResults.length;
+      const correctCount = examResults.filter(x => x.isCorrect).length;
+      const score = Math.round((correctCount / total) * 100);
+
+      document.getElementById('examScoreNumber').innerText = score;
+      document.getElementById('examCorrectText').innerText = `${correctCount} / ${total}`;
+      document.getElementById('examAccText').innerText = `${score}%`;
+
+      // Reward fish
+      addFish(correctCount);
+      document.getElementById('examFishEarned').innerText = `+${correctCount} 🐟`;
+
+      // Store weak items for quick retry
+      lastExamWeakItems = examResults.filter(x => !x.isCorrect).map(x => RAW_VOCAB.find(v => v.num === x.num));
+      const btnRetryWeak = document.getElementById('btnExamRetryWeak');
+      if (lastExamWeakItems.length === 0) {
+        btnRetryWeak.classList.add('hidden');
+      } else {
+        btnRetryWeak.classList.remove('hidden');
+        btnRetryWeak.innerText = `🔥 專攻本次錯題 (${lastExamWeakItems.length} 題)`;
+      }
+
+      // Feedback text and cat mood
+      const feedbackEl = document.getElementById('examCatFeedback');
+      const titleEl = document.getElementById('examResultTitle');
+      const emojiEl = document.getElementById('examCatEmoji');
+
+      if (score === 100) {
+        emojiEl.innerText = "👑";
+        titleEl.innerText = "🎉 哇！滿分 100 分！太神了！";
+        feedbackEl.innerText = "喵嗚嗚嗚！全部聽寫完全正確，連一個字母都沒拼錯！咪咪給妳滿分神喵皇冠，小魚乾滿載而歸～🐟✨";
+        playCatMeowSound();
+      } else if (score >= 80) {
+        emojiEl.innerText = "😸";
+        titleEl.innerText = "✨ 優秀！拿到了 " + score + " 分！";
+        feedbackEl.innerText = "表現非常優秀喵！只有幾題小細節（注意連字符號或 forty），國一會考基礎已經很扎實囉！🐾";
+        playCatMeowSound();
+      } else if (score >= 60) {
+        emojiEl.innerText = "😺";
+        titleEl.innerText = "及格過關！得分：" + score + " 分";
+        feedbackEl.innerText = "順利過關喵！錯的題目咪咪都幫妳收在待加強本了，點擊下方「專攻本次錯題」再來一次就能拿到滿分喔！🐾";
+      } else {
+        emojiEl.innerText = "😿";
+        titleEl.innerText = "得分：" + score + " 分，別氣餒！";
+        feedbackEl.innerText = "數字聽寫本來就需要多練幾次耳朵才會習慣，不要灰心！咪咪陪妳看錯題解析，多聽幾次一定會變強喵～🐾";
+      }
+
+      // Populate Table Breakdown
+      const tbody = document.getElementById('examResultTableBody');
+      tbody.innerHTML = '';
+      examResults.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = r.isCorrect ? "bg-emerald-50/50 dark:bg-emerald-950/20" : "bg-rose-50/50 dark:bg-rose-950/20";
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-slate-500">#${idx + 1}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-800 dark:text-slate-100">${r.num}</td>
+          <td class="py-2.5 px-3 ${r.isCorrect ? 'text-emerald-700 dark:text-emerald-300 font-semibold' : 'text-rose-600 dark:text-rose-400 font-bold'}">${r.inputWord || '(空白)'}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-900 dark:text-white">
+            ${r.targetWord}
+            ${r.note ? '<div class="text-[10px] text-amber-600 font-sans font-normal mt-0.5">' + r.note + '</div>' : ''}
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            ${r.isCorrect ? '<span class="text-emerald-600 font-bold text-base">✓</span>' : '<span class="text-rose-500 font-bold text-base">✗</span>'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function retryExamSameScope() {
+      startExamSession();
+    }
+
+    function retryExamWeakOnly() {
+      if (lastExamWeakItems.length > 0) {
+        startExamSession(lastExamWeakItems);
+      }
     }
 
     // ==================== WORD TABLE LOGIC ====================
