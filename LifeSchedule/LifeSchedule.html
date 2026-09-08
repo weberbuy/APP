@@ -280,7 +280,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.8.1-test (支援多層拆解目標繼承子推進標籤完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.9.0-test (冰存目標自動隔離與折疊靈感庫完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1714,6 +1714,33 @@ function updateContainerWidth() {
         }
 
         // 切換目標為「主推進」或取消 (落實巴菲特專注心法，上限 3 個)
+
+        // 計算目標休眠/冰存天數
+        function getDormantDays(thought) {
+            const now = new Date();
+            const steps = Array.isArray(thought.steps) ? thought.steps : [];
+            const dates = steps.map(s => s.stepDate).filter(d => d && d !== '未指定日期').sort();
+            let lastDate = null;
+            if (dates.length > 0) {
+                lastDate = new Date(dates[dates.length - 1]);
+            }
+            if (lastDate && !isNaN(lastDate.getTime())) {
+                const diffDays = Math.floor((now - lastDate) / (86400000));
+                return Math.max(diffDays, 7);
+            }
+            const created = thought.createdAt || (typeof thought.id === 'number' && thought.id > 1600000000000 ? thought.id : 0);
+            if (created > 0) {
+                const diffDays = Math.floor((now.getTime() - created) / (86400000));
+                return Math.max(diffDays, 7);
+            }
+            return 7;
+        }
+
+        let showBacklogCards = false;
+        function toggleShowBacklogCards() {
+            showBacklogCards = !showBacklogCards;
+            render();
+        }
         function toggleMainFocus(thoughtId) {
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
@@ -2131,6 +2158,7 @@ function updateContainerWidth() {
 
             const thought = thoughts.find(t => t.id === thoughtId);
             if (thought) {
+                const wasFrozen = (getGoalFocusTag(thought).key === 'frozen');
                 if (!Array.isArray(thought.steps)) thought.steps = [];
                 thought.steps.push({
                     id: Date.now(),
@@ -2142,6 +2170,9 @@ function updateContainerWidth() {
                     done: false
                 });
                 saveData();
+                if (wasFrozen) {
+                    alert(`✨ 目標「${thought.goal || thought.text}」已成功新增步驟並喚醒，移回主看板！`);
+                }
             }
         }
 
@@ -2968,20 +2999,28 @@ function renderCards(container) {
                         const allCategoryGoals = activeCategory === '全部' ? thoughts : thoughts.filter(t => (t.category || '💼 事業') === activeCategory);
             const pendingGoals = allCategoryGoals.filter(t => !t.goalDone);
             const completedGoals = allCategoryGoals.filter(t => t.goalDone);
+
+            // 分流活躍推進目標 (主推進、子推進、習慣推進、加分推進) 與 冰存推進目標
+            const activeGoals = pendingGoals.filter(t => getGoalFocusTag(t).key !== 'frozen');
+            const frozenGoals = pendingGoals.filter(t => getGoalFocusTag(t).key === 'frozen');
+
             if (allCategoryGoals.length > 0) {
-
-
                 const activeMainCount = thoughts.filter(x => x.isMainFocus && !x.goalDone).length;
                 const cardsControlBar = document.createElement('div');
                 cardsControlBar.className = "mb-4 flex items-center justify-between flex-wrap gap-2 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs";
                 cardsControlBar.innerHTML = `
                     <div class="text-xs font-bold text-slate-700 flex items-center gap-2 flex-wrap">
-                        <span>🎴 「${escapeHtml(activeCategory)}」領域看板 (${pendingGoals.length} 個進行中 / 共 ${allCategoryGoals.length} 個目標)</span>
+                        <span>🎴 「${escapeHtml(activeCategory)}」領域看板 (${activeGoals.length} 個活躍中 / 共 ${allCategoryGoals.length} 個目標)</span>
                         <span class="text-[11px] px-2.5 py-0.5 rounded-full font-extrabold transition-all ${
                             activeMainCount >= 3 ? 'bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-950/80 dark:text-amber-300' : 'bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
                         }">
                             ⭐ 主推進限額：${activeMainCount} / 3
                         </span>
+                        ${frozenGoals.length > 0 ? `
+                            <span class="text-[11px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
+                                🧊 冰存：${frozenGoals.length}
+                            </span>
+                        ` : ''}
                     </div>
                     ${completedGoals.length > 0 ? `
                         <button type="button" onclick="toggleHideCompletedGoalsCards()" class="px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
@@ -2994,19 +3033,24 @@ function renderCards(container) {
                 container.appendChild(cardsControlBar);
             }
 
+            // 看板主區域只渲染活躍目標 (主推進、子推進、加分推進、習慣推進)，冰存目標不直接出現在看板主視野
+            const mainGoalsToRender = hideCompletedGoalsCards ? activeGoals : [...activeGoals, ...completedGoals];
 
-            const goalsToRender = hideCompletedGoalsCards ? pendingGoals : allCategoryGoals;
             if (allCategoryGoals.length === 0) {
-
-
                 const emptyEl = document.createElement('div');
                 emptyEl.className = "text-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-200 text-sm";
                 emptyEl.innerHTML = `目前「${escapeHtml(activeCategory)}」領域尚無記錄！`;
                 container.appendChild(emptyEl);
                 return;
-            } else if (goalsToRender.length === 0 && hideCompletedGoalsCards) {
-
-
+            } else if (activeGoals.length === 0 && frozenGoals.length > 0 && hideCompletedGoalsCards) {
+                const emptyEl = document.createElement('div');
+                emptyEl.className = "text-center py-8 text-slate-500 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-sm space-y-2 mb-4";
+                emptyEl.innerHTML = `
+                    <div class="font-bold text-slate-700 dark:text-slate-200">✨ 目前「${escapeHtml(activeCategory)}」領域無活躍進行中的目標</div>
+                    <p class="text-xs text-slate-400 dark:text-slate-400">共有 ${frozenGoals.length} 個目標在下方「📦 冰存靈感庫」中休眠收納，需要時可隨時展開或喚醒。</p>
+                `;
+                container.appendChild(emptyEl);
+            } else if (mainGoalsToRender.length === 0 && hideCompletedGoalsCards) {
                 const emptyEl = document.createElement('div');
                 emptyEl.className = "text-center py-12 text-slate-500 bg-white rounded-2xl border border-slate-200 text-sm space-y-2";
                 emptyEl.innerHTML = `
@@ -3016,12 +3060,11 @@ function renderCards(container) {
                 container.appendChild(emptyEl);
                 return;
             }
-            goalsToRender.forEach((thought, index) => {
 
-
-                const card = document.createElement('div');
-                card.id = `card-${thought.id}`;
-                card.className = "bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden";
+            function createGoalCardElement(thought, index, isFrozen = false) {
+const card = document.createElement('div');
+                card.id = isFrozen ? `frozen-card-${thought.id}` : `card-${thought.id}`;
+                card.className = isFrozen ? "bg-white dark:bg-slate-800/95 rounded-2xl shadow-2xs border border-slate-300 dark:border-slate-700 overflow-hidden opacity-95 hover:opacity-100 transition-all" : "bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden";
 
 
                 const isEdit = (editingId === thought.id);
@@ -3180,13 +3223,18 @@ function renderCards(container) {
                         <div class="p-4 border-b border-slate-100 bg-slate-50/50">
                             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 mb-2">
                                 <div class="flex items-start gap-2.5 sm:gap-3 flex-1 min-w-0">
-                                    <span class="inline-flex items-center justify-center bg-indigo-100 text-indigo-700 font-bold text-sm w-7 h-7 rounded-full shrink-0 mt-0.5">${index + 1}</span>
+                                    <span class="inline-flex items-center justify-center bg-indigo-100 text-indigo-700 font-bold text-sm w-7 h-7 rounded-full shrink-0 mt-0.5">${isFrozen ? "🧊" : (index + 1)}</span>
                                     <div class="flex-1 min-w-0">
                                         <div class="flex flex-wrap items-center gap-1.5 mb-1.5">
                                             <span class="inline-block bg-slate-200/80 text-slate-700 font-semibold text-[10px] px-2 py-0.5 rounded-md dark:bg-slate-700 dark:text-slate-200">${thought.category || '💼 事業'}</span>
                                             <span class="inline-flex items-center gap-1 font-bold text-[11px] px-2.5 py-0.5 rounded-md border shadow-2xs ${focusTag.badgeClass}">
                                                 ${focusTag.label}
                                             </span>
+                                            ${focusTag.key === 'frozen' ? `
+                                                <span class="inline-flex items-center gap-1 font-bold text-[11px] px-2 py-0.5 rounded-md bg-slate-200/80 text-slate-600 border border-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600 shadow-2xs">
+                                                    💤 已休眠 ${getDormantDays(thought)} 天
+                                                </span>
+                                            ` : ''}
                                             ${thought.parentStepInfo && thoughts.find(x => x.id === thought.parentStepInfo.parentThoughtId) ? `
                                                 <span onclick="jumpToStepEdit(${thought.parentStepInfo.parentThoughtId}, ${thought.parentStepInfo.parentStepId})" class="inline-flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-[11px] px-2.5 py-0.5 rounded-md cursor-pointer transition-colors shadow-2xs break-words" title="點擊直接跳轉至母思緒卡片的對應步驟">
                                                     🔗 來自母步驟：${escapeAttr(thoughts.find(x => x.id === thought.parentStepInfo.parentThoughtId).text)}
@@ -3200,7 +3248,7 @@ function renderCards(container) {
                                     <button type="button" onclick="toggleMainFocus(${thought.id})" class="text-xs font-bold px-2.5 py-1 rounded-md transition-all border cursor-pointer select-none ${
                                         thought.isMainFocus ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-xs' : 'bg-slate-100 hover:bg-amber-50 text-slate-600 hover:text-amber-700 border-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 dark:hover:bg-slate-600'
                                     }" title="${thought.isMainFocus ? '點擊取消主推進' : '點擊設為主推進 (上限 3 個)'}">
-                                        ${thought.isMainFocus ? '⭐ 主推進中' : '☆ 設為主推進'}
+                                        ${thought.isMainFocus ? '⭐ 主推進中' : (isFrozen ? '⚡ 設為主推進 (喚醒)' : '☆ 設為主推進')}
                                     </button>
                                     <button onclick="duplicateThought(${thought.id})" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-medium border border-slate-200">📋 複製</button>
                                     <button onclick="startEdit(${thought.id})" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-medium border border-slate-200">✏️ 編輯卡片</button>
@@ -3269,8 +3317,51 @@ function renderCards(container) {
                         </div>
                     `;
                 }
+                
+                return card;
+            }
+
+            // 渲染主看板中的活躍目標卡片
+            mainGoalsToRender.forEach((thought, index) => {
+                const card = createGoalCardElement(thought, index, false);
                 container.appendChild(card);
             });
+
+            // ------------------------------------------------------------
+            // 📦 冰存靈感庫 (Backlog) 專屬折疊區塊 (第二步：消除視覺干擾)
+            // ------------------------------------------------------------
+            if (frozenGoals.length > 0) {
+                const backlogWrapper = document.createElement('div');
+                backlogWrapper.className = "mt-8 pt-6 border-t-2 border-dashed border-slate-300 dark:border-slate-700";
+                
+                const backlogCard = document.createElement('div');
+                backlogCard.className = "bg-slate-100/90 dark:bg-slate-800/90 p-4 rounded-2xl border border-slate-300 dark:border-slate-700 shadow-xs space-y-3";
+                backlogCard.innerHTML = `
+                    <div class="flex items-center justify-between flex-wrap gap-2 cursor-pointer select-none" onclick="toggleShowBacklogCards()">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-base">📦</span>
+                            <h3 class="font-bold text-sm text-slate-800 dark:text-slate-100">冰存靈感庫 (Backlog)</h3>
+                            <span class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2.5 py-0.5 rounded-full font-bold border border-slate-300/80 dark:border-slate-600">
+                                已收納 ${frozenGoals.length} 個暫無排程的目標
+                            </span>
+                        </div>
+                        <button type="button" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 shadow-2xs transition-all">
+                            ${showBacklogCards ? '▲ 點擊收折' : '▼ 點擊展開檢視'}
+                        </button>
+                    </div>
+                    <div id="frozenCardsContainer" class="${showBacklogCards ? 'space-y-4 pt-3 border-t border-slate-200/80 dark:border-slate-700/80' : 'hidden'}"></div>
+                `;
+                backlogWrapper.appendChild(backlogCard);
+                container.appendChild(backlogWrapper);
+
+                if (showBacklogCards) {
+                    const frozenContainer = backlogCard.querySelector('#frozenCardsContainer');
+                    frozenGoals.forEach((thought, fIdx) => {
+                        const fCard = createGoalCardElement(thought, fIdx, true);
+                        frozenContainer.appendChild(fCard);
+                    });
+                }
+            }
         }
         document.addEventListener('DOMContentLoaded', () => {
 
