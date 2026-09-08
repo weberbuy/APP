@@ -280,7 +280,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.8.0-test (核心標籤判定引擎與卡片徽章完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.8.1-test (支援多層拆解目標繼承子推進標籤完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1626,6 +1626,25 @@ function updateContainerWidth() {
         // 核心標籤判定引擎 (Focus Tag Engine)
         // 5 級標籤：⭐ 主推進 / 🌿 子推進 / 🔄 習慣推進 / 🧊 冰存推進 / 💡 加分推進
         // ============================================================
+        // 向上遞迴檢查目標是否為「主推進」之衍生子目標（支援多層子步驟拆解目標繼承）
+        function isDescendantOfMainFocus(thought, thoughtsList, visited = new Set()) {
+            if (!thought || !thought.parentStepInfo || !thought.parentStepInfo.parentThoughtId) {
+                return false;
+            }
+            const parentId = thought.parentStepInfo.parentThoughtId;
+            if (visited.has(parentId)) return false; // 防呆避免循環引用
+            visited.add(parentId);
+
+            const parent = thoughtsList.find(x => x.id === parentId);
+            if (!parent) return false;
+
+            // 若直接母目標為「主推進」，則本目標為子推進
+            if (parent.isMainFocus) return true;
+
+            // 若直接母目標本身也是拆解目標，繼續向上追溯其母目標是否源自「主推進」
+            return isDescendantOfMainFocus(parent, thoughtsList, visited);
+        }
+
         function getGoalFocusTag(thought) {
             if (!thought) {
                 return {
@@ -1644,16 +1663,13 @@ function updateContainerWidth() {
                 };
             }
 
-            // 2. 🌿 子推進：若為拆解目標，且其母目標是「主推進」，自動標示為子推進
-            if (thought.parentStepInfo && thought.parentStepInfo.parentThoughtId) {
-                const parentThought = thoughts.find(x => x.id === thought.parentStepInfo.parentThoughtId);
-                if (parentThought && parentThought.isMainFocus) {
-                    return {
-                        key: 'sub',
-                        label: '🌿 子推進',
-                        badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-600'
-                    };
-                }
+            // 2. 🌿 子推進：若為拆解目標，且其母目標或上層拆解鏈源自「主推進」，自動標示為子推進
+            if (isDescendantOfMainFocus(thought, thoughts)) {
+                return {
+                    key: 'sub',
+                    label: '🌿 子推進',
+                    badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-600'
+                };
             }
 
             const steps = Array.isArray(thought.steps) ? thought.steps : [];
