@@ -245,7 +245,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.11.1-test (戰略心智圖排除已完成步驟僅呈現待辦步驟完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.11.2-test (心智圖主推進三類步驟排序與子目標預設折疊完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -2541,6 +2541,13 @@ function renderTimelineMatrix(container) {
         // 視覺化呈現：⭐ 主推進 ➔ 🌿 子推進 / 🔄 習慣推進 ➔ 具體執行步驟
         // 同時呈現：💡 加分推進目標群 與 獨立例行習慣
         // ============================================================
+        // 心智圖模式下子目標展開/收合狀態表 (預設收合)
+        let mindmapExpandedSubGoalsMap = {};
+        function toggleMindmapSubGoal(subGoalId) {
+            mindmapExpandedSubGoalsMap[subGoalId] = !mindmapExpandedSubGoalsMap[subGoalId];
+            render();
+        }
+
         function renderStepLeaf(parentGoal, s) {
             const isDone = s.done;
             const isRecurring = s.recurrence && s.recurrence !== 'none';
@@ -2564,6 +2571,38 @@ function renderTimelineMatrix(container) {
                         ${s.stepTime ? `<span class="bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded font-medium">⏱️ ${s.stepTime}</span>` : ''}
                         ${hasLinked ? `<span onclick="jumpToGoalCard(${s.linkedThoughtId})" class="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold cursor-pointer" title="點擊跳轉至拆解目標卡片">🌱 拆解目標 🔗</span>` : ''}
                     </div>
+                </div>
+            `;
+        }
+
+        
+        // 渲染帶有子目標展開按鈕之步驟項目
+        function renderStepWithSubGoal(parentGoal, s, linkedGoal, isHabitType, visited = new Set()) {
+            const isExpanded = linkedGoal ? !!mindmapExpandedSubGoalsMap[linkedGoal.id] : false;
+
+            return `
+                <div class="space-y-2">
+                    ${renderStepLeaf(parentGoal, s)}
+                    ${linkedGoal ? `
+                        <div class="pl-3 sm:pl-6 border-l-2 border-dashed ${
+                            isHabitType ? 'border-teal-300 dark:border-teal-700' : 'border-emerald-300 dark:border-emerald-700'
+                        } space-y-2">
+                            <button type="button" onclick="toggleMindmapSubGoal(${linkedGoal.id})" class="text-xs font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+                                isExpanded 
+                                    ? (isHabitType ? 'bg-teal-600 text-white border-teal-600 shadow-2xs' : 'bg-emerald-600 text-white border-emerald-600 shadow-2xs')
+                                    : (isHabitType ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border-teal-200 hover:bg-teal-100' : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 hover:bg-emerald-100')
+                            }">
+                                <span>${isHabitType ? '🔄' : '🌿'}</span>
+                                <span>${isHabitType ? '習慣目標' : '拆解子目標'}：${escapeHtml(linkedGoal.goal || linkedGoal.text)}</span>
+                                <span class="text-[10px] opacity-80 font-mono">${isExpanded ? '▲ 收合' : '▼ 展開卡片'}</span>
+                            </button>
+                            ${isExpanded ? `
+                                <div class="pt-1">
+                                    ${renderChildGoalBranch(linkedGoal, visited)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
                 </div>
             `;
         }
@@ -2607,8 +2646,8 @@ function renderTimelineMatrix(container) {
                         </div>
                     </div>
 
-                    <!-- 子目標底下的步驟清單 (排除已完成步驟) -->
-                    <div class="space-y-1.5 pt-1 border-t border-emerald-100 dark:border-emerald-900/60">
+                    <!-- 子目標底下的步驟清單 (排除已完成步驟，帶孫目標者支援折疊) -->
+                    <div class="space-y-2 pt-1 border-t border-emerald-100 dark:border-emerald-900/60">
                         <div class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-between">
                             <span>📋 待辦步驟 (${cPendingSteps.length} 個)：</span>
                             ${cPercent === 100 && cTotal > 0 ? '<span class="text-[10px] text-emerald-600 font-bold">🎉 全數完成</span>' : ''}
@@ -2618,19 +2657,20 @@ function renderTimelineMatrix(container) {
                                 ${cTotal > 0 ? '🎉 所有步驟已全數完成！' : '尚未規劃拆解步驟'}
                             </div>
                         ` : `
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-1">
-                                ${cPendingSteps.map(s => renderStepLeaf(childGoal, s)).join('')}
+                            <div class="space-y-2 pl-1">
+                                ${cPendingSteps.map(s => {
+                                    const linkedGrandChild = s.linkedThoughtId 
+                                        ? thoughts.find(x => x.id === s.linkedThoughtId && !x.goalDone) 
+                                        : thoughts.find(x => x.parentStepInfo && x.parentStepInfo.parentThoughtId === childGoal.id && x.parentStepInfo.parentStepId === s.id && !x.goalDone);
+                                    if (linkedGrandChild) {
+                                        return renderStepWithSubGoal(childGoal, s, linkedGrandChild, false, visited);
+                                    } else {
+                                        return renderStepLeaf(childGoal, s);
+                                    }
+                                }).join('')}
                             </div>
                         `}
                     </div>
-
-                    <!-- 若有孫目標，繼續向下延伸分支 -->
-                    ${grandChildGoals.length > 0 ? `
-                        <div class="pl-3 sm:pl-5 border-l-2 border-dashed border-teal-400 dark:border-teal-700 space-y-2 mt-2 pt-2">
-                            <div class="text-xs font-bold text-teal-800 dark:text-teal-300">🌱 孫層次拆解目標 (${grandChildGoals.length} 個)：</div>
-                            ${grandChildGoals.map(gc => renderChildGoalBranch(gc, visited)).join('')}
-                        </div>
-                    ` : ''}
                 </div>
             `;
         }
@@ -2764,8 +2804,36 @@ function renderTimelineMatrix(container) {
                     const totalCount = steps.length;
                     const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
-                    // 尋找由此主推進目標衍生出的所有子目標
-                    const directChildGoals = thoughts.filter(t => t.parentStepInfo && t.parentStepInfo.parentThoughtId === mainGoal.id && !t.goalDone);
+                    // 三類步驟分流解析
+                    const classifiedDirectSteps = [];
+                    const classifiedBreakdownSteps = [];
+                    const classifiedHabitSteps = [];
+
+                    pendingSteps.forEach(s => {
+                        const linkedGoal = s.linkedThoughtId 
+                            ? thoughts.find(x => x.id === s.linkedThoughtId && !x.goalDone) 
+                            : thoughts.find(x => x.parentStepInfo && x.parentStepInfo.parentThoughtId === mainGoal.id && x.parentStepInfo.parentStepId === s.id && !x.goalDone);
+
+                        const isDirectRecurring = (s.recurrence && s.recurrence !== 'none');
+                        let isLinkedHabit = false;
+                        if (linkedGoal) {
+                            const cUncompleted = (linkedGoal.steps || []).filter(cs => !cs.done);
+                            if (cUncompleted.length > 0 && cUncompleted.every(cs => cs.recurrence && cs.recurrence !== 'none')) {
+                                isLinkedHabit = true;
+                            }
+                        }
+
+                        if (linkedGoal && !isLinkedHabit) {
+                            // 類別 2: 拆解步驟 (即有拆解目標/子孫推進)
+                            classifiedBreakdownSteps.push({ step: s, linkedGoal });
+                        } else if ((linkedGoal && isLinkedHabit) || isDirectRecurring) {
+                            // 類別 3: 習慣步驟 (有拆解目標且步驟只剩循環步驟，或直接循環步驟)
+                            classifiedHabitSteps.push({ step: s, linkedGoal });
+                        } else {
+                            // 類別 1: 待執行步驟 (即無拆解目標)
+                            classifiedDirectSteps.push(s);
+                        }
+                    });
 
                     html += `
                         <div class="bg-white dark:bg-slate-800/95 p-5 rounded-3xl shadow-sm border-2 border-amber-300 dark:border-amber-600/80 space-y-5">
@@ -2794,37 +2862,67 @@ function renderTimelineMatrix(container) {
                                 </div>
                             </div>
 
-                            <!-- 樹狀分支結構 (Branch) -->
+                            <!-- 步驟三類分流結構 (1.待執行步驟 2.拆解步驟 3.習慣步驟，子孫目標預設折疊) -->
                             <div class="pl-3 sm:pl-6 border-l-2 border-dashed border-amber-300 dark:border-amber-700/80 space-y-5">
-                                <!-- 分支 1: 🌿 衍生子推進目標與步驟 -->
-                                ${directChildGoals.length > 0 ? `
-                                    <div class="space-y-3">
-                                        <div class="text-xs font-extrabold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-                                            <span class="text-base">🌿</span>
-                                            <span>衍生子推進目標樹 (${directChildGoals.length} 個子目標)：</span>
-                                        </div>
-                                        <div class="space-y-3 pl-2 sm:pl-4 border-l-2 border-emerald-300 dark:border-emerald-800/80">
-                                            ${directChildGoals.map((childGoal) => renderChildGoalBranch(childGoal)).join('')}
-                                        </div>
+                                ${pendingSteps.length === 0 ? `
+                                    <div class="text-xs ${steps.length > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-500 italic'} py-2 pl-2">
+                                        ${steps.length > 0 ? '🎉 本主推進目標所有步驟已全數完成！' : '尚未規劃步驟'}
                                     </div>
-                                ` : ''}
+                                ` : `
+                                    <!-- 類別 1: 📋 待執行步驟 (即無拆解目標) -->
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between text-xs font-extrabold text-slate-800 dark:text-slate-200">
+                                            <span class="flex items-center gap-1.5">
+                                                <span class="text-base">📋</span>
+                                                <span>1. 待執行步驟 (無拆解目標，共 ${classifiedDirectSteps.length} 個)：</span>
+                                            </span>
+                                            ${classifiedDirectSteps.length > 0 ? '<span class="text-[10px] text-slate-500 font-normal">直接行動清單</span>' : ''}
+                                        </div>
+                                        ${classifiedDirectSteps.length === 0 ? `
+                                            <div class="text-xs text-slate-400 italic pl-3">無單獨直接執行的待辦步驟</div>
+                                        ` : `
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-2">
+                                                ${classifiedDirectSteps.map(s => renderStepLeaf(mainGoal, s)).join('')}
+                                            </div>
+                                        `}
+                                    </div>
 
-                                <!-- 分支 2: 📋 主目標待辦執行步驟 (排除已完成步驟) -->
-                                <div class="space-y-2.5">
-                                    <div class="text-xs font-extrabold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                                        <span class="text-base">📋</span>
-                                        <span>主目標待辦步驟 (${pendingSteps.length} 個)：</span>
+                                    <!-- 類別 2: 🌿 拆解步驟 (即有拆解目標/子孫推進，預設折疊) -->
+                                    <div class="space-y-2.5 pt-3 border-t border-dashed border-slate-200 dark:border-slate-700">
+                                        <div class="flex items-center justify-between text-xs font-extrabold text-emerald-800 dark:text-emerald-300">
+                                            <span class="flex items-center gap-1.5">
+                                                <span class="text-base">🌿</span>
+                                                <span>2. 拆解步驟 (已另闢專案，共 ${classifiedBreakdownSteps.length} 個)：</span>
+                                            </span>
+                                            <span class="text-[10px] text-emerald-600 font-normal">子孫推進卡片預設折疊，點擊展開</span>
+                                        </div>
+                                        ${classifiedBreakdownSteps.length === 0 ? `
+                                            <div class="text-xs text-slate-400 italic pl-3">無拆解子推進步驟</div>
+                                        ` : `
+                                            <div class="space-y-3 pl-2">
+                                                ${classifiedBreakdownSteps.map(item => renderStepWithSubGoal(mainGoal, item.step, item.linkedGoal, false)).join('')}
+                                            </div>
+                                        `}
                                     </div>
-                                    ${pendingSteps.length === 0 ? `
-                                        <div class="text-xs ${steps.length > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-500 italic'} pl-3">
-                                            ${steps.length > 0 ? '🎉 所有步驟已全數完成！' : '尚未新增步驟'}
+
+                                    <!-- 類別 3: 🔄 習慣步驟 (即有拆解目標且只剩循環步驟，或直接循環步驟) -->
+                                    <div class="space-y-2.5 pt-3 border-t border-dashed border-slate-200 dark:border-slate-700">
+                                        <div class="flex items-center justify-between text-xs font-extrabold text-teal-800 dark:text-teal-300">
+                                            <span class="flex items-center gap-1.5">
+                                                <span class="text-base">🔄</span>
+                                                <span>3. 習慣步驟 (日常例行循環維護，共 ${classifiedHabitSteps.length} 個)：</span>
+                                            </span>
+                                            <span class="text-[10px] text-teal-600 font-normal">例行循環維護</span>
                                         </div>
-                                    ` : `
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-2">
-                                            ${pendingSteps.map(s => renderStepLeaf(mainGoal, s)).join('')}
-                                        </div>
-                                    `}
-                                </div>
+                                        ${classifiedHabitSteps.length === 0 ? `
+                                            <div class="text-xs text-slate-400 italic pl-3">無例行習慣步驟</div>
+                                        ` : `
+                                            <div class="space-y-3 pl-2">
+                                                ${classifiedHabitSteps.map(item => renderStepWithSubGoal(mainGoal, item.step, item.linkedGoal, true)).join('')}
+                                            </div>
+                                        `}
+                                    </div>
+                                `}
                             </div>
                         </div>
                     `;
