@@ -245,7 +245,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.11.0-test (總覽模式新增戰略心智圖樹狀全景檢視完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.11.1-test (戰略心智圖排除已完成步驟僅呈現待辦步驟完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -2572,6 +2572,7 @@ function renderTimelineMatrix(container) {
             if (!childGoal || visited.has(childGoal.id)) return '';
             visited.add(childGoal.id);
             const cSteps = Array.isArray(childGoal.steps) ? childGoal.steps : [];
+            const cPendingSteps = cSteps.filter(s => !s.done);
             const cDone = cSteps.filter(s => s.done).length;
             const cTotal = cSteps.length;
             const cPercent = cTotal > 0 ? Math.round((cDone / cTotal) * 100) : 0;
@@ -2606,17 +2607,19 @@ function renderTimelineMatrix(container) {
                         </div>
                     </div>
 
-                    <!-- 子目標底下的步驟清單 -->
+                    <!-- 子目標底下的步驟清單 (排除已完成步驟) -->
                     <div class="space-y-1.5 pt-1 border-t border-emerald-100 dark:border-emerald-900/60">
                         <div class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-between">
-                            <span>📋 執行步驟 (${cSteps.length} 個)：</span>
-                            ${cPercent === 100 ? '<span class="text-[10px] text-emerald-600 font-bold">🎉 全數完成</span>' : ''}
+                            <span>📋 待辦步驟 (${cPendingSteps.length} 個)：</span>
+                            ${cPercent === 100 && cTotal > 0 ? '<span class="text-[10px] text-emerald-600 font-bold">🎉 全數完成</span>' : ''}
                         </div>
-                        ${cSteps.length === 0 ? `
-                            <div class="text-xs text-slate-400 italic pl-2">尚未規劃拆解步驟</div>
+                        ${cPendingSteps.length === 0 ? `
+                            <div class="text-xs ${cTotal > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 italic'} pl-2">
+                                ${cTotal > 0 ? '🎉 所有步驟已全數完成！' : '尚未規劃拆解步驟'}
+                            </div>
                         ` : `
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-1">
-                                ${cSteps.map(s => renderStepLeaf(childGoal, s)).join('')}
+                                ${cPendingSteps.map(s => renderStepLeaf(childGoal, s)).join('')}
                             </div>
                         `}
                     </div>
@@ -2634,6 +2637,7 @@ function renderTimelineMatrix(container) {
 
         function renderMiniGoalTreeCard(goal) {
             const steps = Array.isArray(goal.steps) ? goal.steps : [];
+            const pendingSteps = steps.filter(s => !s.done);
             const doneCount = steps.filter(s => s.done).length;
             const totalCount = steps.length;
             const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
@@ -2651,23 +2655,25 @@ function renderTimelineMatrix(container) {
                         </h4>
                         <div class="text-[11px] text-amber-800 dark:text-amber-400 font-medium truncate">🎯 ${escapeHtml(goal.goal || '未設定')}</div>
 
-                        <!-- 步驟列表預覽 -->
+                        <!-- 步驟列表預覽 (排除已完成步驟) -->
                         <div class="pt-2 border-t border-slate-100 dark:border-slate-700/80 space-y-1.5">
                             <div class="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center justify-between">
-                                <span>📋 步驟清單 (${steps.length})：</span>
+                                <span>📋 待辦步驟 (${pendingSteps.length})：</span>
                                 <span class="text-xs text-indigo-600 dark:text-indigo-400 font-bold">${doneCount}/${totalCount} (${percent}%)</span>
                             </div>
-                            ${steps.length === 0 ? `
-                                <div class="text-[11px] text-slate-400 italic py-1">尚無排定步驟</div>
+                            ${pendingSteps.length === 0 ? `
+                                <div class="text-[11px] ${totalCount > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 italic'} py-1">
+                                    ${totalCount > 0 ? '🎉 所有步驟已全數完成！' : '尚無排定步驟'}
+                                </div>
                             ` : `
                                 <div class="space-y-1 max-h-40 overflow-y-auto pr-1">
-                                    ${steps.slice(0, 5).map(s => `
+                                    ${pendingSteps.slice(0, 5).map(s => `
                                         <div class="flex items-center justify-between text-[11px] text-slate-700 dark:text-slate-300 p-1.5 bg-slate-50 dark:bg-slate-900/60 rounded-lg">
-                                            <span class="truncate ${s.done ? 'line-through text-slate-400 dark:text-slate-500' : 'font-medium'}">${s.done ? '✅' : '▫️'} ${escapeHtml(s.text)}</span>
+                                            <span class="truncate font-medium">▫️ ${escapeHtml(s.text)}</span>
                                             ${s.stepDate ? `<span class="text-[10px] text-slate-400 dark:text-slate-500 shrink-0 ml-1.5 font-mono">📅${s.stepDate}</span>` : ''}
                                         </div>
                                     `).join('')}
-                                    ${steps.length > 5 ? `<div class="text-[10px] text-indigo-500 dark:text-indigo-400 font-bold text-center pt-0.5">還有 ${steps.length - 5} 個步驟...</div>` : ''}
+                                    ${pendingSteps.length > 5 ? `<div class="text-[10px] text-indigo-500 dark:text-indigo-400 font-bold text-center pt-0.5">還有 ${pendingSteps.length - 5} 個待辦步驟...</div>` : ''}
                                 </div>
                             `}
                         </div>
@@ -2753,6 +2759,7 @@ function renderTimelineMatrix(container) {
                 html += `<div class="space-y-6">`;
                 mainGoals.forEach((mainGoal, mIdx) => {
                     const steps = Array.isArray(mainGoal.steps) ? mainGoal.steps : [];
+                    const pendingSteps = steps.filter(s => !s.done);
                     const doneCount = steps.filter(s => s.done).length;
                     const totalCount = steps.length;
                     const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
@@ -2802,17 +2809,19 @@ function renderTimelineMatrix(container) {
                                     </div>
                                 ` : ''}
 
-                                <!-- 分支 2: 📋 主目標直接執行步驟 -->
+                                <!-- 分支 2: 📋 主目標待辦執行步驟 (排除已完成步驟) -->
                                 <div class="space-y-2.5">
                                     <div class="text-xs font-extrabold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                                         <span class="text-base">📋</span>
-                                        <span>主目標直接步驟 (${steps.length} 個)：</span>
+                                        <span>主目標待辦步驟 (${pendingSteps.length} 個)：</span>
                                     </div>
-                                    ${steps.length === 0 ? `
-                                        <div class="text-xs text-slate-400 dark:text-slate-500 italic pl-3">尚未新增步驟</div>
+                                    ${pendingSteps.length === 0 ? `
+                                        <div class="text-xs ${steps.length > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-500 italic'} pl-3">
+                                            ${steps.length > 0 ? '🎉 所有步驟已全數完成！' : '尚未新增步驟'}
+                                        </div>
                                     ` : `
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-2">
-                                            ${steps.map(s => renderStepLeaf(mainGoal, s)).join('')}
+                                            ${pendingSteps.map(s => renderStepLeaf(mainGoal, s)).join('')}
                                         </div>
                                     `}
                                 </div>
