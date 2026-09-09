@@ -24,14 +24,12 @@
            徹底解決總覽模式、看板與時間軸等白色卡片白字難以閱讀問題
            ============================================================ */
 
-
         /* 1. 頁面基底背景與預設文字 (柔和護眼深藍黑) */
         html.dark,
         html.dark body {
             background-color: #0b0f19 !important;
             color: #f1f5f9 !important;
         }
-
 
         /* 2. 主卡片與核心容器 (slate-800，相容所有 bg-white 與透明度變體如 /80, /90) */
         html.dark [class*="bg-white"] {
@@ -40,7 +38,6 @@
             border-color: #334155 !important;
         }
 
-
         /* 3. 次級區塊、嵌套卡片與底層面板 (slate-900 / slate-950) */
         html.dark [class*="bg-slate-50"] {
             background-color: #0f172a !important;
@@ -48,20 +45,17 @@
             border-color: #334155 !important;
         }
 
-
         html.dark [class*="bg-slate-100"] {
             background-color: #334155 !important; /* slate-700 */
             color: #f8fafc !important;
             border-color: #475569 !important;
         }
 
-
         html.dark [class*="bg-slate-200"] {
             background-color: #475569 !important; /* slate-600 */
             color: #f8fafc !important;
             border-color: #64748b !important;
         }
-
 
         /* 4. 總覽模式 (Overview) 專屬高對比適配 */
         html.dark [class*="bg-slate-50/90"],
@@ -70,11 +64,9 @@
             border-color: #475569 !important;
         }
 
-
         html.dark svg path.text-slate-200 {
             color: #334155 !important;
         }
-
 
         /* 5. 文字色彩高對比度全面翻轉 (文字絕對清晰好讀) */
         html.dark .text-slate-900,
@@ -84,18 +76,15 @@
             color: #f8fafc !important;
         }
 
-
         html.dark .text-slate-700,
         html.dark [class*="text-slate-700"] {
             color: #e2e8f0 !important;
         }
 
-
         html.dark .text-slate-600,
         html.dark [class*="text-slate-600"] {
             color: #cbd5e1 !important;
         }
-
 
         html.dark .text-slate-500,
         html.dark .text-slate-400,
@@ -103,7 +92,6 @@
         html.dark [class*="text-slate-400"] {
             color: #94a3b8 !important;
         }
-
 
         /* 各領域專屬彩色文字 (全面翻轉為 300 階高亮度柔和粉彩，拒絕暗色字) */
         html.dark .text-indigo-950,
@@ -115,7 +103,6 @@
             color: #a5b4fc !important;
         }
 
-
         html.dark .text-emerald-900,
         html.dark .text-emerald-800,
         html.dark .text-emerald-700,
@@ -123,7 +110,6 @@
         html.dark [class*="text-emerald-"] {
             color: #6ee7b7 !important;
         }
-
 
         html.dark .text-amber-950,
         html.dark .text-amber-900,
@@ -134,14 +120,12 @@
             color: #fcd34d !important;
         }
 
-
         html.dark .text-rose-900,
         html.dark .text-rose-800,
         html.dark .text-rose-700,
         html.dark [class*="text-rose-"] {
             color: #fda4af !important;
         }
-
 
         html.dark .text-teal-900,
         html.dark .text-teal-800,
@@ -150,14 +134,12 @@
             color: #5eead4 !important;
         }
 
-
         html.dark .text-blue-900,
         html.dark .text-blue-800,
         html.dark .text-blue-700,
         html.dark [class*="text-blue-"] {
             color: #93c5fd !important;
         }
-
 
         /* 6. 彩色標籤背景與邊框 (半透明暗底 + 發光細邊框) */
         html.dark [class*="bg-indigo-50"],
@@ -166,19 +148,16 @@
             border-color: #4338ca !important;
         }
 
-
         html.dark [class*="bg-emerald-50"],
         html.dark [class*="bg-emerald-100"] {
             background-color: rgba(6, 78, 59, 0.45) !important;
             border-color: #065f46 !important;
         }
 
-
         html.dark [class*="bg-teal-50"] {
             background-color: rgba(19, 78, 74, 0.45) !important;
             border-color: #115e59 !important;
         }
-
 
         html.dark [class*="bg-rose-50"],
         html.dark [class*="bg-rose-100"] {
@@ -186,20 +165,17 @@
             border-color: #9f1239 !important;
         }
 
-
         html.dark [class*="bg-amber-50"],
         html.dark [class*="bg-amber-100"] {
             background-color: rgba(120, 53, 15, 0.4) !important;
             border-color: #92400e !important;
         }
 
-
         html.dark [class*="bg-blue-50"],
         html.dark [class*="bg-blue-100"] {
             background-color: rgba(30, 58, 138, 0.4) !important;
             border-color: #1d4ed8 !important;
         }
-
 
         /* 7. 表單輸入框、下拉選單與 Textarea (深底 + 清晰灰框 + 純白輸入文字) */
         html.dark input,
@@ -210,24 +186,20 @@
             color: #f8fafc !important;
         }
 
-
         html.dark select option {
             background-color: #1e293b !important;
             color: #f8fafc !important;
         }
-
 
         html.dark input::placeholder,
         html.dark textarea::placeholder {
             color: #64748b !important;
         }
 
-
         /* 8. 邊框線調和 */
         html.dark [class*="border-slate-"] {
             border-color: #334155 !important;
         }
-
 
         /* 9. 彈出設定視窗 (piSettingsModal / datePickerModal) */
         html.dark #piSettingsModal > div,
@@ -237,7 +209,6 @@
             border-color: #475569 !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75) !important;
         }
-
 
         /* 10. 時間軸 (Timeline) 矩陣與拖曳卡片 */
         html.dark table td,
@@ -250,13 +221,11 @@
             border-color: #475569 !important;
         }
 
-
         /* 11. 按鈕懸停 (Hover) 過渡自然適配 */
         html.dark [class*="hover:bg-slate-100"]:hover,
         html.dark [class*="hover:bg-slate-200"]:hover {
             background-color: #475569 !important;
         }
-
 
         /* 平滑轉場效果 */
         body, header, div, input, button, select, textarea {
@@ -266,15 +235,11 @@
 </head>
 <body class="bg-slate-50 min-h-screen py-6 px-4 text-slate-800">
 
-
     <!-- 動態模式寬度容器 -->
-
 
     <div id="appContainer" class="max-w-4xl mx-auto w-full transition-all duration-300">
 
-
         <!-- 頁首與備份按鈕 -->
-
 
         <header class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
             <div>
@@ -297,12 +262,9 @@
             </div>
         </header>
 
-
         <!-- 📊 本週 (週一~週日) 總工時統計與警示面板 -->
 
-
         <div id="weeklyStatsPanel" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"></div>
-
 
         <!-- 三模式切換列 -->
         <div class="mb-6 bg-slate-200/80 p-1.5 rounded-2xl flex items-center shadow-inner border border-slate-300/60 gap-1 overflow-x-auto">
@@ -317,7 +279,6 @@
             </button>
         </div>
 
-
         <!-- 表單輸入區 -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6">
             <div class="flex items-center justify-between cursor-pointer select-none" onclick="toggleForm()">
@@ -329,7 +290,6 @@
                     ➕ 展開表單
                 </button>
             </div>
-
 
             <div id="formContent" class="hidden mt-4 space-y-4 pt-3 border-t border-slate-100">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -377,9 +337,7 @@
             </div>
         </div>
 
-
         <!-- 頁籤列 -->
-
 
         <div id="tabsSection" class="mb-6 hidden">
             <div class="flex items-center justify-between gap-2 mb-2">
@@ -393,17 +351,13 @@
                 </div>
             </div>
 
-
             <div id="tabsScrollContainer" class="overflow-x-auto pb-2 scroll-smooth">
-
 
                 <div id="categoryTabs" class="flex gap-2 border-b border-slate-200 pb-2 flex-nowrap min-w-max"></div>
             </div>
         </div>
 
-
         <!-- ⚙️ 資料管理與同步設定彈出視窗 (整合本機備份、匯入、樹莓派同步與連線設定) -->
-
 
         <div id="piSettingsModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="handleModalBackdropClick(event)">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-5 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
@@ -417,7 +371,6 @@
                     </div>
                     <button onclick="closePiSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 transition-colors" title="關閉">✕</button>
                 </div>
-
 
                 <!-- 區塊一：本機資料管理 (免伺服器) -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5">
@@ -441,7 +394,6 @@
                     </div>
                 </div>
 
-
                 <!-- 區塊二：樹莓派雲端同步手動操作 -->
                 <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 space-y-2.5">
                     <div class="flex items-center justify-between">
@@ -462,7 +414,6 @@
                         </button>
                     </div>
                 </div>
-
 
                 <!-- 區塊三：樹莓派伺服器連線參數設定 -->
                 <div class="space-y-3 pt-1">
@@ -489,7 +440,6 @@
                     </div>
                 </div>
 
-
                 <!-- 底部操作列 -->
                 <div class="flex justify-between items-center pt-3 border-t border-slate-100">
                     <button onclick="closePiSettingsModal()" class="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors">關閉</button>
@@ -501,9 +451,7 @@
             </div>
         </div>
 
-
         <!-- 日期選擇器彈出視窗 -->
-
 
         <div id="datePickerModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 hidden z-50">
             <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 space-y-4">
@@ -528,15 +476,12 @@
             </div>
         </div>
 
-
         <!-- 主顯示區塊 -->
-
 
         <div id="mainContentList" class="space-y-6"></div>
     </div>
     <script>
 window.onerror = function(msg, url, line, col, error) {
-
 
     var banner = document.getElementById('globalErrorBanner');
     if (!banner) {
@@ -549,7 +494,6 @@ window.onerror = function(msg, url, line, col, error) {
     return false;
 };
 
-
 function escapeHtml(str) {
     if (str === null || str === undefined) return '';
     return String(str)
@@ -560,12 +504,10 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-
 function escapeAttr(str) {
     if (!str) return '';
     return String(str).replace(/'/g, "\\'").replace(/"/g, '\&quot;');
 }
-
 
 let thoughts = [];
 try { thoughts = JSON.parse(localStorage.getItem('my_thoughts_local')) || []; } catch(e) { thoughts = []; }
@@ -589,7 +531,6 @@ thoughts.forEach(t => {
     });
 });
 
-
 let blockedSlots = [];
 try { blockedSlots = JSON.parse(localStorage.getItem('my_blocked_slots')) || []; } catch(e) { blockedSlots = []; }
 let customTimelineDates = [];
@@ -602,9 +543,7 @@ const todayObj = new Date();
 const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 let timelineStartDate = (storedTimelineStart !== null) ? storedTimelineStart : todayStr;
 
-
 // UI & Interaction State Variables
-
 
 let activeCategory = "全部";
 let viewMode = "overview";
@@ -627,13 +566,11 @@ let hideCompletedGoalsCards = localStorage.getItem('hide_completed_goals_cards')
 let showCompletedStepsMap = {};
 let showAddStepFormMap = {};
 
-
 function toggleHideCompletedGoalsCards() {
     hideCompletedGoalsCards = !hideCompletedGoalsCards;
     localStorage.setItem('hide_completed_goals_cards', hideCompletedGoalsCards);
     render();
 }
-
 
 function getRecurrenceLabel(recurrence) {
     if (recurrence === 'daily') return '每日循環';
@@ -644,10 +581,8 @@ function getRecurrenceLabel(recurrence) {
     return '';
 }
 
-
 function getNextRecurrenceDate(baseDateStr, recurrence) {
     if (!baseDateStr || baseDateStr === '未指定日期') baseDateStr = todayStr;
-
 
     const d = new Date(baseDateStr + 'T00:00:00');
     if (isNaN(d.getTime())) return todayStr;
@@ -667,19 +602,16 @@ function getNextRecurrenceDate(baseDateStr, recurrence) {
         d.setMonth(d.getMonth() + 1);
     }
 
-
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
 }
 
-
 function toggleShowCompletedSteps(thoughtId) {
     showCompletedStepsMap[thoughtId] = !showCompletedStepsMap[thoughtId];
     render();
 }
-
 
 function toggleShowAddStepForm(thoughtId) {
     showAddStepFormMap[thoughtId] = !showAddStepFormMap[thoughtId];
@@ -692,23 +624,18 @@ function toggleShowAddStepForm(thoughtId) {
     }
 }
 
-
 function isFileMatchingAccount(fileName, account) {
     if (!fileName || !fileName.startsWith('BL-') || !fileName.endsWith('.json')) return false;
 
-
     const acc = (account || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     if (acc) return fileName.endsWith('-' + acc + '.json');
-
 
     const nameWithoutExt = fileName.slice(0, -5);
     const parts = nameWithoutExt.split('-');
     return parts.length === 3;
 }
 
-
 function generateBackupFileName(account = piAccount) {
-
 
     const now = new Date();
     const pad = n => String(n).padStart(2, '0');
@@ -716,7 +643,6 @@ function generateBackupFileName(account = piAccount) {
     const accSuffix = account ? `-${account}` : '';
     return `BL-${ts}${accSuffix}.json`;
 }
-
 
 function getExportPayload() {
     return {
@@ -730,10 +656,8 @@ function getExportPayload() {
     };
 }
 
-
 function applyImportedData(backupData, fileName) {
     if (!backupData) return false;
-
 
     let importedThoughts = Array.isArray(backupData) ? backupData : backupData.thoughts;
     if (!importedThoughts) return false;
@@ -753,7 +677,6 @@ function applyImportedData(backupData, fileName) {
     return true;
 }
 
-
 function handlePiBadgeClick() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
@@ -762,13 +685,10 @@ function handlePiBadgeClick() {
     else checkAndAutoSyncFromPi();
 }
 
-
 function updatePiSyncBadge(statusText, badgeClass) {
-
 
     const badge = document.getElementById('piSyncStatusBadge');
     if (badge) {
-
 
         const accountPrefix = piAccount ? `[${piAccount}] ` : '';
         badge.innerHTML = accountPrefix + statusText;
@@ -776,14 +696,12 @@ function updatePiSyncBadge(statusText, badgeClass) {
     }
 }
 
-
         // 日間/夜間模式切換功能 (與首頁 weber_theme 完全同步)
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('weber_theme', isDark ? 'dark' : 'light');
             updateThemeUI(isDark);
         }
-
 
         function initTheme() {
             const saved = localStorage.getItem('weber_theme');
@@ -797,7 +715,6 @@ function updatePiSyncBadge(statusText, badgeClass) {
             updateThemeUI(isDark);
         }
 
-
         function updateThemeUI(isDark) {
             const icon = document.getElementById('themeIcon');
             const text = document.getElementById('themeText');
@@ -809,23 +726,19 @@ function updatePiSyncBadge(statusText, badgeClass) {
             }
         }
 
-
 function openSettingsModal() {
     openPiSettingsModal();
 }
 
-
 function closeSettingsModal() {
     closePiSettingsModal();
 }
-
 
 function handleModalBackdropClick(event) {
     if (event.target && event.target.id === 'piSettingsModal') {
         closePiSettingsModal();
     }
 }
-
 
 // 支援鍵盤 ESC 快速關閉彈窗
 window.addEventListener('keydown', (e) => {
@@ -837,9 +750,7 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-
 function openPiSettingsModal() {
-
 
     const modal = document.getElementById('piSettingsModal');
     const urlInput = document.getElementById('piServerUrlInput');
@@ -851,15 +762,12 @@ function openPiSettingsModal() {
     if (modal) modal.classList.remove('hidden');
 }
 
-
 function closePiSettingsModal() {
-
 
     const modal = document.getElementById('piSettingsModal');
     if (modal) modal.classList.add('hidden');
 }
 async function uploadPayloadToPi(fileName, payload) {
-
 
     let response = await fetch(`${piServerUrl}/api/liveschedule/backup`, {
         method: 'POST',
@@ -867,7 +775,6 @@ async function uploadPayloadToPi(fileName, payload) {
         body: JSON.stringify({ fileName, account: piAccount, data: payload })
     }).catch(() => null);
     if (!response || !response.ok) {
-
 
         const formData = new FormData();
         const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -882,7 +789,6 @@ async function uploadPayloadToPi(fileName, payload) {
 }
 async function fetchLatestBackupForAccount(targetAccount) {
 
-
     const acc = (targetAccount || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     try {
         let response = await fetch(`${piServerUrl}/api/liveschedule/latest?account=${encodeURIComponent(acc)}`, {
@@ -890,7 +796,6 @@ async function fetchLatestBackupForAccount(targetAccount) {
             headers: { 'x-api-key': piApiKey, 'x-account': encodeURIComponent(acc) }
         });
         if (response.ok) {
-
 
             const result = await response.json();
             if (result && result.fileName && isFileMatchingAccount(result.fileName, acc) && result.data) {
@@ -902,13 +807,11 @@ async function fetchLatestBackupForAccount(targetAccount) {
         const filesRes = await fetch(`${piServerUrl}/files?path=LiveSchedule`, { headers: { 'x-api-key': piApiKey } });
         if (filesRes.ok) {
 
-
             const filesData = await filesRes.json();
             const jsonFiles = (filesData.files || [])
                 .filter(f => !f.isDirectory && isFileMatchingAccount(f.name, acc))
                 .map(f => f.name).sort().reverse();
             if (jsonFiles.length > 0) {
-
 
                 const fileName = jsonFiles[0];
                 const downRes = await fetch(`${piServerUrl}/download/LiveSchedule%2F${encodeURIComponent(fileName)}`, { headers: { 'x-api-key': piApiKey } });
@@ -922,7 +825,6 @@ async function fetchLatestBackupForAccount(targetAccount) {
 }
 async function savePiSettings() {
 
-
     const urlInput = document.getElementById('piServerUrlInput');
     const keyInput = document.getElementById('piApiKeyInput');
     const accInput = document.getElementById('piAccountInput');
@@ -930,7 +832,6 @@ async function savePiSettings() {
     if (newUrl && !/^https?:\/\//i.test(newUrl)) {
         newUrl = 'http://' + newUrl;
     }
-
 
     const newKey = keyInput ? keyInput.value.trim() : '';
     const newAcc = accInput ? accInput.value.trim().replace(/[^a-zA-Z0-9_-]/g, '') : '';
@@ -959,7 +860,6 @@ async function savePiSettings() {
         }
         updatePiSyncBadge('🔍 檢查新帳號備份...', 'bg-indigo-50 text-indigo-700 border-indigo-200 animate-pulse');
 
-
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
         if (backupData && fileName && applyImportedData(backupData, fileName)) {
             updatePiSyncBadge('🟢 已同步最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
@@ -976,7 +876,6 @@ async function savePiSettings() {
     alert("已儲存樹莓派伺服器連線設定！");
     checkAndAutoSyncFromPi();
 }
-
 
 function triggerAutoSaveToPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
@@ -996,7 +895,6 @@ async function performSilentAutoSave() {
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     if (!piServerUrl || !piApiKey || thoughts.length === 0) return;
     updatePiSyncBadge('⏳ 儲存中...', 'bg-indigo-50 text-indigo-800 border-indigo-200 animate-pulse');
-
 
     const fileName = generateBackupFileName();
     const payload = getExportPayload();
@@ -1024,7 +922,6 @@ async function exportToPi() {
     }
     if (thoughts.length === 0) return alert("目前沒有可備份的資料！");
 
-
     const fileName = generateBackupFileName();
     const payload = getExportPayload();
     try {
@@ -1035,7 +932,6 @@ async function exportToPi() {
             updatePiSyncBadge('🟢 已同步最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
             alert(`🎉 成功上傳備份至樹莓派！\n帳號：${piAccount || '未指定'}\n檔名：${fileName}`);
         } else {
-
 
             const errData = await response.json().catch(() => ({}));
             alert(`❌ 上傳失敗 (${response ? response.status : '網路異常'})：${errData.error || errData.message || '請檢查密碼與連線'}`);
@@ -1056,7 +952,6 @@ async function importFromPi() {
     try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
         if (backupData && fileName) {
-
 
             const accLabel = piAccount ? ` [帳號: ${piAccount}]` : '';
             if (confirm(`確定從樹莓派載入最新備份？${accLabel}\n備份檔名：${fileName}`)) {
@@ -1099,15 +994,12 @@ async function checkAndAutoSyncFromPi() {
     }
 }
 
-
 function jumpToCardsCategory(cat) {
             activeCategory = cat;
             setViewMode('cards');
         }
 
-
         function jumpToGoalCard(thoughtId) {
-
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
@@ -1121,7 +1013,6 @@ function jumpToCardsCategory(cat) {
             setViewMode('cards');
             setTimeout(() => {
 
-
                 const el = document.getElementById(`card-${thoughtId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1133,9 +1024,7 @@ function jumpToCardsCategory(cat) {
             }, 150);
         }
 
-
         function jumpToGoalEdit(thoughtId) {
-
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
@@ -1149,15 +1038,12 @@ function jumpToCardsCategory(cat) {
             setViewMode('cards');
             setTimeout(() => {
 
-
                 const el = document.getElementById(`card-${thoughtId}`);
                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 150);
         }
 
-
         function jumpToStepEdit(thoughtId, stepId) {
-
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
@@ -1166,7 +1052,6 @@ function jumpToCardsCategory(cat) {
                 hideCompletedGoalsCards = false;
                 localStorage.setItem('hide_completed_goals_cards', 'false');
             }
-
 
             const step = (t.steps || []).find(s => s.id === stepId);
             if (step && step.done) {
@@ -1177,12 +1062,10 @@ function jumpToCardsCategory(cat) {
             setViewMode('cards');
             setTimeout(() => {
 
-
                 const el = document.getElementById(`step-item-${thoughtId}-${stepId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
-
 
                     const cardEl = document.getElementById(`card-${thoughtId}`);
                     if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1190,21 +1073,17 @@ function jumpToCardsCategory(cat) {
             }, 150);
         }
 
-
         function toggleOverviewSubMode(subMode) {
             overviewSubMode = subMode;
             render();
         }
-
 
         function toggleTimelineXMode(xMode) {
             timelineXMode = xMode;
             render();
         }
 
-
         function getCategoryStats(cat) {
-
 
             const goals = thoughts.filter(t => (t.category || '💼 事業') === cat);
             const totalGoals = goals.length;
@@ -1215,7 +1094,6 @@ function jumpToCardsCategory(cat) {
                 if (Array.isArray(g.steps)) {
                     g.steps.forEach(s => {
 
-
                         const h = parseHours(s.stepTime);
                         totalHours += h;
                         if (s.done) completedHours += h;
@@ -1225,9 +1103,7 @@ function jumpToCardsCategory(cat) {
             return { totalGoals, completedGoals, totalHours, completedHours };
         }
 
-
         function getCurrentWeekRange() {
-
 
             const d = new Date();
             const day = d.getDay();
@@ -1235,19 +1111,15 @@ function jumpToCardsCategory(cat) {
             const monday = new Date(d);
             monday.setDate(d.getDate() + diffToMonday);
 
-
             const sunday = new Date(monday);
             sunday.setDate(monday.getDate() + 6);
-
 
             const mondayStr = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`;
             const sundayStr = `${sunday.getFullYear()}-${String(sunday.getMonth() + 1).padStart(2, '0')}-${String(sunday.getDate()).padStart(2, '0')}`;
             return { mondayStr, sundayStr };
         }
 
-
         function getWeeklyTotalHours(excludeStepId = null) {
-
 
             const { mondayStr, sundayStr } = getCurrentWeekRange();
             let total = 0;
@@ -1263,9 +1135,7 @@ function jumpToCardsCategory(cat) {
             return total;
         }
 
-
         function updateMaxWeeklyHours(val) {
-
 
             const parsed = parseFloat(val);
             if (!isNaN(parsed) && parsed > 0) {
@@ -1276,13 +1146,10 @@ function jumpToCardsCategory(cat) {
             }
         }
 
-
 function renderWeeklyStatsPanel() {
-
 
             const panel = document.getElementById('weeklyStatsPanel');
             if (!panel) return;
-
 
             const weekRange = getCurrentWeekRange();
             const weeklyTotal = getWeeklyTotalHours();
@@ -1309,9 +1176,7 @@ function renderWeeklyStatsPanel() {
             `;
         }
 
-
 function updateContainerWidth() {
-
 
             const container = document.getElementById('appContainer');
             if (!container) return;
@@ -1324,9 +1189,7 @@ function updateContainerWidth() {
             }
         }
 
-
         function getOrderedCategories() {
-
 
             const currentCats = Array.from(new Set(thoughts.map(t => t.category || '💼 事業')));
             currentCats.forEach(c => { if (!categoryOrder.includes(c)) categoryOrder.push(c); });
@@ -1334,48 +1197,35 @@ function updateContainerWidth() {
             return categoryOrder;
         }
 
-
         function scrollElement(id, offset) {
-
 
             const el = document.getElementById(id);
             if (el) el.scrollBy({ left: offset, behavior: 'smooth' });
         }
 
-
         function scrollTabsLeft() { scrollElement('tabsScrollContainer', -220); }
-
 
         function scrollTabsRight() { scrollElement('tabsScrollContainer', 220); }
 
-
         function scrollMatrixLeft() { scrollElement('matrixScrollContainer', -300); }
-
 
         function scrollMatrixRight() { scrollElement('matrixScrollContainer', 300); }
 
-
         function scrollTimelineLeft() { scrollElement('timelineTableContainer', -300); }
 
-
         function scrollTimelineRight() { scrollElement('timelineTableContainer', 300); }
-
 
         function parseHours(timeStr) {
             if (!timeStr) return 0;
 
-
             let s = String(timeStr).trim();
             if (s.includes('分')) {
-
 
                 const mins = parseFloat(s) || 0;
                 return mins / 60;
             }
             return parseFloat(s) || 0;
         }
-
-
 
         // ============================================================
         // 工時統計模組雙線分流 (calculateFocusHours)
@@ -1418,7 +1268,6 @@ function updateContainerWidth() {
         function getDailyTotalHours(dateStr, excludeStepId = null) {
             if (!dateStr || dateStr === '未指定日期') return 0;
 
-
             let total = 0;
             thoughts.forEach(t => {
                 if (Array.isArray(t.steps)) {
@@ -1432,9 +1281,7 @@ function updateContainerWidth() {
             return total;
         }
 
-
         function updateMaxDailyHours(val) {
-
 
             const parsed = parseFloat(val);
             if (!isNaN(parsed) && parsed > 0) {
@@ -1445,10 +1292,8 @@ function updateContainerWidth() {
             }
         }
 
-
         function getBlockedSlot(dateStr, itemSlot = '全天') {
             if (!dateStr || dateStr === '未指定日期') return null;
-
 
             const matches = blockedSlots.filter(b => b.date === dateStr);
             if (matches.length === 0) return null;
@@ -1459,10 +1304,8 @@ function updateContainerWidth() {
             return null;
         }
 
-
         function validateChildStepsDate(targetThoughtId, newTargetDate) {
             if (!newTargetDate || newTargetDate === '未指定日期') return true;
-
 
             const targetThought = thoughts.find(x => x.id === targetThoughtId);
             if (!targetThought || !Array.isArray(targetThought.steps)) return true;
@@ -1474,7 +1317,6 @@ function updateContainerWidth() {
             }
             return true;
         }
-
 
         function syncLinkedData() {
             thoughts.forEach(t => {
@@ -1511,11 +1353,9 @@ function updateContainerWidth() {
             });
         }
 
-
         function promoteStepToGoal(thoughtId, stepId) {
             const parentThought = thoughts.find(x => x.id === thoughtId);
             if (!parentThought) return;
-
 
             const step = parentThought.steps.find(s => s.id === stepId);
             if (!step) return;
@@ -1523,7 +1363,6 @@ function updateContainerWidth() {
             if (step.linkedThoughtId && thoughts.some(x => x.id === step.linkedThoughtId)) {
                 return alert("此步驟已經另存為獨立目標囉！");
             }
-
 
             const newThoughtId = Date.now();
             const newGoalThought = {
@@ -1546,9 +1385,7 @@ function updateContainerWidth() {
             alert(`已將步驟「${step.text}」另存為獨立目標！兩者將保持狀態與日期雙向聯動。`);
         }
 
-
         function autoCheckExpiredInTimeline() {
-
 
             let count = 0;
             thoughts.forEach(t => {
@@ -1568,9 +1405,7 @@ function updateContainerWidth() {
             }
         }
 
-
         function convertExpiredToUnscheduled() {
-
 
             let count = 0;
             thoughts.forEach(t => {
@@ -1593,69 +1428,53 @@ function updateContainerWidth() {
             }
         }
 
-
         function moveStepUp(thoughtId, stepId) {
-
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t || !Array.isArray(t.steps)) return;
 
-
             const idx = t.steps.findIndex(s => s.id === stepId);
             if (idx > 0) {
-
 
                 const temp = t.steps[idx]; t.steps[idx] = t.steps[idx - 1]; t.steps[idx - 1] = temp; saveData();
             }
         }
 
-
         function moveStepDown(thoughtId, stepId) {
-
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t || !Array.isArray(t.steps)) return;
 
-
             const idx = t.steps.findIndex(s => s.id === stepId);
             if (idx !== -1 && idx < t.steps.length - 1) {
-
 
                 const temp = t.steps[idx]; t.steps[idx] = t.steps[idx + 1]; t.steps[idx + 1] = temp; saveData();
             }
         }
 
-
         function moveCategoryLeft(cat, ev) {
             if (ev) ev.stopPropagation();
             getOrderedCategories();
 
-
             const idx = categoryOrder.indexOf(cat);
             if (idx > 0) {
-
 
                 const temp = categoryOrder[idx]; categoryOrder[idx] = categoryOrder[idx - 1]; categoryOrder[idx - 1] = temp; saveCategoryOrder();
             }
         }
 
-
         function moveCategoryRight(cat, ev) {
             if (ev) ev.stopPropagation();
             getOrderedCategories();
 
-
             const idx = categoryOrder.indexOf(cat);
             if (idx !== -1 && idx < categoryOrder.length - 1) {
-
 
                 const temp = categoryOrder[idx]; categoryOrder[idx] = categoryOrder[idx + 1]; categoryOrder[idx + 1] = temp; saveCategoryOrder();
             }
         }
 
-
         function toggleGoalDone(thoughtId) {
-
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (t) { t.goalDone = !t.goalDone; saveData(); }
@@ -1799,15 +1618,12 @@ function updateContainerWidth() {
             render();
         }
 
-
-
         function setTimelineStartToToday() {
             timelineStartDate = todayStr;
             localStorage.setItem('my_timeline_start_date', timelineStartDate);
             render();
             triggerAutoSaveToPi();
         }
-
 
         function showAllTimelineHistory() {
             timelineStartDate = '';
@@ -1816,7 +1632,6 @@ function updateContainerWidth() {
             triggerAutoSaveToPi();
         }
 
-
         function changeTimelineStartDate(val) {
             timelineStartDate = val || '';
             localStorage.setItem('my_timeline_start_date', timelineStartDate);
@@ -1824,15 +1639,11 @@ function updateContainerWidth() {
             triggerAutoSaveToPi();
         }
 
-
         function toggleBlockPanel() { isBlockPanelOpen = !isBlockPanelOpen; render(); }
-
 
         function saveBlockedSlots() { localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots)); render(); triggerAutoSaveToPi(); }
 
-
         function addBlockedSlot() {
-
 
             const dateInput = document.getElementById('blockDateInput');
             const slotSelect = document.getElementById('blockTimeSlotSelect');
@@ -1846,16 +1657,13 @@ function updateContainerWidth() {
             saveBlockedSlots();
         }
 
-
         function deleteBlockedSlot(id) {
             blockedSlots = blockedSlots.filter(b => b.id !== id);
             saveBlockedSlots();
         }
 
-
         function openDatePickerModal(type, thoughtId, stepId) {
             pendingDropItem = { type, thoughtId, stepId };
-
 
             const modal = document.getElementById('datePickerModal');
             const picker = document.getElementById('modalDatePicker');
@@ -1863,18 +1671,14 @@ function updateContainerWidth() {
             if (modal) modal.classList.remove('hidden');
         }
 
-
         function closeDatePickerModal() {
             pendingDropItem = null;
-
 
             const modal = document.getElementById('datePickerModal');
             if (modal) modal.classList.add('hidden');
         }
 
-
         function confirmModalDate() {
-
 
             const picker = document.getElementById('modalDatePicker');
             const slotSelect = document.getElementById('modalSlotSelect');
@@ -1882,14 +1686,12 @@ function updateContainerWidth() {
             const selectedSlot = slotSelect ? slotSelect.value : '全天';
             if (!selectedDate) return alert("請選擇有效日期！");
 
-
             const blocked = getBlockedSlot(selectedDate, selectedSlot);
             if (blocked) {
                 alert(`🚫 警告：${selectedDate} 的 [${blocked.timeSlot}] 已設定為不排事 (${blocked.note})！`);
                 return;
             }
             if (pendingDropItem) {
-
 
                 const { type, thoughtId, stepId } = pendingDropItem;
                 const t = thoughts.find(x => x.id === thoughtId);
@@ -1906,10 +1708,8 @@ function updateContainerWidth() {
                             return;
                         }
 
-
                         const weekRange = getCurrentWeekRange();
                         if (selectedDate >= weekRange.mondayStr && selectedDate <= weekRange.sundayStr) {
-
 
                             const currentWeeklyTotal = getWeeklyTotalHours(stepId);
                             const stepObj = t.steps.find(x => x.id === stepId);
@@ -1921,7 +1721,6 @@ function updateContainerWidth() {
                                 }
                             }
                         }
-
 
                         const s = t.steps.find(x => x.id === stepId);
                         if (s) {
@@ -1936,10 +1735,8 @@ function updateContainerWidth() {
             closeDatePickerModal();
         }
 
-
         function toggleForm() {
             isFormOpen = !isFormOpen;
-
 
             const content = document.getElementById('formContent');
             const btn = document.getElementById('toggleFormBtn');
@@ -1952,10 +1749,8 @@ function updateContainerWidth() {
             }
         }
 
-
         function getDateStatus(dateStr) {
             if (!dateStr || dateStr === '未指定日期') return { text: dateStr, style: '', badge: '' };
-
 
             const d = new Date(dateStr + "T00:00:00");
             const dayOfWeek = d.getDay();
@@ -1979,13 +1774,10 @@ function updateContainerWidth() {
             return { isToday, isPast, isWeekend, dayName, style, badge };
         }
 
-
         function setCategory(cat) { document.getElementById('categoryInput').value = cat; }
-
 
         function setViewMode(mode) {
             viewMode = mode;
-
 
             const btnOverview = document.getElementById('btnViewOverview');
             const btnCards = document.getElementById('btnViewCards');
@@ -2006,10 +1798,8 @@ function updateContainerWidth() {
             render();
         }
 
-
         function toggleReorderMode() {
             isReorderMode = !isReorderMode;
-
 
             const btn = document.getElementById('reorderBtn');
             if (btn) {
@@ -2021,7 +1811,6 @@ function updateContainerWidth() {
             render();
         }
 
-
         function saveData() {
             syncLinkedData();
             localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
@@ -2029,15 +1818,12 @@ function updateContainerWidth() {
             triggerAutoSaveToPi();
         }
 
-
         function saveCategoryOrder() {
             localStorage.setItem('my_category_order', JSON.stringify(categoryOrder));
             render();
         }
 
-
         function addCustomDateRow() {
-
 
             const picker = document.getElementById('newDateRowInput');
             const val = picker ? picker.value : '';
@@ -2047,9 +1833,7 @@ function updateContainerWidth() {
             render();
         }
 
-
         function addThought() {
-
 
             const cat = document.getElementById('categoryInput').value.trim() || '💼 事業';
             const text = document.getElementById('thoughtInput').value.trim();
@@ -2059,7 +1843,6 @@ function updateContainerWidth() {
             const slotSelect = document.getElementById('goalSlotSelect');
             const targetTimeSlot = slotSelect ? slotSelect.value : '全天';
             if (!text) return alert("請填入思緒/想法主題！");
-
 
             const blocked = getBlockedSlot(date, targetTimeSlot);
             if (blocked) {
@@ -2074,13 +1857,10 @@ function updateContainerWidth() {
             saveData();
         }
 
-
         function duplicateThought(id) {
-
 
             const original = thoughts.find(t => t.id === id);
             if (!original) return;
-
 
             const clonedSteps = (original.steps || []).map(s => ({
                 id: Date.now() + Math.random(),
@@ -2105,7 +1885,6 @@ function updateContainerWidth() {
             });
             saveData();
         }
-
 
         function deleteThought(id) {
             if (confirm("確定刪除這項思緒？")) {
@@ -2136,15 +1915,11 @@ function updateContainerWidth() {
             }
         }
 
-
         function startEdit(id) { editingId = id; render(); }
-
 
         function cancelEdit() { editingId = null; render(); }
 
-
         function saveEdit(id) {
-
 
             const cat = document.getElementById(`edit-cat-${id}`).value.trim();
             const text = document.getElementById(`edit-text-${id}`).value.trim();
@@ -2155,13 +1930,11 @@ function updateContainerWidth() {
             const targetTimeSlot = slotSelect ? slotSelect.value : '全天';
             if (!text) return alert("思緒主題不能為空！");
 
-
             const blocked = getBlockedSlot(date, targetTimeSlot);
             if (blocked) {
                 return alert(`🚫 警告：${date} 的 [${blocked.timeSlot}] 已設定為不排事 (${blocked.note})！`);
             }
             if (!validateChildStepsDate(id, date)) return;
-
 
             const t = thoughts.find(x => x.id === id);
             if (t) {
@@ -2170,9 +1943,7 @@ function updateContainerWidth() {
             }
         }
 
-
         function addStep(thoughtId) {
-
 
             const textInput = document.getElementById(`step-text-${thoughtId}`);
             const dateInput = document.getElementById(`step-date-${thoughtId}`);
@@ -2188,12 +1959,10 @@ function updateContainerWidth() {
             const recurrence = recSelect ? recSelect.value : 'none';
             if (!text) return alert("請填入步驟內容！");
 
-
             const blocked = getBlockedSlot(stepDate, stepTimeSlot);
             if (blocked) {
                 return alert(`⚠️ 無法新增步驟！\n\n「${stepDate} [${stepTimeSlot}]」已被設定為不可排程時段：\n原因：${blocked.reason || '未提供理由'}`);
             }
-
 
             const thought = thoughts.find(t => t.id === thoughtId);
             if (thought) {
@@ -2215,7 +1984,6 @@ function updateContainerWidth() {
             }
         }
 
-
         function duplicateStep(thoughtId, stepId) {
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
@@ -2232,17 +2000,13 @@ function updateContainerWidth() {
             saveData();
         }
 
-
         function toggleStep(thoughtId, stepId) {
-
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
 
-
             const s = (t.steps || []).find(x => x.id === stepId);
             if (!s) return;
-
 
             if (!s.done) {
                 s.done = true;
@@ -2250,7 +2014,6 @@ function updateContainerWidth() {
                     const oldDate = s.stepDate || todayStr;
                     const nextDate = getNextRecurrenceDate(oldDate, s.recurrence);
                     const recLabel = getRecurrenceLabel(s.recurrence);
-
 
                     const alreadyHasNext = t.steps.some(x => x.text === s.text && x.stepDate === nextDate && !x.done);
                     if (!alreadyHasNext) {
@@ -2275,7 +2038,6 @@ function updateContainerWidth() {
             }
         }
 
-
         function deleteStep(thoughtId, stepId) {
             const t = thoughts.find(x => x.id === thoughtId);
             if (t) {
@@ -2291,15 +2053,11 @@ function updateContainerWidth() {
             }
         }
 
-
         function startEditStep(thoughtId, stepId) { editingStepIdKey = `${thoughtId}-${stepId}`; render(); }
-
 
         function cancelEditStep() { editingStepIdKey = null; render(); }
 
-
         function saveEditStep(thoughtId, stepId) {
-
 
             const textInput = document.getElementById(`edit-step-text-${thoughtId}-${stepId}`);
             const dateInput = document.getElementById(`edit-step-date-${thoughtId}-${stepId}`);
@@ -2315,16 +2073,13 @@ function updateContainerWidth() {
             const recurrence = recSelect ? recSelect.value : 'none';
             if (!text) return alert("步驟內容不能為空！");
 
-
             const blocked = getBlockedSlot(stepDate, stepTimeSlot);
             if (blocked) {
                 return alert(`⚠️ 無法指定步驟至此時段！\n\n「${stepDate} [${stepTimeSlot}]」已被設定為不可排程時段：\n原因：${blocked.reason || '未提供理由'}`);
             }
 
-
             const t = thoughts.find(x => x.id === thoughtId);
             if (t) {
-
 
                 const s = (t.steps || []).find(x => x.id === stepId);
                 if (s) {
@@ -2340,21 +2095,17 @@ function updateContainerWidth() {
             }
         }
 
-
         function handleDragStart(ev, type, thoughtId, stepId) {
             draggedItemInfo = { type, thoughtId, stepId };
             ev.dataTransfer.setData("text/plain", JSON.stringify(draggedItemInfo));
         }
 
-
         function handleDragOver(ev) { ev.preventDefault(); }
-
 
         function handleDrop(ev, targetDate) {
             ev.preventDefault();
             if (!draggedItemInfo) return;
             if (targetDate === '__prompt_new_date__') {
-
 
                 const { type, thoughtId, stepId } = draggedItemInfo;
                 openDatePickerModal(type, thoughtId, stepId);
@@ -2362,22 +2113,18 @@ function updateContainerWidth() {
                 return;
             }
 
-
             const { type, thoughtId, stepId } = draggedItemInfo;
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
-
 
             let itemSlot = '全天';
             if (type === 'goal') itemSlot = t.targetTimeSlot || '全天';
             else if (type === 'step') {
 
-
                 const s = t.steps.find(x => x.id === stepId);
                 if (s) itemSlot = s.stepTimeSlot || '全天';
             }
             if (targetDate !== '__unscheduled__') {
-
 
                 const blocked = getBlockedSlot(targetDate, itemSlot);
                 if (blocked) {
@@ -2393,13 +2140,11 @@ function updateContainerWidth() {
                 saveData();
             } else if (type === 'step') {
 
-
                 const newStepDate = (targetDate === '__unscheduled__') ? '' : targetDate;
                 if (newStepDate && t.targetDate && t.targetDate !== '未指定日期' && newStepDate > t.targetDate) {
                     alert(`步驟預期日期 (${newStepDate}) 不能超過最終目標預期日期 (${t.targetDate})！`);
                     draggedItemInfo = null; return;
                 }
-
 
                 const s = t.steps.find(x => x.id === stepId);
                 if (s) {
@@ -2412,10 +2157,8 @@ function updateContainerWidth() {
             draggedItemInfo = null;
         }
 
-
         function exportData() {
             if (thoughts.length === 0) return alert("目前沒有可匯出的思緒資料！");
-
 
             const now = new Date();
             const yyyy = now.getFullYear();
@@ -2436,15 +2179,12 @@ function updateContainerWidth() {
                 timelineStartDate: timelineStartDate
             };
 
-
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
             const a = document.createElement('a'); a.href = dataStr;
             a.download = fileName; a.click();
         }
 
-
         function importData(e) {
-
 
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
@@ -2496,12 +2236,9 @@ function updateContainerWidth() {
             e.target.value = '';
         }
 
-
         function setCategoryTab(cat) { activeCategory = cat; render(); }
 
-
 function renderTimelineMatrix(container) {
-
 
             const datesSet = new Set(customTimelineDates);
             const categoriesList = getOrderedCategories();
@@ -2511,21 +2248,17 @@ function renderTimelineMatrix(container) {
                 if (Array.isArray(t.steps)) { t.steps.forEach(s => { if (s.stepDate) datesSet.add(s.stepDate); }); }
             });
 
-
             let sortedDates = Array.from(datesSet).sort();
             if (timelineStartDate) {
                 sortedDates = sortedDates.filter(d => d >= timelineStartDate);
             }
 
-
             const undatedGoals = thoughts.filter(t => (!t.targetDate || t.targetDate === '未指定日期') && !t.goalDone);
             const undatedSteps = [];
             thoughts.forEach(t => { if (Array.isArray(t.steps)) { t.steps.forEach(s => { if (!s.stepDate && !s.done) undatedSteps.push({ thought: t, step: s }); }); } });
 
-
             const wrapper = document.createElement('div');
             wrapper.className = "bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4 w-full";
-
 
             let dateFilterControlHtml = `
                 <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100/90 p-3 rounded-xl border border-slate-200">
@@ -2544,7 +2277,6 @@ function renderTimelineMatrix(container) {
                     </div>
                 </div>
             `;
-
 
             let blockedManagerHtml = `
                 <div class="bg-rose-50/80 p-3.5 rounded-xl border border-rose-200 space-y-2">
@@ -2584,7 +2316,6 @@ function renderTimelineMatrix(container) {
                 </div>
             `;
 
-
             let unscheduledHtml = `
                 <div ondragover="handleDragOver(event)" ondrop="handleDrop(event, '__unscheduled__')"
                     class="bg-slate-100/90 p-3.5 rounded-xl border-2 border-dashed border-slate-300 space-y-2">
@@ -2605,7 +2336,6 @@ function renderTimelineMatrix(container) {
                 });
             }
             unscheduledHtml += `</div></div>`;
-
 
             let html = dateFilterControlHtml + blockedManagerHtml + unscheduledHtml;
             html += `
@@ -2637,7 +2367,6 @@ function renderTimelineMatrix(container) {
                     📍 拖曳卡片至此處放開 ➔ 快速點選月曆指定全新日期與時段
                 </div>
 
-
                 <div id="timelineTableContainer" class="max-h-[70vh] overflow-y-auto overflow-x-auto rounded-xl border border-slate-200 w-full scroll-smooth">
                     <table class="w-full border-collapse text-sm min-w-full">
                         <thead class="sticky top-0 z-20 bg-indigo-100 border-b-2 border-indigo-200 shadow-sm">
@@ -2655,7 +2384,6 @@ function renderTimelineMatrix(container) {
                 html += `<tr><td colspan="${timelineXMode === 'expanded' ? categoriesList.length + 1 : 2}" class="text-center py-8 text-slate-400 text-xs">起始日期以內尚無任何目標排程。點擊「📜 顯示全部歷史」可查閱過往記錄。</td></tr>`;
             }
             sortedDates.forEach(date => {
-
 
                 const dateInfo = getDateStatus(date);
                 const dayBlocks = blockedSlots.filter(b => b.date === date);
@@ -2704,7 +2432,6 @@ function renderTimelineMatrix(container) {
                             });
                         }
 
-
                         let cellItems = [];
                         const matchingGoals = thoughts.filter(t => (t.category || '💼 事業') === cat && t.targetDate === date);
                         matchingGoals.forEach(g => cellItems.push({ type: 'goal', slot: g.targetTimeSlot || '全天', item: g }));
@@ -2717,7 +2444,6 @@ function renderTimelineMatrix(container) {
                         cellItems.forEach(ci => {
                             if (ci.type === 'goal') {
 
-
                                 const g = ci.item;
                                 html += `
                                     <div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})"
@@ -2729,7 +2455,6 @@ function renderTimelineMatrix(container) {
                                     </div>
                                 `;
                             } else if (ci.type === 'step') {
-
 
                                 const s = ci.item;
                                 const t = ci.parentThought;
@@ -2754,7 +2479,6 @@ function renderTimelineMatrix(container) {
                         });
                     }
 
-
                     let dayItems = [];
                     thoughts.forEach(t => {
                         if (t.targetDate === date) {
@@ -2774,7 +2498,6 @@ function renderTimelineMatrix(container) {
                         dayItems.forEach(ci => {
                             if (ci.type === 'goal') {
 
-
                                 const g = ci.item;
                                 html += `
                                     <div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})"
@@ -2787,7 +2510,6 @@ function renderTimelineMatrix(container) {
                                     </div>
                                 `;
                             } else if (ci.type === 'step') {
-
 
                                 const s = ci.item;
                                 const t = ci.parentThought;
@@ -2813,8 +2535,6 @@ function renderTimelineMatrix(container) {
             wrapper.innerHTML = html;
             container.appendChild(wrapper);
         }
-
-
 
         // ============================================================
         // 🧠 戰略心智圖全景檢視模組 (Focus Mindmap & Tree View)
@@ -2848,7 +2568,9 @@ function renderTimelineMatrix(container) {
             `;
         }
 
-        function renderChildGoalBranch(childGoal) {
+        function renderChildGoalBranch(childGoal, visited = new Set()) {
+            if (!childGoal || visited.has(childGoal.id)) return '';
+            visited.add(childGoal.id);
             const cSteps = Array.isArray(childGoal.steps) ? childGoal.steps : [];
             const cDone = cSteps.filter(s => s.done).length;
             const cTotal = cSteps.length;
@@ -2903,7 +2625,7 @@ function renderTimelineMatrix(container) {
                     ${grandChildGoals.length > 0 ? `
                         <div class="pl-3 sm:pl-5 border-l-2 border-dashed border-teal-400 dark:border-teal-700 space-y-2 mt-2 pt-2">
                             <div class="text-xs font-bold text-teal-800 dark:text-teal-300">🌱 孫層次拆解目標 (${grandChildGoals.length} 個)：</div>
-                            ${grandChildGoals.map(gc => renderChildGoalBranch(gc)).join('')}
+                            ${grandChildGoals.map(gc => renderChildGoalBranch(gc, visited)).join('')}
                         </div>
                     ` : ''}
                 </div>
@@ -3173,18 +2895,15 @@ function renderTimelineMatrix(container) {
             return html;
         }
 
-
 function renderOverview(container) {
             if (thoughts.length === 0) {
                 container.innerHTML = `<div class="text-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-200 text-sm">目前尚無記錄！</div>`;
                 return;
             }
 
-
             const categoriesList = getOrderedCategories();
             const dashboardBox = document.createElement('div');
             dashboardBox.className = "bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-6 space-y-3";
-
 
             let dashboardHtml = `
                 <div class="border-b border-slate-100 dark:border-slate-700 pb-2.5">
@@ -3196,7 +2915,6 @@ function renderOverview(container) {
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     ${categoriesList.map(cat => {
-
 
                         const stats = getCategoryStats(cat);
                         const percentGoals = stats.totalGoals > 0 ? Math.round((stats.completedGoals / stats.totalGoals) * 100) : 0;
@@ -3228,10 +2946,8 @@ function renderOverview(container) {
             dashboardBox.innerHTML = dashboardHtml;
             container.appendChild(dashboardBox);
 
-
             const viewControlWrapper = document.createElement('div');
             viewControlWrapper.className = "space-y-3";
-
 
             let viewControlHtml = `
                 <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2 mb-3">
@@ -3256,7 +2972,6 @@ function renderOverview(container) {
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                         ${categoriesList.map(cat => {
 
-
                             const cardList = thoughts.filter(t => (t.category || '💼 事業') === cat);
                             const stats = getCategoryStats(cat);
                             const percentGoals = stats.totalGoals > 0 ? Math.round((stats.completedGoals / stats.totalGoals) * 100) : 0;
@@ -3276,7 +2991,6 @@ function renderOverview(container) {
                                         <div class="space-y-2.5 mt-3">
                                             ${cardList.length === 0 ? `<div class="text-xs text-slate-400 italic py-3 text-center">尚無目標</div>` : ''}
                                             ${cardList.map((t, i) => {
-
 
                                                 const steps = Array.isArray(t.steps) ? t.steps : [];
                                                 const doneCount = steps.filter(s => s.done).length;
@@ -3311,18 +3025,16 @@ function renderOverview(container) {
                         }).join('')}
                     </div>
                 `;
-            } else {
+            } else if (overviewSubMode === 'matrix') {
                 viewControlHtml += `
                     <div class="flex items-center justify-end gap-1.5 mb-2">
                         <button onclick="scrollMatrixLeft()" class="text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg border border-slate-300 font-bold" title="向左捲動">◀ 滾動</button>
                         <button onclick="scrollMatrixRight()" class="text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg border border-slate-300 font-bold" title="向右捲動">滾動 ▶</button>
                     </div>
 
-
                     <div id="matrixScrollContainer" class="overflow-x-auto pb-4 scroll-smooth w-full">
                         <div class="flex gap-3.5 items-start min-w-max">
                             ${categoriesList.map(cat => {
-
 
                                 const cardList = thoughts.filter(t => (t.category || '💼 事業') === cat);
                                 return `
@@ -3337,7 +3049,6 @@ function renderOverview(container) {
                                         <div class="space-y-3">
                                             ${cardList.length === 0 ? `<div class="text-xs text-slate-400 italic py-4 text-center">尚無目標</div>` : ''}
                                             ${cardList.map((t, i) => {
-
 
                                                 const steps = Array.isArray(t.steps) ? t.steps : [];
                                                 const doneCount = steps.filter(s => s.done).length;
@@ -3380,20 +3091,16 @@ function renderOverview(container) {
             container.appendChild(viewControlWrapper);
         }
 
-
 function renderCards(container) {
-
 
             const categoriesList = getOrderedCategories();
             const tabsContainer = document.getElementById('categoryTabs');
             if (tabsContainer) {
                 tabsContainer.innerHTML = '';
 
-
                 const displayCategories = ['全部', ...categoriesList];
                 if (!displayCategories.includes(activeCategory)) activeCategory = '全部';
                 displayCategories.forEach((cat) => {
-
 
                     const count = cat === '全部' ? thoughts.length : thoughts.filter(t => (t.category || '💼 事業') === cat).length;
                     const isActive = (activeCategory === cat);
@@ -3401,7 +3108,6 @@ function renderCards(container) {
                     tabWrapper.className = `px-3.5 py-1.5 text-xs font-semibold rounded-xl whitespace-nowrap transition-all flex items-center gap-1.5 select-none shrink-0 ${
                         isActive ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
                     }`;
-
 
                     let tabContentHtml = `
                         <span onclick="setCategoryTab('${escapeAttr(cat)}')" class="cursor-pointer flex items-center gap-1">
@@ -3420,7 +3126,6 @@ function renderCards(container) {
                     tabsContainer.appendChild(tabWrapper);
                 });
             }
-
 
                         const allCategoryGoals = activeCategory === '全部' ? thoughts : thoughts.filter(t => (t.category || '💼 事業') === activeCategory);
             const pendingGoals = allCategoryGoals.filter(t => !t.goalDone);
@@ -3491,7 +3196,6 @@ function renderCards(container) {
 const card = document.createElement('div');
                 card.id = isFrozen ? `frozen-card-${thought.id}` : `card-${thought.id}`;
                 card.className = isFrozen ? "bg-white dark:bg-slate-800/95 rounded-2xl shadow-2xs border border-slate-300 dark:border-slate-700 overflow-hidden opacity-95 hover:opacity-100 transition-all" : "bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden";
-
 
                 const isEdit = (editingId === thought.id);
                 const maxDateAttr = (thought.targetDate && thought.targetDate !== '未指定日期') ? `max="${thought.targetDate}"` : '';
@@ -3571,7 +3275,6 @@ const card = document.createElement('div');
                         `;
                     }
                 };
-
 
                 let stepsHtml = '';
                 if (pendingSteps.length > 0) {
@@ -3791,14 +3494,12 @@ const card = document.createElement('div');
         }
         document.addEventListener('DOMContentLoaded', () => {
 
-
             const thoughtInput = document.getElementById('thoughtInput');
             if (thoughtInput) {
                 thoughtInput.addEventListener('keypress', function (e) {
                     if (e.key === 'Enter') addThought();
                 });
             }
-
 
             const tabsContainer = document.getElementById('tabsScrollContainer');
             if (tabsContainer) {
@@ -3810,7 +3511,6 @@ const card = document.createElement('div');
                 });
             }
 
-
             const matrixContainer = document.getElementById('matrixScrollContainer');
             if (matrixContainer) {
                 matrixContainer.addEventListener('wheel', (e) => {
@@ -3820,7 +3520,6 @@ const card = document.createElement('div');
                     }
                 });
             }
-
 
             const timelineContainer = document.getElementById('timelineTableContainer');
             if (timelineContainer) {
@@ -3832,39 +3531,12 @@ const card = document.createElement('div');
                 });
             }
         });
-                if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                render();
-                checkAndAutoSyncFromPi();
-            });
-        } else {
-            render();
-            checkAndAutoSyncFromPi();
-            if (hideCompletedGoalsCards && completedGoals.length > 0) {
-
-
-                const completedAccordion = document.createElement('div');
-                completedAccordion.className = "mt-6 pt-2";
-                completedAccordion.innerHTML = `
-                    <button type="button" onclick="toggleHideCompletedGoalsCards()" class="w-full p-3.5 bg-emerald-50/80 hover:bg-emerald-100/80 rounded-2xl border border-emerald-200 text-xs font-bold text-emerald-900 flex items-center justify-between cursor-pointer select-none transition-colors shadow-2xs">
-                        <span class="flex items-center gap-2">
-                            <span>🎉 已完成之目標卡片 (${completedGoals.length} 個)</span>
-                        </span>
-                        <span class="text-emerald-700 bg-white px-2.5 py-1 rounded-xl border border-emerald-200 text-[11px] font-extrabold shadow-2xs">
-                            ▼ 點擊展開顯示
-                        </span>
-                    </button>
-                `;
-                container.appendChild(completedAccordion);
-            }
-}
-
+        
 
 function render() {
     syncLinkedData();
     updateContainerWidth();
     renderWeeklyStatsPanel();
-
 
     const container = document.getElementById('mainContentList');
     if (!container) return;
@@ -3873,11 +3545,17 @@ function render() {
     else if (viewMode === 'timeline') renderTimelineMatrix(container);
     else renderCards(container);
 }
-window.addEventListener('DOMContentLoaded', () => {
-            initTheme();
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        render();
+        checkAndAutoSyncFromPi();
+    });
+} else {
+    initTheme();
     render();
     checkAndAutoSyncFromPi();
-});
+}
 window.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
         checkAndAutoSyncFromPi();
