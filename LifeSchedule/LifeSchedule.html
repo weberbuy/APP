@@ -280,7 +280,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.10.0-test (習慣維護工時拆解與專注度儀表板完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.10.1-test (移除頂部儀表並改用單日工時上限警示完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -2527,41 +2527,7 @@ function renderTimelineMatrix(container) {
             wrapper.className = "bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4 w-full";
 
 
-            const todayFocus = calculateFocusHours(todayStr);
-            const isTodayOverMax = todayFocus.totalHours > maxDailyHours;
-            const isTodayOverAlert = todayFocus.totalHours > 2.5;
-
             let dateFilterControlHtml = `
-                <!-- 📊 今日工時專注度儀表板 (習慣維護 vs 專案推進) -->
-                <div class="bg-gradient-to-r from-slate-50 to-indigo-50/40 dark:from-slate-800/90 dark:to-indigo-950/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between flex-wrap gap-3 shadow-2xs">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1">
-                            <span>📊 今日專注儀表 (${todayStr})：</span>
-                        </span>
-                        <span class="text-xs font-bold px-2.5 py-1 rounded-lg transition-all ${
-                            isTodayOverMax
-                                ? 'bg-rose-500 text-white shadow-xs'
-                                : (isTodayOverAlert
-                                    ? 'bg-amber-500 text-white shadow-xs'
-                                    : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700')
-                        }">
-                            ⏱️ 總工時: ${todayFocus.totalHours.toFixed(1)}h ${
-                                isTodayOverMax 
-                                    ? '🚨 嚴重超載' 
-                                    : (isTodayOverAlert ? '⚠️ 警戒超載 (>2.5h)' : '✅ 專注適中')
-                            }
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-2 text-xs font-bold flex-wrap">
-                        <span class="px-2.5 py-1 rounded-lg bg-teal-100 text-teal-800 dark:bg-teal-950/80 dark:text-teal-300 border border-teal-200 dark:border-teal-700">
-                            🔄 習慣維護: ${todayFocus.habitHours.toFixed(1)}h (${todayFocus.totalHours > 0 ? Math.round((todayFocus.habitHours / todayFocus.totalHours) * 100) : 0}%)
-                        </span>
-                        <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">
-                            ⭐ 專案推進: ${todayFocus.projectHours.toFixed(1)}h (${todayFocus.totalHours > 0 ? Math.round((todayFocus.projectHours / todayFocus.totalHours) * 100) : 0}%)
-                        </span>
-                    </div>
-                </div>
-
                 <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100/90 p-3 rounded-xl border border-slate-200">
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-bold text-slate-700">📅 起始日期：</span>
@@ -2696,17 +2662,13 @@ function renderTimelineMatrix(container) {
                 const focusOnDate = calculateFocusHours(date);
                 const totalHoursOnDate = focusOnDate.totalHours;
                 const isOverMaxLimit = totalHoursOnDate > maxDailyHours;
-                const isOverAlertLimit = totalHoursOnDate > 2.5;
 
-                // 健康度視覺警示樣式 (<=2.5h 健康, >2.5h 黃色警戒, >上限 紅色超載)
+                // 工時警示樣式 (依「單日工時上限」設定提醒，保留習慣/專案表)
                 let healthBoxStyle = "bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800 text-indigo-900 dark:text-indigo-200";
-                let healthBadge = `<span class="text-[9px] bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-bold">✅ 適中</span>`;
+                let healthBadge = `<span class="text-[9px] bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-bold">⏱️ 正常</span>`;
                 if (isOverMaxLimit) {
                     healthBoxStyle = "bg-rose-50 dark:bg-rose-950/70 border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-200";
-                    healthBadge = `<span class="text-[9px] bg-rose-600 text-white px-1.5 py-0.5 rounded font-bold shadow-2xs">🚨 嚴重超標</span>`;
-                } else if (isOverAlertLimit) {
-                    healthBoxStyle = "bg-amber-50 dark:bg-amber-950/70 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200";
-                    healthBadge = `<span class="text-[9px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-bold shadow-2xs">⚠️ 警戒 (>2.5h)</span>`;
+                    healthBadge = `<span class="text-[9px] bg-rose-600 text-white px-1.5 py-0.5 rounded font-bold shadow-2xs">⚠️ 超標 (>${maxDailyHours}h)</span>`;
                 }
 
                 html += `<tr ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${date}')" class="hover:bg-slate-100/50 transition-colors">`;
