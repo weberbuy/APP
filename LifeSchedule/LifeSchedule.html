@@ -245,7 +245,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.11.3-test (冰存14天門檻與跨分頁跳轉及回到頂部功能完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.11.4-test (步驟完成日期活躍期檢查與跳轉看板分頁修復完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1557,9 +1557,16 @@ function updateContainerWidth() {
             const createdTimestamp = thought.createdAt || (typeof thought.id === 'number' && thought.id > 1600000000000 ? thought.id : 0);
             const isNewWithin14Days = createdTimestamp > 0 && (Date.now() - createdTimestamp < 14 * 86400000);
 
-            // 4. 🧊 冰存推進：卡片內無步驟 (超過兩週未規劃)，或所有未完成步驟均已逾期 > 14 天
-            const hasNoStepsFrozen = (steps.length === 0 || uncompleted.length === 0) && !isNewWithin14Days;
-            const allStepsExpiredFrozen = uncompleted.length > 0 && uncompleted.every(s => s.stepDate && s.stepDate !== '未指定日期' && s.stepDate < fourteenDaysAgoStr);
+            // 檢查是否有最近 14 天內完成的步驟或推進活動 (給予至少 14 天活躍緩衝期，剛打勾完成步驟絕不立即打回冰存)
+            const hasRecentCompletedStep = steps.some(s => {
+                if (!s.done) return false;
+                const compDate = s.completedDate || s.stepDate;
+                return compDate && compDate >= fourteenDaysAgoStr;
+            }) || (thought.lastCompletedDate && thought.lastCompletedDate >= fourteenDaysAgoStr);
+
+            // 4. 🧊 冰存推進：卡片內無步驟且無近期完成步驟 (超過兩週未規劃)，或所有未完成步驟均已逾期 > 14 天且近期無完成步驟
+            const hasNoStepsFrozen = (steps.length === 0 || uncompleted.length === 0) && !isNewWithin14Days && !hasRecentCompletedStep;
+            const allStepsExpiredFrozen = uncompleted.length > 0 && uncompleted.every(s => s.stepDate && s.stepDate !== '未指定日期' && s.stepDate < fourteenDaysAgoStr) && !hasRecentCompletedStep;
 
             if (hasNoStepsFrozen || allStepsExpiredFrozen) {
                 return {
@@ -1583,7 +1590,7 @@ function updateContainerWidth() {
         function getDormantDays(thought) {
             const now = new Date();
             const steps = Array.isArray(thought.steps) ? thought.steps : [];
-            const dates = steps.map(s => s.stepDate).filter(d => d && d !== '未指定日期').sort();
+            const dates = steps.map(s => s.completedDate || s.stepDate).filter(d => d && d !== '未指定日期').sort();
             let lastDate = null;
             if (dates.length > 0) {
                 lastDate = new Date(dates[dates.length - 1]);
@@ -2016,6 +2023,8 @@ function updateContainerWidth() {
 
             if (!s.done) {
                 s.done = true;
+                s.completedDate = todayStr;
+                t.lastCompletedDate = todayStr;
                 if (s.recurrence && s.recurrence !== 'none') {
                     const oldDate = s.stepDate || todayStr;
                     const nextDate = getNextRecurrenceDate(oldDate, s.recurrence);
@@ -2040,6 +2049,7 @@ function updateContainerWidth() {
                 saveData();
             } else {
                 s.done = false;
+                delete s.completedDate;
                 saveData();
             }
         }
@@ -2752,9 +2762,8 @@ function renderTimelineMatrix(container) {
 
         function jumpToCardsViewWithBacklog() {
             activeCategory = '全部'; // 自動切換至「全部」領域分頁，確保所有冰存目標立即可見
-            viewMode = 'cards';
             showBacklogCards = true;
-            render();
+            setViewMode('cards'); // 呼叫 setViewMode 正確切換最上方分頁高亮選取樣式
             setTimeout(() => {
                 const el = document.getElementById('frozenCardsContainer') || document.getElementById('card-container');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
