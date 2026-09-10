@@ -245,7 +245,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.11.2-test (心智圖主推進三類步驟排序與子目標預設折疊完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.11.3-test (冰存14天門檻與跨分頁跳轉及回到頂部功能完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -480,6 +480,12 @@
 
         <div id="mainContentList" class="space-y-6"></div>
     </div>
+
+    <!-- 懸浮回到頂部按鈕 (滾動超過 250px 時平滑浮現) -->
+    <button id="btnScrollToTop" type="button" onclick="scrollToPageTop()" class="fixed bottom-6 right-6 z-50 px-3.5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg transition-all duration-300 transform translate-y-16 opacity-0 pointer-events-none flex items-center justify-center gap-1.5 cursor-pointer select-none border border-indigo-400" title="回到頂部">
+        <span class="text-sm font-bold">▲</span>
+        <span class="text-xs font-bold">回頂部</span>
+    </button>
     <script>
 window.onerror = function(msg, url, line, col, error) {
 
@@ -1542,18 +1548,18 @@ function updateContainerWidth() {
                 };
             }
 
-            // 計算 7 天前基準日期 (YYYY-MM-DD)
-            const sevenDaysAgo = new Date();
-            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-            const sevenDaysAgoStr = `${sevenDaysAgo.getFullYear()}-${String(sevenDaysAgo.getMonth() + 1).padStart(2, '0')}-${String(sevenDaysAgo.getDate()).padStart(2, '0')}`;
+            // 計算 14 天前基準日期 (YYYY-MM-DD，超過 14 天/2週 冰存)
+            const fourteenDaysAgo = new Date();
+            fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+            const fourteenDaysAgoStr = `${fourteenDaysAgo.getFullYear()}-${String(fourteenDaysAgo.getMonth() + 1).padStart(2, '0')}-${String(fourteenDaysAgo.getDate()).padStart(2, '0')}`;
 
-            // 檢查目標建立時間是否在一週內 (若是新建立目標，即便尚無步驟也先標示為加分推進)
+            // 檢查目標建立時間是否在兩週內 (若是兩週內新建立目標，即便尚無步驟也先標示為加分推進)
             const createdTimestamp = thought.createdAt || (typeof thought.id === 'number' && thought.id > 1600000000000 ? thought.id : 0);
-            const isNewWithin7Days = createdTimestamp > 0 && (Date.now() - createdTimestamp < 7 * 86400000);
+            const isNewWithin14Days = createdTimestamp > 0 && (Date.now() - createdTimestamp < 14 * 86400000);
 
-            // 4. 🧊 冰存推進：卡片內無步驟 (超過一週未規劃)，或所有未完成步驟均已逾期 > 7 天
-            const hasNoStepsFrozen = (steps.length === 0 || uncompleted.length === 0) && !isNewWithin7Days;
-            const allStepsExpiredFrozen = uncompleted.length > 0 && uncompleted.every(s => s.stepDate && s.stepDate !== '未指定日期' && s.stepDate < sevenDaysAgoStr);
+            // 4. 🧊 冰存推進：卡片內無步驟 (超過兩週未規劃)，或所有未完成步驟均已逾期 > 14 天
+            const hasNoStepsFrozen = (steps.length === 0 || uncompleted.length === 0) && !isNewWithin14Days;
+            const allStepsExpiredFrozen = uncompleted.length > 0 && uncompleted.every(s => s.stepDate && s.stepDate !== '未指定日期' && s.stepDate < fourteenDaysAgoStr);
 
             if (hasNoStepsFrozen || allStepsExpiredFrozen) {
                 return {
@@ -1584,14 +1590,14 @@ function updateContainerWidth() {
             }
             if (lastDate && !isNaN(lastDate.getTime())) {
                 const diffDays = Math.floor((now - lastDate) / (86400000));
-                return Math.max(diffDays, 7);
+                return Math.max(diffDays, 14);
             }
             const created = thought.createdAt || (typeof thought.id === 'number' && thought.id > 1600000000000 ? thought.id : 0);
             if (created > 0) {
                 const diffDays = Math.floor((now.getTime() - created) / (86400000));
-                return Math.max(diffDays, 7);
+                return Math.max(diffDays, 14);
             }
-            return 7;
+            return 14;
         }
 
         let showBacklogCards = false;
@@ -2726,14 +2732,33 @@ function renderTimelineMatrix(container) {
             `;
         }
 
+        
+        // 快速回到頁面頂部功能
+        function scrollToPageTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('btnScrollToTop');
+            if (!btn) return;
+            if (window.scrollY > 250) {
+                btn.classList.remove('translate-y-16', 'opacity-0', 'pointer-events-none');
+                btn.classList.add('translate-y-0', 'opacity-100');
+            } else {
+                btn.classList.add('translate-y-16', 'opacity-0', 'pointer-events-none');
+                btn.classList.remove('translate-y-0', 'opacity-100');
+            }
+        });
+
         function jumpToCardsViewWithBacklog() {
+            activeCategory = '全部'; // 自動切換至「全部」領域分頁，確保所有冰存目標立即可見
             viewMode = 'cards';
             showBacklogCards = true;
             render();
             setTimeout(() => {
                 const el = document.getElementById('frozenCardsContainer') || document.getElementById('card-container');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
+            }, 120);
         }
 
         function renderFocusMindmapHtml() {
@@ -3598,6 +3623,16 @@ const card = document.createElement('div');
                     });
                 }
             }
+
+            // 看板底部快速回到頂部按鈕
+            const bottomNav = document.createElement('div');
+            bottomNav.className = "mt-8 pt-4 pb-12 flex items-center justify-center";
+            bottomNav.innerHTML = `
+                <button type="button" onclick="scrollToPageTop()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-300 dark:border-slate-700 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer select-none">
+                    <span>▲ 回到最上方</span>
+                </button>
+            `;
+            container.appendChild(bottomNav);
         }
         document.addEventListener('DOMContentLoaded', () => {
 
