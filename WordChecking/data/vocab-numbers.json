@@ -1,0 +1,802 @@
+[
+  {
+    "num": 1,
+    "word": "one",
+    "chinese": "1",
+    "kk": "[wʌn]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 2,
+    "word": "two",
+    "chinese": "2",
+    "kk": "[tu]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 3,
+    "word": "three",
+    "chinese": "3",
+    "kk": "[θri]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 4,
+    "word": "four",
+    "chinese": "4",
+    "kk": "[for]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 5,
+    "word": "five",
+    "chinese": "5",
+    "kk": "[faɪv]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 6,
+    "word": "six",
+    "chinese": "6",
+    "kk": "[sɪks]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 7,
+    "word": "seven",
+    "chinese": "7",
+    "kk": "[ˋsɛvn]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 8,
+    "word": "eight",
+    "chinese": "8",
+    "kk": "[et]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 9,
+    "word": "nine",
+    "chinese": "9",
+    "kk": "[naɪn]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 10,
+    "word": "ten",
+    "chinese": "10",
+    "kk": "[tɛn]",
+    "note": "",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 11,
+    "word": "eleven",
+    "chinese": "11",
+    "kk": "[ɪˋlɛvn]",
+    "note": "不規則：eleven，國中必考",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 12,
+    "word": "twelve",
+    "chinese": "12",
+    "kk": "[twɛlv]",
+    "note": "不規則：twelve，結尾是 ve",
+    "category": "1-12 基礎數字"
+  },
+  {
+    "num": 13,
+    "word": "thirteen",
+    "chinese": "13",
+    "kk": "[ˋθɝˋtin]",
+    "note": "thirteen (由 three 轉為 thir- + teen)",
+    "category": "13-19 teen 族群"
+  },
+  {
+    "num": 14,
+    "word": "fourteen",
+    "chinese": "14",
+    "kk": "[ˋforˋtin]",
+    "note": "fourteen (注意四是 four，這裡保留 u)",
+    "category": "13-19 teen 族群"
+  },
+  {
+    "num": 15,
+    "word": "fifteen",
+    "chinese": "15",
+    "kk": "[ˋfɪfˋtin]",
+    "note": "fifteen (由 five 轉為 fif- + teen，常考)",
+    "category": "13-19 teen 族群"
+  },
+  {
+    "num": 16,
+    "word": "sixteen",
+    "chinese": "16",
+    "kk": "[ˋsɪksˋtin]",
+    "note": "",
+    "category": "13-19 teen 族群"
+  },
+  {
+    "num": 17,
+    "word": "seventeen",
+    "chinese": "17",
+    "kk": "[ˋsɛvnˋtin]",
+    "note": "",
+    "category": "13-19 teen 族群"
+  },
+  {
+    "num": 18,
+    "word": "eighteen",
+    "chinese": "18",
+    "kk": "[ˋeˋtin]",
+    "note": "eighteen (eight 結尾已有 t，不重複寫成 eightteen)",
+    "category": "13-19 teen 族群"
+  },
+  {
+    "num": 19,
+    "word": "nineteen",
+    "chinese": "19",
+    "kk": "[ˋnaɪnˋtin]",
+    "note": "",
+    "category": "13-19 teen 族群"
+  },
+  {
+    "num": 20,
+    "word": "twenty",
+    "chinese": "20",
+    "kk": "[ˋtwɛntɪ]",
+    "note": "twenty (twen- + ty)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 21,
+    "word": "twenty-one",
+    "chinese": "21",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(one)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 22,
+    "word": "twenty-two",
+    "chinese": "22",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(two)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 23,
+    "word": "twenty-three",
+    "chinese": "23",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(three)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 24,
+    "word": "twenty-four",
+    "chinese": "24",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(four)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 25,
+    "word": "twenty-five",
+    "chinese": "25",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(five)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 26,
+    "word": "twenty-six",
+    "chinese": "26",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(six)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 27,
+    "word": "twenty-seven",
+    "chinese": "27",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(seven)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 28,
+    "word": "twenty-eight",
+    "chinese": "28",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(eight)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 29,
+    "word": "twenty-nine",
+    "chinese": "29",
+    "kk": "",
+    "note": "十位數(twenty)與個位數(nine)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 30,
+    "word": "thirty",
+    "chinese": "30",
+    "kk": "[ˋθɝtɪ]",
+    "note": "thirty (thir- + ty，注意音標與拼法)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 31,
+    "word": "thirty-one",
+    "chinese": "31",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(one)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 32,
+    "word": "thirty-two",
+    "chinese": "32",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(two)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 33,
+    "word": "thirty-three",
+    "chinese": "33",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(three)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 34,
+    "word": "thirty-four",
+    "chinese": "34",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(four)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 35,
+    "word": "thirty-five",
+    "chinese": "35",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(five)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 36,
+    "word": "thirty-six",
+    "chinese": "36",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(six)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 37,
+    "word": "thirty-seven",
+    "chinese": "37",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(seven)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 38,
+    "word": "thirty-eight",
+    "chinese": "38",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(eight)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 39,
+    "word": "thirty-nine",
+    "chinese": "39",
+    "kk": "",
+    "note": "十位數(thirty)與個位數(nine)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 40,
+    "word": "forty",
+    "chinese": "40",
+    "kk": "[ˋfɔrtɪ]",
+    "note": "forty (★大魔王：沒有 u！不是 fourty)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 41,
+    "word": "forty-one",
+    "chinese": "41",
+    "kk": "",
+    "note": "十位數(forty)與個位數(one)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 42,
+    "word": "forty-two",
+    "chinese": "42",
+    "kk": "",
+    "note": "十位數(forty)與個位數(two)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 43,
+    "word": "forty-three",
+    "chinese": "43",
+    "kk": "",
+    "note": "十位數(forty)與個位數(three)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 44,
+    "word": "forty-four",
+    "chinese": "44",
+    "kk": "",
+    "note": "十位數(forty)與個位數(four)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 45,
+    "word": "forty-five",
+    "chinese": "45",
+    "kk": "",
+    "note": "十位數(forty)與個位數(five)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 46,
+    "word": "forty-six",
+    "chinese": "46",
+    "kk": "",
+    "note": "十位數(forty)與個位數(six)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 47,
+    "word": "forty-seven",
+    "chinese": "47",
+    "kk": "",
+    "note": "十位數(forty)與個位數(seven)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 48,
+    "word": "forty-eight",
+    "chinese": "48",
+    "kk": "",
+    "note": "十位數(forty)與個位數(eight)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 49,
+    "word": "forty-nine",
+    "chinese": "49",
+    "kk": "",
+    "note": "十位數(forty)與個位數(nine)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 50,
+    "word": "fifty",
+    "chinese": "50",
+    "kk": "[ˋfɪftɪ]",
+    "note": "fifty (由 five 轉為 fif- + ty)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 51,
+    "word": "fifty-one",
+    "chinese": "51",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(one)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 52,
+    "word": "fifty-two",
+    "chinese": "52",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(two)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 53,
+    "word": "fifty-three",
+    "chinese": "53",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(three)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 54,
+    "word": "fifty-four",
+    "chinese": "54",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(four)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 55,
+    "word": "fifty-five",
+    "chinese": "55",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(five)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 56,
+    "word": "fifty-six",
+    "chinese": "56",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(six)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 57,
+    "word": "fifty-seven",
+    "chinese": "57",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(seven)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 58,
+    "word": "fifty-eight",
+    "chinese": "58",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(eight)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 59,
+    "word": "fifty-nine",
+    "chinese": "59",
+    "kk": "",
+    "note": "十位數(fifty)與個位數(nine)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 60,
+    "word": "sixty",
+    "chinese": "60",
+    "kk": "[ˋsɪkstɪ]",
+    "note": "",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 61,
+    "word": "sixty-one",
+    "chinese": "61",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(one)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 62,
+    "word": "sixty-two",
+    "chinese": "62",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(two)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 63,
+    "word": "sixty-three",
+    "chinese": "63",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(three)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 64,
+    "word": "sixty-four",
+    "chinese": "64",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(four)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 65,
+    "word": "sixty-five",
+    "chinese": "65",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(five)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 66,
+    "word": "sixty-six",
+    "chinese": "66",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(six)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 67,
+    "word": "sixty-seven",
+    "chinese": "67",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(seven)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 68,
+    "word": "sixty-eight",
+    "chinese": "68",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(eight)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 69,
+    "word": "sixty-nine",
+    "chinese": "69",
+    "kk": "",
+    "note": "十位數(sixty)與個位數(nine)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 70,
+    "word": "seventy",
+    "chinese": "70",
+    "kk": "[ˋsɛvntɪ]",
+    "note": "",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 71,
+    "word": "seventy-one",
+    "chinese": "71",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(one)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 72,
+    "word": "seventy-two",
+    "chinese": "72",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(two)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 73,
+    "word": "seventy-three",
+    "chinese": "73",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(three)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 74,
+    "word": "seventy-four",
+    "chinese": "74",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(four)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 75,
+    "word": "seventy-five",
+    "chinese": "75",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(five)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 76,
+    "word": "seventy-six",
+    "chinese": "76",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(six)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 77,
+    "word": "seventy-seven",
+    "chinese": "77",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(seven)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 78,
+    "word": "seventy-eight",
+    "chinese": "78",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(eight)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 79,
+    "word": "seventy-nine",
+    "chinese": "79",
+    "kk": "",
+    "note": "十位數(seventy)與個位數(nine)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 80,
+    "word": "eighty",
+    "chinese": "80",
+    "kk": "[ˋetɪ]",
+    "note": "eighty (eight 結尾已具 t，直接加 y)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 81,
+    "word": "eighty-one",
+    "chinese": "81",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(one)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 82,
+    "word": "eighty-two",
+    "chinese": "82",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(two)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 83,
+    "word": "eighty-three",
+    "chinese": "83",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(three)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 84,
+    "word": "eighty-four",
+    "chinese": "84",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(four)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 85,
+    "word": "eighty-five",
+    "chinese": "85",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(five)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 86,
+    "word": "eighty-six",
+    "chinese": "86",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(six)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 87,
+    "word": "eighty-seven",
+    "chinese": "87",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(seven)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 88,
+    "word": "eighty-eight",
+    "chinese": "88",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(eight)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 89,
+    "word": "eighty-nine",
+    "chinese": "89",
+    "kk": "",
+    "note": "十位數(eighty)與個位數(nine)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 90,
+    "word": "ninety",
+    "chinese": "90",
+    "kk": "[ˋnaɪntɪ]",
+    "note": "ninety (保留 e：nine + ty)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 91,
+    "word": "ninety-one",
+    "chinese": "91",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(one)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 92,
+    "word": "ninety-two",
+    "chinese": "92",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(two)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 93,
+    "word": "ninety-three",
+    "chinese": "93",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(three)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 94,
+    "word": "ninety-four",
+    "chinese": "94",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(four)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 95,
+    "word": "ninety-five",
+    "chinese": "95",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(five)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 96,
+    "word": "ninety-six",
+    "chinese": "96",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(six)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 97,
+    "word": "ninety-seven",
+    "chinese": "97",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(seven)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 98,
+    "word": "ninety-eight",
+    "chinese": "98",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(eight)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 99,
+    "word": "ninety-nine",
+    "chinese": "99",
+    "kk": "",
+    "note": "十位數(ninety)與個位數(nine)中間必須加連字符號 (-)",
+    "category": "20-99 複合數字"
+  },
+  {
+    "num": 100,
+    "word": "one hundred",
+    "chinese": "100",
+    "kk": "[wʌn ˋhʌndrəd]",
+    "note": "one hundred (百，不可直接加 s 除非指數以百計 hundreds of)",
+    "category": "百位數字"
+  }
+]
