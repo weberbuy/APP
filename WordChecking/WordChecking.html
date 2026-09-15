@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 數字 1-100 貓咪陪伴版 (v1.4.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 數字 1-100 貓咪陪伴版 (v1.4.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -85,7 +85,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.4.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.4.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -278,6 +278,70 @@
         </div>
       </div>
     </div>
+
+    <!-- ==================== MODE 1: FLASHCARDS ==================== -->
+    <section id="modeCard" class="space-y-4">
+      <div class="relative w-full max-w-lg mx-auto h-84 perspective-1000 cursor-pointer" onclick="flipCard()">
+        <div id="flashcardInner" class="relative w-full h-full min-h-[340px] transition-transform duration-500 transform-style-3d shadow-xl rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-200/80 dark:border-slate-700 p-6 flex flex-col justify-between">
+          
+          <!-- Front Face -->
+          <div id="cardFront" class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white dark:bg-slate-800 rounded-3xl">
+            <div class="flex justify-between items-center text-xs text-slate-400">
+              <span id="cardCategory" class="px-2.5 py-1 bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-300 rounded-lg font-medium">1-12 基礎數字</span>
+              <span id="cardIndex" class="font-mono text-xs">1 / 100</span>
+            </div>
+            
+            <div class="text-center my-auto">
+              <div class="text-7xl sm:text-8xl font-black text-slate-900 dark:text-white font-mono tracking-tight" id="cardDigit">1</div>
+              <div class="text-xs text-rose-500 dark:text-rose-400 font-medium mt-3 flex items-center justify-center space-x-1.5">
+                <span>🐾 點擊卡片翻面看拼字</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/60">
+              <span class="text-xs text-slate-400">提示：正面阿拉伯數字</span>
+              <button onclick="event.stopPropagation(); playVoiceCurrent()" class="p-2.5 rounded-full hover:bg-rose-50 dark:hover:bg-slate-700 text-rose-500 transition">
+                <i class="fa-solid fa-volume-high text-lg"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Back Face -->
+          <div id="cardBack" class="absolute inset-0 backface-hidden rotate-y-180 p-6 flex flex-col justify-between bg-gradient-to-b from-rose-50/50 via-white to-amber-50/40 dark:from-slate-800 dark:to-slate-800 rounded-3xl border-2 border-rose-300 dark:border-rose-500">
+            <div class="flex justify-between items-center text-xs text-slate-400">
+              <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center space-x-1" id="cardBackCategory">
+                <span>🐾</span>
+                <span>1-12 基礎數字</span>
+              </span>
+              <span class="font-mono text-xs font-bold text-amber-600" id="cardBackDigit">#1</span>
+            </div>
+
+            <div class="text-center my-auto">
+              <div class="text-4xl sm:text-5xl font-extrabold text-rose-600 dark:text-rose-400 tracking-wide" id="cardEnglish">one</div>
+              <div class="text-lg text-slate-500 dark:text-slate-400 font-mono mt-1" id="cardPhonetic">[wʌn]</div>
+              
+              <div id="cardNoteBox" class="mt-3 px-3.5 py-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded-2xl text-xs text-amber-800 dark:text-amber-300 inline-block text-left max-w-xs shadow-sm">
+                <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>
+                <span id="cardNote">規則說明</span>
+              </div>
+              <div id="cardExampleBox" class="mt-2 text-xs text-slate-500 dark:text-slate-400 italic max-w-sm mx-auto px-2 hidden">
+                <span id="cardExample"></span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center space-x-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+              <button onclick="event.stopPropagation(); playVoiceCurrent(0.8)" class="text-xs text-slate-600 dark:text-slate-300 hover:text-rose-600 flex items-center space-x-1 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-xl">
+                <i class="fa-solid fa-play text-[10px]"></i>
+                <span>慢速 0.8x</span>
+              </button>
+              <button onclick="event.stopPropagation(); playVoiceCurrent(1.0)" class="text-xs text-white bg-rose-500 hover:bg-rose-600 flex items-center space-x-1 px-3.5 py-1.5 rounded-xl shadow-sm">
+                <i class="fa-solid fa-volume-high text-[10px]"></i>
+                <span>真人示範發音</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <!-- Action Buttons with Cat Accents -->
@@ -1489,7 +1553,7 @@
       const current = examQuestions[examIndex];
       const inputVal = document.getElementById('examInput').value.trim();
       
-      const cleanInput = inputVal.toLowerCase().replace(/\s+/g, '-');
+      const cleanInput = inputVal.toLowerCase().replace(/\\s+/g, '-');
       const cleanTarget = current.word.toLowerCase();
       const isCorrect = (cleanInput === cleanTarget);
 
