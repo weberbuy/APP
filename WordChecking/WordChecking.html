@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 數字 1-100 貓咪陪伴版 (v1.3.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 數字 1-100 貓咪陪伴版 (v1.4.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -85,9 +85,9 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.3.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.4.0-test</span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴陪伴背單字 (數字 1-100)</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
       </div>
 
@@ -254,80 +254,30 @@
         </button>
       </div>
 
-      <!-- Scope Selector -->
-      <div class="flex items-center space-x-2 w-full md:w-auto">
-        <label for="scopeFilter" class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">範圍：</label>
-        <select id="scopeFilter" onchange="onScopeChange()" class="w-full md:w-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm rounded-xl px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 shadow-sm">
-          <option value="all">全部 1-100 數字 (100字)</option>
-          <option value="1-12">1-12 基礎核心字群 (12字)</option>
-          <option value="13-19">13-19 teen 家族 (7字)</option>
-          <option value="20-99">20-99 複合數字 (80字)</option>
-          <option value="tens">整十位數 (20, 30, 40...90)</option>
-          <option value="weak">★ 貓貓待加強清單</option>
-        </select>
+      <!-- Theme & Scope Selectors -->
+      <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+        <!-- Theme Unit Dropdown -->
+        <div class="flex items-center space-x-1.5 bg-amber-100/70 dark:bg-slate-800 px-3 py-1.5 rounded-2xl border border-amber-300/80 dark:border-slate-700 shadow-sm">
+          <label for="themeSelect" class="text-xs font-bold text-amber-900 dark:text-amber-300 whitespace-nowrap flex items-center gap-1">
+            <span>📚</span>
+            <span>單元：</span>
+          </label>
+          <select id="themeSelect" onchange="onThemeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer">
+            <option value="numbers">🔢 數字篇：1-100 基礎數字</option>
+            <option value="family">👨‍👩‍👧‍👦 人物篇：人物與家庭親屬</option>
+          </select>
+        </div>
+
+        <!-- Sub-Scope Dropdown -->
+        <div class="flex items-center space-x-1.5 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <label for="scopeFilter" class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">範圍：</label>
+          <select id="scopeFilter" onchange="onScopeChange()" class="bg-transparent text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer">
+            <option value="all">全部單字</option>
+            <option value="weak">★ 貓貓待加強清單</option>
+          </select>
+        </div>
       </div>
     </div>
-
-    <!-- ==================== MODE 1: FLASHCARDS ==================== -->
-    <section id="modeCard" class="space-y-4">
-      <div class="relative w-full max-w-lg mx-auto h-84 perspective-1000 cursor-pointer" onclick="flipCard()">
-        <div id="flashcardInner" class="relative w-full h-full min-h-[340px] transition-transform duration-500 transform-style-3d shadow-xl rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-200/80 dark:border-slate-700 p-6 flex flex-col justify-between">
-          
-          <!-- Front Face -->
-          <div id="cardFront" class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white dark:bg-slate-800 rounded-3xl">
-            <div class="flex justify-between items-center text-xs text-slate-400">
-              <span id="cardCategory" class="px-2.5 py-1 bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-300 rounded-lg font-medium">1-12 基礎數字</span>
-              <span id="cardIndex" class="font-mono text-xs">1 / 100</span>
-            </div>
-            
-            <div class="text-center my-auto">
-              <div class="text-7xl sm:text-8xl font-black text-slate-900 dark:text-white font-mono tracking-tight" id="cardDigit">1</div>
-              <div class="text-xs text-rose-500 dark:text-rose-400 font-medium mt-3 flex items-center justify-center space-x-1.5">
-                <span>🐾 點擊卡片翻面看拼字</span>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/60">
-              <span class="text-xs text-slate-400">提示：正面阿拉伯數字</span>
-              <button onclick="event.stopPropagation(); playVoiceCurrent()" class="p-2.5 rounded-full hover:bg-rose-50 dark:hover:bg-slate-700 text-rose-500 transition">
-                <i class="fa-solid fa-volume-high text-lg"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Back Face -->
-          <div id="cardBack" class="absolute inset-0 backface-hidden rotate-y-180 p-6 flex flex-col justify-between bg-gradient-to-b from-rose-50/50 via-white to-amber-50/40 dark:from-slate-800 dark:to-slate-800 rounded-3xl border-2 border-rose-300 dark:border-rose-500">
-            <div class="flex justify-between items-center text-xs text-slate-400">
-              <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center space-x-1" id="cardBackCategory">
-                <span>🐾</span>
-                <span>1-12 基礎數字</span>
-              </span>
-              <span class="font-mono text-xs font-bold text-amber-600" id="cardBackDigit">#1</span>
-            </div>
-
-            <div class="text-center my-auto">
-              <div class="text-4xl sm:text-5xl font-extrabold text-rose-600 dark:text-rose-400 tracking-wide" id="cardEnglish">one</div>
-              <div class="text-lg text-slate-500 dark:text-slate-400 font-mono mt-1" id="cardPhonetic">[wʌn]</div>
-              
-              <div id="cardNoteBox" class="mt-4 px-3.5 py-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded-2xl text-xs text-amber-800 dark:text-amber-300 inline-block text-left max-w-xs shadow-sm">
-                <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>
-                <span id="cardNote">規則說明</span>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-center space-x-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
-              <button onclick="event.stopPropagation(); playVoiceCurrent(0.8)" class="text-xs text-slate-600 dark:text-slate-300 hover:text-rose-600 flex items-center space-x-1 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-xl">
-                <i class="fa-solid fa-play text-[10px]"></i>
-                <span>慢速 0.8x</span>
-              </button>
-              <button onclick="event.stopPropagation(); playVoiceCurrent(1.0)" class="text-xs text-white bg-rose-500 hover:bg-rose-600 flex items-center space-x-1 px-3.5 py-1.5 rounded-xl shadow-sm">
-                <i class="fa-solid fa-volume-high text-[10px]"></i>
-                <span>真人示範發音</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
       </div>
 
       <!-- Action Buttons with Cat Accents -->
@@ -711,15 +661,45 @@
 
   <!-- Data & Logic script -->
   <script>
-    // Vocab State (分離式架構：動態非同步載入)
-    let RAW_VOCAB = [];
-    const VOCAB_DATA_URL = './data/vocab-numbers.json';
-    const VOCAB_DATA_FALLBACK_URL = './vocab-numbers.json';
-    let isDataLoaded = false;
+    // ==================== MULTI-THEME REGISTRY ====================
+    const THEME_REGISTRY = {
+      numbers: {
+        id: "numbers",
+        name: "1-100 基礎數字",
+        url: "./data/vocab-numbers.json",
+        fallbackUrl: "./vocab-numbers.json",
+        storageKey: "wordchecking_progress_numbers_v1",
+        catIntro: "數字篇：1-100 數字考驗規律與拼寫細節，別忘了連字符號喔！🐾",
+        scopes: [
+          { value: "all", label: "全部 1-100 數字 (100字)" },
+          { value: "1-12", label: "1-12 基礎核心字群 (12字)" },
+          { value: "13-19", label: "13-19 teen 家族 (7字)" },
+          { value: "20-99", label: "20-99 複合數字 (80字)" },
+          { value: "tens", label: "整十位數 (20, 30, 40...90)" },
+          { value: "weak", label: "★ 貓貓待加強清單" }
+        ]
+      },
+      family: {
+        id: "family",
+        name: "人物與家庭親屬",
+        url: "./data/vocab-people-family.json",
+        fallbackUrl: "./vocab-people-family.json",
+        storageKey: "wordchecking_progress_family_v1",
+        catIntro: "人物與家庭篇：國一會考必考的不規則複數（children、men、women）要特別注意喔！🐾",
+        scopes: [
+          { value: "all", label: "全部人物與家庭 (25字)" },
+          { value: "人物與人際", label: "人物與人際關係 (12字)" },
+          { value: "家庭親屬", label: "家庭與親屬稱謂 (13字)" },
+          { value: "weak", label: "★ 貓貓待加強清單" }
+        ]
+      }
+    };
 
     // State
+    let currentThemeKey = 'numbers';
+    let RAW_VOCAB = [];
     let currentScope = 'all';
-    let filteredList = [...RAW_VOCAB];
+    let filteredList = [];
     let currentIndex = 0;
     let cardFlipped = false;
     let catSoundEnabled = true;
@@ -743,23 +723,22 @@
     };
     let examQuestions = [];
     let examIndex = 0;
-    let examResults = []; // { num, word, input, isCorrect, note }
+    let examResults = [];
     let lastExamWeakItems = [];
 
     // Cat Dialogues
     const CAT_SPEECHES = [
-      "喵～今天也要一起把 1-100 數字全部背熟喔！🐾",
+      "喵～今天也要一起把單字全部背熟喔！🐾",
       "喵嗚～數字四十是 forty，裡面沒有 u 喔！別被騙了喵～",
-      "喵～十四是 fourteen，四十四是 forty-four，要加連字符號喔！",
+      "喵～child 的複數是 children，man 的複數是 men 喔！",
       "呼嚕呼嚕～每背熟一個單字，我就多一條小魚乾可以吃耶！🐟",
       "喵嗚！妳今天好認真，國一英文會考一定難不倒妳的！✨",
       "試試看聽寫模考！看妳 10 題或 20 題能拿幾分喵～🐾"
     ];
 
     // Storage keys
-    const STORAGE_KEY = 'wordchecking_progress_v1';
     const FISH_STORAGE_KEY = 'wordchecking_fish_count_v1';
-    let userProgress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    let userProgress = {};
     let fishCount = parseInt(localStorage.getItem(FISH_STORAGE_KEY) || '0', 10);
 
     // Audio Synth for Cat Meow
@@ -799,7 +778,7 @@
         playCatMeowSound();
       } else {
         icon.className = "fa-solid fa-bell-slash text-base text-slate-400";
-        sayCatSpeech("音效已靜音，專心考試喵～");
+        sayCatSpeech("音效已靜音，專心讀書喵～");
       }
     }
 
@@ -830,41 +809,74 @@
       document.getElementById('catMood').innerText = mood;
     }
 
-    // 動態載入單字資料 (支援 WordChecking/data/vocab-numbers.json)
-    async function loadVocabData() {
-      sayCatSpeech("喵～正在載入單字資料庫中...🐾", "準備中");
+    // ==================== THEME MANAGEMENT ====================
+    function onThemeChange() {
+      currentThemeKey = document.getElementById('themeSelect').value;
+      loadThemeData(currentThemeKey);
+    }
+
+    function updateScopeDropdown(themeObj) {
+      const scopeSel = document.getElementById('scopeFilter');
+      scopeSel.innerHTML = '';
+      themeObj.scopes.forEach(sc => {
+        const opt = document.createElement('option');
+        opt.value = sc.value;
+        opt.innerText = sc.label;
+        scopeSel.appendChild(opt);
+      });
+      currentScope = 'all';
+      scopeSel.value = 'all';
+    }
+
+    async function loadThemeData(themeKey) {
+      const theme = THEME_REGISTRY[themeKey];
+      if (!theme) return;
+
+      sayCatSpeech(`喵～正在載入【${theme.name}】資料庫...🐾`, "準備中");
+      updateScopeDropdown(theme);
+
+      // Load user progress for this theme
+      userProgress = JSON.parse(localStorage.getItem(theme.storageKey) || '{}');
+
       try {
-        let res = await fetch(VOCAB_DATA_URL);
-        if (!res.ok) {
-          res = await fetch(VOCAB_DATA_FALLBACK_URL);
-        }
+        let res = await fetch(theme.url);
+        if (!res.ok) res = await fetch(theme.fallbackUrl);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         RAW_VOCAB = await res.json();
-        isDataLoaded = true;
-        sayCatSpeech("單字載入完成！今天也要一起把 1-100 數字背熟喔！🐾", "元氣滿滿");
         
-        // 成功取得後存入本地快取，防止離線或本機開啟時失效
+        // Cache to local storage
         try {
-          localStorage.setItem('cached_vocab_numbers_v1', JSON.stringify(RAW_VOCAB));
+          localStorage.setItem(`cached_vocab_${themeKey}_v1`, JSON.stringify(RAW_VOCAB));
         } catch(e) {}
       } catch (err) {
-        console.warn("網路 fetch 單字失敗，嘗試使用本地快取：", err);
-        const cached = localStorage.getItem('cached_vocab_numbers_v1');
+        console.warn("Fetch 載入失敗，嘗試載入本地快取：", err);
+        const cached = localStorage.getItem(`cached_vocab_${themeKey}_v1`);
         if (cached) {
           try {
             RAW_VOCAB = JSON.parse(cached);
-            isDataLoaded = true;
-            sayCatSpeech("已自本地快取載入單字！喵～🐾", "離線模式");
           } catch(e) {}
-        }
-        if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
-          sayCatSpeech("喵嗚！單字載入受限 (本機直接雙擊 file:// 可能被瀏覽器阻擋 fetch，建議用 Web Server 或 GitHub Pages 開啟喔) 🐾", "提醒");
         }
       }
 
+      if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
+        sayCatSpeech(`喵嗚！【${theme.name}】單字庫載入受限 (本機直接雙擊 file:// 可能被瀏覽器安全性阻擋 fetch，建議用 Web Server 或 GitHub Pages 開啟喔) 🐾`, "提醒");
+        RAW_VOCAB = [];
+      } else {
+        sayCatSpeech(theme.catIntro, "元氣滿滿");
+      }
+
+      currentIndex = 0;
       updateFilteredList();
       renderCurrentCard();
       renderStats();
+
+      // Refresh active mode view
+      const activeMode = getActiveMode();
+      if (activeMode === 'quiz') startNewQuiz();
+      if (activeMode === 'spelling') startNewSpelling();
+      if (activeMode === 'speaking') startNewSpeaking();
+      if (activeMode === 'exam') initExamSetup();
+      if (activeMode === 'list') renderWordTable();
     }
 
     // Init App
@@ -872,7 +884,7 @@
       initTheme();
       document.getElementById('fishCount').innerText = fishCount;
       initSpeechRecognition();
-      loadVocabData();
+      loadThemeData(currentThemeKey);
 
       // Keyboard shortcuts for Flashcard
       document.addEventListener('keydown', (e) => {
@@ -927,43 +939,59 @@
     }
 
     function updateFilteredList() {
+      if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
+        filteredList = [];
+        return;
+      }
+
       if (currentScope === 'all') {
         filteredList = [...RAW_VOCAB];
-      } else if (currentScope === '1-12') {
-        filteredList = RAW_VOCAB.filter(x => x.num <= 12);
-      } else if (currentScope === '13-19') {
-        filteredList = RAW_VOCAB.filter(x => x.num >= 13 && x.num <= 19);
-      } else if (currentScope === '20-99') {
-        filteredList = RAW_VOCAB.filter(x => x.num >= 20 && x.num <= 99);
-      } else if (currentScope === 'tens') {
-        filteredList = RAW_VOCAB.filter(x => x.num % 10 === 0 && x.num >= 20 && x.num <= 90);
       } else if (currentScope === 'weak') {
-        filteredList = RAW_VOCAB.filter(x => userProgress[x.num] === 'weak');
+        filteredList = RAW_VOCAB.filter(x => userProgress[x.word || x.num] === 'weak');
         if (filteredList.length === 0) {
           alert('喵～目前沒有標記為「待加強」的單字！咪咪為您自動切換回全部單字。');
           document.getElementById('scopeFilter').value = 'all';
           currentScope = 'all';
           filteredList = [...RAW_VOCAB];
         }
+      } else if (currentThemeKey === 'numbers') {
+        if (currentScope === '1-12') {
+          filteredList = RAW_VOCAB.filter(x => x.num <= 12);
+        } else if (currentScope === '13-19') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 13 && x.num <= 19);
+        } else if (currentScope === '20-99') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 20 && x.num <= 99);
+        } else if (currentScope === 'tens') {
+          filteredList = RAW_VOCAB.filter(x => x.num % 10 === 0 && x.num >= 20 && x.num <= 90);
+        } else {
+          filteredList = [...RAW_VOCAB];
+        }
+      } else {
+        // Filter by category name
+        filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
+        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
       }
     }
 
     function renderStats() {
       let mastered = 0;
       let weak = 0;
+      const total = RAW_VOCAB.length;
+
       RAW_VOCAB.forEach(item => {
-        if (userProgress[item.num] === 'mastered') mastered++;
-        else if (userProgress[item.num] === 'weak') weak++;
+        const key = item.word || item.num;
+        if (userProgress[key] === 'mastered') mastered++;
+        else if (userProgress[key] === 'weak') weak++;
       });
 
-      document.getElementById('statTotal').innerText = RAW_VOCAB.length;
+      document.getElementById('statTotal').innerText = total;
       document.getElementById('statMastered').innerText = mastered;
       document.getElementById('statWeak').innerText = weak;
 
-      const pct = Math.round((mastered / RAW_VOCAB.length) * 100);
-      document.getElementById('progressText').innerText = `${pct}% (${mastered}/${RAW_VOCAB.length})`;
-      document.getElementById('progressBarMastered').style.width = `${(mastered / RAW_VOCAB.length) * 100}%`;
-      document.getElementById('progressBarWeak').style.width = `${(weak / RAW_VOCAB.length) * 100}%`;
+      const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
+      document.getElementById('progressText').innerText = `${pct}% (${mastered}/${total})`;
+      document.getElementById('progressBarMastered').style.width = total > 0 ? `${(mastered / total) * 100}%` : '0%';
+      document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
 
       const catFavor = document.getElementById('catFavorText');
       if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
@@ -981,18 +1009,23 @@
 
     // Flashcard Rendering
     function renderCurrentCard() {
-      if (filteredList.length === 0) return;
+      if (!filteredList || filteredList.length === 0) return;
       const item = filteredList[currentIndex];
       
       cardFlipped = false;
       document.getElementById('flashcardInner').classList.remove('rotate-y-180');
 
       document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
-      document.getElementById('cardCategory').innerText = item.category;
-      document.getElementById('cardDigit').innerText = item.num;
+      document.getElementById('cardCategory').innerText = item.category || '核心單字';
+      
+      const digitEl = document.getElementById('cardDigit');
+      digitEl.innerText = item.chinese;
+      digitEl.className = item.chinese.length > 4 
+        ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight" 
+        : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
 
-      document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${item.category}</span>`;
-      document.getElementById('cardBackDigit').innerText = `#${item.num}`;
+      document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${item.category || '核心單字'}</span>`;
+      document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
       document.getElementById('cardEnglish').innerText = item.word;
       document.getElementById('cardPhonetic').innerText = item.kk || '';
 
@@ -1003,6 +1036,14 @@
       } else {
         noteBox.classList.add('hidden');
       }
+
+      const exampleBox = document.getElementById('cardExampleBox');
+      if (item.example) {
+        exampleBox.classList.remove('hidden');
+        document.getElementById('cardExample').innerText = `例句：${item.example}`;
+      } else {
+        exampleBox.classList.add('hidden');
+      }
     }
 
     function flipCard() {
@@ -1011,7 +1052,7 @@
       if (cardFlipped) {
         inner.classList.add('rotate-y-180');
         playVoiceCurrent(1.0);
-        sayCatSpeech(`翻面看拼寫囉！這個是 "${filteredList[currentIndex].word}"，記起來了嗎喵？🐾`, "專心看牌");
+        sayCatSpeech(`翻面看拼寫囉！"${filteredList[currentIndex].word}"，記起來了嗎喵？🐾`, "專心看牌");
       } else {
         inner.classList.remove('rotate-y-180');
       }
@@ -1036,13 +1077,18 @@
     }
 
     function markCurrent(isMastered) {
+      if (!filteredList || filteredList.length === 0) return;
       const item = filteredList[currentIndex];
-      userProgress[item.num] = isMastered ? 'mastered' : 'weak';
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      const key = item.word || item.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+
+      userProgress[key] = isMastered ? 'mastered' : 'weak';
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
+      
       if (isMastered) {
         addFish();
         playCatMeowSound();
-        sayCatSpeech(`太棒了！"${item.word}" 已記住！貓咪送妳 1 條小魚乾 🐟～`, "開心歡呼");
+        sayCatSpeech(`太棒了！"${item.word}" 已記住！送妳 1 條小魚乾 🐟～`, "開心歡呼");
       } else {
         sayCatSpeech(`沒關係！貓貓幫妳把 "${item.word}" 記在待加強名單，等等多看兩眼喵～🐾`, "貼心鼓勵");
       }
@@ -1062,8 +1108,9 @@
     }
 
     function playVoiceCurrent(rate = 1.0) {
-      const item = filteredList[currentIndex];
-      if (item) playVoiceText(item.word, rate);
+      if (filteredList && filteredList[currentIndex]) {
+        playVoiceText(filteredList[currentIndex].word, rate);
+      }
     }
 
     // Mode Switching
@@ -1081,7 +1128,7 @@
         }
       });
 
-      if (mode === 'card') sayCatSpeech("翻翻卡片模式：正面看數字，翻面看拼寫，記住按精通拿小魚乾喔！🐟");
+      if (mode === 'card') sayCatSpeech("翻翻卡片模式：看中文想英文，翻面看拼寫與例句喔！🐾");
       if (mode === 'quiz') startNewQuiz();
       if (mode === 'spelling') startNewSpelling();
       if (mode === 'speaking') startNewSpeaking();
@@ -1096,32 +1143,29 @@
     // ==================== QUIZ LOGIC ====================
     function startNewQuiz() {
       document.getElementById('quizFeedback').classList.add('hidden');
-      if (filteredList.length === 0) return;
+      if (!filteredList || filteredList.length === 0) return;
 
-      sayCatSpeech("四選一小測驗！找出最正確的英文拼法，別掉進相近字陷阱喵～🐾");
+      sayCatSpeech("四選一測驗！找出最正確的英文單字，別掉進易錯陷阱喵～🐾");
 
-      const weakItems = filteredList.filter(x => userProgress[x.num] === 'weak');
+      const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
       if (weakItems.length > 0 && Math.random() < 0.6) {
         currentQuizItem = weakItems[Math.floor(Math.random() * weakItems.length)];
       } else {
         currentQuizItem = filteredList[Math.floor(Math.random() * filteredList.length)];
       }
 
-      document.getElementById('quizQuestionDigit').innerText = currentQuizItem.num;
+      const qEl = document.getElementById('quizQuestionDigit');
+      qEl.innerText = currentQuizItem.chinese;
+      qEl.className = currentQuizItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white" : "text-6xl font-black text-slate-900 dark:text-white font-mono";
       document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
 
       let options = [currentQuizItem];
-      let distractors = RAW_VOCAB.filter(x => x.num !== currentQuizItem.num);
-      
-      distractors.sort((a, b) => {
-        let aSim = (Math.abs(a.num - currentQuizItem.num) < 15 || a.num % 10 === currentQuizItem.num % 10) ? -1 : 1;
-        let bSim = (Math.abs(b.num - currentQuizItem.num) < 15 || b.num % 10 === currentQuizItem.num % 10) ? -1 : 1;
-        return aSim - bSim;
-      });
+      let distractors = RAW_VOCAB.filter(x => x.word !== currentQuizItem.word);
+      distractors.sort(() => Math.random() - 0.5);
 
       for (let d of distractors) {
         if (options.length >= 4) break;
-        if (!options.some(o => o.num === d.num)) options.push(d);
+        if (!options.some(o => o.word === d.word)) options.push(d);
       }
 
       options.sort(() => Math.random() - 0.5);
@@ -1138,12 +1182,14 @@
     }
 
     function checkQuizAnswer(selectedOpt, btnElement) {
-      const isCorrect = selectedOpt.num === currentQuizItem.num;
+      const isCorrect = selectedOpt.word === currentQuizItem.word;
       quizStats.total++;
       if (isCorrect) quizStats.correct++;
 
-      userProgress[currentQuizItem.num] = isCorrect ? 'mastered' : 'weak';
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      const key = currentQuizItem.word || currentQuizItem.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+      userProgress[key] = isCorrect ? 'mastered' : 'weak';
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
 
       const container = document.getElementById('quizOptionsContainer');
@@ -1188,17 +1234,20 @@
       document.getElementById('spellInput').disabled = false;
       document.getElementById('spellInput').focus();
 
-      sayCatSpeech("拼字挑戰：輸入完整的英文單字，複合數字記得中間有連字符號 '-' 喔！🐾");
+      sayCatSpeech("拼字挑戰：輸入完整的英文單字，字母要拼精準喔！🐾");
 
-      if (filteredList.length === 0) return;
+      if (!filteredList || filteredList.length === 0) return;
       currentSpellItem = filteredList[Math.floor(Math.random() * filteredList.length)];
-      document.getElementById('spellDigit').innerText = currentSpellItem.num;
+      
+      const sEl = document.getElementById('spellDigit');
+      sEl.innerText = currentSpellItem.chinese;
+      sEl.className = currentSpellItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white my-3" : "text-6xl font-black text-slate-900 dark:text-white font-mono my-3";
     }
 
     function toggleSpellHint() {
       const hintBox = document.getElementById('spellHintBox');
       hintBox.classList.toggle('hidden');
-      if (!hintBox.classList.contains('hidden')) {
+      if (!hintBox.classList.contains('hidden') && currentSpellItem) {
         const target = currentSpellItem.word;
         const masked = target.split('').map(c => (c === '-' ? '-' : '_')).join(' ');
         hintBox.innerText = `🐾 咪咪給提示：${masked} (共 ${target.replace(/-/g,'').length} 字母)`;
@@ -1213,8 +1262,10 @@
       const isCorrect = (inputVal === target);
       document.getElementById('spellInput').disabled = true;
 
-      userProgress[currentSpellItem.num] = isCorrect ? 'mastered' : 'weak';
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      const key = currentSpellItem.word || currentSpellItem.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+      userProgress[key] = isCorrect ? 'mastered' : 'weak';
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
 
       const feedback = document.getElementById('spellFeedback');
@@ -1228,13 +1279,13 @@
         document.getElementById('spellFeedbackTitle').innerText = '完全正確！一個字母都沒有漏！ (+1 🐟)';
         document.getElementById('spellFeedbackDetail').innerText = `${currentSpellItem.word} ${currentSpellItem.kk || ''} ${currentSpellItem.note ? '・' + currentSpellItem.note : ''}`;
         playVoiceText(currentSpellItem.word);
-        sayCatSpeech("好厲害的拼字實力！連連字號都打對了，貓貓好崇拜妳！🐟✨");
+        sayCatSpeech("好厲害的拼字實力！字母全對，貓貓好崇拜妳！🐟✨");
       } else {
         feedback.className = "mt-4 p-4 rounded-2xl text-sm bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200";
         document.getElementById('spellFeedbackIcon').innerHTML = '<i class="fa-solid fa-cat text-rose-500"></i>';
         document.getElementById('spellFeedbackTitle').innerText = '拼字有誤，請仔細比對：';
         document.getElementById('spellFeedbackDetail').innerText = `正確答案：${currentSpellItem.word} (妳輸入的是：${inputVal || '空白'}) ${currentSpellItem.note ? '・' + currentSpellItem.note : ''}`;
-        sayCatSpeech(`差一點點！仔細看一下咪咪寫的正確答案，記在心裡喵～🐾`);
+        sayCatSpeech(`差一點點！仔細看一下正確答案，下次一定拼對喵～🐾`);
       }
     }
 
@@ -1295,12 +1346,12 @@
 
     function startNewSpeaking() {
       document.getElementById('speakFeedback').classList.add('hidden');
-      if (filteredList.length === 0) return;
+      if (!filteredList || filteredList.length === 0) return;
       currentSpeakItem = filteredList[Math.floor(Math.random() * filteredList.length)];
 
       document.getElementById('speakEnglish').innerText = currentSpeakItem.word;
       document.getElementById('speakPhonetic').innerText = currentSpeakItem.kk || '';
-      document.getElementById('speakDigit').innerText = currentSpeakItem.num;
+      document.getElementById('speakDigit').innerText = currentSpeakItem.chinese;
       document.getElementById('micStatus').innerText = "點擊麥克風後說出英文單字給咪咪聽 🐾";
       sayCatSpeech(`來跟著我練習唸 "${currentSpeakItem.word}"，按下麥克風開口吧！🐾`);
     }
@@ -1314,17 +1365,20 @@
       const feedback = document.getElementById('speakFeedback');
       feedback.classList.remove('hidden');
 
+      const key = currentSpeakItem.word || currentSpeakItem.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+
       if (isMatch) {
-        userProgress[currentSpeakItem.num] = 'mastered';
+        userProgress[key] = 'mastered';
         addFish();
         playCatMeowSound();
         feedback.className = "p-4 rounded-2xl text-sm bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200";
         document.getElementById('speakFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
         document.getElementById('speakFeedbackTitle').innerText = '發音超清晰！辨識成功！ (+1 🐟)';
         document.getElementById('speakFeedbackDetail').innerText = `咪咪聽到了：${spokenText} (目標單字：${currentSpeakItem.word})`;
-        sayCatSpeech(`好標準好甜美的英文發音！咪咪太喜歡了～魚乾送給妳 🐟🐾`);
+        sayCatSpeech(`好標準的英文發音！咪咪太喜歡了～魚乾送給妳 🐟🐾`);
       } else {
-        userProgress[currentSpeakItem.num] = 'weak';
+        userProgress[key] = 'weak';
         feedback.className = "p-4 rounded-2xl text-sm bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200";
         document.getElementById('speakFeedbackIcon').innerHTML = '<i class="fa-solid fa-cat text-amber-500"></i>';
         document.getElementById('speakFeedbackTitle').innerText = '咪咪聽到的稍有不同，可以再試一次：';
@@ -1332,7 +1386,7 @@
         sayCatSpeech(`放慢速度再唸一次看看，咪咪相信妳可以唸得很好的喵～🐾`);
       }
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
     }
 
@@ -1340,12 +1394,13 @@
       startNewSpeaking();
     }
 
-    // ==================== MODE 5: MOCK EXAM LOGIC (NEW!) ====================
+    // ==================== MOCK EXAM LOGIC ====================
     function initExamSetup() {
       document.getElementById('examSetupBox').classList.remove('hidden');
       document.getElementById('examRunningBox').classList.add('hidden');
       document.getElementById('examResultBox').classList.add('hidden');
-      sayCatSpeech("歡迎來到模擬聽寫考試！選擇 10 題或 20 題，來看看能拿幾分喵～🐾", "認真監考");
+      const theme = THEME_REGISTRY[currentThemeKey];
+      sayCatSpeech(`歡迎來到【${theme.name}】聽寫模擬考！選擇 10 題或 20 題，來看看能拿幾分喵～🐾`, "認真監考");
     }
 
     function setExamQuestionCount(cnt) {
@@ -1372,11 +1427,11 @@
       if (mode === 'audio_digit') {
         bBoth.className = "flex-1 py-2 px-2 rounded-xl border-2 border-rose-500 bg-rose-500 text-white font-bold text-xs transition shadow-sm";
         bAudio.className = "flex-1 py-2 px-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition hover:border-rose-400";
-        desc.innerText = "顯示題目數字，並播放發音";
+        desc.innerText = "顯示中文釋義，並播放英語發音";
       } else {
         bAudio.className = "flex-1 py-2 px-2 rounded-xl border-2 border-rose-500 bg-rose-500 text-white font-bold text-xs transition shadow-sm";
         bBoth.className = "flex-1 py-2 px-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition hover:border-rose-400";
-        desc.innerText = "隱藏數字，完全靠純聽力作答！";
+        desc.innerText = "隱藏文字，完全靠純英語聽力作答！";
       }
     }
 
@@ -1384,7 +1439,6 @@
       let pool = customList ? [...customList] : [...filteredList];
       if (pool.length === 0) pool = [...RAW_VOCAB];
 
-      // Shuffle pool
       pool.sort(() => Math.random() - 0.5);
 
       const targetCount = Math.min(examConfig.count, pool.length);
@@ -1411,13 +1465,13 @@
       if (examConfig.promptMode === 'audio_only') {
         digitEl.innerHTML = '<span class="text-4xl text-amber-500">🎧 盲聽模式</span>';
       } else {
-        digitEl.innerText = current.num;
+        digitEl.innerText = current.chinese;
+        digitEl.className = current.chinese.length > 4 ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white" : "text-6xl sm:text-7xl font-black font-mono text-slate-900 dark:text-white";
       }
 
       document.getElementById('examInput').value = '';
       document.getElementById('examInput').focus();
 
-      // Auto play audio once
       setTimeout(() => {
         playExamAudio(1.0);
       }, 300);
@@ -1439,18 +1493,19 @@
       const cleanTarget = current.word.toLowerCase();
       const isCorrect = (cleanInput === cleanTarget);
 
-      // Record in examResults
       examResults.push({
         num: current.num,
+        chinese: current.chinese,
         targetWord: current.word,
         inputWord: inputVal,
         isCorrect: isCorrect,
         note: current.note
       });
 
-      // Update userProgress in storage: if wrong, mark weak immediately
-      userProgress[current.num] = isCorrect ? 'mastered' : 'weak';
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      const key = current.word || current.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+      userProgress[key] = isCorrect ? 'mastered' : 'weak';
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
 
       examIndex++;
       if (examIndex < examQuestions.length) {
@@ -1464,13 +1519,16 @@
       const current = examQuestions[examIndex];
       examResults.push({
         num: current.num,
+        chinese: current.chinese,
         targetWord: current.word,
         inputWord: '(未作答)',
         isCorrect: false,
         note: current.note
       });
-      userProgress[current.num] = 'weak';
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+      const key = current.word || current.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+      userProgress[key] = 'weak';
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
 
       examIndex++;
       if (examIndex < examQuestions.length) {
@@ -1494,12 +1552,10 @@
       document.getElementById('examCorrectText').innerText = `${correctCount} / ${total}`;
       document.getElementById('examAccText').innerText = `${score}%`;
 
-      // Reward fish
       addFish(correctCount);
       document.getElementById('examFishEarned').innerText = `+${correctCount} 🐟`;
 
-      // Store weak items for quick retry
-      lastExamWeakItems = examResults.filter(x => !x.isCorrect).map(x => RAW_VOCAB.find(v => v.num === x.num));
+      lastExamWeakItems = examResults.filter(x => !x.isCorrect).map(x => RAW_VOCAB.find(v => (v.word || v.num) === (x.targetWord || x.num)));
       const btnRetryWeak = document.getElementById('btnExamRetryWeak');
       if (lastExamWeakItems.length === 0) {
         btnRetryWeak.classList.add('hidden');
@@ -1508,7 +1564,6 @@
         btnRetryWeak.innerText = `🔥 專攻本次錯題 (${lastExamWeakItems.length} 題)`;
       }
 
-      // Feedback text and cat mood
       const feedbackEl = document.getElementById('examCatFeedback');
       const titleEl = document.getElementById('examResultTitle');
       const emojiEl = document.getElementById('examCatEmoji');
@@ -1521,7 +1576,7 @@
       } else if (score >= 80) {
         emojiEl.innerText = "😸";
         titleEl.innerText = "✨ 優秀！拿到了 " + score + " 分！";
-        feedbackEl.innerText = "表現非常優秀喵！只有幾題小細節（注意連字符號或 forty），國一會考基礎已經很扎實囉！🐾";
+        feedbackEl.innerText = "表現非常優秀喵！只有幾題小細節（注意拼寫或不規則複數），基礎已經很扎實囉！🐾";
         playCatMeowSound();
       } else if (score >= 60) {
         emojiEl.innerText = "😺";
@@ -1530,10 +1585,9 @@
       } else {
         emojiEl.innerText = "😿";
         titleEl.innerText = "得分：" + score + " 分，別氣餒！";
-        feedbackEl.innerText = "數字聽寫本來就需要多練幾次耳朵才會習慣，不要灰心！咪咪陪妳看錯題解析，多聽幾次一定會變強喵～🐾";
+        feedbackEl.innerText = "單字聽寫本來就需要多練幾次耳朵才會習慣，不要灰心！咪咪陪妳看錯題解析，多聽幾次一定會變強喵～🐾";
       }
 
-      // Populate Table Breakdown
       const tbody = document.getElementById('examResultTableBody');
       tbody.innerHTML = '';
       examResults.forEach((r, idx) => {
@@ -1541,7 +1595,7 @@
         tr.className = r.isCorrect ? "bg-emerald-50/50 dark:bg-emerald-950/20" : "bg-rose-50/50 dark:bg-rose-950/20";
         tr.innerHTML = `
           <td class="py-2.5 px-3 text-slate-500">#${idx + 1}</td>
-          <td class="py-2.5 px-3 font-bold text-slate-800 dark:text-slate-100">${r.num}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-800 dark:text-slate-100">${r.chinese || r.num}</td>
           <td class="py-2.5 px-3 ${r.isCorrect ? 'text-emerald-700 dark:text-emerald-300 font-semibold' : 'text-rose-600 dark:text-rose-400 font-bold'}">${r.inputWord || '(空白)'}</td>
           <td class="py-2.5 px-3 font-bold text-slate-900 dark:text-white">
             ${r.targetWord}
@@ -1570,18 +1624,29 @@
       const tbody = document.getElementById('wordTableBody');
       tbody.innerHTML = '';
 
-      sayCatSpeech("這是 1-100 的完整單字簿，妳看每個單字都有貓貓標記的熟練狀態喔！🐾");
+      const theme = THEME_REGISTRY[currentThemeKey];
+      sayCatSpeech(`這是【${theme.name}】的完整單字簿，隨時點擊發音或手動標記熟練度喔！🐾`);
+
+      if (!filteredList || filteredList.length === 0) return;
 
       filteredList.forEach(item => {
-        const status = userProgress[item.num] || 'none';
+        const key = item.word || item.num;
+        const status = userProgress[key] || 'none';
         const tr = document.createElement('tr');
         tr.className = "hover:bg-amber-50/60 dark:hover:bg-slate-800/50 transition";
         
         tr.innerHTML = `
           <td class="py-2.5 px-3 font-mono font-bold text-slate-900 dark:text-white">${item.num}</td>
-          <td class="py-2.5 px-3 font-bold text-rose-600 dark:text-rose-400 font-mono">${item.word}</td>
+          <td class="py-2.5 px-3 font-bold text-rose-600 dark:text-rose-400 font-mono">
+            ${item.word}
+            ${item.pos ? '<span class="text-[10px] text-slate-400 font-sans font-normal ml-1">(' + item.pos + ')</span>' : ''}
+          </td>
           <td class="py-2.5 px-3 font-mono text-slate-500">${item.kk || '-'}</td>
-          <td class="py-2.5 px-3 text-slate-600 dark:text-slate-300">${item.note || '<span class="text-slate-400">標準十位組合</span>'}</td>
+          <td class="py-2.5 px-3 text-slate-700 dark:text-slate-200">
+            <span class="font-bold text-slate-900 dark:text-white mr-1.5">${item.chinese}</span>
+            <span class="text-[11px] text-amber-700 dark:text-amber-400">${item.note ? '・' + item.note : ''}</span>
+            ${item.example ? '<div class="text-[10px] text-slate-400 italic mt-0.5">' + item.example + '</div>' : ''}
+          </td>
           <td class="py-2.5 px-3 text-center">
             <button onclick="playVoiceText('${item.word}')" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-700 transition">
               <i class="fa-solid fa-volume-high"></i>
@@ -1601,18 +1666,15 @@
     }
 
     function resetAllProgress() {
-      if (confirm('確定要清空這 100 個單字的掌握進度與小魚乾嗎？')) {
+      const theme = THEME_REGISTRY[currentThemeKey];
+      if (confirm(`確定要清空【${theme.name}】的掌握進度嗎？`)) {
         userProgress = {};
-        fishCount = 0;
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(FISH_STORAGE_KEY);
-        document.getElementById('fishCount').innerText = '0';
+        localStorage.removeItem(theme.storageKey);
         renderStats();
         renderWordTable();
-        alert('喵！已重置所有紀錄！');
+        alert(`喵！已重置【${theme.name}】的所有紀錄！`);
       }
     }
   </script>
 </body>
 </html>
-
