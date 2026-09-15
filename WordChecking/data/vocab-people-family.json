@@ -1,0 +1,252 @@
+[
+  {
+    "num": 1,
+    "word": "baby",
+    "chinese": "嬰兒",
+    "kk": "[ˋbebɪ]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "複數去 y 加 ies：babies；常見搭配 baby boy / baby girl",
+    "example": "The baby is sleeping peacefully in the crib."
+  },
+  {
+    "num": 2,
+    "word": "boy",
+    "chinese": "男孩",
+    "kk": "[bɔɪ]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "母音+y結尾，複數直接加 s：boys",
+    "example": "The boy likes to play basketball with his friends."
+  },
+  {
+    "num": 3,
+    "word": "girl",
+    "chinese": "女孩",
+    "kk": "[gɝl]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "可數名詞，複數為 girls",
+    "example": "She is a smart and polite junior high school girl."
+  },
+  {
+    "num": 4,
+    "word": "child",
+    "chinese": "小孩",
+    "kk": "[tʃaɪld]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "★會考大重點！不規則複數為 children [ˋtʃɪldrən]，不可寫 childs",
+    "example": "Every child deserves love, care, and a good education."
+  },
+  {
+    "num": 5,
+    "word": "man",
+    "chinese": "男人",
+    "kk": "[mæn]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "★會考常考不規則複數：men [mɛn]，母音 a 轉 e",
+    "example": "That tall man standing by the door is our teacher."
+  },
+  {
+    "num": 6,
+    "word": "woman",
+    "chinese": "女人",
+    "kk": "[ˋwʊmən]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "★會考必考不規則複數：women [ˋwɪmɪn]，注意讀音變化",
+    "example": "She is a kind, wise, and hardworking woman."
+  },
+  {
+    "num": 7,
+    "word": "person",
+    "chinese": "人",
+    "kk": "[ˋpɝsn]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "日常複數通通用 people [ˋpip!]；persons 僅用於正式法律公文",
+    "example": "She is a very responsible and caring person."
+  },
+  {
+    "num": 8,
+    "word": "friend",
+    "chinese": "朋友",
+    "kk": "[frɛnd]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "常見片語：make friends with (和...交朋友)；friendly (adj. 友善的)",
+    "example": "A friend in need is a friend indeed."
+  },
+  {
+    "num": 9,
+    "word": "classmate",
+    "chinese": "同班同學",
+    "kk": "[ˋklæsˌmet]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "複合字：class (班級) + mate (夥伴)，複數加 s",
+    "example": "He is my best classmate in junior high school."
+  },
+  {
+    "num": 10,
+    "word": "neighbor",
+    "chinese": "鄰居",
+    "kk": "[ˋnebɚ]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "可數名詞，美式拼法 neighbor，英式拼法 neighbour",
+    "example": "Our neighbors are very kind and friendly to us."
+  },
+  {
+    "num": 11,
+    "word": "guest",
+    "chinese": "客人、賓客",
+    "kk": "[gɛst]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "可數名詞；常與 be my guest (請便、別客氣) 連用",
+    "example": "We welcomed several guests to our home for dinner."
+  },
+  {
+    "num": 12,
+    "word": "stranger",
+    "chinese": "陌生人",
+    "kk": "[ˋstrendʒɚ]",
+    "pos": "n.",
+    "category": "人物與人際",
+    "note": "源自 strange (奇怪的/陌生的) + er；注意片語 don't talk to strangers",
+    "example": "Never give your private information to a stranger."
+  },
+  {
+    "num": 13,
+    "word": "family",
+    "chinese": "家庭、家人",
+    "kk": "[ˋfæməlɪ]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "指家庭時視為單數；指家人全體成員時常視為複數",
+    "example": "I love spending quality time with my family on weekends."
+  },
+  {
+    "num": 14,
+    "word": "parent",
+    "chinese": "雙親之一",
+    "kk": "[ˋpɛrənt]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "單數指父或母一人；指父母雙方務必用複數 parents",
+    "example": "My parents always encourage me to do my best."
+  },
+  {
+    "num": 15,
+    "word": "father",
+    "chinese": "父親、爸爸",
+    "kk": "[ˋfɑðɚ]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "口語常稱 dad 或 daddy",
+    "example": "My father drives me to school every morning."
+  },
+  {
+    "num": 16,
+    "word": "mother",
+    "chinese": "母親、媽媽",
+    "kk": "[ˋmʌðɚ]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "口語常稱 mom 或 mommy",
+    "example": "My mother makes the most delicious breakfast for us."
+  },
+  {
+    "num": 17,
+    "word": "brother",
+    "chinese": "哥哥、弟弟",
+    "kk": "[ˋbrʌðɚ]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "年長加 elder / older brother；年幼加 younger brother",
+    "example": "My elder brother is studying hard for his exams."
+  },
+  {
+    "num": 18,
+    "word": "sister",
+    "chinese": "姊姊、妹妹",
+    "kk": "[ˋsɪstɚ]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "年長加 elder / older sister；年幼加 younger sister",
+    "example": "I often share secrets and stories with my sister."
+  },
+  {
+    "num": 19,
+    "word": "son",
+    "chinese": "兒子",
+    "kk": "[sʌn]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "與太陽 sun 同音 [sʌn]，注意拼法別搞混",
+    "example": "They are very proud of their kind and polite son."
+  },
+  {
+    "num": 20,
+    "word": "daughter",
+    "chinese": "女兒",
+    "kk": "[ˋdɔtɚ]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "注意 gh 不發音，拼寫常考；複數加 s",
+    "example": "Their daughter is good at English and likes drawing cats."
+  },
+  {
+    "num": 21,
+    "word": "uncle",
+    "chinese": "叔叔、伯父、舅舅",
+    "kk": "[ˋʌŋk!]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "開頭音標為母音 [ʌ]，冠詞要用 an uncle",
+    "example": "My uncle bought me a cute cat notebook yesterday."
+  },
+  {
+    "num": 22,
+    "word": "aunt",
+    "chinese": "姑姑、阿姨、嬸嬸",
+    "kk": "[ænt]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "開頭音標為母音 [æ]，冠詞要用 an aunt",
+    "example": "My aunt is a warm-hearted teacher."
+  },
+  {
+    "num": 23,
+    "word": "cousin",
+    "chinese": "堂表兄弟姊妹",
+    "kk": "[ˋkʌzn]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "英文不分男女與年長年幼，堂或表親皆稱為 cousin",
+    "example": "I will visit my cousins in Tainan this weekend."
+  },
+  {
+    "num": 24,
+    "word": "grandfather",
+    "chinese": "祖父、爺爺、外公",
+    "kk": "[ˋgrændˌfɑðɚ]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "口語常稱 grandpa 或 granddad",
+    "example": "My grandfather tells wonderful stories about his childhood."
+  },
+  {
+    "num": 25,
+    "word": "grandmother",
+    "chinese": "祖母、奶奶、外婆",
+    "kk": "[ˋgrændˌmʌðɚ]",
+    "pos": "n.",
+    "category": "家庭親屬",
+    "note": "口語常稱 grandma 或 granny",
+    "example": "My grandmother grows beautiful flowers in her garden."
+  }
+]
