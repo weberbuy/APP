@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v1.5.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v1.5.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -49,6 +49,7 @@
       border-radius: 9999px;
     }
 
+
     @keyframes catEarWiggle {
       0%, 100% { transform: rotate(0deg); }
       25% { transform: rotate(-6deg); }
@@ -57,6 +58,7 @@
     .cat-ear-wiggle {
       animation: catEarWiggle 2.5s ease-in-out infinite;
     }
+
 
     @keyframes tailWag {
       0%, 100% { transform: rotate(0deg); }
@@ -69,6 +71,7 @@
   </style>
 </head>
 <body class="bg-amber-50/40 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
 
   <!-- Navigation Bar -->
   <header class="sticky top-0 z-40 bg-white/85 dark:bg-slate-800/85 backdrop-blur border-b border-amber-200/70 dark:border-slate-700 shadow-sm">
@@ -85,11 +88,12 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.5.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.5.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
       </div>
+
 
       <!-- Actions: Fish Counter, Theme toggle & Back -->
       <div class="flex items-center space-x-2">
@@ -99,6 +103,7 @@
           <span id="piSyncText" class="hidden sm:inline">未設定同步</span>
         </button>
 
+
         <!-- Cat Treat (Fish) Counter -->
         <div class="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-100/80 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800/60 rounded-xl text-amber-800 dark:text-amber-300 text-xs font-bold shadow-sm" title="已獲得的小魚乾獎勵">
           <span class="text-base">🐟</span>
@@ -106,14 +111,17 @@
           <span class="text-[10px] text-amber-600 dark:text-amber-400 font-normal">魚乾</span>
         </div>
 
+
         <button id="catSoundToggle" onclick="toggleCatSound()" class="p-2 rounded-xl text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-slate-700 transition" title="開關貓咪叫聲提示音">
           <i class="fa-solid fa-bell text-base" id="soundIcon"></i>
         </button>
+
 
         <button id="themeToggle" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="切換深色/淺色">
           <i class="fa-solid fa-moon dark:hidden text-lg"></i>
           <i class="fa-solid fa-sun hidden dark:inline text-lg text-amber-400"></i>
         </button>
+
 
         <button onclick="window.history.length > 1 ? window.history.back() : window.location.href='index.html'" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition flex items-center space-x-1">
           <i class="fa-solid fa-house text-xs"></i>
@@ -123,14 +131,17 @@
     </div>
   </header>
 
+
   <!-- Main Container -->
   <main class="max-w-5xl mx-auto px-4 py-5 space-y-5">
+
 
     <!-- Interactive Cat Mascot Card -->
     <section class="bg-gradient-to-r from-amber-100/90 via-rose-50 to-pink-100/70 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800/90 rounded-3xl p-4 sm:p-5 border border-amber-200/80 dark:border-slate-700 shadow-sm relative overflow-hidden">
       <!-- Decorative Background Paws -->
       <div class="absolute -right-4 -bottom-4 text-amber-200/40 dark:text-slate-700/30 text-8xl pointer-events-none select-none">🐾</div>
       <div class="absolute right-24 top-2 text-rose-200/30 dark:text-slate-700/20 text-5xl pointer-events-none select-none">🐾</div>
+
 
       <div class="flex items-center space-x-4 relative z-10">
         <!-- Animated Cat Avatar -->
@@ -167,6 +178,7 @@
           <span class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold mt-1 block">摸摸咪咪 🐾</span>
         </div>
 
+
         <!-- Dialogue Bubble -->
         <div class="flex-1">
           <div class="bg-white/95 dark:bg-slate-700/90 rounded-2xl p-3 sm:p-4 shadow-sm border border-amber-200/80 dark:border-slate-600 relative">
@@ -179,6 +191,7 @@
         </div>
       </div>
     </section>
+
 
     <!-- Progress & Overview Banner -->
     <section class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -213,6 +226,7 @@
         </div>
       </div>
 
+
       <!-- Progress bar with Cat Marker -->
       <div>
         <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
@@ -228,6 +242,7 @@
         </div>
       </div>
     </section>
+
 
     <!-- Scope Filter & Mode Selection -->
     <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
@@ -260,6 +275,7 @@
         </button>
       </div>
 
+
       <!-- Theme & Scope Selectors -->
       <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
         <!-- Theme Unit Dropdown -->
@@ -274,6 +290,7 @@
           </select>
         </div>
 
+
         <!-- Sub-Scope Dropdown -->
         <div class="flex items-center space-x-1.5 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
           <label for="scopeFilter" class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">範圍：</label>
@@ -284,6 +301,7 @@
         </div>
       </div>
     </div>
+
 
     <!-- ==================== MODE 1: FLASHCARDS ==================== -->
     <section id="modeCard" class="space-y-4">
@@ -304,6 +322,7 @@
               </div>
             </div>
 
+
             <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/60">
               <span class="text-xs text-slate-400">提示：正面阿拉伯數字</span>
               <button onclick="event.stopPropagation(); playVoiceCurrent()" class="p-2.5 rounded-full hover:bg-rose-50 dark:hover:bg-slate-700 text-rose-500 transition">
@@ -311,6 +330,7 @@
               </button>
             </div>
           </div>
+
 
           <!-- Back Face -->
           <div id="cardBack" class="absolute inset-0 backface-hidden rotate-y-180 p-6 flex flex-col justify-between bg-gradient-to-b from-rose-50/50 via-white to-amber-50/40 dark:from-slate-800 dark:to-slate-800 rounded-3xl border-2 border-rose-300 dark:border-rose-500">
@@ -321,6 +341,7 @@
               </span>
               <span class="font-mono text-xs font-bold text-amber-600" id="cardBackDigit">#1</span>
             </div>
+
 
             <div class="text-center my-auto">
               <div class="text-4xl sm:text-5xl font-extrabold text-rose-600 dark:text-rose-400 tracking-wide" id="cardEnglish">one</div>
@@ -335,6 +356,7 @@
               </div>
             </div>
 
+
             <div class="flex items-center justify-center space-x-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
               <button onclick="event.stopPropagation(); playVoiceCurrent(0.8)" class="text-xs text-slate-600 dark:text-slate-300 hover:text-rose-600 flex items-center space-x-1 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-xl">
                 <i class="fa-solid fa-play text-[10px]"></i>
@@ -347,8 +369,10 @@
             </div>
           </div>
 
+
         </div>
       </div>
+
 
       <!-- Action Buttons with Cat Accents -->
       <div class="flex items-center justify-center space-x-4 max-w-lg mx-auto">
@@ -361,6 +385,7 @@
           <span>已記住 (+1 魚乾)</span>
         </button>
       </div>
+
 
       <!-- Nav navigation -->
       <div class="flex items-center justify-center space-x-6 text-sm text-slate-500 dark:text-slate-400">
@@ -376,6 +401,7 @@
       </div>
     </section>
 
+
     <!-- ==================== MODE 2: QUIZ ==================== -->
     <section id="modeQuiz" class="hidden max-w-xl mx-auto space-y-5">
       <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border-2 border-amber-200/80 dark:border-slate-700 shadow-md">
@@ -384,6 +410,7 @@
           <span class="px-3 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold">🐾 四選一測驗</span>
           <span id="quizScoreText">第 1 題</span>
         </div>
+
 
         <div class="text-center py-5">
           <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">請問這個數字的正確英文拼法是？</div>
@@ -394,7 +421,9 @@
           </button>
         </div>
 
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" id="quizOptionsContainer"></div>
+
 
         <div id="quizFeedback" class="hidden mt-5 p-4 rounded-2xl text-sm transition">
           <div class="flex items-start space-x-3">
@@ -409,8 +438,10 @@
           </button>
         </div>
 
+
       </div>
     </section>
+
 
     <!-- ==================== MODE 3: SPELLING ==================== -->
     <section id="modeSpelling" class="hidden max-w-xl mx-auto space-y-5">
@@ -419,6 +450,7 @@
           <span class="px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 font-bold">🐾 拼字練習</span>
           <span id="spellCounter">第 1 題</span>
         </div>
+
 
         <div class="text-center py-4">
           <div class="text-xs text-slate-400">請拼寫出這個數字的英文：</div>
@@ -436,6 +468,7 @@
           <div id="spellHintBox" class="hidden text-xs text-slate-400 tracking-widest font-mono mt-2 bg-slate-50 dark:bg-slate-700/50 py-1.5 px-3 rounded-lg inline-block"></div>
         </div>
 
+
         <form onsubmit="checkSpelling(event)" class="space-y-4">
           <div>
             <input type="text" id="spellInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="在此輸入英文單字 (例如: twelve)..." class="w-full text-center font-mono text-xl py-3 px-4 rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-300 transition">
@@ -444,6 +477,7 @@
             檢查答案 🐾
           </button>
         </form>
+
 
         <div id="spellFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm">
           <div class="flex items-start space-x-3">
@@ -458,8 +492,10 @@
           </button>
         </div>
 
+
       </div>
     </section>
+
 
     <!-- ==================== MODE 4: SPEAKING ==================== -->
     <section id="modeSpeaking" class="hidden max-w-xl mx-auto space-y-5">
@@ -469,11 +505,13 @@
           <span id="speakCounter">第 1 題</span>
         </div>
 
+
         <div class="text-center py-4">
           <div class="text-xs text-slate-400">請跟著咪咪唸出這個數字的英文：</div>
           <div class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2 mb-1" id="speakEnglish">fourteen</div>
           <div class="text-sm font-mono text-slate-400" id="speakPhonetic">[ˋforˋtin]</div>
           <div class="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">數字：<span id="speakDigit">14</span></div>
+
 
           <div class="mt-4 flex justify-center space-x-3">
             <button onclick="playVoiceText(currentSpeakItem.word)" class="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-xs text-slate-600 dark:text-slate-300 flex items-center space-x-1.5 shadow-sm">
@@ -483,12 +521,14 @@
           </div>
         </div>
 
+
         <div class="flex flex-col items-center justify-center my-6">
           <button id="micBtn" onclick="toggleSpeechRecognition()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95">
             <i class="fa-solid fa-microphone text-2xl" id="micIcon"></i>
           </button>
           <div class="text-xs text-slate-500 dark:text-slate-400 mt-3" id="micStatus">點擊麥克風後說出英文單字給咪咪聽 🐾</div>
         </div>
+
 
         <div id="speakFeedback" class="hidden p-4 rounded-2xl text-sm border">
           <div class="flex items-start space-x-3">
@@ -503,8 +543,10 @@
           </button>
         </div>
 
+
       </div>
     </section>
+
 
     <!-- ==================== MODE 5: MOCK EXAM (NEW!) ==================== -->
     <section id="modeExam" class="hidden max-w-2xl mx-auto space-y-5">
@@ -518,6 +560,7 @@
           <h2 class="text-2xl font-black text-slate-900 dark:text-white">數字聽寫模擬考</h2>
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">聽取發音並拼寫出單字，測驗結束即刻出分與錯題解析 🐾</p>
         </div>
+
 
         <!-- Exam Options Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-lg mx-auto">
@@ -537,6 +580,7 @@
             <p class="text-[11px] text-slate-400 mt-2" id="examScoreRateText">每題 10 分，滿分 100 分</p>
           </div>
 
+
           <!-- Prompt Mode -->
           <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-700/50 border border-amber-200/80 dark:border-slate-600">
             <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">
@@ -554,11 +598,13 @@
           </div>
         </div>
 
+
         <button onclick="startExamSession()" class="w-full max-w-md mx-auto py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-pink-500 text-white font-black text-base shadow-lg shadow-rose-500/25 hover:opacity-95 transform active:scale-98 transition flex items-center justify-center space-x-2">
           <span>開始模擬測驗</span>
           <span>🐾</span>
         </button>
       </div>
+
 
       <!-- 2. Exam Running View -->
       <div id="examRunningBox" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700/60 shadow-lg space-y-5">
@@ -572,6 +618,7 @@
           <div id="examRunningProgressBar" class="bg-gradient-to-r from-amber-500 to-rose-500 h-full transition-all duration-300" style="width: 10%"></div>
         </div>
 
+
         <!-- Question Area -->
         <div class="text-center py-5 space-y-4">
           <div class="text-xs text-slate-400">🎧 請聽發音並輸入英文單字拼寫：</div>
@@ -579,6 +626,7 @@
           <div id="examDigitDisplay" class="text-6xl sm:text-7xl font-black font-mono text-slate-900 dark:text-white">
             15
           </div>
+
 
           <!-- Audio Player Buttons -->
           <div class="flex items-center justify-center space-x-3 pt-2">
@@ -592,6 +640,7 @@
             </button>
           </div>
         </div>
+
 
         <!-- Input Form -->
         <form onsubmit="submitExamAnswer(event)" class="space-y-4 max-w-md mx-auto">
@@ -609,7 +658,9 @@
           </div>
         </form>
 
+
       </div>
+
 
       <!-- 3. Exam Result View (Report Card) -->
       <div id="examResultBox" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border-2 border-rose-300 dark:border-rose-700/60 shadow-xl space-y-6">
@@ -627,6 +678,7 @@
             <div class="text-xs font-bold text-slate-400 mt-1">滿分 100 分</div>
           </div>
 
+
           <!-- Score Metrics -->
           <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto text-center py-2">
             <div class="bg-slate-50 dark:bg-slate-700/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700">
@@ -643,11 +695,13 @@
             </div>
           </div>
 
+
           <!-- Cat Comment -->
           <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-slate-700 border border-amber-200 dark:border-slate-600 text-xs text-amber-900 dark:text-amber-200 max-w-md mx-auto text-left" id="examCatFeedback">
             喵嗚！太厲害了～這次測驗表現超好，咪咪送妳滿滿的魚乾獎勵！🐾
           </div>
         </div>
+
 
         <!-- Detailed Breakdown Table -->
         <div>
@@ -673,6 +727,7 @@
           </div>
         </div>
 
+
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-3 pt-2">
           <button onclick="retryExamSameScope()" class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-bold shadow transition text-center">
@@ -686,9 +741,12 @@
           </button>
         </div>
 
+
       </div>
 
+
     </section>
+
 
     <!-- ==================== MODE 6: WORD LIST ==================== -->
     <section id="modeList" class="hidden space-y-4">
@@ -706,6 +764,7 @@
             </button>
           </div>
         </div>
+
 
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm border-collapse">
@@ -727,6 +786,7 @@
       </div>
     </section>
 
+
     <!-- ==================== PI SETTINGS & MULTI-USER SYNC MODAL ==================== -->
     <div id="piSettingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="handleModalBackdropClick(event)">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
@@ -744,6 +804,7 @@
           <button onclick="closePiSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">✕</button>
         </div>
 
+
         <!-- Section 1: Server Connection Parameters -->
         <div class="space-y-3 bg-slate-50 dark:bg-slate-700/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-600">
           <div class="flex items-center justify-between">
@@ -753,11 +814,13 @@
             <span class="text-[10px] text-slate-400">多裝置通用</span>
           </div>
 
+
           <div class="space-y-2.5">
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">樹莓派伺服器網址 (URL)：</label>
               <input type="text" id="piServerUrlInput" placeholder="例如: https://pi.domain.com 或 http://192.168.1.100:3000" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
             </div>
+
 
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">使用者帳號 (Account)：</label>
@@ -765,35 +828,37 @@
               <p class="text-[10px] text-slate-400 mt-1">💡 備份檔將命名為 <code class="font-mono text-amber-600 dark:text-amber-400">WC-...-[帳號].json</code>，實現多帳號隔離儲存</p>
             </div>
 
+
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">API 金鑰 (x-api-key)：</label>
               <input type="password" id="piApiKeyInput" placeholder="請輸入 API_KEY 密碼" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
             </div>
           </div>
 
+
           <button onclick="savePiSettings()" class="w-full py-2 bg-slate-800 dark:bg-slate-600 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm">
             儲存連線設定 🐾
           </button>
         </div>
 
+
         <!-- Section 2: Pi Cloud Sync Actions -->
         <div class="bg-emerald-50/70 dark:bg-emerald-950/30 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/40 space-y-2.5">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-              <span>☁️ 樹莓派雲端同步</span>
+              <span>☁️ 樹莓派雲端同步（已啟用自動同步）</span>
             </span>
-            <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">多裝置無縫切換</span>
+            <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">全自動雙向同步</span>
           </div>
           <p class="text-[11px] text-emerald-800 dark:text-emerald-300 leading-relaxed">
-            手動上傳當前帳號的最新學習進度、錯題與小魚乾，或從伺服器拉取最新進度：
+            💡 系統已啟用<b>全自動雙向同步</b>：做完練習或獲得小魚乾 2 秒後自動靜默備份至樹莓派；重新開啟網頁或切換回分頁時自動同步最新進度。您亦可隨時使用下方按鈕手動強制同步：
           </p>
-
           <div class="grid grid-cols-2 gap-2 pt-1">
             <button onclick="exportToPi()" class="w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-3 rounded-xl font-bold transition shadow-sm flex items-center justify-center gap-1.5">
-              <span>☁️ 上傳至樹莓派</span>
+              <span>☁️ 手動上傳備份</span>
             </button>
             <button onclick="importFromPi()" class="w-full text-xs bg-teal-600 hover:bg-teal-700 text-white py-2.5 px-3 rounded-xl font-bold transition shadow-sm flex items-center justify-center gap-1.5">
-              <span>🔄 從樹莓派同步</span>
+              <span>🔄 手動從樹莓派拉取</span>
             </button>
           </div>
         </div>
@@ -815,15 +880,18 @@
           </div>
         </div>
 
+
         <div class="flex justify-end pt-1">
           <button onclick="closePiSettingsModal()" class="px-5 py-2 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl font-bold transition">
             關閉視窗
           </button>
         </div>
 
+
       </div>
     </div>
   </main>
+
 
   <!-- Data & Logic script -->
   <script>
@@ -861,6 +929,7 @@
       }
     };
 
+
     // State
     let currentThemeKey = 'numbers';
     let RAW_VOCAB = [];
@@ -870,17 +939,21 @@
     let cardFlipped = false;
     let catSoundEnabled = true;
 
+
     // Quiz State
     let currentQuizItem = null;
     let quizStats = { total: 0, correct: 0 };
 
+
     // Spelling State
     let currentSpellItem = null;
+
 
     // Speaking State
     let currentSpeakItem = null;
     let isRecording = false;
     let recognition = null;
+
 
     // Exam State
     let examConfig = {
@@ -892,6 +965,7 @@
     let examResults = [];
     let lastExamWeakItems = [];
 
+
     // Cat Dialogues
     const CAT_SPEECHES = [
       "喵～今天也要一起把單字全部背熟喔！🐾",
@@ -902,10 +976,12 @@
       "試試看聽寫模考！看妳 10 題或 20 題能拿幾分喵～🐾"
     ];
 
+
     // Storage keys
     const FISH_STORAGE_KEY = 'wordchecking_fish_count_v1';
     let userProgress = {};
     let fishCount = parseInt(localStorage.getItem(FISH_STORAGE_KEY) || '0', 10);
+
 
     // Audio Synth for Cat Meow
     let audioCtx = null;
@@ -922,9 +998,11 @@
         osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
         osc.frequency.exponentialRampToValueAtTime(620, now + 0.35);
 
+
         gain.gain.setValueAtTime(0.01, now);
         gain.gain.linearRampToValueAtTime(0.18, now + 0.08);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -934,6 +1012,7 @@
         console.log("Audio not allowed yet:", e);
       }
     }
+
 
     function toggleCatSound() {
       catSoundEnabled = !catSoundEnabled;
@@ -948,11 +1027,14 @@
       }
     }
 
+
     function addFish(amount = 1) {
       fishCount += amount;
       localStorage.setItem(FISH_STORAGE_KEY, fishCount);
       document.getElementById('fishCount').innerText = fishCount;
+      triggerAutoSaveToPi();
     }
+
 
     function petTheCat() {
       playCatMeowSound();
@@ -970,16 +1052,19 @@
       }
     }
 
+
     function sayCatSpeech(text, mood = "活力滿滿") {
       document.getElementById('catSpeech').innerText = text;
       document.getElementById('catMood').innerText = mood;
     }
+
 
     // ==================== THEME MANAGEMENT ====================
     function onThemeChange() {
       currentThemeKey = document.getElementById('themeSelect').value;
       loadThemeData(currentThemeKey);
     }
+
 
     function updateScopeDropdown(themeObj) {
       const scopeSel = document.getElementById('scopeFilter');
@@ -994,15 +1079,19 @@
       scopeSel.value = 'all';
     }
 
+
     async function loadThemeData(themeKey) {
       const theme = THEME_REGISTRY[themeKey];
       if (!theme) return;
 
+
       sayCatSpeech(`喵～正在載入【${theme.name}】資料庫...🐾`, "準備中");
       updateScopeDropdown(theme);
 
+
       // Load user progress for this theme
       userProgress = JSON.parse(localStorage.getItem(theme.storageKey) || '{}');
+
 
       try {
         let res = await fetch(theme.url);
@@ -1024,6 +1113,7 @@
         }
       }
 
+
       if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
         sayCatSpeech(`喵嗚！【${theme.name}】單字庫載入受限 (本機直接雙擊 file:// 可能被瀏覽器安全性阻擋 fetch，建議用 Web Server 或 GitHub Pages 開啟喔) 🐾`, "提醒");
         RAW_VOCAB = [];
@@ -1031,10 +1121,12 @@
         sayCatSpeech(theme.catIntro, "元氣滿滿");
       }
 
+
       currentIndex = 0;
       updateFilteredList();
       renderCurrentCard();
       renderStats();
+
 
       // Refresh active mode view
       const activeMode = getActiveMode();
@@ -1045,6 +1137,7 @@
       if (activeMode === 'list') renderWordTable();
     }
 
+
     // Init App
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
@@ -1052,6 +1145,8 @@
       initSpeechRecognition();
       initPiSyncUI();
       loadThemeData(currentThemeKey);
+      checkAndAutoSyncFromPi(true);
+
 
       // Keyboard shortcuts for Flashcard
       document.addEventListener('keydown', (e) => {
@@ -1069,6 +1164,7 @@
       });
     });
 
+
     function getActiveMode() {
       if (!document.getElementById('modeCard').classList.contains('hidden')) return 'card';
       if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
@@ -1077,6 +1173,7 @@
       if (!document.getElementById('modeExam').classList.contains('hidden')) return 'exam';
       return 'list';
     }
+
 
     function initTheme() {
       const isDark = localStorage.getItem('theme') === 'dark' || 
@@ -1087,12 +1184,14 @@
         document.documentElement.classList.remove('dark');
       }
 
+
       document.getElementById('themeToggle').addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
         const darkActive = document.documentElement.classList.contains('dark');
         localStorage.setItem('theme', darkActive ? 'dark' : 'light');
       });
     }
+
 
     function onScopeChange() {
       currentScope = document.getElementById('scopeFilter').value;
@@ -1105,11 +1204,13 @@
       if (getActiveMode() === 'list') renderWordTable();
     }
 
+
     function updateFilteredList() {
       if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
         filteredList = [];
         return;
       }
+
 
       if (currentScope === 'all') {
         filteredList = [...RAW_VOCAB];
@@ -1140,10 +1241,12 @@
       }
     }
 
+
     function renderStats() {
       let mastered = 0;
       let weak = 0;
       const total = RAW_VOCAB.length;
+
 
       RAW_VOCAB.forEach(item => {
         const key = item.word || item.num;
@@ -1151,20 +1254,24 @@
         else if (userProgress[key] === 'weak') weak++;
       });
 
+
       document.getElementById('statTotal').innerText = total;
       document.getElementById('statMastered').innerText = mastered;
       document.getElementById('statWeak').innerText = weak;
+
 
       const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
       document.getElementById('progressText').innerText = `${pct}% (${mastered}/${total})`;
       document.getElementById('progressBarMastered').style.width = total > 0 ? `${(mastered / total) * 100}%` : '0%';
       document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
 
+
       const catFavor = document.getElementById('catFavorText');
       if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
       else if (pct < 50) catFavor.innerText = "（友善踏踏貓 🐱）";
       else if (pct < 80) catFavor.innerText = "（默契好學伴 ✨）";
       else catFavor.innerText = "（滿分神喵喵 👑）";
+
 
       if (quizStats.total > 0) {
         const acc = Math.round((quizStats.correct / quizStats.total) * 100);
@@ -1174,6 +1281,7 @@
       }
     }
 
+
     // Flashcard Rendering
     function renderCurrentCard() {
       if (!filteredList || filteredList.length === 0) return;
@@ -1181,6 +1289,7 @@
       
       cardFlipped = false;
       document.getElementById('flashcardInner').classList.remove('rotate-y-180');
+
 
       document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
       document.getElementById('cardCategory').innerText = item.category || '核心單字';
@@ -1191,10 +1300,12 @@
         ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight" 
         : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
 
+
       document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${item.category || '核心單字'}</span>`;
       document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
       document.getElementById('cardEnglish').innerText = item.word;
       document.getElementById('cardPhonetic').innerText = item.kk || '';
+
 
       const noteBox = document.getElementById('cardNoteBox');
       if (item.note) {
@@ -1204,6 +1315,7 @@
         noteBox.classList.add('hidden');
       }
 
+
       const exampleBox = document.getElementById('cardExampleBox');
       if (item.example) {
         exampleBox.classList.remove('hidden');
@@ -1212,6 +1324,7 @@
         exampleBox.classList.add('hidden');
       }
     }
+
 
     function flipCard() {
       cardFlipped = !cardFlipped;
@@ -1225,6 +1338,7 @@
       }
     }
 
+
     function nextCard() {
       if (currentIndex < filteredList.length - 1) {
         currentIndex++;
@@ -1233,6 +1347,7 @@
       }
       renderCurrentCard();
     }
+
 
     function prevCard() {
       if (currentIndex > 0) {
@@ -1243,11 +1358,13 @@
       renderCurrentCard();
     }
 
+
     function markCurrent(isMastered) {
       if (!filteredList || filteredList.length === 0) return;
       const item = filteredList[currentIndex];
       const key = item.word || item.num;
       const theme = THEME_REGISTRY[currentThemeKey];
+
 
       userProgress[key] = isMastered ? 'mastered' : 'weak';
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
@@ -1260,8 +1377,10 @@
         sayCatSpeech(`沒關係！貓貓幫妳把 "${item.word}" 記在待加強名單，等等多看兩眼喵～🐾`, "貼心鼓勵");
       }
       renderStats();
+      triggerAutoSaveToPi();
       nextCard();
     }
+
 
     // Text to Speech
     function playVoiceText(text, rate = 1.0) {
@@ -1274,11 +1393,13 @@
       }
     }
 
+
     function playVoiceCurrent(rate = 1.0) {
       if (filteredList && filteredList[currentIndex]) {
         playVoiceText(filteredList[currentIndex].word, rate);
       }
     }
+
 
     // Mode Switching
     function switchMode(mode) {
@@ -1295,6 +1416,7 @@
         }
       });
 
+
       if (mode === 'card') sayCatSpeech("翻翻卡片模式：看中文想英文，翻面看拼寫與例句喔！🐾");
       if (mode === 'quiz') startNewQuiz();
       if (mode === 'spelling') startNewSpelling();
@@ -1303,16 +1425,20 @@
       if (mode === 'list') renderWordTable();
     }
 
+
     function capitalize(s) {
       return s.charAt(0).toUpperCase() + s.slice(1);
     }
+
 
     // ==================== QUIZ LOGIC ====================
     function startNewQuiz() {
       document.getElementById('quizFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
 
+
       sayCatSpeech("四選一測驗！找出最正確的英文單字，別掉進易錯陷阱喵～🐾");
+
 
       const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
       if (weakItems.length > 0 && Math.random() < 0.6) {
@@ -1321,21 +1447,26 @@
         currentQuizItem = filteredList[Math.floor(Math.random() * filteredList.length)];
       }
 
+
       const qEl = document.getElementById('quizQuestionDigit');
       qEl.innerText = currentQuizItem.chinese;
       qEl.className = currentQuizItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white" : "text-6xl font-black text-slate-900 dark:text-white font-mono";
       document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
 
+
       let options = [currentQuizItem];
       let distractors = RAW_VOCAB.filter(x => x.word !== currentQuizItem.word);
       distractors.sort(() => Math.random() - 0.5);
+
 
       for (let d of distractors) {
         if (options.length >= 4) break;
         if (!options.some(o => o.word === d.word)) options.push(d);
       }
 
+
       options.sort(() => Math.random() - 0.5);
+
 
       const container = document.getElementById('quizOptionsContainer');
       container.innerHTML = '';
@@ -1348,16 +1479,22 @@
       });
     }
 
+
     function checkQuizAnswer(selectedOpt, btnElement) {
       const isCorrect = selectedOpt.word === currentQuizItem.word;
       quizStats.total++;
       if (isCorrect) quizStats.correct++;
+
 
       const key = currentQuizItem.word || currentQuizItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
       userProgress[key] = isCorrect ? 'mastered' : 'weak';
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
+      triggerAutoSaveToPi();
+      triggerAutoSaveToPi();
+      triggerAutoSaveToPi();
+
 
       const container = document.getElementById('quizOptionsContainer');
       Array.from(container.children).forEach(b => {
@@ -1368,6 +1505,7 @@
           b.className = "p-4 text-center rounded-2xl border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 font-bold";
         }
       });
+
 
       const feedback = document.getElementById('quizFeedback');
       feedback.classList.remove('hidden');
@@ -1389,9 +1527,11 @@
       }
     }
 
+
     function nextQuizQuestion() {
       startNewQuiz();
     }
+
 
     // ==================== SPELLING LOGIC ====================
     function startNewSpelling() {
@@ -1401,7 +1541,9 @@
       document.getElementById('spellInput').disabled = false;
       document.getElementById('spellInput').focus();
 
+
       sayCatSpeech("拼字挑戰：輸入完整的英文單字，字母要拼精準喔！🐾");
+
 
       if (!filteredList || filteredList.length === 0) return;
       currentSpellItem = filteredList[Math.floor(Math.random() * filteredList.length)];
@@ -1410,6 +1552,7 @@
       sEl.innerText = currentSpellItem.chinese;
       sEl.className = currentSpellItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white my-3" : "text-6xl font-black text-slate-900 dark:text-white font-mono my-3";
     }
+
 
     function toggleSpellHint() {
       const hintBox = document.getElementById('spellHintBox');
@@ -1421,6 +1564,7 @@
       }
     }
 
+
     function checkSpelling(e) {
       e.preventDefault();
       const inputVal = document.getElementById('spellInput').value.trim().toLowerCase();
@@ -1429,14 +1573,17 @@
       const isCorrect = (inputVal === target);
       document.getElementById('spellInput').disabled = true;
 
+
       const key = currentSpellItem.word || currentSpellItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
       userProgress[key] = isCorrect ? 'mastered' : 'weak';
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
 
+
       const feedback = document.getElementById('spellFeedback');
       feedback.classList.remove('hidden');
+
 
       if (isCorrect) {
         addFish();
@@ -1456,9 +1603,11 @@
       }
     }
 
+
     function nextSpellQuestion() {
       startNewSpelling();
     }
+
 
     // ==================== SPEAKING LOGIC ====================
     function initSpeechRecognition() {
@@ -1469,6 +1618,7 @@
         recognition.interimResults = false;
         recognition.maxAlternatives = 3;
 
+
         recognition.onstart = () => {
           isRecording = true;
           document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/40 transition animate-pulse";
@@ -1476,15 +1626,18 @@
           sayCatSpeech("我在聽喔！請大聲清晰唸出來喵～👂");
         };
 
+
         recognition.onresult = (event) => {
           const transcript = event.results[0][0].transcript.trim().toLowerCase();
           handleSpeechResult(transcript);
         };
 
+
         recognition.onerror = (event) => {
           stopRecordingUI();
           document.getElementById('micStatus').innerText = "咪咪沒聽清楚，再點一次麥克風試試看喵～";
         };
+
 
         recognition.onend = () => {
           stopRecordingUI();
@@ -1494,10 +1647,12 @@
       }
     }
 
+
     function stopRecordingUI() {
       isRecording = false;
       document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95";
     }
+
 
     function toggleSpeechRecognition() {
       if (!recognition) {
@@ -1511,10 +1666,12 @@
       }
     }
 
+
     function startNewSpeaking() {
       document.getElementById('speakFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
       currentSpeakItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+
 
       document.getElementById('speakEnglish').innerText = currentSpeakItem.word;
       document.getElementById('speakPhonetic').innerText = currentSpeakItem.kk || '';
@@ -1523,17 +1680,21 @@
       sayCatSpeech(`來跟著我練習唸 "${currentSpeakItem.word}"，按下麥克風開口吧！🐾`);
     }
 
+
     function handleSpeechResult(spokenText) {
       const target = currentSpeakItem.word.toLowerCase().replace(/-/g, ' ');
       const cleanSpoken = spokenText.toLowerCase().replace(/-/g, ' ');
       
       const isMatch = (cleanSpoken === target || cleanSpoken === String(currentSpeakItem.num));
 
+
       const feedback = document.getElementById('speakFeedback');
       feedback.classList.remove('hidden');
 
+
       const key = currentSpeakItem.word || currentSpeakItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
+
 
       if (isMatch) {
         userProgress[key] = 'mastered';
@@ -1553,13 +1714,16 @@
         sayCatSpeech(`放慢速度再唸一次看看，咪咪相信妳可以唸得很好的喵～🐾`);
       }
 
+
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
     }
 
+
     function nextSpeakQuestion() {
       startNewSpeaking();
     }
+
 
     // ==================== MOCK EXAM LOGIC ====================
     function initExamSetup() {
@@ -1569,6 +1733,7 @@
       const theme = THEME_REGISTRY[currentThemeKey];
       sayCatSpeech(`歡迎來到【${theme.name}】聽寫模擬考！選擇 10 題或 20 題，來看看能拿幾分喵～🐾`, "認真監考");
     }
+
 
     function setExamQuestionCount(cnt) {
       examConfig.count = cnt;
@@ -1586,6 +1751,7 @@
       }
     }
 
+
     function setExamPromptMode(mode) {
       examConfig.promptMode = mode;
       const bBoth = document.getElementById('btnPromptBoth');
@@ -1602,31 +1768,39 @@
       }
     }
 
+
     function startExamSession(customList = null) {
       let pool = customList ? [...customList] : [...filteredList];
       if (pool.length === 0) pool = [...RAW_VOCAB];
 
+
       pool.sort(() => Math.random() - 0.5);
+
 
       const targetCount = Math.min(examConfig.count, pool.length);
       examQuestions = pool.slice(0, targetCount);
       examIndex = 0;
       examResults = [];
 
+
       document.getElementById('examSetupBox').classList.add('hidden');
       document.getElementById('examResultBox').classList.add('hidden');
       document.getElementById('examRunningBox').classList.remove('hidden');
 
+
       loadExamQuestion();
     }
+
 
     function loadExamQuestion() {
       const current = examQuestions[examIndex];
       const total = examQuestions.length;
 
+
       document.getElementById('examProgressBadge').innerText = `第 ${examIndex + 1} / ${total} 題`;
       document.getElementById('examRemainText').innerText = `剩餘 ${total - (examIndex + 1)} 題`;
       document.getElementById('examRunningProgressBar').style.width = `${((examIndex + 1) / total) * 100}%`;
+
 
       const digitEl = document.getElementById('examDigitDisplay');
       if (examConfig.promptMode === 'audio_only') {
@@ -1636,20 +1810,25 @@
         digitEl.className = current.chinese.length > 4 ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white" : "text-6xl sm:text-7xl font-black font-mono text-slate-900 dark:text-white";
       }
 
+
       document.getElementById('examInput').value = '';
       document.getElementById('examInput').focus();
+
 
       setTimeout(() => {
         playExamAudio(1.0);
       }, 300);
 
+
       sayCatSpeech(`第 ${examIndex + 1} 題聽寫！仔細聽發音拼寫出來喵～🐾`, "監考計時");
     }
+
 
     function playExamAudio(rate = 1.0) {
       const current = examQuestions[examIndex];
       if (current) playVoiceText(current.word, rate);
     }
+
 
     function submitExamAnswer(e) {
       if (e) e.preventDefault();
@@ -1660,6 +1839,7 @@
       const cleanTarget = current.word.toLowerCase();
       const isCorrect = (cleanInput === cleanTarget);
 
+
       examResults.push({
         num: current.num,
         chinese: current.chinese,
@@ -1669,10 +1849,12 @@
         note: current.note
       });
 
+
       const key = current.word || current.num;
       const theme = THEME_REGISTRY[currentThemeKey];
       userProgress[key] = isCorrect ? 'mastered' : 'weak';
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
+
 
       examIndex++;
       if (examIndex < examQuestions.length) {
@@ -1681,6 +1863,7 @@
         finishExam();
       }
     }
+
 
     function skipExamQuestion() {
       const current = examQuestions[examIndex];
@@ -1696,6 +1879,8 @@
       const theme = THEME_REGISTRY[currentThemeKey];
       userProgress[key] = 'weak';
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
+      triggerAutoSaveToPi();
+
 
       examIndex++;
       if (examIndex < examQuestions.length) {
@@ -1705,22 +1890,28 @@
       }
     }
 
+
     function finishExam() {
       document.getElementById('examRunningBox').classList.add('hidden');
       document.getElementById('examResultBox').classList.remove('hidden');
 
+
       renderStats();
+
 
       const total = examResults.length;
       const correctCount = examResults.filter(x => x.isCorrect).length;
       const score = Math.round((correctCount / total) * 100);
 
+
       document.getElementById('examScoreNumber').innerText = score;
       document.getElementById('examCorrectText').innerText = `${correctCount} / ${total}`;
       document.getElementById('examAccText').innerText = `${score}%`;
 
+
       addFish(correctCount);
       document.getElementById('examFishEarned').innerText = `+${correctCount} 🐟`;
+
 
       lastExamWeakItems = examResults.filter(x => !x.isCorrect).map(x => RAW_VOCAB.find(v => (v.word || v.num) === (x.targetWord || x.num)));
       const btnRetryWeak = document.getElementById('btnExamRetryWeak');
@@ -1731,9 +1922,11 @@
         btnRetryWeak.innerText = `🔥 專攻本次錯題 (${lastExamWeakItems.length} 題)`;
       }
 
+
       const feedbackEl = document.getElementById('examCatFeedback');
       const titleEl = document.getElementById('examResultTitle');
       const emojiEl = document.getElementById('examCatEmoji');
+
 
       if (score === 100) {
         emojiEl.innerText = "👑";
@@ -1754,6 +1947,7 @@
         titleEl.innerText = "得分：" + score + " 分，別氣餒！";
         feedbackEl.innerText = "單字聽寫本來就需要多練幾次耳朵才會習慣，不要灰心！咪咪陪妳看錯題解析，多聽幾次一定會變強喵～🐾";
       }
+
 
       const tbody = document.getElementById('examResultTableBody');
       tbody.innerHTML = '';
@@ -1776,9 +1970,11 @@
       });
     }
 
+
     function retryExamSameScope() {
       startExamSession();
     }
+
 
     function retryExamWeakOnly() {
       if (lastExamWeakItems.length > 0) {
@@ -1786,15 +1982,19 @@
       }
     }
 
+
     // ==================== WORD TABLE LOGIC ====================
     function renderWordTable() {
       const tbody = document.getElementById('wordTableBody');
       tbody.innerHTML = '';
 
+
       const theme = THEME_REGISTRY[currentThemeKey];
       sayCatSpeech(`這是【${theme.name}】的完整單字簿，隨時點擊發音或手動標記熟練度喔！🐾`);
 
+
       if (!filteredList || filteredList.length === 0) return;
+
 
       filteredList.forEach(item => {
         const key = item.word || item.num;
@@ -1832,30 +2032,40 @@
       });
     }
 
-    // ==================== RASPBERRY PI MULTI-USER SYNC ====================
+
+    // ==================== RASPBERRY PI MULTI-USER SYNC & AUTO BACKUP ====================
     let piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     let piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
     let piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-    let piLastSyncedFile = localStorage.getItem('pi_last_synced_file') || '';
+    let autoSaveTimer = null;
+    let isAutoSyncing = false;
+
+    function updatePiSyncBadge(statusText, badgeClass, icon = null) {
+      const badgeText = document.getElementById('piSyncText');
+      const badgeIcon = document.getElementById('piSyncIcon');
+      const badge = document.getElementById('piSyncBadge');
+
+      if (badgeText) {
+        const accPrefix = piAccount ? `[${piAccount}] ` : '';
+        badgeText.innerText = accPrefix + statusText;
+      }
+      if (icon && badgeIcon) {
+        badgeIcon.innerText = icon;
+      }
+      if (badge && badgeClass) {
+        badge.className = `text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 border transition shadow-2xs cursor-pointer ${badgeClass}`;
+      }
+    }
 
     function initPiSyncUI() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
-      const badgeText = document.getElementById('piSyncText');
-      const badgeIcon = document.getElementById('piSyncIcon');
-      const badge = document.getElementById('piSyncBadge');
-
       if (!piServerUrl || !piApiKey) {
-        if (badgeText) badgeText.innerText = '未設定同步';
-        if (badgeIcon) badgeIcon.innerText = '⚪';
-        if (badge) badge.className = 'text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-200 transition shadow-2xs cursor-pointer';
+        updatePiSyncBadge('未設定同步', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-200', '⚪');
       } else {
-        const accLabel = piAccount ? `[${piAccount}]` : '[預設]';
-        if (badgeText) badgeText.innerText = `${accLabel} 樹莓派`;
-        if (badgeIcon) badgeIcon.innerText = '🟢';
-        if (badge) badge.className = 'text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 transition shadow-2xs cursor-pointer';
+        updatePiSyncBadge('樹莓派', 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100', '🟢');
       }
     }
 
@@ -1884,7 +2094,9 @@
       localStorage.setItem('pi_api_key', key);
 
       initPiSyncUI();
+      closePiSettingsModal();
       alert(`已儲存連線設定！\n帳號：${acc || '未指定'}\n伺服器：${url || '未設定'}`);
+      checkAndAutoSyncFromPi(false);
     }
 
     function generateBackupFileName() {
@@ -1902,7 +2114,7 @@
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "1.5.0-test",
+        version: "1.5.1-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -1911,6 +2123,92 @@
           family: JSON.parse(localStorage.getItem('wordchecking_progress_family_v1') || '{}')
         }
       };
+    }
+
+    // 防抖動背景靜默自動儲存 (Debounced Silent Auto Save)
+    function triggerAutoSaveToPi() {
+      piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
+      piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+      piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
+      if (!piServerUrl || !piApiKey) {
+        return;
+      }
+
+      updatePiSyncBadge('待儲存...', 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700', '⏳');
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(performSilentAutoSave, 2000);
+    }
+
+    async function performSilentAutoSave() {
+      piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
+      piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+      piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
+      if (!piServerUrl || !piApiKey) return;
+
+      updatePiSyncBadge('儲存中...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '⏳');
+
+      const fileName = generateBackupFileName();
+      const payload = getExportPayload();
+
+      try {
+        const response = await uploadPayloadToPi(fileName, payload);
+        if (response && response.ok) {
+          localStorage.setItem('pi_last_synced_file', fileName);
+          updatePiSyncBadge('已自動儲存', 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700', '💾');
+          setTimeout(() => {
+            initPiSyncUI();
+          }, 3000);
+        } else {
+          updatePiSyncBadge('自動儲存失敗', 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-700', '⚠️');
+        }
+      } catch (e) {
+        updatePiSyncBadge('離線暫存', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
+      }
+    }
+
+    // 自動開頁與焦點喚醒同步 (Auto Sync from Pi on load & focus)
+    async function checkAndAutoSyncFromPi(silent = true) {
+      piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
+      piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+      piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
+      if (!piServerUrl || !piApiKey) {
+        initPiSyncUI();
+        return;
+      }
+      if (isAutoSyncing) return;
+      isAutoSyncing = true;
+
+      updatePiSyncBadge('檢查同步中...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '🔍');
+
+      try {
+        const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
+        const lastSyncedFileName = localStorage.getItem('pi_last_synced_file') || '';
+
+        if (backupData && fileName) {
+          // If cloud backup is newer than local last synced file, automatically load it
+          if (!lastSyncedFileName || fileName > lastSyncedFileName) {
+            if (applyImportedData(backupData, fileName, silent)) {
+              localStorage.setItem('pi_last_synced_file', fileName);
+              updatePiSyncBadge('已同步最新', 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700', '🟢');
+              if (!silent) {
+                sayCatSpeech(`已自動從樹莓派同步最新進度喵～🐾`, "同步成功");
+              }
+              isAutoSyncing = false;
+              return;
+            }
+          }
+          updatePiSyncBadge('已是最新狀態', 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700', '🟢');
+        } else {
+          updatePiSyncBadge('尚無雲端備份', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
+        }
+      } catch (err) {
+        updatePiSyncBadge('離線模式', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
+      } finally {
+        isAutoSyncing = false;
+      }
     }
 
     async function uploadPayloadToPi(fileName, payload) {
@@ -1943,43 +2241,13 @@
       return response;
     }
 
-    async function exportToPi() {
-      piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-      piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
-      piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-
-      if (!piServerUrl || !piApiKey) {
-        alert("請先填寫樹莓派伺服器網址 (URL) 與 API 金鑰！");
-        openPiSettingsModal();
-        return;
-      }
-
-      const fileName = generateBackupFileName();
-      const payload = getExportPayload();
-
-      sayCatSpeech(`喵～正在上傳備份至樹莓派【${piAccount || '預設'}】...🐾`, "連線中");
-
-      try {
-        const response = await uploadPayloadToPi(fileName, payload);
-        if (response && response.ok) {
-          localStorage.setItem('pi_last_synced_file', fileName);
-          initPiSyncUI();
-          playCatMeowSound();
-          sayCatSpeech(`成功上傳備份！檔案：${fileName} 🐾`, "同步成功");
-          alert(`🎉 成功上傳進度至樹莓派！\n使用者帳號：${piAccount || '未指定'}\n備份檔名：${fileName}`);
-        } else {
-          const errData = await response.json().catch(() => ({}));
-          alert(`❌ 上傳失敗 (${response ? response.status : '網路異常'})：${errData.error || errData.message || '請檢查伺服器與金鑰'}`);
-        }
-      } catch (err) {
-        alert(`❌ 連線樹莓派伺服器失敗：${err.message}`);
-      }
-    }
-
-    function isFileMatchingAccount(fileName, account) {
-      if (!fileName) return false;
-      if (!account) return !fileName.includes('[') || fileName.includes('[]') || fileName.includes('[default]');
-      return fileName.includes(`[${account}]`);
+    function isFileMatchingAccount(fileName, targetAccount) {
+      if (!fileName || !fileName.endsWith('.json')) return false;
+      const acc = (targetAccount || '').trim();
+      if (!acc) return true; // match all if account not specified
+      const expectedTag = `-[${acc}].json`;
+      const expectedOldTag = `-${acc}.json`;
+      return fileName.includes(expectedTag) || fileName.includes(expectedOldTag);
     }
 
     async function fetchLatestBackupForAccount(targetAccount) {
@@ -2023,6 +2291,39 @@
       return { backupData: null, fileName: null };
     }
 
+    async function exportToPi() {
+      piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
+      piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+      piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
+      if (!piServerUrl || !piApiKey) {
+        alert("請先填寫樹莓派伺服器網址 (URL) 與 API 金鑰！");
+        openPiSettingsModal();
+        return;
+      }
+
+      const fileName = generateBackupFileName();
+      const payload = getExportPayload();
+
+      sayCatSpeech(`喵～正在上傳備份至樹莓派【${piAccount || '預設'}】...🐾`, "連線中");
+
+      try {
+        const response = await uploadPayloadToPi(fileName, payload);
+        if (response && response.ok) {
+          localStorage.setItem('pi_last_synced_file', fileName);
+          initPiSyncUI();
+          playCatMeowSound();
+          alert(`🎉 成功上傳備份至樹莓派！\n帳號：${piAccount || '未指定'}\n檔名：${fileName}`);
+          sayCatSpeech(`太棒了！已將小魚乾與單字進度備份至樹莓派喵～🐟`, "上傳成功");
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          alert(`❌ 上傳失敗 (${response ? response.status : '網路異常'})：${errData.error || errData.message || '請檢查 API 金鑰與連線'}`);
+        }
+      } catch (err) {
+        alert(`❌ 連線樹莓派失敗！請檢查伺服器網址與網路連線。\n錯誤：${err.message}`);
+      }
+    }
+
     async function importFromPi() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
@@ -2041,7 +2342,7 @@
         if (backupData && fileName) {
           const accLabel = piAccount ? ` [帳號: ${piAccount}]` : '';
           if (confirm(`確定從樹莓派載入最新進度？${accLabel}\n備份檔名：${fileName}`)) {
-            if (applyImportedData(backupData, fileName)) {
+            if (applyImportedData(backupData, fileName, false)) {
               localStorage.setItem('pi_last_synced_file', fileName);
               initPiSyncUI();
               playCatMeowSound();
@@ -2049,16 +2350,16 @@
             }
           }
         } else {
-          alert(`❌ 樹莓派上尚未找到帳號「${piAccount || '未指定'}」的任何備份檔案，請先點擊「上傳至樹莓派」！`);
+          alert(`❌ 樹莓派上尚未找到帳號「${piAccount || '未指定'}」的任何備份檔案，請先點擊「手動上傳備份」！`);
         }
       } catch (err) {
         alert(`❌ 連線樹莓派失敗：${err.message}`);
       }
     }
 
-    function applyImportedData(payload, fileName) {
+    function applyImportedData(payload, fileName, silent = false) {
       if (!payload || !payload.progress) {
-        alert("資料格式不符合規範！");
+        if (!silent) alert("資料格式不符合規範！");
         return false;
       }
 
@@ -2081,7 +2382,9 @@
       renderStats();
       renderCurrentCard();
       if (getActiveMode() === 'list') renderWordTable();
-      sayCatSpeech(`成功載入【${piAccount || '預設'}】的最新進度！小魚乾有 ${fishCount} 條喵～🐟`, "同步成功");
+      if (!silent) {
+        sayCatSpeech(`成功載入【${piAccount || '預設'}】的最新進度！小魚乾有 ${fishCount} 條喵～🐟`, "同步成功");
+      }
       return true;
     }
 
@@ -2094,6 +2397,7 @@
       a.download = fileName;
       a.click();
     }
+
 
     function importLocalJson(e) {
       const file = e.target.files[0];
@@ -2113,6 +2417,7 @@
       reader.readAsText(file);
     }
 
+
     function resetAllProgress() {
       const theme = THEME_REGISTRY[currentThemeKey];
       if (confirm(`確定要清空【${theme.name}】的掌握進度嗎？`)) {
@@ -2120,9 +2425,20 @@
         localStorage.removeItem(theme.storageKey);
         renderStats();
         renderWordTable();
+        triggerAutoSaveToPi();
         alert(`喵！已重置【${theme.name}】的所有紀錄！`);
       }
     }
+  
+    // Auto sync when returning to tab or window focus
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkAndAutoSyncFromPi(true);
+      }
+    });
+    window.addEventListener('focus', () => {
+      checkAndAutoSyncFromPi(true);
+    });
   </script>
 </body>
 </html>
