@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v2.0.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v2.0.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -108,7 +108,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.0.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.0.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -979,6 +979,7 @@
           <p>• <b>餵食小魚乾 🐟</b>：每次消耗 1 條魚乾，好感度 +15% 💖</p>
           <p>• <b>背單字與測驗答對</b>：每次記住單字好感度 +2% 🐾</p>
           <p>• <b>狂熱雙倍時段 (Fever Time)</b>：親密度累積達 <b>100%</b> 時，咪咪進入狂熱報恩狀態！接下來 10 次練習或測驗，<b>小魚乾獎勵全部雙倍 (+2 🐟)</b>！</p>
+          <p>• <b>溫馨陪伴提醒（肚子餓撒嬌機制）</b>：若超過 2 天（48 小時）未開啟練習，咪咪會出現「🐟 肚子扁扁想妳中」的可愛撒嬌狀態。只要點擊餵魚或背 1 個單字，咪咪立刻吃飽恢復元氣！<b>親密度與小魚乾 100% 不會倒扣</b>，純情境溫柔守護。🐾</p>
         </div>
 
         <button onclick="closeCatGrowthGuideModal()" class="w-full py-2.5 bg-slate-800 dark:bg-slate-600 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm">
@@ -1306,6 +1307,17 @@
       { level: 5, name: "Lv.5 傳奇貓神獸", title: "1200會考傳奇守護神", icon: "👑", min: 1050, max: 1200 }
     ];
 
+    const LAST_INTERACTION_KEY = 'wordchecking_last_interaction_v1';
+    let lastInteractionTime = parseInt(localStorage.getItem(LAST_INTERACTION_KEY) || Date.now().toString(), 10);
+    const HUNGER_THRESHOLD_MS = 48 * 60 * 60 * 1000; // 48 小時 (2 天)
+
+    const HUNGRY_CAT_SPEECHES = [
+      "喵嗚～咪咪好久沒見到妳了，肚子有點扁扁喵～快餵我一條小魚乾吧！🐾",
+      "咕嚕嚕～咪咪的肚子在叫了喵！今天一起背幾個單字賺魚乾吃好不好～🐟",
+      "好想妳喵～咪咪今天肚子餓得發慌，只要背一個單字或餵我吃魚，咪咪就瞬間充滿元氣喵！🐾",
+      "咪咪在等妳呢！肚子扁扁的小貓咪需要一條小魚乾充電喵～🐟❤️"
+    ];
+
     let catAffection = parseInt(localStorage.getItem('wordchecking_cat_affection_v1') || '20', 10);
     let feverRemainingQuestions = parseInt(localStorage.getItem('wordchecking_fever_remaining_v1') || '0', 10);
     let lastKnownCatLevel = parseInt(localStorage.getItem('wordchecking_cat_level_v1') || '1', 10);
@@ -1332,7 +1344,32 @@
       return CAT_LEVEL_CONFIG[0];
     }
 
+    function isMimiHungry() {
+      return (Date.now() - lastInteractionTime) > HUNGER_THRESHOLD_MS;
+    }
+
+    function checkMimiHungerState() {
+      const moodEl = document.getElementById('catMood');
+      if (!moodEl) return;
+      if (isMimiHungry()) {
+        moodEl.innerText = "🐟 肚子扁扁想妳中";
+        moodEl.className = "text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-700 animate-pulse";
+      } else {
+        moodEl.innerText = "元氣滿滿 ✨";
+        moodEl.className = "text-[11px] font-medium text-slate-500 dark:text-slate-400";
+      }
+    }
+
+    function touchMimiInteraction() {
+      const wasHungry = isMimiHungry();
+      lastInteractionTime = Date.now();
+      localStorage.setItem(LAST_INTERACTION_KEY, lastInteractionTime);
+      checkMimiHungerState();
+      return wasHungry;
+    }
+
     function updateCatGrowthUI() {
+      checkMimiHungerState();
       const totalMastered = calculateTotalMasteredWords();
       const currentConfig = getCatLevelInfo(totalMastered);
       const level = currentConfig.level;
@@ -1455,7 +1492,11 @@
       spawnFloatingHeart("❤️");
       spawnFloatingHeart("🐾");
       gainAffection(5);
-      const randomSpeech = CAT_SPEECHES[Math.floor(Math.random() * CAT_SPEECHES.length)];
+      const wasHungry = touchMimiInteraction();
+      let randomSpeech = CAT_SPEECHES[Math.floor(Math.random() * CAT_SPEECHES.length)];
+      if (wasHungry) {
+        randomSpeech = "喵～摸摸好舒服喔！咪咪精神好多了，但還是有點想吃小魚乾喵～🐟🐾";
+      }
       sayCatSpeech(randomSpeech, "開心呼嚕中 🐾");
 
       const eyeL = document.getElementById('catEyeLeft');
@@ -1485,8 +1526,13 @@
       spawnFloatingHeart("🐟");
       spawnFloatingHeart("💖");
       gainAffection(15);
+      const wasHungry = touchMimiInteraction();
 
-      sayCatSpeech(`嚼嚼嚼～太美味了喵！謝謝妳餵咪咪，親密度 +15% 💖 (目前: ${catAffection}%)`, "超愛吃魚");
+      if (wasHungry) {
+        sayCatSpeech(`嚼嚼嚼～太美味了喵！肚子終於飽飽了，咪咪瞬間充滿元氣～親密度 +15% 💖 (目前: ${catAffection}%)`, "吃飽飽超幸福 🐟");
+      } else {
+        sayCatSpeech(`嚼嚼嚼～太美味了喵！謝謝妳餵咪咪，親密度 +15% 💖 (目前: ${catAffection}%)`, "超愛吃魚");
+      }
       triggerAutoSaveToPi();
     }
 
@@ -1592,6 +1638,11 @@
       updateCatGrowthUI();
       loadThemeData(currentThemeKey);
       checkAndAutoSyncFromPi(true);
+
+      if (isMimiHungry()) {
+        const hungrySpeech = HUNGRY_CAT_SPEECHES[Math.floor(Math.random() * HUNGRY_CAT_SPEECHES.length)];
+        sayCatSpeech(hungrySpeech, "肚子扁扁想妳中 🐾");
+      }
 
 
       // Keyboard shortcuts for Flashcard
@@ -1825,6 +1876,7 @@
       }
       renderStats();
       gainAffection(2);
+      touchMimiInteraction();
       updateCatGrowthUI();
       triggerAutoSaveToPi();
       nextCard();
@@ -1940,6 +1992,7 @@
       userProgress[key] = isCorrect ? 'mastered' : 'weak';
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
+      touchMimiInteraction();
       triggerAutoSaveToPi();
       triggerAutoSaveToPi();
       triggerAutoSaveToPi();
@@ -2612,6 +2665,8 @@
       catAffection = 20;
       feverRemainingQuestions = 0;
       lastKnownCatLevel = 1;
+      lastInteractionTime = Date.now();
+      localStorage.setItem(LAST_INTERACTION_KEY, lastInteractionTime);
       localStorage.setItem('wordchecking_cat_affection_v1', '20');
       localStorage.setItem('wordchecking_fever_remaining_v1', '0');
       localStorage.setItem('wordchecking_cat_level_v1', '1');
@@ -2638,14 +2693,15 @@
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.0.0-test",
+        version: "2.0.1-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
         catGamification: {
           affection: catAffection,
           feverRemaining: feverRemainingQuestions,
-          lastLevel: lastKnownCatLevel
+          lastLevel: lastKnownCatLevel,
+          lastInteraction: lastInteractionTime
         },
         progress: {
           numbers: JSON.parse(localStorage.getItem('wordchecking_progress_numbers_v1') || '{}'),
@@ -2902,9 +2958,14 @@
         catAffection = parseInt(payload.catGamification.affection, 10) || 20;
         feverRemainingQuestions = parseInt(payload.catGamification.feverRemaining, 10) || 0;
         lastKnownCatLevel = parseInt(payload.catGamification.lastLevel, 10) || 1;
+        if (payload.catGamification.lastInteraction) {
+          lastInteractionTime = parseInt(payload.catGamification.lastInteraction, 10) || Date.now();
+          localStorage.setItem(LAST_INTERACTION_KEY, lastInteractionTime);
+        }
         localStorage.setItem('wordchecking_cat_affection_v1', catAffection);
         localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
         localStorage.setItem('wordchecking_cat_level_v1', lastKnownCatLevel);
+        checkMimiHungerState();
       }
 
       if (payload.progress.numbers) {
