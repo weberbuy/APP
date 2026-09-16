@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 數字 1-100 貓咪陪伴版 (v1.4.1-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v1.5.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -85,7 +85,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.4.1-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.5.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -93,6 +93,12 @@
 
       <!-- Actions: Fish Counter, Theme toggle & Back -->
       <div class="flex items-center space-x-2">
+        <!-- Pi Sync Status Badge -->
+        <button onclick="openPiSettingsModal()" id="piSyncBadge" class="text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-600 transition shadow-2xs cursor-pointer" title="點擊設定樹莓派伺服器與多使用者同步">
+          <span id="piSyncIcon">☁️</span>
+          <span id="piSyncText" class="hidden sm:inline">未設定同步</span>
+        </button>
+
         <!-- Cat Treat (Fish) Counter -->
         <div class="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-100/80 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800/60 rounded-xl text-amber-800 dark:text-amber-300 text-xs font-bold shadow-sm" title="已獲得的小魚乾獎勵">
           <span class="text-base">🐟</span>
@@ -721,6 +727,102 @@
       </div>
     </section>
 
+    <!-- ==================== PI SETTINGS & MULTI-USER SYNC MODAL ==================== -->
+    <div id="piSettingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="handleModalBackdropClick(event)">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+              ⚙️
+            </div>
+            <div>
+              <h3 class="text-base font-black text-slate-900 dark:text-white leading-tight">樹莓派同步與多使用者管理</h3>
+              <p class="text-[11px] text-slate-400">支援多裝置即時同步與多帳號隔離儲存 🐾</p>
+            </div>
+          </div>
+          <button onclick="closePiSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">✕</button>
+        </div>
+
+        <!-- Section 1: Server Connection Parameters -->
+        <div class="space-y-3 bg-slate-50 dark:bg-slate-700/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-600">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+              <span>🔌 伺服器連線參數</span>
+            </span>
+            <span class="text-[10px] text-slate-400">多裝置通用</span>
+          </div>
+
+          <div class="space-y-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">樹莓派伺服器網址 (URL)：</label>
+              <input type="text" id="piServerUrlInput" placeholder="例如: https://pi.domain.com 或 http://192.168.1.100:3000" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">使用者帳號 (Account)：</label>
+              <input type="text" id="piAccountInput" placeholder="例如: star, weber (英數不含空格)" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+              <p class="text-[10px] text-slate-400 mt-1">💡 備份檔將命名為 <code class="font-mono text-amber-600 dark:text-amber-400">WC-...-[帳號].json</code>，實現多帳號隔離儲存</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">API 金鑰 (x-api-key)：</label>
+              <input type="password" id="piApiKeyInput" placeholder="請輸入 API_KEY 密碼" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+            </div>
+          </div>
+
+          <button onclick="savePiSettings()" class="w-full py-2 bg-slate-800 dark:bg-slate-600 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm">
+            儲存連線設定 🐾
+          </button>
+        </div>
+
+        <!-- Section 2: Pi Cloud Sync Actions -->
+        <div class="bg-emerald-50/70 dark:bg-emerald-950/30 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/40 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+              <span>☁️ 樹莓派雲端同步</span>
+            </span>
+            <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">多裝置無縫切換</span>
+          </div>
+          <p class="text-[11px] text-emerald-800 dark:text-emerald-300 leading-relaxed">
+            手動上傳當前帳號的最新學習進度、錯題與小魚乾，或從伺服器拉取最新進度：
+          </p>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="exportToPi()" class="w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-3 rounded-xl font-bold transition shadow-sm flex items-center justify-center gap-1.5">
+              <span>☁️ 上傳至樹莓派</span>
+            </button>
+            <button onclick="importFromPi()" class="w-full text-xs bg-teal-600 hover:bg-teal-700 text-white py-2.5 px-3 rounded-xl font-bold transition shadow-sm flex items-center justify-center gap-1.5">
+              <span>🔄 從樹莓派同步</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 3: Local Backup / Restore -->
+        <div class="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">📁 本機離線備份與匯入</span>
+            <span class="text-[10px] text-slate-400">免伺服器</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="exportLocalJson()" class="w-full text-xs bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 font-bold transition flex items-center justify-center gap-1 shadow-2xs">
+              <span>📥 匯出 JSON</span>
+            </button>
+            <label class="w-full text-xs bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 font-bold transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer text-center">
+              <span>📤 匯入 JSON</span>
+              <input type="file" id="localImportFile" accept=".json" onchange="importLocalJson(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-1">
+          <button onclick="closePiSettingsModal()" class="px-5 py-2 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl font-bold transition">
+            關閉視窗
+          </button>
+        </div>
+
+      </div>
+    </div>
   </main>
 
   <!-- Data & Logic script -->
@@ -948,6 +1050,7 @@
       initTheme();
       document.getElementById('fishCount').innerText = fishCount;
       initSpeechRecognition();
+      initPiSyncUI();
       loadThemeData(currentThemeKey);
 
       // Keyboard shortcuts for Flashcard
@@ -1727,6 +1830,287 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    // ==================== RASPBERRY PI MULTI-USER SYNC ====================
+    let piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
+    let piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    let piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+    let piLastSyncedFile = localStorage.getItem('pi_last_synced_file') || '';
+
+    function initPiSyncUI() {
+      piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
+      piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+      piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
+      const badgeText = document.getElementById('piSyncText');
+      const badgeIcon = document.getElementById('piSyncIcon');
+      const badge = document.getElementById('piSyncBadge');
+
+      if (!piServerUrl || !piApiKey) {
+        if (badgeText) badgeText.innerText = '未設定同步';
+        if (badgeIcon) badgeIcon.innerText = '⚪';
+        if (badge) badge.className = 'text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-200 transition shadow-2xs cursor-pointer';
+      } else {
+        const accLabel = piAccount ? `[${piAccount}]` : '[預設]';
+        if (badgeText) badgeText.innerText = `${accLabel} 樹莓派`;
+        if (badgeIcon) badgeIcon.innerText = '🟢';
+        if (badge) badge.className = 'text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 transition shadow-2xs cursor-pointer';
+      }
+    }
+
+    function openPiSettingsModal() {
+      document.getElementById('piServerUrlInput').value = localStorage.getItem('pi_server_url') || '';
+      document.getElementById('piAccountInput').value = localStorage.getItem('pi_account') || '';
+      document.getElementById('piApiKeyInput').value = localStorage.getItem('pi_api_key') || '';
+      document.getElementById('piSettingsModal').classList.remove('hidden');
+    }
+
+    function closePiSettingsModal() {
+      document.getElementById('piSettingsModal').classList.add('hidden');
+    }
+
+    function handleModalBackdropClick(e) {
+      closePiSettingsModal();
+    }
+
+    function savePiSettings() {
+      const url = document.getElementById('piServerUrlInput').value.trim();
+      const acc = document.getElementById('piAccountInput').value.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+      const key = document.getElementById('piApiKeyInput').value.trim();
+
+      localStorage.setItem('pi_server_url', url);
+      localStorage.setItem('pi_account', acc);
+      localStorage.setItem('pi_api_key', key);
+
+      initPiSyncUI();
+      alert(`已儲存連線設定！\n帳號：${acc || '未指定'}\n伺服器：${url || '未設定'}`);
+    }
+
+    function generateBackupFileName() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      const accTag = piAccount ? `[${piAccount}]` : '[default]';
+      return `WC-${y}${m}${d}-${hh}${mm}${ss}-${accTag}.json`;
+    }
+
+    function getExportPayload() {
+      return {
+        app: "WordChecking",
+        version: "1.5.0-test",
+        account: piAccount || "default",
+        exportDate: new Date().toISOString(),
+        fishCount: fishCount,
+        progress: {
+          numbers: JSON.parse(localStorage.getItem('wordchecking_progress_numbers_v1') || '{}'),
+          family: JSON.parse(localStorage.getItem('wordchecking_progress_family_v1') || '{}')
+        }
+      };
+    }
+
+    async function uploadPayloadToPi(fileName, payload) {
+      // 1. Dedicated endpoint
+      let response = await fetch(`${piServerUrl}/api/wordchecking/backup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': piApiKey,
+          'x-account': encodeURIComponent(piAccount)
+        },
+        body: JSON.stringify({ fileName, account: piAccount, data: payload })
+      }).catch(() => null);
+
+      // 2. Fallback to generic upload endpoint matching LifeSchedule
+      if (!response || !response.ok) {
+        const formData = new FormData();
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        formData.append('photo', blob, fileName);
+        response = await fetch(`${piServerUrl}/upload`, {
+          method: 'POST',
+          headers: {
+            'x-api-key': piApiKey,
+            'x-original-name': encodeURIComponent(fileName),
+            'x-target-path': encodeURIComponent('WordChecking')
+          },
+          body: formData
+        });
+      }
+      return response;
+    }
+
+    async function exportToPi() {
+      piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
+      piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+      piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
+      if (!piServerUrl || !piApiKey) {
+        alert("請先填寫樹莓派伺服器網址 (URL) 與 API 金鑰！");
+        openPiSettingsModal();
+        return;
+      }
+
+      const fileName = generateBackupFileName();
+      const payload = getExportPayload();
+
+      sayCatSpeech(`喵～正在上傳備份至樹莓派【${piAccount || '預設'}】...🐾`, "連線中");
+
+      try {
+        const response = await uploadPayloadToPi(fileName, payload);
+        if (response && response.ok) {
+          localStorage.setItem('pi_last_synced_file', fileName);
+          initPiSyncUI();
+          playCatMeowSound();
+          sayCatSpeech(`成功上傳備份！檔案：${fileName} 🐾`, "同步成功");
+          alert(`🎉 成功上傳進度至樹莓派！\n使用者帳號：${piAccount || '未指定'}\n備份檔名：${fileName}`);
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          alert(`❌ 上傳失敗 (${response ? response.status : '網路異常'})：${errData.error || errData.message || '請檢查伺服器與金鑰'}`);
+        }
+      } catch (err) {
+        alert(`❌ 連線樹莓派伺服器失敗：${err.message}`);
+      }
+    }
+
+    function isFileMatchingAccount(fileName, account) {
+      if (!fileName) return false;
+      if (!account) return !fileName.includes('[') || fileName.includes('[]') || fileName.includes('[default]');
+      return fileName.includes(`[${account}]`);
+    }
+
+    async function fetchLatestBackupForAccount(targetAccount) {
+      const acc = (targetAccount || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+      // Dedicated endpoint
+      try {
+        let response = await fetch(`${piServerUrl}/api/wordchecking/latest?account=${encodeURIComponent(acc)}`, {
+          method: 'GET',
+          headers: { 'x-api-key': piApiKey, 'x-account': encodeURIComponent(acc) }
+        });
+        if (response.ok) {
+          const result = await response.json();
+          if (result && result.fileName && isFileMatchingAccount(result.fileName, acc) && result.data) {
+            return { backupData: result.data, fileName: result.fileName };
+          }
+        }
+      } catch (e) {}
+
+      // Generic files endpoint matching LifeSchedule
+      try {
+        const filesRes = await fetch(`${piServerUrl}/files?path=WordChecking`, {
+          headers: { 'x-api-key': piApiKey }
+        });
+        if (filesRes.ok) {
+          const filesData = await filesRes.json();
+          const jsonFiles = (filesData.files || [])
+            .filter(f => !f.isDirectory && isFileMatchingAccount(f.name, acc))
+            .map(f => f.name).sort().reverse();
+          if (jsonFiles.length > 0) {
+            const fileName = jsonFiles[0];
+            const downRes = await fetch(`${piServerUrl}/download/WordChecking%2F${encodeURIComponent(fileName)}`, {
+              headers: { 'x-api-key': piApiKey }
+            });
+            if (downRes.ok) {
+              return { backupData: await downRes.json(), fileName };
+            }
+          }
+        }
+      } catch (e) {}
+
+      return { backupData: null, fileName: null };
+    }
+
+    async function importFromPi() {
+      piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
+      piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+      piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
+      if (!piServerUrl || !piApiKey) {
+        alert("請先設定樹莓派伺服器網址與 API 金鑰！");
+        openPiSettingsModal();
+        return;
+      }
+
+      sayCatSpeech(`喵～正在查詢樹莓派上【${piAccount || '預設'}】的最新進度...🐾`, "連線中");
+
+      try {
+        const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
+        if (backupData && fileName) {
+          const accLabel = piAccount ? ` [帳號: ${piAccount}]` : '';
+          if (confirm(`確定從樹莓派載入最新進度？${accLabel}\n備份檔名：${fileName}`)) {
+            if (applyImportedData(backupData, fileName)) {
+              localStorage.setItem('pi_last_synced_file', fileName);
+              initPiSyncUI();
+              playCatMeowSound();
+              alert(`🎉 成功從樹莓派同步最新進度！${accLabel}`);
+            }
+          }
+        } else {
+          alert(`❌ 樹莓派上尚未找到帳號「${piAccount || '未指定'}」的任何備份檔案，請先點擊「上傳至樹莓派」！`);
+        }
+      } catch (err) {
+        alert(`❌ 連線樹莓派失敗：${err.message}`);
+      }
+    }
+
+    function applyImportedData(payload, fileName) {
+      if (!payload || !payload.progress) {
+        alert("資料格式不符合規範！");
+        return false;
+      }
+
+      if (payload.fishCount !== undefined) {
+        fishCount = parseInt(payload.fishCount, 10) || 0;
+        localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+        document.getElementById('fishCount').innerText = fishCount;
+      }
+
+      if (payload.progress.numbers) {
+        localStorage.setItem('wordchecking_progress_numbers_v1', JSON.stringify(payload.progress.numbers));
+      }
+      if (payload.progress.family) {
+        localStorage.setItem('wordchecking_progress_family_v1', JSON.stringify(payload.progress.family));
+      }
+
+      // Reload current theme progress
+      const theme = THEME_REGISTRY[currentThemeKey];
+      userProgress = JSON.parse(localStorage.getItem(theme.storageKey) || '{}');
+      renderStats();
+      renderCurrentCard();
+      if (getActiveMode() === 'list') renderWordTable();
+      sayCatSpeech(`成功載入【${piAccount || '預設'}】的最新進度！小魚乾有 ${fishCount} 條喵～🐟`, "同步成功");
+      return true;
+    }
+
+    function exportLocalJson() {
+      const payload = getExportPayload();
+      const fileName = generateBackupFileName();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      a.click();
+    }
+
+    function importLocalJson(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          if (applyImportedData(data, file.name)) {
+            alert(`🎉 成功從本機檔案匯入進度！\n檔案：${file.name}`);
+            closePiSettingsModal();
+          }
+        } catch (err) {
+          alert(`匯入失敗：${err.message}`);
+        }
+      };
+      reader.readAsText(file);
     }
 
     function resetAllProgress() {
