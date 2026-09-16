@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v1.5.2-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v2.0.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -31,6 +31,26 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    /* Gamification Animations */
+    @keyframes floatUpFade {
+      0% { transform: translate(0, 0) scale(0.7); opacity: 1; }
+      50% { transform: translate(var(--dx, 5px), -25px) scale(1.1); opacity: 0.9; }
+      100% { transform: translate(var(--dx2, -10px), -50px) scale(1.3); opacity: 0; }
+    }
+    .floating-heart {
+      position: absolute;
+      pointer-events: none;
+      animation: floatUpFade 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      z-index: 50;
+      font-size: 18px;
+    }
+    @keyframes levelUpGlow {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4)); }
+      50% { transform: scale(1.06); filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.9)); }
+    }
+    .level-up-pulse {
+      animation: levelUpGlow 0.7s ease-in-out 3;
+    }
     .perspective-1000 { perspective: 1000px; }
     .transform-style-3d { transform-style: preserve-3d; }
     .backface-hidden { backface-visibility: hidden; }
@@ -88,7 +108,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-1.5.2-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.0.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -136,17 +156,23 @@
   <main class="max-w-5xl mx-auto px-4 py-5 space-y-5">
 
 
-    <!-- Interactive Cat Mascot Card -->
+    <!-- Interactive Cat Mascot & Growth Center (v2.0.0 Gamification) -->
     <section class="bg-gradient-to-r from-amber-100/90 via-rose-50 to-pink-100/70 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800/90 rounded-3xl p-4 sm:p-5 border border-amber-200/80 dark:border-slate-700 shadow-sm relative overflow-hidden">
       <!-- Decorative Background Paws -->
       <div class="absolute -right-4 -bottom-4 text-amber-200/40 dark:text-slate-700/30 text-8xl pointer-events-none select-none">🐾</div>
       <div class="absolute right-24 top-2 text-rose-200/30 dark:text-slate-700/20 text-5xl pointer-events-none select-none">🐾</div>
 
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 relative z-10">
+        <!-- Animated Cat Avatar with Level Badge -->
+        <div class="flex-shrink-0 cursor-pointer text-center group relative mx-auto sm:mx-0" onclick="petTheCat()">
+          <div id="catAvatarBox" class="w-20 h-20 sm:w-24 sm:h-24 bg-white dark:bg-slate-700 rounded-3xl p-2 shadow-md border-2 border-rose-300 dark:border-rose-500/50 flex items-center justify-center transition transform group-hover:scale-105 relative overflow-visible">
+            <!-- Level Badge -->
+            <span id="catAvatarLevelBadge" class="absolute -top-2 -left-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[11px] font-black px-2 py-0.5 rounded-lg shadow-md border-2 border-white dark:border-slate-800 flex items-center gap-0.5 z-20">
+              Lv.1 🍼
+            </span>
+            <!-- Floating Hearts Container -->
+            <div id="catHeartContainer" class="absolute inset-0 pointer-events-none overflow-visible"></div>
 
-      <div class="flex items-center space-x-4 relative z-10">
-        <!-- Animated Cat Avatar -->
-        <div class="flex-shrink-0 cursor-pointer text-center group" onclick="petTheCat()">
-          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white dark:bg-slate-700 rounded-2xl p-1.5 shadow-md border-2 border-rose-300 dark:border-rose-500/50 flex items-center justify-center transition transform group-hover:scale-105">
             <svg viewBox="0 0 100 100" class="w-full h-full">
               <!-- Cat Ears -->
               <polygon points="20,40 10,12 42,26" fill="#f59e0b" />
@@ -164,7 +190,7 @@
               <circle cx="66" cy="50" r="1.5" fill="#ffffff" />
               <!-- Nose & Mouth -->
               <polygon points="50,62 47,59 53,59" fill="#f43f5e" />
-              <path d="M 45,65 Q 50,70 50,62 Q 50,70 55,65" stroke="#1e293b" stroke-width="2" fill="none" />
+              <path d="M 45,65 Q 50,70 50,62 Q 50,70 55,65" stroke="#1e293b" stroke-width="2" fill="none" id="catMouthPath" />
               <!-- Whiskers -->
               <line x1="15" y1="56" x2="30" y2="58" stroke="#78350f" stroke-width="1.5" />
               <line x1="14" y1="64" x2="29" y2="63" stroke="#78350f" stroke-width="1.5" />
@@ -178,20 +204,87 @@
           <span class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold mt-1 block">摸摸咪咪 🐾</span>
         </div>
 
-
-        <!-- Dialogue Bubble -->
-        <div class="flex-1">
-          <div class="bg-white/95 dark:bg-slate-700/90 rounded-2xl p-3 sm:p-4 shadow-sm border border-amber-200/80 dark:border-slate-600 relative">
-            <div class="text-xs font-bold text-rose-500 dark:text-rose-400 flex items-center space-x-1.5 mb-1">
-              <span>🐱 咪咪（Mimi 學伴）：</span>
-              <span id="catMood" class="text-[11px] font-normal text-slate-500 dark:text-slate-400">元氣滿滿</span>
+        <!-- Dialogue & Growth Status Bubble -->
+        <div class="flex-1 w-full space-y-3">
+          <div class="bg-white/95 dark:bg-slate-700/90 rounded-2xl p-3 sm:p-4 shadow-sm border border-amber-200/80 dark:border-slate-600 space-y-2.5">
+            
+            <!-- Header: Cat Name, Title, Mood & Fever Badge -->
+            <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-100 dark:border-slate-600 pb-2">
+              <div class="flex items-center flex-wrap gap-1.5">
+                <span class="text-xs font-bold text-rose-500 dark:text-rose-400">🐱 咪咪（Mimi 學伴）</span>
+                <span id="catTitleBadge" class="text-[11px] font-black px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">【見習小貓奴】</span>
+                <span id="catMood" class="text-[11px] font-medium text-slate-500 dark:text-slate-400">元氣滿滿</span>
+              </div>
+              <span id="feverBadge" class="hidden text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-400 text-amber-950 border border-amber-500 animate-bounce shadow-xs">
+                🔥 狂熱雙倍小魚乾中 (剩餘 <span id="feverCount">10</span> 題)
+              </span>
             </div>
-            <p id="catSpeech" class="text-sm font-medium text-slate-800 dark:text-slate-100">喵～今天想背背哪幾個數字呢？我們新增了「聽寫模考」功能，可以測驗10或20題看能拿幾分喔！🐾</p>
+
+            <!-- Cat Dialogue Speech -->
+            <p id="catSpeech" class="text-sm font-medium text-slate-800 dark:text-slate-100 leading-relaxed min-h-[1.5rem]">
+              喵～今天想背背哪幾個單字呢？只要練習我就會陪著妳一起長大喔！🐾
+            </p>
+
+            <!-- Dual Progress: EXP & Affection Bars -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              
+              <!-- 1. Cat Level & 1200 Words EXP Bar -->
+              <div class="bg-amber-50/70 dark:bg-slate-800/60 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
+                <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  <span class="flex items-center gap-1">
+                    <span id="catLevelNameText">Lv.1 幼幼小奶貓</span>
+                  </span>
+                  <span class="text-[10px] text-amber-700 dark:text-amber-400">
+                    已掌握 <b id="catMasteredTotal" class="font-black text-xs">0</b> / 1200 字
+                  </span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div id="catExpBar" class="bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="text-[10px] text-slate-400 text-right mt-0.5" id="catNextLevelTargetText">
+                  距離升級還差 150 字 🐾
+                </div>
+              </div>
+
+              <!-- 2. Cat Affection Heart Bar -->
+              <div class="bg-pink-50/70 dark:bg-slate-800/60 p-2.5 rounded-xl border border-pink-100 dark:border-slate-600">
+                <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  <span class="flex items-center gap-1 text-pink-600 dark:text-pink-400 font-bold">
+                    <span>💖 親密度：</span>
+                    <span id="catAffectionPct">20%</span>
+                  </span>
+                  <span class="text-[10px] text-pink-500 dark:text-pink-400">滿 100% 觸發狂熱雙倍！</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div id="catAffectionBar" class="bg-gradient-to-r from-pink-400 to-rose-500 h-full rounded-full transition-all duration-500" style="width: 20%"></div>
+                </div>
+                <div class="text-[10px] text-slate-400 text-right mt-0.5">
+                  摸頭 +5% 💖 ｜ 餵小魚乾 +15% 💖
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-600">
+              <button onclick="petTheCat()" class="px-3 py-1.5 bg-rose-50 dark:bg-slate-700 hover:bg-rose-100 dark:hover:bg-slate-600 text-rose-600 dark:text-rose-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-rose-200 dark:border-slate-600 shadow-2xs">
+                <span>🖐️</span>
+                <span>摸摸咪咪</span>
+              </button>
+              <button onclick="feedFishToCat()" class="px-3 py-1.5 bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 dark:hover:bg-slate-600 text-amber-700 dark:text-amber-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-amber-200 dark:border-slate-600 shadow-2xs">
+                <span>🐟</span>
+                <span>餵咪咪吃魚 <span class="text-[10px] text-amber-600 font-normal">(-1魚乾)</span></span>
+              </button>
+              <button onclick="openCatGrowthGuideModal()" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition flex items-center gap-1 ml-auto">
+                <span>📖</span>
+                <span>成長階梯指南</span>
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
     </section>
-
 
     <!-- Progress & Overview Banner -->
     <section class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -787,6 +880,114 @@
     </section>
 
 
+    <!-- ==================== CAT GROWTH & EVOLUTION GUIDE MODAL ==================== -->
+    <div id="catGrowthGuideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeCatGrowthGuideModal()">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-400 text-white flex items-center justify-center text-xl shadow-sm">
+              👑
+            </div>
+            <div>
+              <h3 class="text-base font-black text-slate-900 dark:text-white leading-tight">咪咪 1200 單字成長階梯指南</h3>
+              <p class="text-[11px] text-slate-400">隨著背單字掌握度提升，咪咪會逐步進化長大喵！🐾</p>
+            </div>
+          </div>
+          <button onclick="closeCatGrowthGuideModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">✕</button>
+        </div>
+
+        <!-- 5 Level Cards -->
+        <div class="space-y-2.5">
+          <div class="p-3 rounded-2xl border border-amber-200 dark:border-slate-600 bg-amber-50/60 dark:bg-slate-700/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🍼</span>
+              <div>
+                <div class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>Lv.1 幼幼小奶貓</span>
+                  <span class="text-[10px] px-2 py-0.2 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-bold">【見習小貓奴】</span>
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">掌握 0 ～ 150 字（基礎數字、家庭親屬、日常問候）</div>
+              </div>
+            </div>
+            <span class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">0 - 150 字</span>
+          </div>
+
+          <div class="p-3 rounded-2xl border border-orange-200 dark:border-slate-600 bg-orange-50/60 dark:bg-slate-700/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🧶</span>
+              <div>
+                <div class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>Lv.2 活潑好奇貓</span>
+                  <span class="text-[10px] px-2 py-0.2 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300 font-bold">【字彙小探險家】</span>
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">掌握 151 ～ 400 字（身體部位、時間星期、飲食動物）</div>
+              </div>
+            </div>
+            <span class="text-xs font-mono font-bold text-orange-600 dark:text-orange-400">151 - 400 字</span>
+          </div>
+
+          <div class="p-3 rounded-2xl border border-indigo-200 dark:border-slate-600 bg-indigo-50/60 dark:bg-slate-700/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🎓</span>
+              <div>
+                <div class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>Lv.3 聰明學霸貓</span>
+                  <span class="text-[10px] px-2 py-0.2 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">【單字守護者】</span>
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">掌握 401 ～ 750 字（學校課堂、休閒運動、核心動詞）</div>
+              </div>
+            </div>
+            <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">401 - 750 字</span>
+          </div>
+
+          <div class="p-3 rounded-2xl border border-emerald-200 dark:border-slate-600 bg-emerald-50/60 dark:bg-slate-700/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🦸</span>
+              <div>
+                <div class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>Lv.4 英勇旅伴貓</span>
+                  <span class="text-[10px] px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-bold">【語感大師】</span>
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">掌握 751 ～ 1050 字（情緒感受、天氣自然、進階片語）</div>
+              </div>
+            </div>
+            <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">751 - 1050 字</span>
+          </div>
+
+          <div class="p-3 rounded-2xl border border-amber-300 dark:border-amber-600 bg-gradient-to-r from-amber-100/80 to-yellow-100/80 dark:from-slate-700 dark:to-slate-700 flex items-center justify-between shadow-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">👑</span>
+              <div>
+                <div class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>Lv.5 傳奇貓神獸</span>
+                  <span class="text-[10px] px-2 py-0.2 rounded-full bg-amber-400 text-amber-950 font-black">【1200會考傳奇守護神】</span>
+                </div>
+                <div class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">掌握 1051 ～ 1200 字（國三會考抽象詞彙、全範圍精通）</div>
+              </div>
+            </div>
+            <span class="text-xs font-mono font-black text-amber-700 dark:text-amber-400">1051 - 1200 字</span>
+          </div>
+        </div>
+
+        <!-- Rules & Affection Info -->
+        <div class="p-4 rounded-2xl bg-pink-50/80 dark:bg-slate-700/40 border border-pink-200 dark:border-slate-600 space-y-2 text-xs text-slate-700 dark:text-slate-200 leading-relaxed">
+          <div class="font-bold text-pink-600 dark:text-pink-400 flex items-center gap-1">
+            <span>💖 咪咪親密度與狂熱雙倍機制：</span>
+          </div>
+          <p>• <b>摸摸頭</b>：每次好感度 +5% ❤️</p>
+          <p>• <b>餵食小魚乾 🐟</b>：每次消耗 1 條魚乾，好感度 +15% 💖</p>
+          <p>• <b>背單字與測驗答對</b>：每次記住單字好感度 +2% 🐾</p>
+          <p>• <b>狂熱雙倍時段 (Fever Time)</b>：親密度累積達 <b>100%</b> 時，咪咪進入狂熱報恩狀態！接下來 10 次練習或測驗，<b>小魚乾獎勵全部雙倍 (+2 🐟)</b>！</p>
+        </div>
+
+        <button onclick="closeCatGrowthGuideModal()" class="w-full py-2.5 bg-slate-800 dark:bg-slate-600 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm">
+          收到！咪咪我們一起加油 🐾
+        </button>
+      </div>
+    </div>
+
+
     <!-- ==================== PI SETTINGS & MULTI-USER SYNC MODAL ==================== -->
     <div id="piSettingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="handleModalBackdropClick(event)">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
@@ -986,6 +1187,51 @@
 
     // Audio Synth for Cat Meow
     let audioCtx = null;
+    // ==================== CAT SOUND SYNTHESIZER ====================
+    function playCatMunchSound() {
+      if (!catSoundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioCtx.currentTime;
+        for (let i = 0; i < 3; i++) {
+          const t = now + i * 0.08;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320 + Math.random() * 60, t);
+          osc.frequency.exponentialRampToValueAtTime(140, t + 0.05);
+          gain.gain.setValueAtTime(0.15, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.055);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.06);
+        }
+      } catch (e) {}
+    }
+
+    function playLevelUpFanfare() {
+      if (!catSoundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const now = audioCtx.currentTime;
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          const t = now + idx * 0.11;
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.16, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.3);
+        });
+      } catch (e) {}
+    }
+
     function playCatMeowSound() {
       if (!catSoundEnabled) return;
       try {
@@ -1030,29 +1276,227 @@
 
 
     function addFish(amount = 1) {
-      fishCount += amount;
+      let finalAmount = amount;
+      if (feverRemainingQuestions > 0) {
+        finalAmount = amount * 2;
+        feverRemainingQuestions--;
+        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
+        if (feverRemainingQuestions === 0) {
+          catAffection = 20; // reset to base after fever
+          localStorage.setItem('wordchecking_cat_affection_v1', catAffection);
+          setTimeout(() => {
+            sayCatSpeech("狂熱時段結束囉～咪咪吃得好開心！繼續加油背單字喵～🐾", "活力充沛");
+          }, 1800);
+        }
+      }
+      fishCount += finalAmount;
       localStorage.setItem(FISH_STORAGE_KEY, fishCount);
       document.getElementById('fishCount').innerText = fishCount;
+      updateCatGrowthUI();
       triggerAutoSaveToPi();
     }
 
 
-    function petTheCat() {
-      playCatMeowSound();
-      const randomSpeech = CAT_SPEECHES[Math.floor(Math.random() * CAT_SPEECHES.length)];
-      sayCatSpeech(randomSpeech, "開心呼嚕中 🐾");
-      const eyeL = document.getElementById('catEyeLeft');
-      const eyeR = document.getElementById('catEyeRight');
-      if (eyeL && eyeR) {
-        eyeL.setAttribute('ry', '1');
-        eyeR.setAttribute('ry', '1');
-        setTimeout(() => {
-          eyeL.setAttribute('ry', '6');
-          eyeR.setAttribute('ry', '6');
-        }, 350);
+    // ==================== CAT GAMIFICATION & AFFECTION ENGINE (v2.0.0) ====================
+    const CAT_LEVEL_CONFIG = [
+      { level: 1, name: "Lv.1 幼幼小奶貓", title: "見習小貓奴", icon: "🍼", min: 0, max: 150 },
+      { level: 2, name: "Lv.2 活潑好奇貓", title: "字彙小探險家", icon: "🧶", min: 150, max: 400 },
+      { level: 3, name: "Lv.3 聰明學霸貓", title: "單字守護者", icon: "🎓", min: 400, max: 750 },
+      { level: 4, name: "Lv.4 英勇旅伴貓", title: "語感大師", icon: "🦸", min: 750, max: 1050 },
+      { level: 5, name: "Lv.5 傳奇貓神獸", title: "1200會考傳奇守護神", icon: "👑", min: 1050, max: 1200 }
+    ];
+
+    let catAffection = parseInt(localStorage.getItem('wordchecking_cat_affection_v1') || '20', 10);
+    let feverRemainingQuestions = parseInt(localStorage.getItem('wordchecking_fever_remaining_v1') || '0', 10);
+    let lastKnownCatLevel = parseInt(localStorage.getItem('wordchecking_cat_level_v1') || '1', 10);
+
+    function calculateTotalMasteredWords() {
+      let total = 0;
+      Object.keys(THEME_REGISTRY).forEach(tKey => {
+        const t = THEME_REGISTRY[tKey];
+        if (t && t.storageKey) {
+          const prog = JSON.parse(localStorage.getItem(t.storageKey) || '{}');
+          Object.values(prog).forEach(v => {
+            if (v === 'mastered') total++;
+          });
+        }
+      });
+      return total;
+    }
+
+    function getCatLevelInfo(totalMastered) {
+      if (totalMastered >= 1050) return CAT_LEVEL_CONFIG[4];
+      if (totalMastered >= 750) return CAT_LEVEL_CONFIG[3];
+      if (totalMastered >= 400) return CAT_LEVEL_CONFIG[2];
+      if (totalMastered >= 150) return CAT_LEVEL_CONFIG[1];
+      return CAT_LEVEL_CONFIG[0];
+    }
+
+    function updateCatGrowthUI() {
+      const totalMastered = calculateTotalMasteredWords();
+      const currentConfig = getCatLevelInfo(totalMastered);
+      const level = currentConfig.level;
+
+      // 1. Update Badge & Title
+      const badgeEl = document.getElementById('catAvatarLevelBadge');
+      if (badgeEl) badgeEl.innerText = `${currentConfig.level === 5 ? '👑' : 'Lv.' + level} ${currentConfig.icon}`;
+      
+      const titleEl = document.getElementById('catTitleBadge');
+      if (titleEl) titleEl.innerText = `【${currentConfig.title}】`;
+
+      const levelNameEl = document.getElementById('catLevelNameText');
+      if (levelNameEl) levelNameEl.innerText = currentConfig.name;
+
+      const totalEl = document.getElementById('catMasteredTotal');
+      if (totalEl) totalEl.innerText = totalMastered;
+
+      // 2. EXP Bar
+      let pct = 0;
+      let nextTargetText = "已達到最高等級！1200 單字大師 👑";
+      if (level < 5) {
+        const span = currentConfig.max - currentConfig.min;
+        const prog = Math.max(0, totalMastered - currentConfig.min);
+        pct = Math.min(100, Math.round((prog / span) * 100));
+        const needed = currentConfig.max - totalMastered;
+        nextTargetText = `距離升級【Lv.${level + 1}】還差 ${needed} 字 🐾`;
+      } else {
+        pct = Math.min(100, Math.round((totalMastered / 1200) * 100));
+      }
+
+      const expBar = document.getElementById('catExpBar');
+      if (expBar) expBar.style.width = `${pct}%`;
+
+      const nextTargetEl = document.getElementById('catNextLevelTargetText');
+      if (nextTargetEl) nextTargetEl.innerText = nextTargetText;
+
+      // 3. Affection Bar & Fever Time
+      const affEl = document.getElementById('catAffectionPct');
+      if (affEl) affEl.innerText = `${catAffection}%`;
+
+      const affBar = document.getElementById('catAffectionBar');
+      if (affBar) affBar.style.width = `${catAffection}%`;
+
+      const feverBadge = document.getElementById('feverBadge');
+      const feverCount = document.getElementById('feverCount');
+      if (feverRemainingQuestions > 0) {
+        if (feverBadge) feverBadge.classList.remove('hidden');
+        if (feverCount) feverCount.innerText = feverRemainingQuestions;
+      } else {
+        if (feverBadge) feverBadge.classList.add('hidden');
+      }
+
+      // 4. Level-up Celebration Check
+      if (level > lastKnownCatLevel) {
+        lastKnownCatLevel = level;
+        localStorage.setItem('wordchecking_cat_level_v1', level);
+        triggerLevelUpCelebration(currentConfig);
       }
     }
 
+    function triggerLevelUpCelebration(config) {
+      playLevelUpFanfare();
+      const avatarBox = document.getElementById('catAvatarBox');
+      if (avatarBox) {
+        avatarBox.classList.add('level-up-pulse');
+        setTimeout(() => avatarBox.classList.remove('level-up-pulse'), 2500);
+      }
+      spawnFloatingHeart("👑");
+      spawnFloatingHeart("🎉");
+      spawnFloatingHeart("⭐");
+      spawnFloatingHeart("🐟");
+
+      fishCount += 10;
+      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+      document.getElementById('fishCount').innerText = fishCount;
+
+      sayCatSpeech(`🎉 太神奇了喵！咪咪進化成長為【${config.name}】！獲得稱號【${config.title}】🐾 送妳 10 條小魚乾 🐟～`, "升級進化！");
+      alert(`🎉 恭喜！咪咪升級進化囉！\n成長階級：${config.name}\n解鎖稱號：【${config.title}】\n咪咪好高興，獎勵 10 條小魚乾 🐟～`);
+      triggerAutoSaveToPi();
+    }
+
+    function spawnFloatingHeart(symbol = "💖") {
+      const container = document.getElementById('catHeartContainer');
+      if (!container) return;
+      const el = document.createElement('div');
+      el.className = 'floating-heart';
+      el.innerText = symbol;
+      const rx = (Math.random() * 40 - 20);
+      const rx2 = (Math.random() * 50 - 25);
+      el.style.setProperty('--dx', `${rx}px`);
+      el.style.setProperty('--dx2', `${rx2}px`);
+      el.style.left = `${30 + Math.random() * 40}%`;
+      el.style.top = `${20 + Math.random() * 30}%`;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 1200);
+    }
+
+    function gainAffection(amount) {
+      catAffection = Math.min(100, (catAffection || 0) + amount);
+      localStorage.setItem('wordchecking_cat_affection_v1', catAffection);
+      if (catAffection >= 100 && feverRemainingQuestions <= 0) {
+        triggerFeverTime();
+      } else {
+        updateCatGrowthUI();
+      }
+    }
+
+    function triggerFeverTime() {
+      feverRemainingQuestions = 10;
+      catAffection = 100;
+      localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
+      updateCatGrowthUI();
+      playLevelUpFanfare();
+      sayCatSpeech("🎉 哇！好感度達到 100% 滿分！咪咪啟動「狂熱報恩時段」～接下來 10 次練習獲得雙倍小魚乾 🐟🐟 喵！", "狂熱雙倍中！");
+      triggerAutoSaveToPi();
+    }
+
+    function petTheCat() {
+      playCatMeowSound();
+      spawnFloatingHeart("❤️");
+      spawnFloatingHeart("🐾");
+      gainAffection(5);
+      const randomSpeech = CAT_SPEECHES[Math.floor(Math.random() * CAT_SPEECHES.length)];
+      sayCatSpeech(randomSpeech, "開心呼嚕中 🐾");
+
+      const eyeL = document.getElementById('catEyeLeft');
+      const eyeR = document.getElementById('catEyeRight');
+      if (eyeL && eyeR) {
+        eyeL.setAttribute('ry', '1.5');
+        eyeR.setAttribute('ry', '1.5');
+        setTimeout(() => {
+          eyeL.setAttribute('ry', '6');
+          eyeR.setAttribute('ry', '6');
+        }, 1200);
+      }
+      triggerAutoSaveToPi();
+    }
+
+    function feedFishToCat() {
+      if (fishCount <= 0) {
+        playCatMeowSound();
+        sayCatSpeech("喵嗚～目前沒有小魚乾了！快去做測驗或背單字賺魚乾給咪咪吃喵～🐟🐾", "肚子餓餓");
+        return;
+      }
+      fishCount--;
+      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+      document.getElementById('fishCount').innerText = fishCount;
+
+      playCatMunchSound();
+      spawnFloatingHeart("🐟");
+      spawnFloatingHeart("💖");
+      gainAffection(15);
+
+      sayCatSpeech(`嚼嚼嚼～太美味了喵！謝謝妳餵咪咪，親密度 +15% 💖 (目前: ${catAffection}%)`, "超愛吃魚");
+      triggerAutoSaveToPi();
+    }
+
+    function openCatGrowthGuideModal() {
+      document.getElementById('catGrowthGuideModal').classList.remove('hidden');
+    }
+
+    function closeCatGrowthGuideModal() {
+      document.getElementById('catGrowthGuideModal').classList.add('hidden');
+    }
 
     function sayCatSpeech(text, mood = "活力滿滿") {
       document.getElementById('catSpeech').innerText = text;
@@ -1145,6 +1589,7 @@
       document.getElementById('fishCount').innerText = fishCount;
       initSpeechRecognition();
       initPiSyncUI();
+      updateCatGrowthUI();
       loadThemeData(currentThemeKey);
       checkAndAutoSyncFromPi(true);
 
@@ -1280,6 +1725,7 @@
       } else {
         document.getElementById('statAccuracy').innerText = '--%';
       }
+      updateCatGrowthUI();
     }
 
 
@@ -1378,6 +1824,8 @@
         sayCatSpeech(`沒關係！貓貓幫妳把 "${item.word}" 記在待加強名單，等等多看兩眼喵～🐾`, "貼心鼓勵");
       }
       renderStats();
+      gainAffection(2);
+      updateCatGrowthUI();
       triggerAutoSaveToPi();
       nextCard();
     }
@@ -2161,7 +2609,15 @@
         }
       });
 
+      catAffection = 20;
+      feverRemainingQuestions = 0;
+      lastKnownCatLevel = 1;
+      localStorage.setItem('wordchecking_cat_affection_v1', '20');
+      localStorage.setItem('wordchecking_fever_remaining_v1', '0');
+      localStorage.setItem('wordchecking_cat_level_v1', '1');
+
       userProgress = {};
+      updateCatGrowthUI();
       renderStats();
       renderCurrentCard();
       if (getActiveMode() === 'list') renderWordTable();
@@ -2182,10 +2638,15 @@
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "1.5.2-test",
+        version: "2.0.0-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
+        catGamification: {
+          affection: catAffection,
+          feverRemaining: feverRemainingQuestions,
+          lastLevel: lastKnownCatLevel
+        },
         progress: {
           numbers: JSON.parse(localStorage.getItem('wordchecking_progress_numbers_v1') || '{}'),
           family: JSON.parse(localStorage.getItem('wordchecking_progress_family_v1') || '{}')
@@ -2435,6 +2896,15 @@
         fishCount = parseInt(payload.fishCount, 10) || 0;
         localStorage.setItem(FISH_STORAGE_KEY, fishCount);
         document.getElementById('fishCount').innerText = fishCount;
+      }
+
+      if (payload.catGamification) {
+        catAffection = parseInt(payload.catGamification.affection, 10) || 20;
+        feverRemainingQuestions = parseInt(payload.catGamification.feverRemaining, 10) || 0;
+        lastKnownCatLevel = parseInt(payload.catGamification.lastLevel, 10) || 1;
+        localStorage.setItem('wordchecking_cat_affection_v1', catAffection);
+        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
+        localStorage.setItem('wordchecking_cat_level_v1', lastKnownCatLevel);
       }
 
       if (payload.progress.numbers) {
