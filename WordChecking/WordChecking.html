@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.3.1-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.3.2-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -89,7 +89,7 @@
       50% { transform: rotate(12deg); }
     }
     .tail-wag {
-      transform-origin: bottom left;
+      transform-origin: 32px 105px;
       animation: tailWag 1.8s ease-in-out infinite;
     }
   
@@ -132,7 +132,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.3.1-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.3.2-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1727,6 +1727,28 @@
       } catch (e) {}
     }
 
+
+        function playCatCheerSound() {
+      if (!catSoundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [587.33, 739.99, 880.00, 1174.66]; // D5, F#5, A5, D6 cheerful chime
+        const now = audioCtx.currentTime;
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          const t = now + idx * 0.09;
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.18, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.35);
+        });
+      } catch (e) {}
+    }
 
     function playLevelUpFanfare() {
       if (!catSoundEnabled) return;
@@ -3812,9 +3834,16 @@
       if (event) event.stopPropagation();
       const tail = document.getElementById('mainCatTail');
       if (tail) {
+        tail.classList.remove('tail-wag');
         tail.classList.remove('tail-wag-fast');
         void tail.offsetWidth;
         tail.classList.add('tail-wag-fast');
+        setTimeout(() => {
+          if (tail) {
+            tail.classList.remove('tail-wag-fast');
+            tail.classList.add('tail-wag');
+          }
+        }, 1600);
       }
       playCatMeowSound();
       sayCatSpeech("喵嗚～！尾巴很敏感的啦！不要偷拉尾巴喵～🐾", "被拉尾巴");
