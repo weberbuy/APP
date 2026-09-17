@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 貓咪換裝養成版 (v2.2.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.3.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -92,6 +92,24 @@
       transform-origin: bottom left;
       animation: tailWag 1.8s ease-in-out infinite;
     }
+  
+    @keyframes catHop {
+      0%, 100% { transform: translateY(0) scale(1); }
+      30% { transform: translateY(-14px) scale(1.06, 0.94); }
+      60% { transform: translateY(-4px) scale(0.97, 1.03); }
+    }
+    .cat-hop {
+      animation: catHop 0.5s ease-out;
+    }
+    @keyframes tailWagFast {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(24deg); }
+    }
+    .tail-wag-fast {
+      transform-origin: 32px 105px;
+      animation: tailWagFast 0.4s ease-in-out 4;
+    }
+
   </style>
 </head>
 <body class="bg-amber-50/40 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
@@ -114,7 +132,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.2.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.3.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -186,49 +204,94 @@
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 relative z-10">
         <!-- Animated Cat Avatar with Level Badge -->
         <div class="flex-shrink-0 cursor-pointer text-center group relative mx-auto sm:mx-0" onclick="petTheCat()">
-          <div id="catAvatarBox" class="w-20 h-20 sm:w-24 sm:h-24 bg-white dark:bg-slate-700 rounded-3xl p-2 shadow-md border-2 border-rose-300 dark:border-rose-500/50 flex items-center justify-center transition transform group-hover:scale-105 relative overflow-visible">
+          <div id="catAvatarBox" class="w-24 h-28 sm:w-28 sm:h-32 bg-white/95 dark:bg-slate-700/95 rounded-3xl p-1.5 shadow-md border-2 border-rose-300 dark:border-rose-500/50 flex items-center justify-center transition transform group-hover:scale-105 relative overflow-visible cursor-pointer">
             <!-- Level Badge -->
-            <span id="catAvatarLevelBadge" class="absolute -top-2 -left-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[11px] font-black px-2 py-0.5 rounded-lg shadow-md border-2 border-white dark:border-slate-800 flex items-center gap-0.5 z-20">
+            <span id="catAvatarLevelBadge" class="absolute -top-2 -left-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[11px] font-black px-2 py-0.5 rounded-lg shadow-md border-2 border-white dark:border-slate-800 flex items-center gap-0.5 z-30">
               Lv.1 🍼
             </span>
             <!-- Floating Hearts Container -->
-            <div id="catHeartContainer" class="absolute inset-0 pointer-events-none overflow-visible"></div>
+            <div id="catHeartContainer" class="absolute inset-0 pointer-events-none overflow-visible z-40"></div>
 
-
-            <svg viewBox="0 0 100 100" id="mainCatSvg" class="w-full h-full overflow-visible">
-              <!-- Accessory Layer: Background Aura -->
+            <svg viewBox="0 0 120 130" id="mainCatSvg" class="w-full h-full overflow-visible">
+              <!-- 0. Background Aura Layer -->
               <g id="mainCatAccAura"></g>
-              <!-- Cat Ears -->
-              <polygon points="20,40 10,12 42,26" fill="#f59e0b" />
-              <polygon points="23,38 16,18 38,28" fill="#fda4af" />
-              <polygon points="80,40 90,12 58,26" fill="#f59e0b" />
-              <polygon points="77,38 84,18 62,28" fill="#fda4af" />
-              <!-- Cat Head -->
-              <ellipse cx="50" cy="55" rx="38" ry="32" fill="#fbbf24" />
-              <!-- Calico Patch -->
-              <path d="M 30,28 Q 50,38 70,28 Q 65,42 50,42 Q 35,42 30,28 Z" fill="#f97316" />
-              <!-- Eyes -->
-              <ellipse cx="36" cy="52" rx="4.5" ry="6" fill="#1e293b" id="catEyeLeft" />
-              <ellipse cx="64" cy="52" rx="4.5" ry="6" fill="#1e293b" id="catEyeRight" />
-              <circle cx="38" cy="50" r="1.5" fill="#ffffff" />
-              <circle cx="66" cy="50" r="1.5" fill="#ffffff" />
-              <!-- Nose & Mouth -->
-              <polygon points="50,62 47,59 53,59" fill="#f43f5e" />
-              <path d="M 45,65 Q 50,70 50,62 Q 50,70 55,65" stroke="#1e293b" stroke-width="2" fill="none" id="catMouthPath" />
-              <!-- Whiskers -->
-              <line x1="15" y1="56" x2="30" y2="58" stroke="#78350f" stroke-width="1.5" />
-              <line x1="14" y1="64" x2="29" y2="63" stroke="#78350f" stroke-width="1.5" />
-              <line x1="85" y1="56" x2="70" y2="58" stroke="#78350f" stroke-width="1.5" />
-              <line x1="86" y1="64" x2="71" y2="63" stroke="#78350f" stroke-width="1.5" />
-              <!-- Cheeks blush -->
-              <circle cx="28" cy="62" r="5" fill="#fca5a5" opacity="0.6" />
-              <circle cx="72" cy="62" r="5" fill="#fca5a5" opacity="0.6" />
-              <!-- Accessory Layer: Face (Blush, Glasses, Sunglasses) -->
-              <g id="mainCatAccFace"></g>
-              <!-- Accessory Layer: Head (Sakura, Bow, Cap, Wizard, Crown) -->
-              <g id="mainCatAccHead"></g>
-              <!-- Accessory Layer: Neck (Bell, Scarf, Bowtie, Medal) -->
+
+              <!-- Ground Shadow -->
+              <ellipse cx="60" cy="120" rx="34" ry="6" fill="#000000" opacity="0.1" />
+
+              <!-- 1. Tail (Animated) -->
+              <g id="mainCatTail" class="tail-wag origin-bottom-left cursor-pointer" onclick="handleTailClick(event)" title="點擊拉拉尾巴">
+                <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
+                <path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />
+              </g>
+
+              <!-- 2. Back Body & Legs -->
+              <g id="mainCatBody" onclick="handleBellyClick(event)" title="點擊搔搔小肚肚">
+                <path d="M 32,80 C 26,92 28,114 42,116 C 52,117 68,117 78,116 C 92,114 94,92 88,80 C 84,70 36,70 32,80 Z" fill="#fbbf24" />
+                <path d="M 28,95 C 28,108 38,116 46,116 C 42,108 40,96 35,90 Z" fill="#f97316" />
+                <path d="M 85,90 C 88,98 86,110 80,115 C 84,106 82,95 78,90 Z" fill="#475569" />
+                <ellipse cx="60" cy="98" rx="16" ry="14" fill="#ffffff" />
+                <!-- Feet -->
+                <ellipse cx="36" cy="116" rx="9" ry="5" fill="#ffffff" />
+                <line x1="33" y1="115" x2="33" y2="118" stroke="#cbd5e1" stroke-width="1" />
+                <line x1="37" y1="115" x2="37" y2="118" stroke="#cbd5e1" stroke-width="1" />
+                <ellipse cx="84" cy="116" rx="9" ry="5" fill="#ffffff" />
+                <line x1="81" y1="115" x2="81" y2="118" stroke="#cbd5e1" stroke-width="1" />
+                <line x1="85" y1="115" x2="85" y2="118" stroke="#cbd5e1" stroke-width="1" />
+                <!-- Front Paws -->
+                <path d="M 48,94 L 48,115 C 48,118 56,118 56,115 L 56,94 Z" fill="#ffffff" />
+                <path d="M 64,94 L 64,115 C 64,118 72,118 72,115 L 72,94 Z" fill="#ffffff" />
+              </g>
+
+              <!-- 3. Body Clothing Layer (Outfits, Dresses, Cloaks) -->
+              <g id="mainCatAccOutfit"></g>
+
+              <!-- 4. Neck Layer (Collar, Scarf, Medal) -->
               <g id="mainCatAccNeck"></g>
+
+              <!-- 5. Head Group -->
+              <g id="mainCatHeadGroup" onclick="handleHeadClick(event)" title="點擊摸摸頭">
+                <!-- Ears -->
+                <polygon points="32,45 20,16 50,30" fill="#f59e0b" />
+                <polygon points="34,42 26,22 47,32" fill="#fda4af" />
+                <polygon points="88,45 100,16 70,30" fill="#f59e0b" />
+                <polygon points="86,42 94,22 73,32" fill="#fda4af" />
+                <!-- Head Ellipse -->
+                <ellipse cx="60" cy="54" rx="35" ry="29" fill="#fbbf24" />
+                <!-- Head Patches -->
+                <path d="M 40,28 C 50,34 60,34 68,26 C 66,40 54,42 40,36 Z" fill="#f97316" />
+                <path d="M 25,48 C 24,58 30,68 36,66 C 32,58 30,50 25,48 Z" fill="#475569" />
+                <!-- Eyes -->
+                <g id="mainCatEyes">
+                  <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" id="mainCatEyeLeft" />
+                  <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
+                  <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" id="mainCatEyeRight" />
+                  <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
+                </g>
+                <!-- Smiling Curved Eyes (for petting state) -->
+                <g id="mainCatHappyEyes" class="hidden">
+                  <path d="M 41,52 Q 46,47 51,52" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                  <path d="M 69,52 Q 74,47 79,52" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                </g>
+                <!-- Nose & Mouth -->
+                <polygon points="60,60 57,57 63,57" fill="#f43f5e" />
+                <path d="M 55,63 Q 60,67 60,60 Q 60,67 65,63" stroke="#1e293b" stroke-width="1.8" fill="none" id="mainCatMouthPath" />
+                <!-- Cheeks -->
+                <circle cx="38" cy="61" r="4.5" fill="#fca5a5" opacity="0.6" />
+                <circle cx="82" cy="61" r="4.5" fill="#fca5a5" opacity="0.6" />
+                <!-- Whiskers -->
+                <line x1="26" y1="56" x2="38" y2="58" stroke="#78350f" stroke-width="1.3" />
+                <line x1="25" y1="63" x2="38" y2="62" stroke="#78350f" stroke-width="1.3" />
+                <line x1="94" y1="56" x2="82" y2="58" stroke="#78350f" stroke-width="1.3" />
+                <line x1="95" y1="63" x2="82" y2="62" stroke="#78350f" stroke-width="1.3" />
+                <!-- Face Accessories -->
+                <g id="mainCatAccFace"></g>
+                <!-- Head Accessories -->
+                <g id="mainCatAccHead"></g>
+              </g>
+
+              <!-- 6. Handheld / Props -->
+              <g id="mainCatAccHand"></g>
             </svg>
           </div>
           <span class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold mt-1 block">摸摸咪咪 🐾</span>
@@ -303,21 +366,25 @@
 
             <!-- Quick Action Buttons -->
             <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-600">
-              <button onclick="petTheCat()" class="px-3 py-1.5 bg-rose-50 dark:bg-slate-700 hover:bg-rose-100 dark:hover:bg-slate-600 text-rose-600 dark:text-rose-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-rose-200 dark:border-slate-600 shadow-2xs">
+              <button onclick="petTheCat()" class="px-2.5 py-1.5 bg-rose-50 dark:bg-slate-700 hover:bg-rose-100 dark:hover:bg-slate-600 text-rose-600 dark:text-rose-300 rounded-xl text-xs font-bold transition flex items-center gap-1 border border-rose-200 dark:border-slate-600 shadow-2xs cursor-pointer" title="摸摸咪咪頭，親密度 +5%">
                 <span>🖐️</span>
                 <span>摸摸咪咪</span>
               </button>
-              <button onclick="feedFishToCat()" class="px-3 py-1.5 bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 dark:hover:bg-slate-600 text-amber-700 dark:text-amber-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-amber-200 dark:border-slate-600 shadow-2xs" title="消耗 1 條小魚乾餵食咪咪，好感度 +15%">
-                <span>🐟</span>
-                <span>餵咪咪吃魚 <span class="text-[10px] text-amber-600 font-normal">(-1魚乾)</span></span>
+              <button onclick="openFeedGourmetModal()" class="px-2.5 py-1.5 bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 dark:hover:bg-slate-600 text-amber-700 dark:text-amber-300 rounded-xl text-xs font-bold transition flex items-center gap-1 border border-amber-200 dark:border-slate-600 shadow-2xs cursor-pointer" title="餵食點心小魚乾、特級鮭魚或海鮮饗宴">
+                <span>🍱</span>
+                <span>點心饗宴</span>
               </button>
-              <button onclick="openWardrobeModal()" class="px-3 py-1.5 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-pink-500/20 cursor-pointer" title="開啟紙娃娃更衣室，為咪咪搭配專屬可愛造型！">
+              <button onclick="playLuckyGacha()" class="px-2.5 py-1.5 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-amber-950 font-black rounded-xl text-xs transition flex items-center gap-1 shadow-xs cursor-pointer" title="消耗 20 魚乾抽取幸運貓爪盲盒，必得驚喜！">
+                <span>🎁</span>
+                <span>幸運盲盒 <span class="text-[10px] font-normal text-amber-900 bg-amber-200/80 px-1.5 py-0.2 rounded-full">20魚</span></span>
+              </button>
+              <button onclick="openWardrobeModal()" class="px-2.5 py-1.5 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm shadow-pink-500/20 cursor-pointer" title="開啟全身紙娃娃換裝室，穿搭可愛配件與衣服！">
                 <span>👗</span>
-                <span>紙娃娃換裝室</span>
+                <span>全身換裝室</span>
               </button>
-              <button onclick="openCatGrowthGuideModal()" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition flex items-center gap-1 ml-auto">
+              <button onclick="openCatGrowthGuideModal()" class="px-2 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition flex items-center gap-1 ml-auto">
                 <span>📖</span>
-                <span>成長階梯指南</span>
+                <span>成長指南</span>
               </button>
             </div>
 
@@ -1018,6 +1085,67 @@
 
 
     
+    
+    <!-- ==================== GOURMET FEED (FEAST) MODAL ==================== -->
+    <div id="feedGourmetModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeFeedGourmetModal()">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between border-b border-amber-100 dark:border-slate-700 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🍱</span>
+            <div>
+              <h3 class="font-bold text-base text-slate-800 dark:text-white">咪咪的美食點心菜單</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">用累積的小魚乾犒賞咪咪，親密度大暴增！🐾</p>
+            </div>
+          </div>
+          <button onclick="closeFeedGourmetModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 flex items-center justify-center font-bold">✕</button>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Item 1: Classic Fish -->
+          <div class="p-3.5 rounded-2xl bg-amber-50/70 dark:bg-slate-700/60 border border-amber-200/80 dark:border-slate-600 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">🐟</span>
+              <div>
+                <div class="font-bold text-sm text-slate-800 dark:text-white">脆口小魚乾零嘴</div>
+                <div class="text-xs text-amber-700 dark:text-amber-300">親密度 +5% 💖 ｜ 解饞常備零食</div>
+              </div>
+            </div>
+            <button onclick="feedMimiGourmet('snack', 1, 5)" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs shadow-2xs transition cursor-pointer">
+              餵食 (1魚)
+            </button>
+          </div>
+
+          <!-- Item 2: Salmon Sashimi -->
+          <div class="p-3.5 rounded-2xl bg-orange-50/70 dark:bg-slate-700/60 border border-orange-200/80 dark:border-slate-600 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">🍣</span>
+              <div>
+                <div class="font-bold text-sm text-slate-800 dark:text-white">特級鮭魚生魚片</div>
+                <div class="text-xs text-orange-700 dark:text-orange-300">親密度 +30% 💖 ｜ 觸發嚼嚼愛心雨！</div>
+              </div>
+            </div>
+            <button onclick="feedMimiGourmet('sashimi', 8, 30)" class="px-3 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-black text-xs shadow-2xs transition cursor-pointer">
+              大啖 (8魚)
+            </button>
+          </div>
+
+          <!-- Item 3: Luxury Seafood Feast -->
+          <div class="p-3.5 rounded-2xl bg-purple-50/70 dark:bg-slate-700/60 border border-purple-200/80 dark:border-slate-600 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">🍱</span>
+              <div>
+                <div class="font-bold text-sm text-slate-800 dark:text-white">頂級滿漢海鮮饗宴</div>
+                <div class="text-xs text-purple-700 dark:text-purple-300">親密度直接加滿 100% 🔥 額外送 10 題狂熱雙倍！</div>
+              </div>
+            </div>
+            <button onclick="feedMimiGourmet('banquet', 25, 100, 10)" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-black text-xs shadow-2xs transition cursor-pointer">
+              盛宴 (25魚)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== CAT WARDROBE (PAPER DOLL) MODAL (v2.2.0) ==================== -->
     <div id="wardrobeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeWardrobeModal()">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-3xl w-full p-5 sm:p-6 shadow-2xl border border-pink-200 dark:border-slate-700 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
@@ -1054,38 +1182,59 @@
           <!-- Left Column: Live Cat Avatar Preview & Reaction Bubble -->
           <div class="md:col-span-5 bg-gradient-to-b from-amber-50/90 via-pink-50/60 to-purple-50/80 dark:from-slate-700/80 dark:via-slate-700/60 dark:to-slate-800/90 p-4 rounded-3xl border border-pink-200/80 dark:border-slate-600 flex flex-col items-center text-center shadow-inner relative">
             <div class="w-36 h-36 sm:w-40 sm:h-40 relative flex items-center justify-center">
-              <svg viewBox="0 0 100 100" id="wardrobeCatSvg" class="w-full h-full overflow-visible drop-shadow-md">
-                <!-- Accessory Layer: Background Aura -->
+              <svg viewBox="0 0 120 130" id="wardrobeCatSvg" class="w-full h-full overflow-visible drop-shadow-md">
+                <!-- 0. Background Aura Layer -->
                 <g id="wardrobeCatAccAura"></g>
-                <!-- Cat Ears -->
-                <polygon points="20,40 10,12 42,26" fill="#f59e0b" />
-                <polygon points="23,38 16,18 38,28" fill="#fda4af" />
-                <polygon points="80,40 90,12 58,26" fill="#f59e0b" />
-                <polygon points="77,38 84,18 62,28" fill="#fda4af" />
-                <!-- Cat Head -->
-                <ellipse cx="50" cy="55" rx="38" ry="32" fill="#fbbf24" />
-                <!-- Calico Patch -->
-                <path d="M 30,28 Q 50,38 70,28 Q 65,42 50,42 Q 35,42 30,28 Z" fill="#f97316" />
-                <!-- Eyes -->
-                <ellipse cx="36" cy="52" rx="4.5" ry="6" fill="#1e293b" id="wardrobeCatEyeLeft" />
-                <ellipse cx="64" cy="52" rx="4.5" ry="6" fill="#1e293b" id="wardrobeCatEyeRight" />
-                <circle cx="38" cy="50" r="1.5" fill="#ffffff" />
-                <circle cx="66" cy="50" r="1.5" fill="#ffffff" />
-                <!-- Nose & Mouth -->
-                <polygon points="50,62 47,59 53,59" fill="#f43f5e" />
-                <path d="M 45,65 Q 50,70 50,62 Q 50,70 55,65" stroke="#1e293b" stroke-width="2" fill="none" />
-                <!-- Whiskers -->
-                <line x1="15" y1="56" x2="30" y2="58" stroke="#78350f" stroke-width="1.5" />
-                <line x1="14" y1="64" x2="29" y2="63" stroke="#78350f" stroke-width="1.5" />
-                <line x1="85" y1="56" x2="70" y2="58" stroke="#78350f" stroke-width="1.5" />
-                <line x1="86" y1="64" x2="71" y2="63" stroke="#78350f" stroke-width="1.5" />
-                <!-- Cheeks blush -->
-                <circle cx="28" cy="62" r="5" fill="#fca5a5" opacity="0.6" />
-                <circle cx="72" cy="62" r="5" fill="#fca5a5" opacity="0.6" />
-                <!-- Accessory Layers -->
-                <g id="wardrobeCatAccFace"></g>
-                <g id="wardrobeCatAccHead"></g>
+                <!-- Ground Shadow -->
+                <ellipse cx="60" cy="120" rx="34" ry="6" fill="#000000" opacity="0.1" />
+                <!-- 1. Tail -->
+                <g id="wardrobeCatTail" class="tail-wag origin-bottom-left">
+                  <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
+                  <path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />
+                </g>
+                <!-- 2. Body -->
+                <g id="wardrobeCatBody">
+                  <path d="M 32,80 C 26,92 28,114 42,116 C 52,117 68,117 78,116 C 92,114 94,92 88,80 C 84,70 36,70 32,80 Z" fill="#fbbf24" />
+                  <path d="M 28,95 C 28,108 38,116 46,116 C 42,108 40,96 35,90 Z" fill="#f97316" />
+                  <path d="M 85,90 C 88,98 86,110 80,115 C 84,106 82,95 78,90 Z" fill="#475569" />
+                  <ellipse cx="60" cy="98" rx="16" ry="14" fill="#ffffff" />
+                  <ellipse cx="36" cy="116" rx="9" ry="5" fill="#ffffff" />
+                  <ellipse cx="84" cy="116" rx="9" ry="5" fill="#ffffff" />
+                  <path d="M 48,94 L 48,115 C 48,118 56,118 56,115 L 56,94 Z" fill="#ffffff" />
+                  <path d="M 64,94 L 64,115 C 64,118 72,118 72,115 L 72,94 Z" fill="#ffffff" />
+                </g>
+                <!-- 3. Outfit Layer -->
+                <g id="wardrobeCatAccOutfit"></g>
+                <!-- 4. Neck Layer -->
                 <g id="wardrobeCatAccNeck"></g>
+                <!-- 5. Head Group -->
+                <g id="wardrobeCatHeadGroup">
+                  <polygon points="32,45 20,16 50,30" fill="#f59e0b" />
+                  <polygon points="34,42 26,22 47,32" fill="#fda4af" />
+                  <polygon points="88,45 100,16 70,30" fill="#f59e0b" />
+                  <polygon points="86,42 94,22 73,32" fill="#fda4af" />
+                  <ellipse cx="60" cy="54" rx="35" ry="29" fill="#fbbf24" />
+                  <path d="M 40,28 C 50,34 60,34 68,26 C 66,40 54,42 40,36 Z" fill="#f97316" />
+                  <path d="M 25,48 C 24,58 30,68 36,66 C 32,58 30,50 25,48 Z" fill="#475569" />
+                  <g id="wardrobeCatEyes">
+                    <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+                    <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
+                    <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+                    <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
+                  </g>
+                  <polygon points="60,60 57,57 63,57" fill="#f43f5e" />
+                  <path d="M 55,63 Q 60,67 60,60 Q 60,67 65,63" stroke="#1e293b" stroke-width="1.8" fill="none" />
+                  <circle cx="38" cy="61" r="4.5" fill="#fca5a5" opacity="0.6" />
+                  <circle cx="82" cy="61" r="4.5" fill="#fca5a5" opacity="0.6" />
+                  <line x1="26" y1="56" x2="38" y2="58" stroke="#78350f" stroke-width="1.3" />
+                  <line x1="25" y1="63" x2="38" y2="62" stroke="#78350f" stroke-width="1.3" />
+                  <line x1="94" y1="56" x2="82" y2="58" stroke="#78350f" stroke-width="1.3" />
+                  <line x1="95" y1="63" x2="82" y2="62" stroke="#78350f" stroke-width="1.3" />
+                  <g id="wardrobeCatAccFace"></g>
+                  <g id="wardrobeCatAccHead"></g>
+                </g>
+                <!-- 6. Handheld Layer -->
+                <g id="wardrobeCatAccHand"></g>
               </svg>
             </div>
 
@@ -1115,18 +1264,24 @@
           <div class="md:col-span-7 space-y-3">
             
             <!-- Category Tabs -->
-            <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-700/70 rounded-2xl overflow-x-auto text-xs font-bold">
-              <button onclick="switchWardrobeTab('head')" id="tabBtn_head" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs">
-                🎀 頭飾帽子
+            <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-700/70 rounded-2xl overflow-x-auto text-xs font-bold">
+              <button onclick="switchWardrobeTab('head')" id="tabBtn_head" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs">
+                🎀 頭部
               </button>
-              <button onclick="switchWardrobeTab('face')" id="tabBtn_face" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer text-slate-600 dark:text-slate-300 hover:text-slate-900">
-                👓 面部裝飾
+              <button onclick="switchWardrobeTab('face')" id="tabBtn_face" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900">
+                👓 面部
               </button>
-              <button onclick="switchWardrobeTab('neck')" id="tabBtn_neck" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer text-slate-600 dark:text-slate-300 hover:text-slate-900">
-                🧣 頸部領巾
+              <button onclick="switchWardrobeTab('neck')" id="tabBtn_neck" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900">
+                🧣 頸部
               </button>
-              <button onclick="switchWardrobeTab('aura')" id="tabBtn_aura" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer text-slate-600 dark:text-slate-300 hover:text-slate-900">
-                ✨ 光環特效
+              <button onclick="switchWardrobeTab('outfit')" id="tabBtn_outfit" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900">
+                👗 衣服
+              </button>
+              <button onclick="switchWardrobeTab('hand')" id="tabBtn_hand" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900">
+                🐾 手持
+              </button>
+              <button onclick="switchWardrobeTab('aura')" id="tabBtn_aura" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900">
+                ✨ 光環
               </button>
             </div>
 
@@ -3176,7 +3331,7 @@
 
 
     
-    // ==================== CAT WARDROBE (PAPER DOLL) SYSTEM (Phase 2, v2.2.0) ====================
+    // ==================== CAT WARDROBE & FULL-BODY INTERACTIVE SYSTEM (v2.3.0) ====================
     const WARDROBE_STORAGE_KEY = 'wordchecking_cat_wardrobe_v1';
 
     const ACCESSORIES_SVG = {
@@ -3184,48 +3339,56 @@
         aura_none: "",
         aura_sparkle: `
           <g id="acc_aura_sparkle" class="animate-pulse">
-            <path d="M 14,22 Q 18,22 18,18 Q 18,22 22,22 Q 18,22 18,26 Q 18,22 14,22 Z" fill="#facc15" />
-            <path d="M 82,20 Q 86,20 86,16 Q 86,20 90,20 Q 86,20 86,24 Q 86,20 82,20 Z" fill="#facc15" />
-            <path d="M 10,65 Q 13,65 13,62 Q 13,65 16,65 Q 13,65 13,68 Q 13,65 10,65 Z" fill="#fde047" />
-            <path d="M 88,68 Q 91,68 91,65 Q 91,68 94,68 Q 91,68 91,71 Q 91,68 88,68 Z" fill="#fde047" />
+            <path d="M 16,25 Q 22,25 22,19 Q 22,25 28,25 Q 22,25 22,31 Q 22,25 16,25 Z" fill="#facc15" />
+            <path d="M 96,22 Q 102,22 102,16 Q 102,22 108,22 Q 102,22 102,28 Q 102,22 96,22 Z" fill="#facc15" />
+            <path d="M 8,82 Q 12,82 12,78 Q 12,82 16,82 Q 12,82 12,86 Q 12,82 8,82 Z" fill="#fde047" />
+            <path d="M 104,85 Q 108,85 108,81 Q 108,85 112,85 Q 108,85 108,89 Q 108,85 104,85 Z" fill="#fde047" />
           </g>`,
         aura_fish: `
-          <g id="acc_aura_fish" opacity="0.9">
-            <g transform="translate(10, 25) rotate(-15)">
-              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
+          <g id="acc_aura_fish" opacity="0.95">
+            <g transform="translate(14, 30) rotate(-15)">
+              <path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
             </g>
-            <g transform="translate(80, 20) rotate(20)">
-              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
+            <g transform="translate(94, 25) rotate(20)">
+              <path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
             </g>
-            <g transform="translate(12, 70) rotate(10)">
-              <path d="M 0,0 Q 5,-3 10,0 Q 5,3 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
+            <g transform="translate(10, 85) rotate(12)">
+              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
             </g>
-            <g transform="translate(82, 65) rotate(-10)">
-              <path d="M 0,0 Q 5,-3 10,0 Q 5,3 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
+            <g transform="translate(96, 80) rotate(-10)">
+              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
             </g>
           </g>`,
         aura_sakura: `
-          <g id="acc_aura_sakura" opacity="0.85">
-            <circle cx="16" cy="20" r="3" fill="#f472b6" />
-            <circle cx="22" cy="16" r="2.2" fill="#fda4af" />
-            <circle cx="82" cy="18" r="3.2" fill="#f472b6" />
-            <circle cx="86" cy="25" r="2" fill="#fda4af" />
-            <circle cx="12" cy="62" r="2.5" fill="#fbcfe8" />
-            <circle cx="88" cy="65" r="2.8" fill="#fbcfe8" />
+          <g id="acc_aura_sakura" opacity="0.9">
+            <circle cx="18" cy="24" r="3.5" fill="#f472b6" />
+            <circle cx="26" cy="18" r="2.5" fill="#fda4af" />
+            <circle cx="98" cy="20" r="3.5" fill="#f472b6" />
+            <circle cx="106" cy="28" r="2.2" fill="#fda4af" />
+            <circle cx="12" cy="75" r="3" fill="#fbcfe8" />
+            <circle cx="106" cy="80" r="3.2" fill="#fbcfe8" />
+          </g>`,
+        aura_wings: `
+          <!-- Lv.4 Adventurer Wings -->
+          <g id="acc_aura_wings" opacity="0.92">
+            <path d="M 36,75 C 10,65 -5,40 10,32 C 16,30 22,35 24,42 C 18,48 24,62 38,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+            <path d="M 24,42 C 28,45 32,56 38,65" stroke="#cbd5e1" stroke-width="1" fill="none" />
+            <path d="M 84,75 C 110,65 125,40 110,32 C 104,30 98,35 96,42 C 102,48 96,62 82,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+            <path d="M 96,42 C 92,45 88,56 82,65" stroke="#cbd5e1" stroke-width="1" fill="none" />
           </g>`,
         aura_rainbow: `
           <g id="acc_aura_rainbow">
-            <path d="M 12,38 A 40,40 0 0,1 88,38" stroke="#f43f5e" stroke-width="2" fill="none" opacity="0.6" />
-            <path d="M 14,36 A 38,38 0 0,1 86,36" stroke="#f59e0b" stroke-width="2" fill="none" opacity="0.6" />
-            <path d="M 16,34 A 36,36 0 0,1 84,34" stroke="#10b981" stroke-width="2" fill="none" opacity="0.6" />
-            <path d="M 18,32 A 34,34 0 0,1 82,32" stroke="#3b82f6" stroke-width="2" fill="none" opacity="0.6" />
-            <path d="M 20,30 A 32,32 0 0,1 80,30" stroke="#8b5cf6" stroke-width="2" fill="none" opacity="0.6" />
+            <path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" />
+            <path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" />
+            <path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" />
+            <path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" />
+            <path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" />
           </g>`
       },
       head: {
         head_none: "",
         head_sakura: `
-          <g id="acc_head_sakura" transform="translate(68, 26)">
+          <g id="acc_head_sakura" transform="translate(80, 24)">
             <circle cx="-4" cy="-1" r="3.5" fill="#f472b6" />
             <circle cx="4" cy="-1" r="3.5" fill="#f472b6" />
             <circle cx="0" cy="-5" r="3.5" fill="#f472b6" />
@@ -3234,35 +3397,44 @@
             <circle cx="0" cy="0" r="2.8" fill="#fef08a" />
           </g>`,
         head_ribbon: `
-          <g id="acc_head_ribbon" transform="translate(50, 24)">
+          <g id="acc_head_ribbon" transform="translate(60, 24)">
             <polygon points="-1,-1 -16,-9 -13,7 -1,1" fill="#ec4899" />
             <polygon points="1,-1 16,-9 13,7 1,1" fill="#ec4899" />
             <ellipse cx="0" cy="0" rx="4.5" ry="4" fill="#db2777" />
             <circle cx="0" cy="0" r="2" fill="#fbcfe8" />
           </g>`,
         head_cap: `
-          <g id="acc_head_cap" transform="translate(50, 22)">
+          <g id="acc_head_cap" transform="translate(60, 22)">
             <ellipse cx="0" cy="2" rx="28" ry="11" fill="#ef4444" />
             <path d="M -26,3 Q 0,-12 26,3 Q 0,-8 -26,3 Z" fill="#b91c1c" />
             <path d="M 12,2 Q 30,-2 42,4 Q 28,10 14,5 Z" fill="#1e3a8a" />
             <circle cx="0" cy="-6" r="2.5" fill="#ffffff" />
           </g>`,
         head_grad: `
-          <g id="acc_head_grad" transform="translate(50, 20)">
+          <g id="acc_head_grad" transform="translate(60, 18)">
             <polygon points="0,-12 -28,-3 0,6 28,-3" fill="#1e293b" />
             <polygon points="-16,0 -16,8 16,8 16,0" fill="#334155" />
             <path d="M 0,-3 L 24,2 L 26,14" stroke="#f59e0b" stroke-width="2" fill="none" />
             <circle cx="26" cy="15" r="2" fill="#d97706" />
           </g>`,
+        head_ranger: `
+          <!-- Lv.4 Adventurer Ranger Hat -->
+          <g id="acc_head_ranger" transform="translate(60, 20)">
+            <ellipse cx="0" cy="4" rx="30" ry="7" fill="#15803d" />
+            <path d="M -22,4 C -16,-10 16,-10 22,4 Z" fill="#16a34a" />
+            <rect x="-18" y="2" width="36" height="3" fill="#ca8a04" />
+            <path d="M 10,2 C 16,-12 28,-20 36,-18 C 30,-12 22,-4 16,2 Z" fill="#ef4444" />
+            <line x1="12" y1="2" x2="32" y2="-17" stroke="#b91c1c" stroke-width="0.8" />
+          </g>`,
         head_wizard: `
-          <g id="acc_head_wizard" transform="translate(50, 20)">
+          <g id="acc_head_wizard" transform="translate(60, 18)">
             <ellipse cx="0" cy="8" rx="30" ry="6" fill="#312e81" />
             <path d="M -20,7 Q -8,-8 10,-24 Q 2,-6 20,7 Z" fill="#4338ca" />
             <ellipse cx="0" cy="6" rx="20" ry="3" fill="#fbbf24" />
             <polygon points="10,-24 13,-21 16,-24 14,-21 17,-19 13,-19 12,-16 11,-19 7,-19 10,-21" fill="#facc15" />
           </g>`,
         head_crown: `
-          <g id="acc_head_crown" transform="translate(50, 18)">
+          <g id="acc_head_crown" transform="translate(60, 16)">
             <path d="M -22,8 L -18,-7 L -9,2 L 0,-11 L 9,2 L 18,-7 L 22,8 Z" fill="#eab308" stroke="#ca8a04" stroke-width="1.5" />
             <rect x="-21" y="6" width="42" height="4" rx="2" fill="#ca8a04" />
             <circle cx="0" cy="-11" r="2.8" fill="#ef4444" />
@@ -3275,101 +3447,189 @@
         face_none: "",
         face_blush: `
           <g id="acc_face_blush">
-            <g transform="translate(28, 62)">
+            <g transform="translate(38, 61)">
               <path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" />
             </g>
-            <g transform="translate(72, 62)">
+            <g transform="translate(82, 61)">
               <path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" />
             </g>
           </g>`,
         face_glasses: `
           <g id="acc_face_glasses">
-            <circle cx="36" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
-            <circle cx="64" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
-            <path d="M 45.5,52 Q 50,48.5 54.5,52" stroke="#78350f" stroke-width="2.2" fill="none" />
-            <line x1="26.5" y1="51" x2="16" y2="48" stroke="#78350f" stroke-width="1.8" />
-            <line x1="73.5" y1="51" x2="84" y2="48" stroke="#78350f" stroke-width="1.8" />
+            <circle cx="46" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
+            <circle cx="74" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
+            <path d="M 55.5,52 Q 60,48.5 64.5,52" stroke="#78350f" stroke-width="2.2" fill="none" />
+            <line x1="36.5" y1="51" x2="26" y2="48" stroke="#78350f" stroke-width="1.8" />
+            <line x1="83.5" y1="51" x2="94" y2="48" stroke="#78350f" stroke-width="1.8" />
           </g>`,
         face_sunglasses: `
           <g id="acc_face_sunglasses">
-            <path d="M 24,46 L 46,46 L 44,58 Q 35,63 26,58 Z" fill="#0f172a" />
-            <path d="M 54,46 L 76,46 L 74,58 Q 65,63 56,58 Z" fill="#0f172a" />
-            <line x1="46" y1="48" x2="54" y2="48" stroke="#0f172a" stroke-width="3" />
-            <line x1="24" y1="48" x2="15" y2="46" stroke="#0f172a" stroke-width="2.2" />
-            <line x1="76" y1="48" x2="85" y2="46" stroke="#0f172a" stroke-width="2.2" />
-            <path d="M 27,48 L 36,48 L 30,55 Z" fill="#ffffff" opacity="0.35" />
-            <path d="M 57,48 L 66,48 L 60,55 Z" fill="#ffffff" opacity="0.35" />
+            <path d="M 34,46 L 56,46 L 54,58 Q 45,63 36,58 Z" fill="#0f172a" />
+            <path d="M 64,46 L 86,46 L 84,58 Q 75,63 66,58 Z" fill="#0f172a" />
+            <line x1="56" y1="48" x2="64" y2="48" stroke="#0f172a" stroke-width="3" />
+            <line x1="34" y1="48" x2="25" y2="46" stroke="#0f172a" stroke-width="2.2" />
+            <line x1="86" y1="48" x2="95" y2="46" stroke="#0f172a" stroke-width="2.2" />
+            <path d="M 37,48 L 46,48 L 40,55 Z" fill="#ffffff" opacity="0.35" />
+            <path d="M 67,48 L 76,48 L 70,55 Z" fill="#ffffff" opacity="0.35" />
           </g>`
       },
       neck: {
         neck_none: "",
         neck_bell: `
           <g id="acc_neck_bell">
-            <path d="M 25,78 Q 50,91 75,78" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" fill="none" />
-            <circle cx="50" cy="85" r="5.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.2" />
-            <line x1="46" y1="84" x2="54" y2="84" stroke="#854d0e" stroke-width="1" />
-            <circle cx="50" cy="87" r="1.3" fill="#713f12" />
+            <path d="M 35,74 Q 60,86 85,74" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" fill="none" />
+            <circle cx="60" cy="82" r="5.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.2" />
+            <line x1="56" y1="81" x2="64" y2="81" stroke="#854d0e" stroke-width="1" />
+            <circle cx="60" cy="84" r="1.3" fill="#713f12" />
           </g>`,
         neck_scarf: `
           <g id="acc_neck_scarf">
-            <path d="M 20,77 Q 50,92 80,77 Q 50,97 20,77 Z" fill="#dc2626" />
-            <rect x="53" y="82" width="10" height="15" rx="3" fill="#b91c1c" transform="rotate(-15 53 82)" />
-            <line x1="53" y1="96" x2="62" y2="94" stroke="#fecaca" stroke-width="1.5" />
+            <path d="M 30,73 Q 60,88 90,73 Q 60,93 30,73 Z" fill="#dc2626" />
+            <rect x="63" y="78" width="10" height="18" rx="3" fill="#b91c1c" transform="rotate(-15 63 78)" />
+            <line x1="63" y1="94" x2="72" y2="92" stroke="#fecaca" stroke-width="1.5" />
           </g>`,
         neck_bowtie: `
           <g id="acc_neck_bowtie">
-            <polygon points="50,83 38,76 38,90" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
-            <polygon points="50,83 62,76 62,90" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
-            <ellipse cx="50" cy="83" rx="3.5" ry="3.5" fill="#2563eb" />
+            <polygon points="60,78 48,71 48,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
+            <polygon points="60,78 72,71 72,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
+            <ellipse cx="60" cy="78" rx="3.5" ry="3.5" fill="#2563eb" />
           </g>`,
         neck_medal: `
           <g id="acc_neck_medal">
-            <path d="M 42,78 L 50,86 L 58,78" stroke="#2563eb" stroke-width="3" fill="none" />
-            <circle cx="50" cy="90" r="6.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" />
-            <text x="50" y="93" text-anchor="middle" font-size="7" font-weight="900" fill="#78350f">1</text>
+            <path d="M 52,74 L 60,82 L 68,74" stroke="#2563eb" stroke-width="3" fill="none" />
+            <circle cx="60" cy="86" r="6.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" />
+            <text x="60" y="89" text-anchor="middle" font-size="7" font-weight="900" fill="#78350f">1</text>
+          </g>`
+      },
+      outfit: {
+        outfit_none: "",
+        outfit_backpack: `
+          <!-- Lv.2 Explorer Backpack -->
+          <g id="acc_outfit_backpack">
+            <path d="M 42,75 L 44,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" />
+            <path d="M 78,75 L 76,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" />
+            <rect x="42" y="84" width="4" height="4" rx="1" fill="#facc15" />
+            <rect x="74" y="84" width="4" height="4" rx="1" fill="#facc15" />
+          </g>`,
+        outfit_cloak: `
+          <!-- Lv.4 Hero Adventurer Cloak -->
+          <g id="acc_outfit_cloak">
+            <path d="M 32,74 C 20,86 16,112 25,116 C 36,118 42,105 46,95 C 54,92 66,92 74,95 C 78,105 84,118 95,116 C 104,112 100,86 88,74 Z" fill="#b91c1c" />
+            <path d="M 25,116 C 36,118 42,105 46,95" stroke="#facc15" stroke-width="2" fill="none" />
+            <path d="M 74,95 C 78,105 84,118 95,116" stroke="#facc15" stroke-width="2" fill="none" />
+            <circle cx="60" cy="76" r="4.5" fill="#facc15" />
+            <circle cx="60" cy="76" r="2.5" fill="#ef4444" />
+          </g>`,
+        outfit_sailor: `
+          <!-- Japanese Sailor Uniform -->
+          <g id="acc_outfit_sailor">
+            <path d="M 36,80 C 32,95 44,106 60,106 C 76,106 88,95 84,80 Z" fill="#1e3a8a" />
+            <polygon points="60,95 48,78 72,78" fill="#ffffff" />
+            <polygon points="60,82 56,92 64,92" fill="#ef4444" />
+            <polygon points="60,92 54,102 66,102" fill="#dc2626" />
+            <path d="M 44,76 L 36,86 L 46,86" stroke="#ffffff" stroke-width="2" fill="none" />
+            <path d="M 76,76 L 84,86 L 74,86" stroke="#ffffff" stroke-width="2" fill="none" />
+          </g>`,
+        outfit_dress: `
+          <!-- Princess Frilly Dress -->
+          <g id="acc_outfit_dress">
+            <path d="M 40,78 C 30,94 28,108 34,112 C 45,115 75,115 86,112 C 92,108 90,94 80,78 Z" fill="#f472b6" />
+            <path d="M 34,112 Q 47,108 60,112 Q 73,108 86,112" stroke="#ffffff" stroke-width="3" fill="none" />
+            <rect x="42" y="86" width="36" height="4" rx="2" fill="#db2777" />
+            <circle cx="60" cy="88" r="3.5" fill="#fbcfe8" />
+          </g>`
+      },
+      hand: {
+        hand_none: "",
+        hand_fishbone: `
+          <g id="acc_hand_fishbone" transform="translate(82, 100) rotate(-20)">
+            <line x1="0" y1="0" x2="20" y2="0" stroke="#94a3b8" stroke-width="2" />
+            <line x1="5" y1="-5" x2="5" y2="5" stroke="#94a3b8" stroke-width="1.8" />
+            <line x1="10" y1="-6" x2="10" y2="6" stroke="#94a3b8" stroke-width="1.8" />
+            <line x1="15" y1="-5" x2="15" y2="5" stroke="#94a3b8" stroke-width="1.8" />
+            <polygon points="20,0 26,-6 26,6" fill="#94a3b8" />
+            <circle cx="0" cy="0" r="3.5" fill="#cbd5e1" />
+          </g>`,
+        hand_book: `
+          <!-- Lv.3 English Dictionary -->
+          <g id="acc_hand_book" transform="translate(75, 96) rotate(15)">
+            <rect x="0" y="0" width="18" height="22" rx="2" fill="#2563eb" stroke="#1d4ed8" stroke-width="1" />
+            <rect x="2" y="2" width="14" height="18" rx="1" fill="#ffffff" />
+            <text x="9" y="14" text-anchor="middle" font-size="8" font-weight="bold" fill="#1e3a8a">EN</text>
+          </g>`,
+        hand_icecream: `
+          <g id="acc_hand_icecream" transform="translate(80, 94)">
+            <polygon points="0,6 12,6 6,24" fill="#d97706" />
+            <circle cx="6" cy="4" r="6.5" fill="#f472b6" />
+            <circle cx="6" cy="4" r="2" fill="#ef4444" />
+          </g>`,
+        hand_wand: `
+          <!-- Lv.5 Magic Star Wand -->
+          <g id="acc_hand_wand" transform="translate(76, 92) rotate(25)">
+            <line x1="0" y1="0" x2="0" y2="28" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" />
+            <polygon points="0,-8 2.5,-2 8.5,-2 4,1.5 6,7.5 0,4 -6,7.5 -4,1.5 -8.5,-2 -2.5,-2" fill="#facc15" />
+            <circle cx="0" cy="0" r="2.5" fill="#ef4444" />
           </g>`
       }
     };
 
+    // Balanced Tiered Wardrobe Catalog with Clear Level Rewards
     const WARDROBE_CATALOG = {
       head: [
-        { id: 'head_none', name: '無飾品', icon: '🚫', desc: '保持純真自然小貓樣貌', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'head_sakura', name: '🌸 櫻花小花飾', icon: '🌸', desc: '粉嫩櫻花，散發甜美初春氣息', unlockType: 'level', price: 0, reqLevel: 1 },
-        { id: 'head_ribbon', name: '🎀 萌萌蝴蝶結', icon: '🎀', desc: '可愛俏皮的粉紅大蝴蝶結', unlockType: 'fish', price: 5, reqLevel: 1 },
-        { id: 'head_cap', name: '🧢 活力運動帽', icon: '🧢', desc: '充滿活力的反戴棒球帽', unlockType: 'fish', price: 8, reqLevel: 2 },
-        { id: 'head_grad', name: '🎓 學霸博士帽', icon: '🎓', desc: 'Lv.3 學霸貓專屬成就象徵！', unlockType: 'level', price: 0, reqLevel: 3 },
-        { id: 'head_wizard', name: '🧙 魔法巫師帽', icon: '🧙', desc: '充滿神秘魔法力量的尖頂帽', unlockType: 'fish', price: 15, reqLevel: 4 },
-        { id: 'head_crown', name: '👑 傳奇璀璨皇冠', icon: '👑', desc: 'Lv.5 傳奇貓神獸專屬至高榮耀！', unlockType: 'level', price: 0, reqLevel: 5 }
+        { id: 'head_none', name: '無飾品', icon: '🚫', desc: '純真自然小貓樣貌', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'head_sakura', name: '🌸 櫻花小花飾', icon: '🌸', desc: '【Lv.1 免費】粉嫩櫻花初春氣息', unlockType: 'level', price: 0, reqLevel: 1 },
+        { id: 'head_ribbon', name: '🎀 萌萌蝴蝶結', icon: '🎀', desc: '俏皮可愛的大粉紅蝴蝶結', unlockType: 'fish', price: 15, reqLevel: 1 },
+        { id: 'head_cap', name: '🧢 活力運動帽', icon: '🧢', desc: '反戴潮流街頭風棒球帽', unlockType: 'fish', price: 30, reqLevel: 2 },
+        { id: 'head_grad', name: '🎓 學霸博士帽', icon: '🎓', desc: '【Lv.3 免費】掌握400字學霸象徵！', unlockType: 'level', price: 0, reqLevel: 3 },
+        { id: 'head_ranger', name: '🏹 冒險獵鷹羽毛帽', icon: '🏹', desc: '【Lv.4 免費】750字英勇旅伴專屬勳章！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'head_wizard', name: '🧙 魔法巫師帽', icon: '🧙', desc: '蘊藏強大魔力的神秘巫師帽', unlockType: 'fish', price: 60, reqLevel: 3 },
+        { id: 'head_crown', name: '👑 傳奇璀璨皇冠', icon: '👑', desc: '【Lv.5 免費】1200會考傳奇守護神至高榮耀！', unlockType: 'level', price: 0, reqLevel: 5 }
       ],
       face: [
         { id: 'face_none', name: '無飾品', icon: '🚫', desc: '清秀乾淨的小臉龐', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'face_blush', name: '✨ 星光微醺腮紅', icon: '✨', desc: '臉頰閃爍著可愛的害羞星芒', unlockType: 'level', price: 0, reqLevel: 1 },
-        { id: 'face_glasses', name: '👓 知性圓圓眼鏡', icon: '👓', desc: '戴上立刻智慧加倍，單字全懂！', unlockType: 'fish', price: 8, reqLevel: 2 },
-        { id: 'face_sunglasses', name: '🕶️ 酷黑潮流墨鏡', icon: '🕶️', desc: '超帥氣黑超墨鏡，回頭率百分百', unlockType: 'fish', price: 12, reqLevel: 3 }
+        { id: 'face_blush', name: '✨ 星光微醺腮紅', icon: '✨', desc: '【Lv.1 免費】臉頰閃爍害羞星芒', unlockType: 'level', price: 0, reqLevel: 1 },
+        { id: 'face_glasses', name: '👓 知性圓圓眼鏡', icon: '👓', desc: '智慧加倍，背單字超專注！', unlockType: 'fish', price: 25, reqLevel: 2 },
+        { id: 'face_sunglasses', name: '🕶️ 酷黑潮流墨鏡', icon: '🕶️', desc: '街頭酷帥潮流，回頭率百分百', unlockType: 'fish', price: 40, reqLevel: 3 }
       ],
       neck: [
-        { id: 'neck_none', name: '無飾品', icon: '🚫', desc: '舒適輕便無束縛', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'neck_bell', name: '🔔 招財黃金鈴鐺', icon: '🔔', desc: '走起路來叮噹作響，帶來好運', unlockType: 'level', price: 0, reqLevel: 1 },
-        { id: 'neck_scarf', name: '🧣 暖冬經典圍巾', icon: '🧣', desc: '寒冬背單字最溫暖的紅色圍巾', unlockType: 'fish', price: 8, reqLevel: 2 },
-        { id: 'neck_bowtie', name: '👔 英倫貴族領結', icon: '👔', desc: '優雅俐落的小紳士風格領結', unlockType: 'fish', price: 10, reqLevel: 3 },
-        { id: 'neck_medal', name: '🥇 會考榮譽金牌', icon: '🥇', desc: '征服 1200 單字的最高英勇勳章！', unlockType: 'level', price: 0, reqLevel: 5 }
+        { id: 'neck_none', name: '無飾品', icon: '🚫', desc: '輕便舒適無束縛', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'neck_bell', name: '🔔 招財黃金鈴鐺', icon: '🔔', desc: '【Lv.1 免費】走動叮噹作響帶來好運', unlockType: 'level', price: 0, reqLevel: 1 },
+        { id: 'neck_scarf', name: '🧣 暖冬經典圍巾', icon: '🧣', desc: '冬日最溫暖厚實的紅色圍巾', unlockType: 'fish', price: 25, reqLevel: 2 },
+        { id: 'neck_bowtie', name: '👔 英倫貴族領結', icon: '👔', desc: '優雅俐落的小紳士風格領結', unlockType: 'fish', price: 35, reqLevel: 3 },
+        { id: 'neck_medal', name: '🥇 會考榮譽金牌', icon: '🥇', desc: '【Lv.5 免費】征服1200單字最高榮譽勳章！', unlockType: 'level', price: 0, reqLevel: 5 }
+      ],
+      outfit: [
+        { id: 'outfit_none', name: '自然毛皮', icon: '🚫', desc: '柔軟三花貓毛皮與白襪肉球', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'outfit_backpack', name: '🎒 探險雙肩包', icon: '🎒', desc: '【Lv.2 免費】背起小書包探索單字世界！', unlockType: 'level', price: 0, reqLevel: 2 },
+        { id: 'outfit_cloak', name: '🧥 英勇冒險披風', icon: '🧥', desc: '【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'outfit_sailor', name: '⚓ 可愛水手制服', icon: '⚓', desc: '日系海軍領水手服，青春活力', unlockType: 'fish', price: 70, reqLevel: 2 },
+        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '粉紅夢幻公主裙，散發華麗光彩', unlockType: 'fish', price: 80, reqLevel: 3 }
+      ],
+      hand: [
+        { id: 'hand_none', name: '雙手空空', icon: '🚫', desc: '隨時準備擊掌或摸摸肉球', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'hand_fishbone', name: '🐟 脆脆魚骨點心', icon: '🐟', desc: '啃著最愛的小魚骨零嘴', unlockType: 'fish', price: 20, reqLevel: 1 },
+        { id: 'hand_book', name: '📘 智慧英文字典', icon: '📘', desc: '【Lv.3 免費】隨身攜帶會考必備英文字典！', unlockType: 'level', price: 0, reqLevel: 3 },
+        { id: 'hand_icecream', name: '🍦 貓爪草莓甜筒', icon: '🍦', desc: '甜滋滋的草莓冰淇淋消暑點心', unlockType: 'fish', price: 35, reqLevel: 2 },
+        { id: 'hand_wand', name: '🪄 傳奇星月魔法杖', icon: '🪄', desc: '【Lv.5 免費】揮動星星法杖，單字通通滿分！', unlockType: 'level', price: 0, reqLevel: 5 }
       ],
       aura: [
         { id: 'aura_none', name: '無特效', icon: '🚫', desc: '回歸純粹的貓咪氛圍', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '周圍閃耀著閃爍璀璨的微芒', unlockType: 'fish', price: 10, reqLevel: 2 },
-        { id: 'aura_sakura', name: '🌸 飛舞落櫻花瓣', icon: '🌸', desc: '浪漫櫻花瓣在身邊翩翩起舞', unlockType: 'fish', price: 12, reqLevel: 3 },
-        { id: 'aura_fish', name: '🐟 游動小魚乾群', icon: '🐟', desc: '小魚乾環繞身旁，貓咪的最愛！', unlockType: 'fish', price: 15, reqLevel: 3 },
-        { id: 'aura_rainbow', name: '🌈 傳奇幸運彩虹', icon: '🌈', desc: 'Lv.5 傳奇貓神獸專屬七彩神聖光芒！', unlockType: 'level', price: 0, reqLevel: 5 }
+        { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '周圍閃爍璀璨的金色呼吸光芒', unlockType: 'fish', price: 40, reqLevel: 2 },
+        { id: 'aura_sakura', name: '🌸 飛舞落櫻花瓣', icon: '🌸', desc: '浪漫櫻花瓣在身邊翩翩起舞', unlockType: 'fish', price: 50, reqLevel: 3 },
+        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】750字英勇旅伴展翅高飛！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'aura_fish', name: '🐟 游動小魚乾群', icon: '🐟', desc: '小魚乾環繞身旁，貓咪的天堂！', unlockType: 'fish', price: 65, reqLevel: 3 },
+        { id: 'aura_rainbow', name: '🌈 傳奇幸運彩虹', icon: '🌈', desc: '【Lv.5 免費】1200字會考傳奇守護神七彩光暈！', unlockType: 'level', price: 0, reqLevel: 5 }
       ]
     };
 
     const ACCESSORY_REACTIONS = {
       head_sakura: "喵～耳朵邊夾了小櫻花，有沒有像花仙子一樣漂亮呀？🌸🐾",
       head_ribbon: "喵嗚～大粉紅蝴蝶結！我今天就是全天下最可愛的小貓！🎀💖",
-      head_cap: "喵！棒球帽戴好，今天背單字我也要全力衝刺打全壘打！⚾🧢",
+      head_cap: "喵！棒球帽反戴超帥氣，今天背單字我也要全力打出全壘打！⚾🧢",
       head_grad: "喵哈哈～戴上學霸博士帽，1200 單字會考通通交給我吧！🎓✨",
-      head_wizard: "（揮舞肉墊法杖）喵拉哩拉～把錯題通通變成小魚乾！🧙‍♀️✨",
-      head_crown: "呼嚕嚕～頭戴璀璨皇冠，感謝妳一路陪我進化成傳奇貓神獸！👑🐾",
+      head_ranger: "呼嚕嚕～戴上冒險獵鷹羽毛帽，我們已經征服 750 個單字囉！英勇旅伴出發！🏹🐾",
+      head_wizard: "（揮舞法杖）喵拉哩拉～把易錯單字通通變成小魚乾！🧙‍♀️✨",
+      head_crown: "呼嚕嚕～頭戴璀璨皇冠，感謝妳一路陪我進化成 1200 單字傳奇神獸！👑🐾",
       face_blush: "喵...臉紅紅的被妳發現了！因為妳今天背單字好認真嘛～✨",
       face_glasses: "推推眼鏡～看清楚了！forty 真的沒有 u，我都記在腦子裡了！👓📚",
       face_sunglasses: "喵～戴上酷炫墨鏡，本喵就是夜市最拉風的街頭貓霸！🕶️😎",
@@ -3377,8 +3637,17 @@
       neck_scarf: "好暖和喔～戴上紅色圍巾，就算外面吹冷風也能精神滿滿背單字！🧣❤️",
       neck_bowtie: "喵～英倫紳士領結！今天上英文課我有沒有特別有氣質呢？👔✨",
       neck_medal: "第一名金牌！這是我們一起努力征服 1200 單字的榮耀證書喵！🥇🌟",
-      aura_sparkle: "哇～閃閃發光的星星！咪咪周圍都在發光耶！✨",
+      outfit_backpack: "喵！背起小探險背包，今天也要去單字森林挖掘好多新寶藏！🎒✨",
+      outfit_cloak: "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
+      outfit_sailor: "水手服登場！青春活力滿點，今天模擬考一定能拿滿分喵！⚓💙",
+      outfit_dress: "哇～夢幻粉紅蓬蓬裙！轉圈圈好漂亮喔，謝謝主人幫我打扮！👗💖",
+      hand_fishbone: "嚼嚼嚼～啃著香噴噴的魚骨點心，背單字更有力氣了！🐟😋",
+      hand_book: "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
+      hand_icecream: "草莓貓爪冰淇淋！好冰好甜好滿足～吃完再來背十個單字！🍦🍓",
+      hand_wand: "星星魔法杖發光了！點石成金，祝福妳所有的英文考試都順利通過！🪄⭐",
+      aura_sparkle: "哇～閃閃發光的金色星芒！咪咪周圍都在發光耶！✨",
       aura_sakura: "喵～花瓣飄飄好浪漫喔，一邊賞花一邊背單字最幸福了～🌸",
+      aura_wings: "展開天使羽翼！我們已經跨過 750 字難關，向著會考巔峰展翅高飛！🪽✨",
       aura_fish: "好多小魚乾在身邊游來游去！天啊～這是貓咪的天堂喵！🐟🐟🐟",
       aura_rainbow: "喵嗚～！七彩祥雲彩虹光芒！我是守護會考的傳奇神獸咪咪！🌈👑"
     };
@@ -3389,13 +3658,15 @@
         head: 'head_none',
         face: 'face_none',
         neck: 'neck_none',
+        outfit: 'outfit_none',
+        hand: 'hand_none',
         aura: 'aura_none'
       },
       unlocked: [
         'head_none', 'head_sakura',
         'face_none', 'face_blush',
         'neck_none', 'neck_bell',
-        'aura_none'
+        'outfit_none', 'hand_none', 'aura_none'
       ]
     };
 
@@ -3404,6 +3675,8 @@
         const saved = JSON.parse(localStorage.getItem(WARDROBE_STORAGE_KEY) || 'null');
         if (saved && saved.equipped && saved.unlocked) {
           catWardrobe = saved;
+          if (!catWardrobe.equipped.outfit) catWardrobe.equipped.outfit = 'outfit_none';
+          if (!catWardrobe.equipped.hand) catWardrobe.equipped.hand = 'hand_none';
         }
       } catch (e) {
         console.warn("Wardrobe load error:", e);
@@ -3435,7 +3708,7 @@
       if (newUnlocks.length > 0) {
         saveCatWardrobe();
         if (notify) {
-          sayCatSpeech(`恭喜升級！咪咪的衣櫥解鎖了新配件：【${newUnlocks.join('、')}】！快去換裝室試穿吧～👗🐾`, "解鎖新衣！");
+          sayCatSpeech(`恭喜升級！衣櫥解鎖了里程碑專屬獎勵：【${newUnlocks.join('、')}】！快去換裝室試穿吧～👗🐾`, "解鎖里程碑新裝");
         }
       }
     }
@@ -3446,11 +3719,15 @@
         const faceEl = document.getElementById(prefix + 'AccFace');
         const headEl = document.getElementById(prefix + 'AccHead');
         const neckEl = document.getElementById(prefix + 'AccNeck');
+        const outfitEl = document.getElementById(prefix + 'AccOutfit');
+        const handEl = document.getElementById(prefix + 'AccHand');
 
         if (auraEl) auraEl.innerHTML = ACCESSORIES_SVG.aura[catWardrobe.equipped.aura] || '';
         if (faceEl) faceEl.innerHTML = ACCESSORIES_SVG.face[catWardrobe.equipped.face] || '';
         if (headEl) headEl.innerHTML = ACCESSORIES_SVG.head[catWardrobe.equipped.head] || '';
         if (neckEl) neckEl.innerHTML = ACCESSORIES_SVG.neck[catWardrobe.equipped.neck] || '';
+        if (outfitEl) outfitEl.innerHTML = (ACCESSORIES_SVG.outfit && ACCESSORIES_SVG.outfit[catWardrobe.equipped.outfit]) || '';
+        if (handEl) handEl.innerHTML = (ACCESSORIES_SVG.hand && ACCESSORIES_SVG.hand[catWardrobe.equipped.hand]) || '';
       });
       updateWardrobeTags();
     }
@@ -3485,6 +3762,141 @@
       }
     }
 
+    // Interactive Mascot Click Handlers
+    function handleMascotClick(event) {
+      // Delegated click on cat areas
+    }
+
+    function handleHeadClick(event) {
+      if (event) event.stopPropagation();
+      petTheCat();
+    }
+
+    function handleBellyClick(event) {
+      if (event) event.stopPropagation();
+      const box = document.getElementById('catAvatarBox');
+      if (box) {
+        box.classList.remove('cat-hop');
+        void box.offsetWidth;
+        box.classList.add('cat-hop');
+      }
+      playCatMeowSound();
+      spawnFloatingHeart("🐾");
+      sayCatSpeech("呼嚕嚕～搔小肚肚好癢好舒服喔！精神百倍喵～🐾", "搔肚肚");
+      gainAffection(3);
+    }
+
+    function handleTailClick(event) {
+      if (event) event.stopPropagation();
+      const tail = document.getElementById('mainCatTail');
+      if (tail) {
+        tail.classList.remove('tail-wag-fast');
+        void tail.offsetWidth;
+        tail.classList.add('tail-wag-fast');
+      }
+      playCatMeowSound();
+      sayCatSpeech("喵嗚～！尾巴很敏感的啦！不要偷拉尾巴喵～🐾", "被拉尾巴");
+    }
+
+    // Gourmet Feasting System (Balances Fish Treats Economy)
+    function openFeedGourmetModal() {
+      document.getElementById('feedGourmetModal').classList.remove('hidden');
+    }
+
+    function closeFeedGourmetModal() {
+      document.getElementById('feedGourmetModal').classList.add('hidden');
+    }
+
+    function feedMimiGourmet(type, cost, affectionGain, extraFever = 0) {
+      if (fishCount < cost) {
+        alert(`小魚乾不足喔！這道點心需要 ${cost} 條小魚乾，多背背單字賺小魚乾吧喵～🐟`);
+        return;
+      }
+
+      fishCount -= cost;
+      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+      document.getElementById('fishCount').innerText = fishCount;
+      const wFish = document.getElementById('wardrobeFishCount');
+      if (wFish) wFish.innerText = fishCount;
+
+      playCatMunchSound();
+      spawnFloatingHeart("🐟");
+      spawnFloatingHeart("💖");
+
+      gainAffection(affectionGain);
+
+      if (extraFever > 0) {
+        feverRemainingQuestions += extraFever;
+        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
+        updateFeverBadge();
+      }
+
+      touchMimiInteraction();
+
+      if (type === 'snack') {
+        sayCatSpeech("嚼嚼嚼～脆脆小魚乾真好吃！親密度 +5% 喵～🐟", "吃小魚乾");
+      } else if (type === 'sashimi') {
+        spawnFloatingHeart("🍣");
+        sayCatSpeech("哇！特級鮭魚生魚片好鮮甜多汁喔！咪咪太幸福了～親密度 +30% 💖！", "大啖鮭魚");
+      } else if (type === 'banquet') {
+        spawnFloatingHeart("👑");
+        spawnFloatingHeart("🍱");
+        sayCatSpeech("天啊～！是頂級滿漢海鮮全席！親密度直接補滿 100%！加贈 10 題狂熱雙倍小魚乾時段！🔥🐟", "海鮮盛宴");
+      }
+
+      closeFeedGourmetModal();
+      triggerAutoSaveToPi();
+    }
+
+    // Lucky Gacha Box (20 Fish Treats Sink)
+    function playLuckyGacha() {
+      const GACHA_COST = 20;
+      if (fishCount < GACHA_COST) {
+        alert(`幸運盲盒每次需要 ${GACHA_COST} 條小魚乾！快去背單字或做測驗賺小魚乾吧喵～🐟`);
+        return;
+      }
+
+      // Collect locked fish-purchasable items
+      let candidates = [];
+      Object.keys(WARDROBE_CATALOG).forEach(catKey => {
+        WARDROBE_CATALOG[catKey].forEach(item => {
+          if (!catWardrobe.unlocked.includes(item.id)) {
+            candidates.push({ slot: catKey, ...item });
+          }
+        });
+      });
+
+      fishCount -= GACHA_COST;
+      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+      document.getElementById('fishCount').innerText = fishCount;
+      const wFish = document.getElementById('wardrobeFishCount');
+      if (wFish) wFish.innerText = fishCount;
+
+      playCatCheerSound();
+      spawnFloatingHeart("🎁");
+      spawnFloatingHeart("✨");
+
+      if (candidates.length > 0) {
+        // Pick random locked accessory
+        const prize = candidates[Math.floor(Math.random() * candidates.length)];
+        catWardrobe.unlocked.push(prize.id);
+        catWardrobe.equipped[prize.slot] = prize.id;
+        saveCatWardrobe();
+        renderCatAccessories();
+
+        sayCatSpeech(`🎁 哇！幸運盲盒大驚喜！成功開出【${prize.name}】並已自動換上！太美了喵～✨🐾`, "開箱大獎");
+      } else {
+        // All items unlocked! Award Fever Ticket & Affection
+        feverRemainingQuestions += 15;
+        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
+        updateFeverBadge();
+        gainAffection(50);
+        sayCatSpeech(`🎁 妳已經解鎖了所有造型！盲盒獎勵轉化為「15 題狂熱雙倍小魚乾時段」與 +50% 親密度喵！🔥✨`, "全造型傳奇");
+      }
+
+      triggerAutoSaveToPi();
+    }
+
     function openWardrobeModal() {
       checkLevelUnlocks(false);
       document.getElementById('wardrobeFishCount').innerText = fishCount;
@@ -3500,13 +3912,13 @@
 
     function switchWardrobeTab(tabKey) {
       currentWardrobeTab = tabKey;
-      ['head', 'face', 'neck', 'aura'].forEach(k => {
+      ['head', 'face', 'neck', 'outfit', 'hand', 'aura'].forEach(k => {
         const btn = document.getElementById('tabBtn_' + k);
         if (btn) {
           if (k === tabKey) {
-            btn.className = 'wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs font-black';
+            btn.className = 'wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs font-black';
           } else {
-            btn.className = 'wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer text-slate-600 dark:text-slate-300 hover:text-slate-900 font-medium';
+            btn.className = 'wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900 font-medium';
           }
         }
       });
@@ -3520,8 +3932,6 @@
 
       const items = WARDROBE_CATALOG[tabKey] || [];
       const equippedId = catWardrobe.equipped[tabKey] || (tabKey + '_none');
-      const totalMastered = calculateTotalMasteredWords();
-      const catLevel = getCatLevelInfo(totalMastered).level;
 
       items.forEach(item => {
         const isEquipped = equippedId === item.id;
@@ -3548,11 +3958,10 @@
               穿戴造型
             </button>`;
         } else {
-          // Locked: check unlock type
           if (item.unlockType === 'level') {
             actionBtnHtml = `
               <div class="w-full mt-2 py-1 px-2 text-[11px] font-bold rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-center flex items-center justify-center gap-1">
-                <span>🔒</span> Lv.${item.reqLevel} 自動解鎖
+                <span>🔒</span> Lv.${item.reqLevel} 里程碑解鎖
               </div>`;
           } else if (item.unlockType === 'fish') {
             const canAfford = fishCount >= item.price;
@@ -3562,7 +3971,7 @@
                   ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs cursor-pointer'
                   : 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
               } transition flex items-center justify-center gap-1" ${canAfford ? '' : 'disabled'}>
-                <span>🐟</span> 兌換 (${item.price}魚乾)
+                <span>🐟</span> 兌換 (${item.price}魚)
               </button>`;
           }
         }
@@ -3573,7 +3982,7 @@
               <span class="text-2xl">${item.icon}</span>
               ${isEquipped ? '<span class="text-[10px] px-2 py-0.2 rounded-full bg-pink-500 text-white font-black">已裝備</span>' : ''}
               ${!isUnlocked && item.unlockType === 'fish' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold dark:bg-amber-950 dark:text-amber-300">🐟 ${item.price}</span>` : ''}
-              ${!isUnlocked && item.unlockType === 'level' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold">Lv.${item.reqLevel}</span>` : ''}
+              ${!isUnlocked && item.unlockType === 'level' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-800 font-bold dark:bg-purple-950 dark:text-purple-300">Lv.${item.reqLevel}</span>` : ''}
             </div>
             <div class="font-bold text-xs text-slate-800 dark:text-white mt-1.5">${item.name}</div>
             <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-tight">${item.desc}</div>
@@ -3588,7 +3997,7 @@
       const isAlreadyEquipped = catWardrobe.equipped[category] === itemId;
       if (isAlreadyEquipped && itemId !== (category + '_none')) {
         catWardrobe.equipped[category] = category + '_none';
-        sayCatSpeech("喵～脫下飾品，回歸純真自然的可愛樣貌！🐾", "輕鬆換裝");
+        sayCatSpeech("喵～脫下飾品，回歸純真自然的可愛小貓樣貌！🐾", "輕鬆換裝");
         document.getElementById('wardrobeCatSpeech').innerText = "喵～脫下飾品，清清爽爽好舒服！🐾";
       } else {
         catWardrobe.equipped[category] = itemId;
@@ -3619,7 +4028,6 @@
         catWardrobe.unlocked.push(itemId);
       }
 
-      // Auto-equip newly purchased item
       catWardrobe.equipped[category] = itemId;
       saveCatWardrobe();
 
@@ -3628,7 +4036,7 @@
       spawnFloatingHeart("🐟");
 
       const reaction = ACCESSORY_REACTIONS[itemId] || "哇！太棒了～新衣服好適合咪咪喔！💖";
-      sayCatSpeech(`消耗 ${price} 條魚乾解鎖造型！${reaction}`, "開箱新衣服");
+      sayCatSpeech(`消耗 ${price} 條魚乾兌換造型！${reaction}`, "開箱新衣服");
       document.getElementById('wardrobeCatSpeech').innerText = reaction;
 
       renderCatAccessories();
@@ -3636,7 +4044,7 @@
     }
 
     function randomizeCatOutfit() {
-      ['head', 'face', 'neck', 'aura'].forEach(catKey => {
+      ['head', 'face', 'neck', 'outfit', 'hand', 'aura'].forEach(catKey => {
         const items = (WARDROBE_CATALOG[catKey] || []).filter(item => catWardrobe.unlocked.includes(item.id));
         if (items.length > 0) {
           const picked = items[Math.floor(Math.random() * items.length)];
@@ -3646,7 +4054,7 @@
 
       playCatMeowSound();
       spawnFloatingHeart("🎲");
-      const speech = "喵嗚～今天的隨機穿搭真特別！妳覺得我有沒有變更漂亮呢？✨🐾";
+      const speech = "喵嗚～今天的全身隨機穿搭真特別！妳覺得我有沒有變更漂亮呢？✨🐾";
       sayCatSpeech(speech, "隨機打扮");
       document.getElementById('wardrobeCatSpeech').innerText = speech;
 
@@ -3660,13 +4068,15 @@
         head: 'head_none',
         face: 'face_none',
         neck: 'neck_none',
+        outfit: 'outfit_none',
+        hand: 'hand_none',
         aura: 'aura_none'
       };
       saveCatWardrobe();
       renderCatAccessories();
       renderWardrobeItems(currentWardrobeTab);
-      sayCatSpeech("喵～所有裝飾都先收進衣櫥裡囉！🐾", "素顏小貓");
-      document.getElementById('wardrobeCatSpeech').innerText = "喵～所有裝飾都先收好囉！素顏小貓也超可愛對不對？🐾";
+      sayCatSpeech("喵～所有衣服飾品都收進衣櫥囉！素顏小貓最純真可愛了對不對？🐾", "素顏小貓");
+      document.getElementById('wardrobeCatSpeech').innerText = "喵～所有衣服飾品都收好囉！素顏小貓也超可愛對不對？🐾";
     }
 
 
@@ -3856,7 +4266,7 @@
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.2.0-test",
+        version: "2.3.0-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
