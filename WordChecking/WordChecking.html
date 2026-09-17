@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v2.0.1-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 貓咪陪伴版 (v2.1.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -70,6 +70,8 @@
     }
 
 
+
+
     @keyframes catEarWiggle {
       0%, 100% { transform: rotate(0deg); }
       25% { transform: rotate(-6deg); }
@@ -78,6 +80,8 @@
     .cat-ear-wiggle {
       animation: catEarWiggle 2.5s ease-in-out infinite;
     }
+
+
 
 
     @keyframes tailWag {
@@ -91,6 +95,8 @@
   </style>
 </head>
 <body class="bg-amber-50/40 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+
 
 
   <!-- Navigation Bar -->
@@ -108,11 +114,13 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.0.1-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.1.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
       </div>
+
+
 
 
       <!-- Actions: Fish Counter, Theme toggle & Back -->
@@ -124,6 +132,8 @@
         </button>
 
 
+
+
         <!-- Cat Treat (Fish) Counter -->
         <div class="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-100/80 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800/60 rounded-xl text-amber-800 dark:text-amber-300 text-xs font-bold shadow-sm" title="已獲得的小魚乾獎勵">
           <span class="text-base">🐟</span>
@@ -132,15 +142,21 @@
         </div>
 
 
+
+
         <button id="catSoundToggle" onclick="toggleCatSound()" class="p-2 rounded-xl text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-slate-700 transition" title="開關貓咪叫聲提示音">
           <i class="fa-solid fa-bell text-base" id="soundIcon"></i>
         </button>
+
+
 
 
         <button id="themeToggle" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="切換深色/淺色">
           <i class="fa-solid fa-moon dark:hidden text-lg"></i>
           <i class="fa-solid fa-sun hidden dark:inline text-lg text-amber-400"></i>
         </button>
+
+
 
 
         <button onclick="window.history.length > 1 ? window.history.back() : window.location.href='index.html'" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition flex items-center space-x-1">
@@ -152,8 +168,12 @@
   </header>
 
 
+
+
   <!-- Main Container -->
   <main class="max-w-5xl mx-auto px-4 py-5 space-y-5">
+
+
 
 
     <!-- Interactive Cat Mascot & Growth Center (v2.0.0 Gamification) -->
@@ -161,6 +181,7 @@
       <!-- Decorative Background Paws -->
       <div class="absolute -right-4 -bottom-4 text-amber-200/40 dark:text-slate-700/30 text-8xl pointer-events-none select-none">🐾</div>
       <div class="absolute right-24 top-2 text-rose-200/30 dark:text-slate-700/20 text-5xl pointer-events-none select-none">🐾</div>
+
 
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 relative z-10">
         <!-- Animated Cat Avatar with Level Badge -->
@@ -172,6 +193,7 @@
             </span>
             <!-- Floating Hearts Container -->
             <div id="catHeartContainer" class="absolute inset-0 pointer-events-none overflow-visible"></div>
+
 
             <svg viewBox="0 0 100 100" class="w-full h-full">
               <!-- Cat Ears -->
@@ -204,6 +226,7 @@
           <span class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold mt-1 block">摸摸咪咪 🐾</span>
         </div>
 
+
         <!-- Dialogue & Growth Status Bubble -->
         <div class="flex-1 w-full space-y-3">
           <div class="bg-white/95 dark:bg-slate-700/90 rounded-2xl p-3 sm:p-4 shadow-sm border border-amber-200/80 dark:border-slate-600 space-y-2.5">
@@ -220,10 +243,12 @@
               </span>
             </div>
 
+
             <!-- Cat Dialogue Speech -->
             <p id="catSpeech" class="text-sm font-medium text-slate-800 dark:text-slate-100 leading-relaxed min-h-[1.5rem]">
               喵～今天想背背哪幾個單字呢？只要練習我就會陪著妳一起長大喔！🐾
             </p>
+
 
             <!-- Dual Progress: EXP & Affection Bars -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
@@ -246,6 +271,7 @@
                 </div>
               </div>
 
+
               <!-- 2. Cat Affection Heart Bar -->
               <div class="bg-pink-50/70 dark:bg-slate-800/60 p-2.5 rounded-xl border border-pink-100 dark:border-slate-600">
                 <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
@@ -263,7 +289,9 @@
                 </div>
               </div>
 
+
             </div>
+
 
             <!-- Quick Action Buttons -->
             <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-600">
@@ -281,10 +309,12 @@
               </button>
             </div>
 
+
           </div>
         </div>
       </div>
     </section>
+
 
     <!-- Progress & Overview Banner -->
     <section class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -320,6 +350,8 @@
       </div>
 
 
+
+
       <!-- Progress bar with Cat Marker -->
       <div>
         <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
@@ -335,6 +367,8 @@
         </div>
       </div>
     </section>
+
+
 
 
     <!-- Scope Filter & Mode Selection -->
@@ -369,6 +403,8 @@
       </div>
 
 
+
+
       <!-- Theme & Scope Selectors -->
       <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
         <!-- Theme Unit Dropdown -->
@@ -378,10 +414,13 @@
             <span>單元：</span>
           </label>
           <select id="themeSelect" onchange="onThemeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer">
-            <option value="numbers">🔢 數字篇：1-100 基礎數字</option>
-            <option value="family">👨‍👩‍👧‍👦 人物篇：人物與家庭親屬</option>
+            <option value="all1200">📚 全集篇：國中會考 1200 單字全集</option>
+            <option value="numbers">🔢 專題篇：1-100 基礎數字</option>
+            <option value="family">👨‍👩‍👧‍👦 專題篇：人物與家庭親屬</option>
           </select>
         </div>
+
+
 
 
         <!-- Sub-Scope Dropdown -->
@@ -394,6 +433,8 @@
         </div>
       </div>
     </div>
+
+
 
 
     <!-- ==================== MODE 1: FLASHCARDS ==================== -->
@@ -416,6 +457,8 @@
             </div>
 
 
+
+
             <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/60">
               <span class="text-xs text-slate-400">提示：正面阿拉伯數字</span>
               <button onclick="event.stopPropagation(); playVoiceCurrent()" class="p-2.5 rounded-full hover:bg-rose-50 dark:hover:bg-slate-700 text-rose-500 transition">
@@ -423,6 +466,8 @@
               </button>
             </div>
           </div>
+
+
 
 
           <!-- Back Face -->
@@ -434,6 +479,8 @@
               </span>
               <span class="font-mono text-xs font-bold text-amber-600" id="cardBackDigit">#1</span>
             </div>
+
+
 
 
             <div class="text-center my-auto">
@@ -450,6 +497,8 @@
             </div>
 
 
+
+
             <div class="flex items-center justify-center space-x-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
               <button onclick="event.stopPropagation(); playVoiceCurrent(0.8)" class="text-xs text-slate-600 dark:text-slate-300 hover:text-rose-600 flex items-center space-x-1 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-xl">
                 <i class="fa-solid fa-play text-[10px]"></i>
@@ -463,8 +512,12 @@
           </div>
 
 
+
+
         </div>
       </div>
+
+
 
 
       <!-- Action Buttons with Cat Accents -->
@@ -478,6 +531,8 @@
           <span>已記住 (+1 魚乾)</span>
         </button>
       </div>
+
+
 
 
       <!-- Nav navigation -->
@@ -495,6 +550,8 @@
     </section>
 
 
+
+
     <!-- ==================== MODE 2: QUIZ ==================== -->
     <section id="modeQuiz" class="hidden max-w-xl mx-auto space-y-5">
       <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border-2 border-amber-200/80 dark:border-slate-700 shadow-md">
@@ -503,6 +560,8 @@
           <span class="px-3 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold">🐾 四選一測驗</span>
           <span id="quizScoreText">第 1 題</span>
         </div>
+
+
 
 
         <div class="text-center py-5">
@@ -515,7 +574,11 @@
         </div>
 
 
+
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" id="quizOptionsContainer"></div>
+
+
 
 
         <div id="quizFeedback" class="hidden mt-5 p-4 rounded-2xl text-sm transition">
@@ -532,8 +595,12 @@
         </div>
 
 
+
+
       </div>
     </section>
+
+
 
 
     <!-- ==================== MODE 3: SPELLING ==================== -->
@@ -543,6 +610,8 @@
           <span class="px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 font-bold">🐾 拼字練習</span>
           <span id="spellCounter">第 1 題</span>
         </div>
+
+
 
 
         <div class="text-center py-4">
@@ -562,6 +631,8 @@
         </div>
 
 
+
+
         <form onsubmit="checkSpelling(event)" class="space-y-4">
           <div>
             <input type="text" id="spellInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="在此輸入英文單字 (例如: twelve)..." class="w-full text-center font-mono text-xl py-3 px-4 rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-300 transition">
@@ -570,6 +641,8 @@
             檢查答案 🐾
           </button>
         </form>
+
+
 
 
         <div id="spellFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm">
@@ -586,8 +659,12 @@
         </div>
 
 
+
+
       </div>
     </section>
+
+
 
 
     <!-- ==================== MODE 4: SPEAKING ==================== -->
@@ -599,11 +676,15 @@
         </div>
 
 
+
+
         <div class="text-center py-4">
           <div class="text-xs text-slate-400">請跟著咪咪唸出這個數字的英文：</div>
           <div class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2 mb-1" id="speakEnglish">fourteen</div>
           <div class="text-sm font-mono text-slate-400" id="speakPhonetic">[ˋforˋtin]</div>
           <div class="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">數字：<span id="speakDigit">14</span></div>
+
+
 
 
           <div class="mt-4 flex justify-center space-x-3">
@@ -615,12 +696,16 @@
         </div>
 
 
+
+
         <div class="flex flex-col items-center justify-center my-6">
           <button id="micBtn" onclick="toggleSpeechRecognition()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95">
             <i class="fa-solid fa-microphone text-2xl" id="micIcon"></i>
           </button>
           <div class="text-xs text-slate-500 dark:text-slate-400 mt-3" id="micStatus">點擊麥克風後說出英文單字給咪咪聽 🐾</div>
         </div>
+
+
 
 
         <div id="speakFeedback" class="hidden p-4 rounded-2xl text-sm border">
@@ -637,8 +722,12 @@
         </div>
 
 
+
+
       </div>
     </section>
+
+
 
 
     <!-- ==================== MODE 5: MOCK EXAM (NEW!) ==================== -->
@@ -653,6 +742,8 @@
           <h2 class="text-2xl font-black text-slate-900 dark:text-white">數字聽寫模擬考</h2>
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">聽取發音並拼寫出單字，測驗結束即刻出分與錯題解析 🐾</p>
         </div>
+
+
 
 
         <!-- Exam Options Grid -->
@@ -674,6 +765,8 @@
           </div>
 
 
+
+
           <!-- Prompt Mode -->
           <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-700/50 border border-amber-200/80 dark:border-slate-600">
             <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">
@@ -692,11 +785,15 @@
         </div>
 
 
+
+
         <button onclick="startExamSession()" class="w-full max-w-md mx-auto py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-pink-500 text-white font-black text-base shadow-lg shadow-rose-500/25 hover:opacity-95 transform active:scale-98 transition flex items-center justify-center space-x-2">
           <span>開始模擬測驗</span>
           <span>🐾</span>
         </button>
       </div>
+
+
 
 
       <!-- 2. Exam Running View -->
@@ -712,6 +809,8 @@
         </div>
 
 
+
+
         <!-- Question Area -->
         <div class="text-center py-5 space-y-4">
           <div class="text-xs text-slate-400">🎧 請聽發音並輸入英文單字拼寫：</div>
@@ -719,6 +818,8 @@
           <div id="examDigitDisplay" class="text-6xl sm:text-7xl font-black font-mono text-slate-900 dark:text-white">
             15
           </div>
+
+
 
 
           <!-- Audio Player Buttons -->
@@ -733,6 +834,8 @@
             </button>
           </div>
         </div>
+
+
 
 
         <!-- Input Form -->
@@ -752,7 +855,11 @@
         </form>
 
 
+
+
       </div>
+
+
 
 
       <!-- 3. Exam Result View (Report Card) -->
@@ -772,6 +879,8 @@
           </div>
 
 
+
+
           <!-- Score Metrics -->
           <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto text-center py-2">
             <div class="bg-slate-50 dark:bg-slate-700/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700">
@@ -789,11 +898,15 @@
           </div>
 
 
+
+
           <!-- Cat Comment -->
           <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-slate-700 border border-amber-200 dark:border-slate-600 text-xs text-amber-900 dark:text-amber-200 max-w-md mx-auto text-left" id="examCatFeedback">
             喵嗚！太厲害了～這次測驗表現超好，咪咪送妳滿滿的魚乾獎勵！🐾
           </div>
         </div>
+
+
 
 
         <!-- Detailed Breakdown Table -->
@@ -821,6 +934,8 @@
         </div>
 
 
+
+
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-3 pt-2">
           <button onclick="retryExamSameScope()" class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-bold shadow transition text-center">
@@ -835,10 +950,16 @@
         </div>
 
 
+
+
       </div>
 
 
+
+
     </section>
+
+
 
 
     <!-- ==================== MODE 6: WORD LIST ==================== -->
@@ -857,6 +978,8 @@
             </button>
           </div>
         </div>
+
+
 
 
         <div class="overflow-x-auto">
@@ -880,6 +1003,8 @@
     </section>
 
 
+
+
     <!-- ==================== CAT GROWTH & EVOLUTION GUIDE MODAL ==================== -->
     <div id="catGrowthGuideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeCatGrowthGuideModal()">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
@@ -897,6 +1022,7 @@
           <button onclick="closeCatGrowthGuideModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">✕</button>
         </div>
 
+
         <!-- 5 Level Cards -->
         <div class="space-y-2.5">
           <div class="p-3 rounded-2xl border border-amber-200 dark:border-slate-600 bg-amber-50/60 dark:bg-slate-700/40 flex items-center justify-between">
@@ -913,6 +1039,7 @@
             <span class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">0 - 150 字</span>
           </div>
 
+
           <div class="p-3 rounded-2xl border border-orange-200 dark:border-slate-600 bg-orange-50/60 dark:bg-slate-700/40 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">🧶</span>
@@ -926,6 +1053,7 @@
             </div>
             <span class="text-xs font-mono font-bold text-orange-600 dark:text-orange-400">151 - 400 字</span>
           </div>
+
 
           <div class="p-3 rounded-2xl border border-indigo-200 dark:border-slate-600 bg-indigo-50/60 dark:bg-slate-700/40 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
@@ -941,6 +1069,7 @@
             <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">401 - 750 字</span>
           </div>
 
+
           <div class="p-3 rounded-2xl border border-emerald-200 dark:border-slate-600 bg-emerald-50/60 dark:bg-slate-700/40 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">🦸</span>
@@ -954,6 +1083,7 @@
             </div>
             <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">751 - 1050 字</span>
           </div>
+
 
           <div class="p-3 rounded-2xl border border-amber-300 dark:border-amber-600 bg-gradient-to-r from-amber-100/80 to-yellow-100/80 dark:from-slate-700 dark:to-slate-700 flex items-center justify-between shadow-xs">
             <div class="flex items-center gap-2.5">
@@ -970,6 +1100,7 @@
           </div>
         </div>
 
+
         <!-- Rules & Affection Info -->
         <div class="p-4 rounded-2xl bg-pink-50/80 dark:bg-slate-700/40 border border-pink-200 dark:border-slate-600 space-y-2 text-xs text-slate-700 dark:text-slate-200 leading-relaxed">
           <div class="font-bold text-pink-600 dark:text-pink-400 flex items-center gap-1">
@@ -982,11 +1113,14 @@
           <p>• <b>溫馨陪伴提醒（肚子餓撒嬌機制）</b>：若超過 2 天（48 小時）未開啟練習，咪咪會出現「🐟 肚子扁扁想妳中」的可愛撒嬌狀態。只要點擊餵魚或背 1 個單字，咪咪立刻吃飽恢復元氣！<b>親密度與小魚乾 100% 不會倒扣</b>，純情境溫柔守護。🐾</p>
         </div>
 
+
         <button onclick="closeCatGrowthGuideModal()" class="w-full py-2.5 bg-slate-800 dark:bg-slate-600 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm">
           收到！咪咪我們一起加油 🐾
         </button>
       </div>
     </div>
+
+
 
 
     <!-- ==================== PI SETTINGS & MULTI-USER SYNC MODAL ==================== -->
@@ -1007,6 +1141,8 @@
         </div>
 
 
+
+
         <!-- Section 1: Server Connection Parameters -->
         <div class="space-y-3 bg-slate-50 dark:bg-slate-700/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-600">
           <div class="flex items-center justify-between">
@@ -1017,11 +1153,15 @@
           </div>
 
 
+
+
           <div class="space-y-2.5">
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">樹莓派伺服器網址 (URL)：</label>
               <input type="text" id="piServerUrlInput" placeholder="例如: https://pi.domain.com 或 http://192.168.1.100:3000" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
             </div>
+
+
 
 
             <div>
@@ -1032,6 +1172,8 @@
             </div>
 
 
+
+
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">API 金鑰 (x-api-key)：</label>
               <input type="password" id="piApiKeyInput" placeholder="請輸入 API_KEY 密碼" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
@@ -1039,10 +1181,14 @@
           </div>
 
 
+
+
           <button onclick="savePiSettings()" class="w-full py-2 bg-slate-800 dark:bg-slate-600 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm">
             儲存連線設定 🐾
           </button>
         </div>
+
+
 
 
         <!-- Section 2: Pi Cloud Sync Actions -->
@@ -1066,6 +1212,7 @@
           </div>
         </div>
 
+
         <!-- Section 3: Local Backup / Restore -->
         <div class="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2.5">
           <div class="flex items-center justify-between">
@@ -1084,6 +1231,8 @@
         </div>
 
 
+
+
         <div class="flex justify-end pt-1">
           <button onclick="closePiSettingsModal()" class="px-5 py-2 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl font-bold transition">
             關閉視窗
@@ -1091,15 +1240,53 @@
         </div>
 
 
+
+
       </div>
     </div>
   </main>
+
+
 
 
   <!-- Data & Logic script -->
   <script>
     // ==================== MULTI-THEME REGISTRY ====================
     const THEME_REGISTRY = {
+      all1200: {
+        id: "all1200",
+        name: "國中會考 1200 單字全集",
+        url: "./data/vocab-1200.json",
+        fallbackUrl: "./vocab-1200.json",
+        storageKey: "wordchecking_progress_all1200_v1",
+        catIntro: "會考全集篇：教育部國中小最基本 1,200 字詞完整收錄！陪著咪咪一路升級進化成傳奇貓神獸吧！🐾",
+        scopes: [
+          { value: "all", label: "全部 1200 單字全集 (1200字)" },
+          { value: "1-150", label: "🍼 Lv.1 幼幼篇 (1-150字)" },
+          { value: "151-400", label: "🧶 Lv.2 好奇篇 (151-400字)" },
+          { value: "401-750", label: "🎓 Lv.3 學霸篇 (401-750字)" },
+          { value: "751-1050", label: "⚔️ Lv.4 冒險篇 (751-1050字)" },
+          { value: "1051-1200", label: "👑 Lv.5 傳奇篇 (1051-1200字)" },
+          { value: "cat:數字與數量", label: "🔢 專題：數字與數量" },
+          { value: "cat:人物與家庭", label: "👨‍👩‍👧 專題：人物與家庭" },
+          { value: "cat:身體與健康", label: "💪 專題：身體與健康" },
+          { value: "cat:食物與飲料", label: "🍎 專題：食物與飲料" },
+          { value: "cat:服飾與配件", label: "👕 專題：服飾與配件" },
+          { value: "cat:房屋與居家", label: "🏠 專題：房屋與居家" },
+          { value: "cat:學校與教育", label: "📚 專題：學校與教育" },
+          { value: "cat:地點與自然", label: "🌲 專題：地點與自然" },
+          { value: "cat:交通與旅遊", label: "🚗 專題：交通與旅遊" },
+          { value: "cat:時間與曆法", label: "⏰ 專題：時間與曆法" },
+          { value: "cat:職業與工作", label: "💼 專題：職業與工作" },
+          { value: "cat:動物與寵物", label: "🐱 專題：動物與寵物" },
+          { value: "cat:運動與休閒", label: "⚽ 專題：運動與休閒" },
+          { value: "cat:情緒與個性", label: "😊 專題：情緒與個性" },
+          { value: "cat:常用動詞", label: "🏃 專題：常用核心動詞" },
+          { value: "cat:形容詞與副詞", label: "✨ 專題：常用形容詞與副詞" },
+          { value: "cat:代名詞與文法詞", label: "🔤 專題：代名詞與文法虛詞" },
+          { value: "weak", label: "★ 貓貓待加強清單" }
+        ]
+      },
       numbers: {
         id: "numbers",
         name: "1-100 基礎數字",
@@ -1133,8 +1320,10 @@
     };
 
 
+
+
     // State
-    let currentThemeKey = 'numbers';
+    let currentThemeKey = localStorage.getItem('wordchecking_current_theme') || 'all1200';
     let RAW_VOCAB = [];
     let currentScope = 'all';
     let filteredList = [];
@@ -1143,19 +1332,27 @@
     let catSoundEnabled = true;
 
 
+
+
     // Quiz State
     let currentQuizItem = null;
     let quizStats = { total: 0, correct: 0 };
+
+
 
 
     // Spelling State
     let currentSpellItem = null;
 
 
+
+
     // Speaking State
     let currentSpeakItem = null;
     let isRecording = false;
     let recognition = null;
+
+
 
 
     // Exam State
@@ -1169,6 +1366,8 @@
     let lastExamWeakItems = [];
 
 
+
+
     // Cat Dialogues
     const CAT_SPEECHES = [
       "喵～今天也要一起把單字全部背熟喔！🐾",
@@ -1180,10 +1379,14 @@
     ];
 
 
+
+
     // Storage keys
     const FISH_STORAGE_KEY = 'wordchecking_fish_count_v1';
     let userProgress = {};
     let fishCount = parseInt(localStorage.getItem(FISH_STORAGE_KEY) || '0', 10);
+
+
 
 
     // Audio Synth for Cat Meow
@@ -1211,6 +1414,7 @@
       } catch (e) {}
     }
 
+
     function playLevelUpFanfare() {
       if (!catSoundEnabled) return;
       try {
@@ -1233,6 +1437,7 @@
       } catch (e) {}
     }
 
+
     function playCatMeowSound() {
       if (!catSoundEnabled) return;
       try {
@@ -1247,9 +1452,13 @@
         osc.frequency.exponentialRampToValueAtTime(620, now + 0.35);
 
 
+
+
         gain.gain.setValueAtTime(0.01, now);
         gain.gain.linearRampToValueAtTime(0.18, now + 0.08);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+
 
 
         osc.connect(gain);
@@ -1260,6 +1469,8 @@
         console.log("Audio not allowed yet:", e);
       }
     }
+
+
 
 
     function toggleCatSound() {
@@ -1274,6 +1485,8 @@
         sayCatSpeech("音效已靜音，專心讀書喵～");
       }
     }
+
+
 
 
     function addFish(amount = 1) {
@@ -1298,6 +1511,8 @@
     }
 
 
+
+
     // ==================== CAT GAMIFICATION & AFFECTION ENGINE (v2.0.0) ====================
     const CAT_LEVEL_CONFIG = [
       { level: 1, name: "Lv.1 幼幼小奶貓", title: "見習小貓奴", icon: "🍼", min: 0, max: 150 },
@@ -1307,9 +1522,11 @@
       { level: 5, name: "Lv.5 傳奇貓神獸", title: "1200會考傳奇守護神", icon: "👑", min: 1050, max: 1200 }
     ];
 
+
     const LAST_INTERACTION_KEY = 'wordchecking_last_interaction_v1';
     let lastInteractionTime = parseInt(localStorage.getItem(LAST_INTERACTION_KEY) || Date.now().toString(), 10);
     const HUNGER_THRESHOLD_MS = 48 * 60 * 60 * 1000; // 48 小時 (2 天)
+
 
     const HUNGRY_CAT_SPEECHES = [
       "喵嗚～咪咪好久沒見到妳了，肚子有點扁扁喵～快餵我一條小魚乾吧！🐾",
@@ -1318,23 +1535,28 @@
       "咪咪在等妳呢！肚子扁扁的小貓咪需要一條小魚乾充電喵～🐟❤️"
     ];
 
+
     let catAffection = parseInt(localStorage.getItem('wordchecking_cat_affection_v1') || '20', 10);
     let feverRemainingQuestions = parseInt(localStorage.getItem('wordchecking_fever_remaining_v1') || '0', 10);
     let lastKnownCatLevel = parseInt(localStorage.getItem('wordchecking_cat_level_v1') || '1', 10);
 
+
     function calculateTotalMasteredWords() {
-      let total = 0;
+      const masteredSet = new Set();
       Object.keys(THEME_REGISTRY).forEach(tKey => {
         const t = THEME_REGISTRY[tKey];
         if (t && t.storageKey) {
           const prog = JSON.parse(localStorage.getItem(t.storageKey) || '{}');
-          Object.values(prog).forEach(v => {
-            if (v === 'mastered') total++;
+          Object.entries(prog).forEach(([k, v]) => {
+            if (v === 'mastered') {
+              masteredSet.add(k.toString().toLowerCase().trim());
+            }
           });
         }
       });
-      return total;
+      return masteredSet.size;
     }
+
 
     function getCatLevelInfo(totalMastered) {
       if (totalMastered >= 1050) return CAT_LEVEL_CONFIG[4];
@@ -1344,9 +1566,11 @@
       return CAT_LEVEL_CONFIG[0];
     }
 
+
     function isMimiHungry() {
       return (Date.now() - lastInteractionTime) > HUNGER_THRESHOLD_MS;
     }
+
 
     function checkMimiHungerState() {
       const moodEl = document.getElementById('catMood');
@@ -1360,6 +1584,7 @@
       }
     }
 
+
     function touchMimiInteraction() {
       const wasHungry = isMimiHungry();
       lastInteractionTime = Date.now();
@@ -1368,11 +1593,13 @@
       return wasHungry;
     }
 
+
     function updateCatGrowthUI() {
       checkMimiHungerState();
       const totalMastered = calculateTotalMasteredWords();
       const currentConfig = getCatLevelInfo(totalMastered);
       const level = currentConfig.level;
+
 
       // 1. Update Badge & Title
       const badgeEl = document.getElementById('catAvatarLevelBadge');
@@ -1381,11 +1608,14 @@
       const titleEl = document.getElementById('catTitleBadge');
       if (titleEl) titleEl.innerText = `【${currentConfig.title}】`;
 
+
       const levelNameEl = document.getElementById('catLevelNameText');
       if (levelNameEl) levelNameEl.innerText = currentConfig.name;
 
+
       const totalEl = document.getElementById('catMasteredTotal');
       if (totalEl) totalEl.innerText = totalMastered;
+
 
       // 2. EXP Bar
       let pct = 0;
@@ -1400,18 +1630,23 @@
         pct = Math.min(100, Math.round((totalMastered / 1200) * 100));
       }
 
+
       const expBar = document.getElementById('catExpBar');
       if (expBar) expBar.style.width = `${pct}%`;
 
+
       const nextTargetEl = document.getElementById('catNextLevelTargetText');
       if (nextTargetEl) nextTargetEl.innerText = nextTargetText;
+
 
       // 3. Affection Bar & Fever Time
       const affEl = document.getElementById('catAffectionPct');
       if (affEl) affEl.innerText = `${catAffection}%`;
 
+
       const affBar = document.getElementById('catAffectionBar');
       if (affBar) affBar.style.width = `${catAffection}%`;
+
 
       const feverBadge = document.getElementById('feverBadge');
       const feverCount = document.getElementById('feverCount');
@@ -1422,6 +1657,7 @@
         if (feverBadge) feverBadge.classList.add('hidden');
       }
 
+
       // 4. Level-up Celebration Check
       if (level > lastKnownCatLevel) {
         lastKnownCatLevel = level;
@@ -1429,6 +1665,7 @@
         triggerLevelUpCelebration(currentConfig);
       }
     }
+
 
     function triggerLevelUpCelebration(config) {
       playLevelUpFanfare();
@@ -1442,14 +1679,17 @@
       spawnFloatingHeart("⭐");
       spawnFloatingHeart("🐟");
 
+
       fishCount += 10;
       localStorage.setItem(FISH_STORAGE_KEY, fishCount);
       document.getElementById('fishCount').innerText = fishCount;
+
 
       sayCatSpeech(`🎉 太神奇了喵！咪咪進化成長為【${config.name}】！獲得稱號【${config.title}】🐾 送妳 10 條小魚乾 🐟～`, "升級進化！");
       alert(`🎉 恭喜！咪咪升級進化囉！\n成長階級：${config.name}\n解鎖稱號：【${config.title}】\n咪咪好高興，獎勵 10 條小魚乾 🐟～`);
       triggerAutoSaveToPi();
     }
+
 
     function spawnFloatingHeart(symbol = "💖") {
       const container = document.getElementById('catHeartContainer');
@@ -1467,6 +1707,7 @@
       setTimeout(() => el.remove(), 1200);
     }
 
+
     function gainAffection(amount) {
       catAffection = Math.min(100, (catAffection || 0) + amount);
       localStorage.setItem('wordchecking_cat_affection_v1', catAffection);
@@ -1477,6 +1718,7 @@
       }
     }
 
+
     function triggerFeverTime() {
       feverRemainingQuestions = 10;
       catAffection = 100;
@@ -1486,6 +1728,7 @@
       sayCatSpeech("🎉 哇！好感度達到 100% 滿分！咪咪啟動「狂熱報恩時段」～接下來 10 次練習獲得雙倍小魚乾 🐟🐟 喵！", "狂熱雙倍中！");
       triggerAutoSaveToPi();
     }
+
 
     function petTheCat() {
       playCatMeowSound();
@@ -1498,6 +1741,7 @@
         randomSpeech = "喵～摸摸好舒服喔！咪咪精神好多了，但還是有點想吃小魚乾喵～🐟🐾";
       }
       sayCatSpeech(randomSpeech, "開心呼嚕中 🐾");
+
 
       const eyeL = document.getElementById('catEyeLeft');
       const eyeR = document.getElementById('catEyeRight');
@@ -1512,6 +1756,7 @@
       triggerAutoSaveToPi();
     }
 
+
     function feedFishToCat() {
       if (fishCount <= 0) {
         playCatMeowSound();
@@ -1522,11 +1767,13 @@
       localStorage.setItem(FISH_STORAGE_KEY, fishCount);
       document.getElementById('fishCount').innerText = fishCount;
 
+
       playCatMunchSound();
       spawnFloatingHeart("🐟");
       spawnFloatingHeart("💖");
       gainAffection(15);
       const wasHungry = touchMimiInteraction();
+
 
       if (wasHungry) {
         sayCatSpeech(`嚼嚼嚼～太美味了喵！肚子終於飽飽了，咪咪瞬間充滿元氣～親密度 +15% 💖 (目前: ${catAffection}%)`, "吃飽飽超幸福 🐟");
@@ -1536,13 +1783,16 @@
       triggerAutoSaveToPi();
     }
 
+
     function openCatGrowthGuideModal() {
       document.getElementById('catGrowthGuideModal').classList.remove('hidden');
     }
 
+
     function closeCatGrowthGuideModal() {
       document.getElementById('catGrowthGuideModal').classList.add('hidden');
     }
+
 
     function sayCatSpeech(text, mood = "活力滿滿") {
       document.getElementById('catSpeech').innerText = text;
@@ -1550,11 +1800,18 @@
     }
 
 
+
+
     // ==================== THEME MANAGEMENT ====================
     function onThemeChange() {
       currentThemeKey = document.getElementById('themeSelect').value;
+      localStorage.setItem('wordchecking_current_theme', currentThemeKey);
+      const themeSelectEl = document.getElementById('themeSelect');
+      if (themeSelectEl) themeSelectEl.value = currentThemeKey;
       loadThemeData(currentThemeKey);
     }
+
+
 
 
     function updateScopeDropdown(themeObj) {
@@ -1571,17 +1828,25 @@
     }
 
 
+
+
     async function loadThemeData(themeKey) {
       const theme = THEME_REGISTRY[themeKey];
       if (!theme) return;
+
+
 
 
       sayCatSpeech(`喵～正在載入【${theme.name}】資料庫...🐾`, "準備中");
       updateScopeDropdown(theme);
 
 
+
+
       // Load user progress for this theme
       userProgress = JSON.parse(localStorage.getItem(theme.storageKey) || '{}');
+
+
 
 
       try {
@@ -1605,6 +1870,8 @@
       }
 
 
+
+
       if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
         sayCatSpeech(`喵嗚！【${theme.name}】單字庫載入受限 (本機直接雙擊 file:// 可能被瀏覽器安全性阻擋 fetch，建議用 Web Server 或 GitHub Pages 開啟喔) 🐾`, "提醒");
         RAW_VOCAB = [];
@@ -1613,10 +1880,14 @@
       }
 
 
+
+
       currentIndex = 0;
       updateFilteredList();
       renderCurrentCard();
       renderStats();
+
+
 
 
       // Refresh active mode view
@@ -1629,6 +1900,8 @@
     }
 
 
+
+
     // Init App
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
@@ -1639,10 +1912,13 @@
       loadThemeData(currentThemeKey);
       checkAndAutoSyncFromPi(true);
 
+
       if (isMimiHungry()) {
         const hungrySpeech = HUNGRY_CAT_SPEECHES[Math.floor(Math.random() * HUNGRY_CAT_SPEECHES.length)];
         sayCatSpeech(hungrySpeech, "肚子扁扁想妳中 🐾");
       }
+
+
 
 
       // Keyboard shortcuts for Flashcard
@@ -1662,6 +1938,8 @@
     });
 
 
+
+
     function getActiveMode() {
       if (!document.getElementById('modeCard').classList.contains('hidden')) return 'card';
       if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
@@ -1670,6 +1948,8 @@
       if (!document.getElementById('modeExam').classList.contains('hidden')) return 'exam';
       return 'list';
     }
+
+
 
 
     function initTheme() {
@@ -1682,12 +1962,16 @@
       }
 
 
+
+
       document.getElementById('themeToggle').addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
         const darkActive = document.documentElement.classList.contains('dark');
         localStorage.setItem('theme', darkActive ? 'dark' : 'light');
       });
     }
+
+
 
 
     function onScopeChange() {
@@ -1702,11 +1986,15 @@
     }
 
 
+
+
     function updateFilteredList() {
       if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
         filteredList = [];
         return;
       }
+
+
 
 
       if (currentScope === 'all') {
@@ -1731,6 +2019,30 @@
         } else {
           filteredList = [...RAW_VOCAB];
         }
+      } else if (currentThemeKey === 'all1200') {
+        if (currentScope === '1-150') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 1 && x.num <= 150);
+        } else if (currentScope === '151-400') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 151 && x.num <= 400);
+        } else if (currentScope === '401-750') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 401 && x.num <= 750);
+        } else if (currentScope === '751-1050') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 751 && x.num <= 1050);
+        } else if (currentScope === '1051-1200') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 1051 && x.num <= 1200);
+        } else if (currentScope.startsWith('cat:')) {
+          const targetCat = currentScope.replace('cat:', '');
+          filteredList = RAW_VOCAB.filter(x => (
+            x.category === targetCat ||
+            (targetCat === '動物與寵物' && (x.category === '動物與昆蟲' || x.category === '動物與寵物')) ||
+            (targetCat === '常用動詞' && (x.category === '核心動詞' || x.category === '常用動詞')) ||
+            (targetCat === '形容詞與副詞' && (x.category === '修飾與語法詞' || x.category === '形容詞與副詞')) ||
+            (targetCat === '代名詞與文法詞' && (x.category === '代名詞與文法詞' || x.category === '修飾與語法詞'))
+          ));
+        } else {
+          filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
+        }
+        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
       } else {
         // Filter by category name
         filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
@@ -1739,10 +2051,14 @@
     }
 
 
+
+
     function renderStats() {
       let mastered = 0;
       let weak = 0;
       const total = RAW_VOCAB.length;
+
+
 
 
       RAW_VOCAB.forEach(item => {
@@ -1752,9 +2068,13 @@
       });
 
 
+
+
       document.getElementById('statTotal').innerText = total;
       document.getElementById('statMastered').innerText = mastered;
       document.getElementById('statWeak').innerText = weak;
+
+
 
 
       const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
@@ -1763,11 +2083,15 @@
       document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
 
 
+
+
       const catFavor = document.getElementById('catFavorText');
       if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
       else if (pct < 50) catFavor.innerText = "（友善踏踏貓 🐱）";
       else if (pct < 80) catFavor.innerText = "（默契好學伴 ✨）";
       else catFavor.innerText = "（滿分神喵喵 👑）";
+
+
 
 
       if (quizStats.total > 0) {
@@ -1780,6 +2104,8 @@
     }
 
 
+
+
     // Flashcard Rendering
     function renderCurrentCard() {
       if (!filteredList || filteredList.length === 0) return;
@@ -1787,6 +2113,8 @@
       
       cardFlipped = false;
       document.getElementById('flashcardInner').classList.remove('rotate-y-180');
+
+
 
 
       document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
@@ -1799,10 +2127,14 @@
         : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
 
 
+
+
       document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${item.category || '核心單字'}</span>`;
       document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
       document.getElementById('cardEnglish').innerText = item.word;
       document.getElementById('cardPhonetic').innerText = item.kk || '';
+
+
 
 
       const noteBox = document.getElementById('cardNoteBox');
@@ -1814,6 +2146,8 @@
       }
 
 
+
+
       const exampleBox = document.getElementById('cardExampleBox');
       if (item.example) {
         exampleBox.classList.remove('hidden');
@@ -1822,6 +2156,8 @@
         exampleBox.classList.add('hidden');
       }
     }
+
+
 
 
     function flipCard() {
@@ -1837,6 +2173,8 @@
     }
 
 
+
+
     function nextCard() {
       if (currentIndex < filteredList.length - 1) {
         currentIndex++;
@@ -1845,6 +2183,8 @@
       }
       renderCurrentCard();
     }
+
+
 
 
     function prevCard() {
@@ -1857,11 +2197,15 @@
     }
 
 
+
+
     function markCurrent(isMastered) {
       if (!filteredList || filteredList.length === 0) return;
       const item = filteredList[currentIndex];
       const key = item.word || item.num;
       const theme = THEME_REGISTRY[currentThemeKey];
+
+
 
 
       userProgress[key] = isMastered ? 'mastered' : 'weak';
@@ -1883,6 +2227,8 @@
     }
 
 
+
+
     // Text to Speech
     function playVoiceText(text, rate = 1.0) {
       if ('speechSynthesis' in window) {
@@ -1895,11 +2241,15 @@
     }
 
 
+
+
     function playVoiceCurrent(rate = 1.0) {
       if (filteredList && filteredList[currentIndex]) {
         playVoiceText(filteredList[currentIndex].word, rate);
       }
     }
+
+
 
 
     // Mode Switching
@@ -1918,6 +2268,8 @@
       });
 
 
+
+
       if (mode === 'card') sayCatSpeech("翻翻卡片模式：看中文想英文，翻面看拼寫與例句喔！🐾");
       if (mode === 'quiz') startNewQuiz();
       if (mode === 'spelling') startNewSpelling();
@@ -1927,9 +2279,13 @@
     }
 
 
+
+
     function capitalize(s) {
       return s.charAt(0).toUpperCase() + s.slice(1);
     }
+
+
 
 
     // ==================== QUIZ LOGIC ====================
@@ -1938,7 +2294,11 @@
       if (!filteredList || filteredList.length === 0) return;
 
 
+
+
       sayCatSpeech("四選一測驗！找出最正確的英文單字，別掉進易錯陷阱喵～🐾");
+
+
 
 
       const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
@@ -1949,15 +2309,21 @@
       }
 
 
+
+
       const qEl = document.getElementById('quizQuestionDigit');
       qEl.innerText = currentQuizItem.chinese;
       qEl.className = currentQuizItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white" : "text-6xl font-black text-slate-900 dark:text-white font-mono";
       document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
 
 
+
+
       let options = [currentQuizItem];
       let distractors = RAW_VOCAB.filter(x => x.word !== currentQuizItem.word);
       distractors.sort(() => Math.random() - 0.5);
+
+
 
 
       for (let d of distractors) {
@@ -1966,7 +2332,11 @@
       }
 
 
+
+
       options.sort(() => Math.random() - 0.5);
+
+
 
 
       const container = document.getElementById('quizOptionsContainer');
@@ -1981,10 +2351,14 @@
     }
 
 
+
+
     function checkQuizAnswer(selectedOpt, btnElement) {
       const isCorrect = selectedOpt.word === currentQuizItem.word;
       quizStats.total++;
       if (isCorrect) quizStats.correct++;
+
+
 
 
       const key = currentQuizItem.word || currentQuizItem.num;
@@ -1998,6 +2372,8 @@
       triggerAutoSaveToPi();
 
 
+
+
       const container = document.getElementById('quizOptionsContainer');
       Array.from(container.children).forEach(b => {
         b.disabled = true;
@@ -2007,6 +2383,8 @@
           b.className = "p-4 text-center rounded-2xl border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 font-bold";
         }
       });
+
+
 
 
       const feedback = document.getElementById('quizFeedback');
@@ -2030,9 +2408,13 @@
     }
 
 
+
+
     function nextQuizQuestion() {
       startNewQuiz();
     }
+
+
 
 
     // ==================== SPELLING LOGIC ====================
@@ -2044,7 +2426,11 @@
       document.getElementById('spellInput').focus();
 
 
+
+
       sayCatSpeech("拼字挑戰：輸入完整的英文單字，字母要拼精準喔！🐾");
+
+
 
 
       if (!filteredList || filteredList.length === 0) return;
@@ -2054,6 +2440,8 @@
       sEl.innerText = currentSpellItem.chinese;
       sEl.className = currentSpellItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white my-3" : "text-6xl font-black text-slate-900 dark:text-white font-mono my-3";
     }
+
+
 
 
     function toggleSpellHint() {
@@ -2067,6 +2455,8 @@
     }
 
 
+
+
     function checkSpelling(e) {
       e.preventDefault();
       const inputVal = document.getElementById('spellInput').value.trim().toLowerCase();
@@ -2076,6 +2466,8 @@
       document.getElementById('spellInput').disabled = true;
 
 
+
+
       const key = currentSpellItem.word || currentSpellItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
       userProgress[key] = isCorrect ? 'mastered' : 'weak';
@@ -2083,8 +2475,12 @@
       renderStats();
 
 
+
+
       const feedback = document.getElementById('spellFeedback');
       feedback.classList.remove('hidden');
+
+
 
 
       if (isCorrect) {
@@ -2106,9 +2502,13 @@
     }
 
 
+
+
     function nextSpellQuestion() {
       startNewSpelling();
     }
+
+
 
 
     // ==================== SPEAKING LOGIC ====================
@@ -2121,6 +2521,8 @@
         recognition.maxAlternatives = 3;
 
 
+
+
         recognition.onstart = () => {
           isRecording = true;
           document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/40 transition animate-pulse";
@@ -2129,16 +2531,22 @@
         };
 
 
+
+
         recognition.onresult = (event) => {
           const transcript = event.results[0][0].transcript.trim().toLowerCase();
           handleSpeechResult(transcript);
         };
 
 
+
+
         recognition.onerror = (event) => {
           stopRecordingUI();
           document.getElementById('micStatus').innerText = "咪咪沒聽清楚，再點一次麥克風試試看喵～";
         };
+
+
 
 
         recognition.onend = () => {
@@ -2150,10 +2558,14 @@
     }
 
 
+
+
     function stopRecordingUI() {
       isRecording = false;
       document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95";
     }
+
+
 
 
     function toggleSpeechRecognition() {
@@ -2169,10 +2581,14 @@
     }
 
 
+
+
     function startNewSpeaking() {
       document.getElementById('speakFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
       currentSpeakItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+
+
 
 
       document.getElementById('speakEnglish').innerText = currentSpeakItem.word;
@@ -2183,6 +2599,8 @@
     }
 
 
+
+
     function handleSpeechResult(spokenText) {
       const target = currentSpeakItem.word.toLowerCase().replace(/-/g, ' ');
       const cleanSpoken = spokenText.toLowerCase().replace(/-/g, ' ');
@@ -2190,12 +2608,18 @@
       const isMatch = (cleanSpoken === target || cleanSpoken === String(currentSpeakItem.num));
 
 
+
+
       const feedback = document.getElementById('speakFeedback');
       feedback.classList.remove('hidden');
 
 
+
+
       const key = currentSpeakItem.word || currentSpeakItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
+
+
 
 
       if (isMatch) {
@@ -2217,14 +2641,20 @@
       }
 
 
+
+
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
     }
 
 
+
+
     function nextSpeakQuestion() {
       startNewSpeaking();
     }
+
+
 
 
     // ==================== MOCK EXAM LOGIC ====================
@@ -2235,6 +2665,8 @@
       const theme = THEME_REGISTRY[currentThemeKey];
       sayCatSpeech(`歡迎來到【${theme.name}】聽寫模擬考！選擇 10 題或 20 題，來看看能拿幾分喵～🐾`, "認真監考");
     }
+
+
 
 
     function setExamQuestionCount(cnt) {
@@ -2254,6 +2686,8 @@
     }
 
 
+
+
     function setExamPromptMode(mode) {
       examConfig.promptMode = mode;
       const bBoth = document.getElementById('btnPromptBoth');
@@ -2271,12 +2705,18 @@
     }
 
 
+
+
     function startExamSession(customList = null) {
       let pool = customList ? [...customList] : [...filteredList];
       if (pool.length === 0) pool = [...RAW_VOCAB];
 
 
+
+
       pool.sort(() => Math.random() - 0.5);
+
+
 
 
       const targetCount = Math.min(examConfig.count, pool.length);
@@ -2285,13 +2725,19 @@
       examResults = [];
 
 
+
+
       document.getElementById('examSetupBox').classList.add('hidden');
       document.getElementById('examResultBox').classList.add('hidden');
       document.getElementById('examRunningBox').classList.remove('hidden');
 
 
+
+
       loadExamQuestion();
     }
+
+
 
 
     function loadExamQuestion() {
@@ -2299,9 +2745,13 @@
       const total = examQuestions.length;
 
 
+
+
       document.getElementById('examProgressBadge').innerText = `第 ${examIndex + 1} / ${total} 題`;
       document.getElementById('examRemainText').innerText = `剩餘 ${total - (examIndex + 1)} 題`;
       document.getElementById('examRunningProgressBar').style.width = `${((examIndex + 1) / total) * 100}%`;
+
+
 
 
       const digitEl = document.getElementById('examDigitDisplay');
@@ -2313,8 +2763,12 @@
       }
 
 
+
+
       document.getElementById('examInput').value = '';
       document.getElementById('examInput').focus();
+
+
 
 
       setTimeout(() => {
@@ -2322,14 +2776,20 @@
       }, 300);
 
 
+
+
       sayCatSpeech(`第 ${examIndex + 1} 題聽寫！仔細聽發音拼寫出來喵～🐾`, "監考計時");
     }
+
+
 
 
     function playExamAudio(rate = 1.0) {
       const current = examQuestions[examIndex];
       if (current) playVoiceText(current.word, rate);
     }
+
+
 
 
     function submitExamAnswer(e) {
@@ -2342,6 +2802,8 @@
       const isCorrect = (cleanInput === cleanTarget);
 
 
+
+
       examResults.push({
         num: current.num,
         chinese: current.chinese,
@@ -2352,10 +2814,14 @@
       });
 
 
+
+
       const key = current.word || current.num;
       const theme = THEME_REGISTRY[currentThemeKey];
       userProgress[key] = isCorrect ? 'mastered' : 'weak';
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
+
+
 
 
       examIndex++;
@@ -2365,6 +2831,8 @@
         finishExam();
       }
     }
+
+
 
 
     function skipExamQuestion() {
@@ -2384,6 +2852,8 @@
       triggerAutoSaveToPi();
 
 
+
+
       examIndex++;
       if (examIndex < examQuestions.length) {
         loadExamQuestion();
@@ -2393,12 +2863,18 @@
     }
 
 
+
+
     function finishExam() {
       document.getElementById('examRunningBox').classList.add('hidden');
       document.getElementById('examResultBox').classList.remove('hidden');
 
 
+
+
       renderStats();
+
+
 
 
       const total = examResults.length;
@@ -2406,13 +2882,19 @@
       const score = Math.round((correctCount / total) * 100);
 
 
+
+
       document.getElementById('examScoreNumber').innerText = score;
       document.getElementById('examCorrectText').innerText = `${correctCount} / ${total}`;
       document.getElementById('examAccText').innerText = `${score}%`;
 
 
+
+
       addFish(correctCount);
       document.getElementById('examFishEarned').innerText = `+${correctCount} 🐟`;
+
+
 
 
       lastExamWeakItems = examResults.filter(x => !x.isCorrect).map(x => RAW_VOCAB.find(v => (v.word || v.num) === (x.targetWord || x.num)));
@@ -2425,9 +2907,13 @@
       }
 
 
+
+
       const feedbackEl = document.getElementById('examCatFeedback');
       const titleEl = document.getElementById('examResultTitle');
       const emojiEl = document.getElementById('examCatEmoji');
+
+
 
 
       if (score === 100) {
@@ -2449,6 +2935,8 @@
         titleEl.innerText = "得分：" + score + " 分，別氣餒！";
         feedbackEl.innerText = "單字聽寫本來就需要多練幾次耳朵才會習慣，不要灰心！咪咪陪妳看錯題解析，多聽幾次一定會變強喵～🐾";
       }
+
+
 
 
       const tbody = document.getElementById('examResultTableBody');
@@ -2473,9 +2961,13 @@
     }
 
 
+
+
     function retryExamSameScope() {
       startExamSession();
     }
+
+
 
 
     function retryExamWeakOnly() {
@@ -2485,17 +2977,25 @@
     }
 
 
+
+
     // ==================== WORD TABLE LOGIC ====================
     function renderWordTable() {
       const tbody = document.getElementById('wordTableBody');
       tbody.innerHTML = '';
 
 
+
+
       const theme = THEME_REGISTRY[currentThemeKey];
       sayCatSpeech(`這是【${theme.name}】的完整單字簿，隨時點擊發音或手動標記熟練度喔！🐾`);
 
 
+
+
       if (!filteredList || filteredList.length === 0) return;
+
+
 
 
       filteredList.forEach(item => {
@@ -2535,6 +3035,8 @@
     }
 
 
+
+
     // ==================== RASPBERRY PI MULTI-USER SYNC & AUTO BACKUP ====================
     let piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     let piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
@@ -2542,10 +3044,12 @@
     let autoSaveTimer = null;
     let isAutoSyncing = false;
 
+
     function updatePiSyncBadge(statusText, badgeClass, icon = null) {
       const badgeText = document.getElementById('piSyncText');
       const badgeIcon = document.getElementById('piSyncIcon');
       const badge = document.getElementById('piSyncBadge');
+
 
       if (badgeText) {
         const accPrefix = piAccount ? `[${piAccount}] ` : '';
@@ -2559,10 +3063,12 @@
       }
     }
 
+
     function initPiSyncUI() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
 
       if (!piServerUrl || !piApiKey) {
         updatePiSyncBadge('未設定同步', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-200', '⚪');
@@ -2571,6 +3077,7 @@
       }
     }
 
+
     function openPiSettingsModal() {
       document.getElementById('piServerUrlInput').value = localStorage.getItem('pi_server_url') || '';
       document.getElementById('piAccountInput').value = localStorage.getItem('pi_account') || '';
@@ -2578,13 +3085,16 @@
       document.getElementById('piSettingsModal').classList.remove('hidden');
     }
 
+
     function closePiSettingsModal() {
       document.getElementById('piSettingsModal').classList.add('hidden');
     }
 
+
     function handleModalBackdropClick(e) {
       closePiSettingsModal();
     }
+
 
     function savePiSettings() {
       const url = document.getElementById('piServerUrlInput').value.trim();
@@ -2592,16 +3102,20 @@
       const key = document.getElementById('piApiKeyInput').value.trim();
       const oldAcc = (localStorage.getItem('pi_account') || '').trim();
 
+
       localStorage.setItem('pi_server_url', url);
       localStorage.setItem('pi_account', acc);
       localStorage.setItem('pi_api_key', key);
+
 
       piServerUrl = url;
       piAccount = acc;
       piApiKey = key;
 
+
       initPiSyncUI();
       closePiSettingsModal();
+
 
       // 切換帳號防污染機制 (比照 LifeSchedule)
       if (oldAcc !== acc) {
@@ -2611,13 +3125,16 @@
         return;
       }
 
+
       alert(`已儲存連線設定！\n帳號：${acc || '未指定'}\n伺服器：${url || '未設定'}`);
       checkAndAutoSyncFromPi(false);
     }
 
+
     // 處理更換帳號邏輯：查得新帳號備份則自動載入；若為全新帳號則自動清空本機暫存並初始化為 0 進度
     async function handleAccountSwitch(oldAcc, newAcc) {
       updatePiSyncBadge('檢查新帳號備份...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '🔍');
+
 
       if (!piServerUrl || !piApiKey) {
         resetLocalProgressToZero();
@@ -2625,6 +3142,7 @@
         alert(`已切換至帳號「${newAcc || '未指定'}」！畫面已初始化為全新 0 進度。`);
         return;
       }
+
 
       try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(newAcc);
@@ -2648,11 +3166,13 @@
       }
     }
 
+
     // 重設本機所有進度為 0 (乾淨狀態)
     function resetLocalProgressToZero() {
       fishCount = 0;
       localStorage.setItem(FISH_STORAGE_KEY, '0');
       document.getElementById('fishCount').innerText = '0';
+
 
       // 清除所有單元主題之本機進度
       Object.keys(THEME_REGISTRY).forEach(tKey => {
@@ -2661,6 +3181,7 @@
           localStorage.removeItem(t.storageKey);
         }
       });
+
 
       catAffection = 20;
       feverRemainingQuestions = 0;
@@ -2671,12 +3192,14 @@
       localStorage.setItem('wordchecking_fever_remaining_v1', '0');
       localStorage.setItem('wordchecking_cat_level_v1', '1');
 
+
       userProgress = {};
       updateCatGrowthUI();
       renderStats();
       renderCurrentCard();
       if (getActiveMode() === 'list') renderWordTable();
     }
+
 
     function generateBackupFileName() {
       const now = new Date();
@@ -2690,10 +3213,11 @@
       return `WC-${y}${m}${d}-${hh}${mm}${ss}-${accTag}.json`;
     }
 
+
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.0.1-test",
+        version: "2.1.0-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -2704,11 +3228,13 @@
           lastInteraction: lastInteractionTime
         },
         progress: {
+          all1200: JSON.parse(localStorage.getItem('wordchecking_progress_all1200_v1') || '{}'),
           numbers: JSON.parse(localStorage.getItem('wordchecking_progress_numbers_v1') || '{}'),
           family: JSON.parse(localStorage.getItem('wordchecking_progress_family_v1') || '{}')
         }
       };
     }
+
 
     // 防抖動背景靜默自動儲存 (Debounced Silent Auto Save)
     function triggerAutoSaveToPi() {
@@ -2716,26 +3242,33 @@
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
+
       if (!piServerUrl || !piApiKey) {
         return;
       }
+
 
       updatePiSyncBadge('待儲存...', 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700', '⏳');
       clearTimeout(autoSaveTimer);
       autoSaveTimer = setTimeout(performSilentAutoSave, 2000);
     }
 
+
     async function performSilentAutoSave() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
+
       if (!piServerUrl || !piApiKey) return;
+
 
       updatePiSyncBadge('儲存中...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '⏳');
 
+
       const fileName = generateBackupFileName();
       const payload = getExportPayload();
+
 
       try {
         const response = await uploadPayloadToPi(fileName, payload);
@@ -2753,11 +3286,13 @@
       }
     }
 
+
     // 自動開頁與焦點喚醒同步 (Auto Sync from Pi on load & focus)
     async function checkAndAutoSyncFromPi(silent = true) {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
 
       if (!piServerUrl || !piApiKey) {
         initPiSyncUI();
@@ -2766,11 +3301,14 @@
       if (isAutoSyncing) return;
       isAutoSyncing = true;
 
+
       updatePiSyncBadge('檢查同步中...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '🔍');
+
 
       try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
         const lastSyncedFileName = localStorage.getItem('pi_last_synced_file') || '';
+
 
         if (backupData && fileName) {
           // If cloud backup is newer than local last synced file, automatically load it
@@ -2796,6 +3334,7 @@
       }
     }
 
+
     async function uploadPayloadToPi(fileName, payload) {
       // 1. Dedicated endpoint
       let response = await fetch(`${piServerUrl}/api/wordchecking/backup`, {
@@ -2807,6 +3346,7 @@
         },
         body: JSON.stringify({ fileName, account: piAccount, data: payload })
       }).catch(() => null);
+
 
       // 2. Fallback to generic upload endpoint matching LifeSchedule
       if (!response || !response.ok) {
@@ -2826,6 +3366,7 @@
       return response;
     }
 
+
     function isFileMatchingAccount(fileName, targetAccount) {
       if (!fileName || !fileName.endsWith('.json')) return false;
       const acc = (targetAccount || '').trim();
@@ -2834,6 +3375,7 @@
       const expectedOldTag = `-${acc}.json`;
       return fileName.includes(expectedTag) || fileName.includes(expectedOldTag);
     }
+
 
     async function fetchLatestBackupForAccount(targetAccount) {
       const acc = (targetAccount || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -2850,6 +3392,7 @@
           }
         }
       } catch (e) {}
+
 
       // Generic files endpoint matching LifeSchedule
       try {
@@ -2873,13 +3416,16 @@
         }
       } catch (e) {}
 
+
       return { backupData: null, fileName: null };
     }
+
 
     async function exportToPi() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
 
       if (!piServerUrl || !piApiKey) {
         alert("請先填寫樹莓派伺服器網址 (URL) 與 API 金鑰！");
@@ -2887,10 +3433,13 @@
         return;
       }
 
+
       const fileName = generateBackupFileName();
       const payload = getExportPayload();
 
+
       sayCatSpeech(`喵～正在上傳備份至樹莓派【${piAccount || '預設'}】...🐾`, "連線中");
+
 
       try {
         const response = await uploadPayloadToPi(fileName, payload);
@@ -2909,10 +3458,12 @@
       }
     }
 
+
     async function importFromPi() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
 
       if (!piServerUrl || !piApiKey) {
         alert("請先設定樹莓派伺服器網址與 API 金鑰！");
@@ -2920,7 +3471,9 @@
         return;
       }
 
+
       sayCatSpeech(`喵～正在查詢樹莓派上【${piAccount || '預設'}】的最新進度...🐾`, "連線中");
+
 
       try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
@@ -2942,17 +3495,20 @@
       }
     }
 
+
     function applyImportedData(payload, fileName, silent = false) {
       if (!payload || !payload.progress) {
         if (!silent) alert("資料格式不符合規範！");
         return false;
       }
 
+
       if (payload.fishCount !== undefined) {
         fishCount = parseInt(payload.fishCount, 10) || 0;
         localStorage.setItem(FISH_STORAGE_KEY, fishCount);
         document.getElementById('fishCount').innerText = fishCount;
       }
+
 
       if (payload.catGamification) {
         catAffection = parseInt(payload.catGamification.affection, 10) || 20;
@@ -2968,12 +3524,17 @@
         checkMimiHungerState();
       }
 
+
+      if (payload.progress.all1200) {
+        localStorage.setItem('wordchecking_progress_all1200_v1', JSON.stringify(payload.progress.all1200));
+      }
       if (payload.progress.numbers) {
         localStorage.setItem('wordchecking_progress_numbers_v1', JSON.stringify(payload.progress.numbers));
       }
       if (payload.progress.family) {
         localStorage.setItem('wordchecking_progress_family_v1', JSON.stringify(payload.progress.family));
       }
+
 
       // Reload current theme progress
       const theme = THEME_REGISTRY[currentThemeKey];
@@ -2987,6 +3548,7 @@
       return true;
     }
 
+
     function exportLocalJson() {
       const payload = getExportPayload();
       const fileName = generateBackupFileName();
@@ -2996,6 +3558,8 @@
       a.download = fileName;
       a.click();
     }
+
+
 
 
     function importLocalJson(e) {
@@ -3015,6 +3579,8 @@
       };
       reader.readAsText(file);
     }
+
+
 
 
     function resetAllProgress() {
