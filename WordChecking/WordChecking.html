@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.3.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.3.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -132,7 +132,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.3.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.3.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1142,6 +1142,28 @@
               盛宴 (25魚)
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- ==================== LUCKY GACHA RESULT & STATUS MODAL (v2.3.1) ==================== -->
+    <div id="gachaResultModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeGachaModal()">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 text-center" onclick="event.stopPropagation()">
+        <div id="gachaModalHeader" class="space-y-1">
+          <div id="gachaModalIcon" class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-400/20">
+            🎁
+          </div>
+          <h3 id="gachaModalTitle" class="font-black text-lg text-slate-900 dark:text-white pt-2">幸運貓爪盲盒</h3>
+          <p id="gachaModalSubtitle" class="text-xs text-slate-500 dark:text-slate-400">消耗 20 條小魚乾的驚喜開箱</p>
+        </div>
+
+        <div id="gachaModalBody" class="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-700/50 border border-amber-100 dark:border-slate-600/60 space-y-2 text-left">
+          <!-- Dynamic Content -->
+        </div>
+
+        <div id="gachaModalActions" class="flex gap-2 justify-center pt-2">
+          <!-- Action buttons -->
         </div>
       </div>
     </div>
@@ -3848,11 +3870,154 @@
       triggerAutoSaveToPi();
     }
 
+    // Lucky Gacha Modal Helpers
+    function closeGachaModal() {
+      const modal = document.getElementById('gachaResultModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openGachaModal(data) {
+      const modal = document.getElementById('gachaResultModal');
+      if (!modal) return;
+
+      const iconEl = document.getElementById('gachaModalIcon');
+      const titleEl = document.getElementById('gachaModalTitle');
+      const subEl = document.getElementById('gachaModalSubtitle');
+      const bodyEl = document.getElementById('gachaModalBody');
+      const actionsEl = document.getElementById('gachaModalActions');
+
+      if (data.status === 'NOT_ENOUGH_FISH') {
+        iconEl.innerHTML = '🐟';
+        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-rose-400 to-pink-500 flex items-center justify-center text-3xl shadow-lg shadow-rose-400/20';
+        titleEl.innerText = '小魚乾還不夠開盲盒喵！';
+        titleEl.className = 'font-black text-lg text-rose-600 dark:text-rose-400 pt-2';
+        subEl.innerText = '每次抽取幸運盲盒需要 20 條小魚乾';
+
+        bodyEl.innerHTML = `
+          <div class="text-sm text-slate-700 dark:text-slate-200 space-y-2">
+            <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-rose-100 dark:border-slate-600">
+              <span class="text-xs text-slate-500 dark:text-slate-400">目前擁有小魚乾：</span>
+              <span class="font-black text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                <span>🐟</span> <span>${data.currentFish}</span> 條
+              </span>
+            </div>
+            <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-rose-100 dark:border-slate-600">
+              <span class="text-xs text-slate-500 dark:text-slate-400">還缺少小魚乾：</span>
+              <span class="font-black text-rose-600 dark:text-rose-400">
+                ${data.cost - data.currentFish} 條
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 pt-1 leading-relaxed">
+              🐾 <b>賺魚乾秘笈</b>：只要背單字或做測驗，每答對一題就能獲得 1 條小魚乾（若觸發狂熱雙倍時段可得 2 條）！累積滿 20 條就能來抽驚喜大獎囉！
+            </p>
+          </div>
+        `;
+
+        actionsEl.innerHTML = `
+          <button onclick="closeGachaModal()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
+            我知道了喵！去背單字賺魚乾
+          </button>
+        `;
+      } else if (data.status === 'SUCCESS') {
+        iconEl.innerHTML = '🎁';
+        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-400/20 cat-hop';
+        titleEl.innerText = '🎉 幸運盲盒大驚喜！';
+        titleEl.className = 'font-black text-lg text-amber-600 dark:text-amber-400 pt-2';
+        subEl.innerText = `成功消耗 20 條小魚乾（剩餘：${data.remainingFish} 條）`;
+
+        const slotMap = {
+          head: '🎀 頭飾帽子',
+          face: '👓 面部裝飾',
+          neck: '🧣 頸部項鍊',
+          outfit: '👗 全身服裝',
+          hand: '🐾 手持道具',
+          aura: '✨ 特效光環'
+        };
+        const slotText = slotMap[data.item.slot] || '造型配件';
+
+        bodyEl.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-2xl border border-amber-200 dark:border-slate-600 shadow-xs">
+              <div class="w-14 h-14 rounded-xl bg-amber-100 dark:bg-amber-950/60 flex items-center justify-center text-3xl">
+                ${data.item.icon}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200">
+                    ${slotText}
+                  </span>
+                </div>
+                <h4 class="font-black text-base text-slate-900 dark:text-white truncate pt-0.5">
+                  ${data.item.name}
+                </h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  ${data.item.desc}
+                </p>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300 font-semibold text-center flex items-center justify-center gap-1.5">
+              <span>✨</span>
+              <span>已自動為咪咪穿戴上新造型！外觀已立即更新！</span>
+            </div>
+          </div>
+        `;
+
+        actionsEl.innerHTML = `
+          <button onclick="closeGachaModal(); openWardrobeModal();" class="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
+            👗 前往換裝室查看
+          </button>
+          <button onclick="closeGachaModal()" class="px-5 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
+            太棒了！
+          </button>
+        `;
+      } else if (data.status === 'ALL_UNLOCKED') {
+        iconEl.innerHTML = '👑';
+        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-purple-500/20';
+        titleEl.innerText = '🏆 全圖鑑收藏大師！';
+        titleEl.className = 'font-black text-lg text-purple-600 dark:text-purple-400 pt-2';
+        subEl.innerText = `成功消耗 20 條小魚乾（剩餘：${data.remainingFish} 條）`;
+
+        bodyEl.innerHTML = `
+          <div class="text-sm text-slate-700 dark:text-slate-200 space-y-2.5">
+            <div class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 text-xs leading-relaxed text-purple-900 dark:text-purple-200">
+              🌟 <b>太震撼了！</b>衣櫥中的所有配件與服裝已經被妳全部收集齊全囉！目前沒有尚未解鎖的衣物了！
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-purple-100 dark:border-slate-600">
+                <span class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <span class="text-base">🔥</span> 狂熱雙倍時段加碼
+                </span>
+                <span class="font-black text-amber-600 dark:text-amber-400">+15 題雙倍魚乾</span>
+              </div>
+              <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-purple-100 dark:border-slate-600">
+                <span class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <span class="text-base">💖</span> 咪咪親密度爆棚
+                </span>
+                <span class="font-black text-rose-500">+50% 親密度</span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        actionsEl.innerHTML = `
+          <button onclick="closeGachaModal()" class="w-full py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
+            收下傳奇大獎喵！🔥
+          </button>
+        `;
+      }
+
+      modal.classList.remove('hidden');
+    }
+
     // Lucky Gacha Box (20 Fish Treats Sink)
     function playLuckyGacha() {
       const GACHA_COST = 20;
       if (fishCount < GACHA_COST) {
-        alert(`幸運盲盒每次需要 ${GACHA_COST} 條小魚乾！快去背單字或做測驗賺小魚乾吧喵～🐟`);
+        openGachaModal({
+          status: 'NOT_ENOUGH_FISH',
+          currentFish: fishCount,
+          cost: GACHA_COST
+        });
         return;
       }
 
@@ -3885,6 +4050,12 @@
         renderCatAccessories();
 
         sayCatSpeech(`🎁 哇！幸運盲盒大驚喜！成功開出【${prize.name}】並已自動換上！太美了喵～✨🐾`, "開箱大獎");
+        
+        openGachaModal({
+          status: 'SUCCESS',
+          item: prize,
+          remainingFish: fishCount
+        });
       } else {
         // All items unlocked! Award Fever Ticket & Affection
         feverRemainingQuestions += 15;
@@ -3892,6 +4063,11 @@
         updateFeverBadge();
         gainAffection(50);
         sayCatSpeech(`🎁 妳已經解鎖了所有造型！盲盒獎勵轉化為「15 題狂熱雙倍小魚乾時段」與 +50% 親密度喵！🔥✨`, "全造型傳奇");
+        
+        openGachaModal({
+          status: 'ALL_UNLOCKED',
+          remainingFish: fishCount
+        });
       }
 
       triggerAutoSaveToPi();
