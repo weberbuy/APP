@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.1-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.2-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -146,6 +146,24 @@
       animation: divineShimmer 2.2s ease-in-out infinite;
     }
 
+
+    /* Select & Options High-Contrast Dark Mode Styling */
+    select option {
+      background-color: #ffffff;
+      color: #0f172a;
+      font-weight: 600;
+      padding: 8px 12px;
+    }
+    .dark select option {
+      background-color: #1e293b;
+      color: #f8fafc;
+      font-weight: 600;
+      padding: 8px 12px;
+    }
+    .dark select option:checked {
+      background-color: #e11d48;
+      color: #ffffff;
+    }
 </style>
 </head>
 <body class="bg-amber-50/40 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
@@ -168,7 +186,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.1-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.2-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -532,24 +550,27 @@
       <div class="flex flex-wrap items-center justify-between gap-2.5 px-0.5">
         <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
           <!-- Theme Unit Dropdown -->
-          <div class="flex items-center space-x-1.5 bg-amber-100/70 dark:bg-slate-800 px-3.5 py-2 rounded-2xl border border-amber-300/80 dark:border-slate-700 shadow-sm">
-            <label for="themeSelect" class="text-xs font-bold text-amber-900 dark:text-amber-300 whitespace-nowrap flex items-center gap-1">
+          <div class="flex items-center space-x-1.5 bg-amber-100/85 dark:bg-slate-800 px-3.5 py-2 rounded-2xl border border-amber-300 dark:border-amber-400/50 shadow-sm transition-colors">
+            <label for="themeSelect" class="text-xs font-black text-amber-900 dark:text-amber-300 whitespace-nowrap flex items-center gap-1">
               <span>📚</span>
               <span>單元：</span>
             </label>
-            <select id="themeSelect" onchange="onThemeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer">
-              <option value="all1200">📚 全集篇：國中會考 1200 單字全集</option>
-              <option value="numbers">🔢 專題篇：1-100 基礎數字</option>
-              <option value="family">👨‍👩‍👧‍👦 專題篇：人物與家庭親屬</option>
+            <select id="themeSelect" onchange="onThemeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-900 dark:text-amber-100 focus:outline-none cursor-pointer">
+              <option value="all1200" class="dark:bg-slate-800 dark:text-slate-100">📚 全集篇：國中會考 1200 單字全集</option>
+              <option value="numbers" class="dark:bg-slate-800 dark:text-slate-100">🔢 專題篇：1-100 基礎數字</option>
+              <option value="family" class="dark:bg-slate-800 dark:text-slate-100">👨‍👩‍👧‍👦 專題篇：人物與家庭親屬</option>
             </select>
           </div>
 
           <!-- Sub-Scope Dropdown -->
-          <div class="flex items-center space-x-1.5 bg-white dark:bg-slate-800 px-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-            <label for="scopeFilter" class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">範圍：</label>
-            <select id="scopeFilter" onchange="onScopeChange()" class="bg-transparent text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer">
-              <option value="all">全部單字</option>
-              <option value="weak">★ 貓貓待加強清單</option>
+          <div class="flex items-center space-x-1.5 bg-white dark:bg-slate-800 px-3.5 py-2 rounded-2xl border border-slate-300 dark:border-rose-400/50 shadow-sm transition-colors">
+            <label for="scopeFilter" class="text-xs font-bold text-slate-700 dark:text-rose-300 whitespace-nowrap flex items-center gap-1">
+              <span>🎯</span>
+              <span>範圍：</span>
+            </label>
+            <select id="scopeFilter" onchange="onScopeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-900 dark:text-rose-100 focus:outline-none cursor-pointer">
+              <option value="all" class="dark:bg-slate-800 dark:text-slate-100">全部單字</option>
+              <option value="weak" class="dark:bg-slate-800 dark:text-slate-100">★ 貓貓待加強清單</option>
             </select>
           </div>
         </div>
@@ -2105,6 +2126,7 @@
         const opt = document.createElement('option');
         opt.value = sc.value;
         opt.innerText = sc.label;
+        opt.className = 'dark:bg-slate-800 dark:text-slate-100';
         scopeSel.appendChild(opt);
       });
       currentScope = 'all';
