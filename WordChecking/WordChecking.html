@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.4.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.4.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -168,7 +168,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.4.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.4.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -496,8 +496,7 @@
           <span>🗺️</span>
           <span>冒險地圖</span>
         </button>
-        <button onclick="switchMode('card')" id="tabCard" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5"
-          <span>🐾</span>
+        <button onclick="switchMode('card')" id="tabCard" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5 cursor-pointer whitespace-nowrap">🐾</span>
           <span>翻轉卡片</span>
         </button>
         <button onclick="switchMode('quiz')" id="tabQuiz" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
@@ -792,7 +791,7 @@
     </div>
     
 
-    <section id="modeCard" class="space-y-4">
+    <section id="modeCard" class="hidden space-y-4">
       <div class="relative w-full max-w-lg mx-auto h-84 perspective-1000 cursor-pointer" onclick="flipCard()">
         <div id="flashcardInner" class="relative w-full h-full min-h-[340px] transition-transform duration-500 transform-style-3d shadow-xl rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-200/80 dark:border-slate-700 p-6 flex flex-col justify-between">
           
@@ -2501,6 +2500,12 @@
       renderCurrentCard();
       renderStats();
 
+      // Sync data to Adventure Map
+      if (window.WordCheckingAdventure && RAW_VOCAB && RAW_VOCAB.length > 0) {
+        WordCheckingAdventure.initAdventureMap({ rawVocabList: RAW_VOCAB });
+        WordCheckingAdventure.renderAdventureMap();
+      }
+
 
 
 
@@ -2682,29 +2687,34 @@
 
 
   function getStageWords(stageId, vocabList) {
-    const list = (vocabList && vocabList.length > 0) ? vocabList : state.rawVocabList;
+    stageId = parseInt(stageId || activeChallenge.stageId || 1, 10);
     const info = getStageInfo(stageId);
-    if (!info || !list || list.length === 0) return [];
+    if (!info) return [];
 
+    let list = (vocabList && vocabList.length > 0) ? vocabList : state.rawVocabList;
+    if ((!list || list.length === 0) && typeof RAW_VOCAB !== 'undefined' && Array.isArray(RAW_VOCAB) && RAW_VOCAB.length > 0) {
+      list = RAW_VOCAB;
+      state.rawVocabList = RAW_VOCAB;
+    }
 
     const startIndex = (info.stageId - 1) * WORDS_PER_STAGE;
     const endIndex = info.stageId * WORDS_PER_STAGE;
 
+    let words = (list && list.length > 0) ? list.slice(startIndex, endIndex) : [];
 
-    const words = list.slice(startIndex, endIndex);
-
-
-    // Fallback word objects if master dataset is not yet loaded
-    if (words.length < WORDS_PER_STAGE) {
+    // Fallback word objects if master dataset is still loading or insufficient
+    if (!words || words.length < WORDS_PER_STAGE) {
+      if (!words) words = [];
+      const worldName = info.world ? info.world.name : '冒險單字';
       for (let i = words.length; i < WORDS_PER_STAGE; i++) {
         const wordNum = startIndex + i + 1;
         words.push({
           id: wordNum,
           word: `word_${wordNum}`,
           pos: 'n.',
-          zh: `第 ${wordNum} 個單字`,
+          zh: `第 ${wordNum} 個核心單字`,
           eg: `This is example sentence for word #${wordNum}.`,
-          category: info.world.name
+          category: worldName
         });
       }
     }
@@ -3336,7 +3346,11 @@
 
 
   function startStageChallenge(stageId, type) {
-    if (stageId) activeChallenge.stageId = stageId;
+    if (stageId) {
+      activeChallenge.stageId = parseInt(stageId, 10);
+    } else if (!activeChallenge.stageId) {
+      activeChallenge.stageId = state.unlockedStage || 1;
+    }
     activeChallenge.type = type || 'quiz';
     activeChallenge.words = getStageWords(activeChallenge.stageId, state.rawVocabList);
     activeChallenge.currentIndex = 0;
@@ -3629,7 +3643,7 @@
     playWordAudio(q.word);
     setTimeout(() => {
       const input = document.getElementById('advSpellingInput');
-      if (input) input.focus();
+      if (input && typeof input.focus === "function") input.focus();
     }, 200);
   }
 
@@ -4024,6 +4038,32 @@
       initSpeechRecognition();
       initPiSyncUI();
       updateCatGrowthUI();
+      updateCatGrowthMorph(currentCatLevel);
+
+      // Initialize Adventure Map Mode with hooks
+      if (window.WordCheckingAdventure) {
+        WordCheckingAdventure.initAdventureMap({
+          rawVocabList: RAW_VOCAB,
+          hooks: {
+            getFishCount: () => fishCount,
+            addFish: (n) => {
+              fishCount += n;
+              localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+              const fc = document.getElementById('fishCount');
+              if (fc) fc.innerText = fishCount;
+              const wfc = document.getElementById('wardrobeFishCount');
+              if (wfc) wfc.innerText = fishCount;
+            },
+            addAffection: (n) => gainAffection(n),
+            playAudio: (word) => playVoiceText(word),
+            playCheerSound: () => playCatCheerSound(),
+            playMeowSound: () => playCatMeowSound(),
+            saySpeech: (text, tag) => sayCatSpeech(text, tag),
+            triggerSaveToPi: () => triggerAutoSaveToPi()
+          }
+        });
+        WordCheckingAdventure.renderAdventureMap();
+      }
       loadThemeData(currentThemeKey);
       checkAndAutoSyncFromPi(true);
 
@@ -4056,6 +4096,8 @@
 
 
     function getActiveMode() {
+      const modeMap = document.getElementById('modeMap');
+      if (modeMap && !modeMap.classList.contains('hidden')) return 'map';
       if (!document.getElementById('modeCard').classList.contains('hidden')) return 'card';
       if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
       if (!document.getElementById('modeSpelling').classList.contains('hidden')) return 'spelling';
