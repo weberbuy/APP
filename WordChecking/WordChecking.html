@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.5.3-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -168,7 +168,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.5.3-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1846,6 +1846,98 @@
 
 
 
+  
+  <!-- ==================== SCREEN ROAMING PET MIMI ==================== -->
+  <div id="screenPetContainer" class="fixed pointer-events-none z-30 select-none transition-all duration-500 ease-out" style="left: 60px; bottom: 24px;">
+    <!-- Speech Bubble -->
+    <div id="screenPetSpeechBubble" class="absolute -top-12 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-slate-800/95 text-slate-800 dark:text-slate-100 text-xs font-bold px-3 py-1.5 rounded-2xl shadow-xl border border-rose-300 dark:border-rose-900/60 whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-1.5 z-40">
+      <span id="screenPetSpeechIcon">🐾</span>
+      <span id="screenPetSpeechText">喵嗚～</span>
+      <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-slate-800 rotate-45 border-r border-b border-rose-300 dark:border-rose-900/60"></div>
+    </div>
+
+    <!-- Roaming Cat Body Wrapper (draggable & interactive) -->
+    <div id="screenPetMimi" class="pointer-events-auto cursor-grab active:cursor-grabbing relative flex items-center justify-center filter drop-shadow-lg hover:drop-shadow-2xl transition-transform" style="width: 105px; height: 115px;" title="點擊摸摸咪咪，或按住拖曳擺放！">
+      <svg viewBox="0 0 120 130" id="roamingCatSvg" class="w-full h-full overflow-visible">
+        <!-- 0. Background Aura Layer -->
+        <g id="roamingCatAccAura"></g>
+
+        <!-- Ground Shadow -->
+        <ellipse cx="60" cy="120" rx="34" ry="6" fill="#000000" opacity="0.15" />
+
+        <g id="roamingCatMorphScaleGroup" style="transform-origin: 60px 116px; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);">
+          <!-- 1. Tail -->
+          <g id="roamingCatTail" class="tail-wag-normal origin-bottom-left"></g>
+
+          <!-- 2. Back Body & Legs -->
+          <g id="roamingCatBody"></g>
+
+          <!-- 3. Morph Chest & Outfit -->
+          <g id="roamingCatMorphChest"></g>
+          <g id="roamingCatAccOutfit"></g>
+
+          <!-- 4. Neck -->
+          <g id="roamingCatAccNeck"></g>
+
+          <!-- 5. Head Group -->
+          <g id="roamingCatHeadGroup">
+            <!-- Ears -->
+            <polygon points="32,45 20,16 50,30" fill="#f59e0b" />
+            <polygon points="34,42 26,22 47,32" fill="#fda4af" />
+            <polygon points="88,45 100,16 70,30" fill="#f59e0b" />
+            <polygon points="86,42 94,22 73,32" fill="#fda4af" />
+            <!-- Head Ellipse -->
+            <ellipse cx="60" cy="54" rx="35" ry="29" fill="#fbbf24" />
+            <!-- Head Patches -->
+            <path d="M 40,28 C 50,34 60,34 68,26 C 66,40 54,42 40,36 Z" fill="#f97316" />
+            <path d="M 25,48 C 24,58 30,68 36,66 C 32,58 30,50 25,48 Z" fill="#475569" />
+            <!-- Eyes -->
+            <g id="roamingCatEyes">
+              <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+              <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
+              <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+              <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
+            </g>
+            <!-- Smiling Curved Eyes -->
+            <g id="roamingCatHappyEyes" class="hidden">
+              <path d="M 41,52 Q 46,47 51,52" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round" />
+              <path d="M 69,52 Q 74,47 79,52" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round" />
+            </g>
+            <!-- Nose & Mouth -->
+            <polygon points="60,60 57,57 63,57" fill="#f43f5e" />
+            <path d="M 55,63 Q 60,67 60,60 Q 60,67 65,63" stroke="#1e293b" stroke-width="1.8" fill="none" />
+            <!-- Cheeks -->
+            <circle cx="38" cy="61" r="4.5" fill="#fca5a5" opacity="0.6" />
+            <circle cx="82" cy="61" r="4.5" fill="#fca5a5" opacity="0.6" />
+            <!-- Whiskers -->
+            <line x1="26" y1="56" x2="38" y2="58" stroke="#78350f" stroke-width="1.3" />
+            <line x1="25" y1="63" x2="38" y2="62" stroke="#78350f" stroke-width="1.3" />
+            <line x1="94" y1="56" x2="82" y2="58" stroke="#78350f" stroke-width="1.3" />
+            <line x1="95" y1="63" x2="82" y2="62" stroke="#78350f" stroke-width="1.3" />
+            <!-- Morph Head & Accessories -->
+            <g id="roamingCatAccFace"></g>
+            <g id="roamingCatMorphHead"></g>
+            <g id="roamingCatAccHead"></g>
+          </g>
+
+          <!-- 6. Hand -->
+          <g id="roamingCatAccHand"></g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Mini Control Badge (Toggle Roam vs Docked) -->
+    <div class="pointer-events-auto flex items-center justify-center gap-1 mt-0.5">
+      <button id="screenPetModeToggle" onclick="toggleScreenPetRoamingMode(event)" class="text-[10px] font-bold bg-white/90 dark:bg-slate-800/90 hover:bg-rose-50 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full shadow border border-amber-200 dark:border-slate-700 backdrop-blur transition" title="切換漫遊或靠邊坐下">
+        <span id="screenPetModeIcon">🐾</span> <span id="screenPetModeText">漫遊中</span>
+      </button>
+      <button onclick="petRoamingMimi(event)" class="text-[10px] font-bold bg-rose-500 hover:bg-rose-600 text-white px-1.5 py-0.5 rounded-full shadow transition" title="摸摸咪咪">
+        ❤️ 摸摸
+      </button>
+    </div>
+  </div>
+
+
   <!-- Data & Logic script -->
   <script>
     
@@ -2404,6 +2496,9 @@
         if (feverBadge) feverBadge.classList.add('hidden');
       }
 
+      // Automatically trigger Cat Morph & Roaming Pet update on level change
+      updateCatGrowthMorph(level);
+
 
       // 4. Level-up Celebration Check
       if (level > lastKnownCatLevel) {
@@ -2560,24 +2655,24 @@
       style.id = CAT_MORPH_STYLES_ID;
       style.textContent = `
         @keyframes tailWagKitten {
-          0%, 100% { transform: rotate(-8deg); }
-          50% { transform: rotate(18deg); }
+          0%, 100% { transform: rotate(-10deg); }
+          50% { transform: rotate(22deg); }
         }
         .tail-wag-kitten {
           transform-origin: 32px 105px;
-          animation: tailWagKitten 0.9s ease-in-out infinite;
+          animation: tailWagKitten 0.85s ease-in-out infinite;
         }
         @keyframes tailWagNormal {
           0%, 100% { transform: rotate(0deg); }
-          50% { transform: rotate(12deg); }
+          50% { transform: rotate(14deg); }
         }
         .tail-wag-normal {
           transform-origin: 32px 105px;
-          animation: tailWagNormal 1.8s ease-in-out infinite;
+          animation: tailWagNormal 1.6s ease-in-out infinite;
         }
         @keyframes tailWagGraceful {
-          0%, 100% { transform: rotate(-2deg); }
-          50% { transform: rotate(10deg); }
+          0%, 100% { transform: rotate(-3deg); }
+          50% { transform: rotate(12deg); }
         }
         .tail-wag-graceful {
           transform-origin: 32px 105px;
@@ -2585,15 +2680,15 @@
         }
         @keyframes tailWagHero {
           0%, 100% { transform: rotate(-6deg); }
-          50% { transform: rotate(16deg); }
+          50% { transform: rotate(18deg); }
         }
         .tail-wag-hero {
           transform-origin: 32px 105px;
-          animation: tailWagHero 1.6s ease-in-out infinite;
+          animation: tailWagHero 1.5s ease-in-out infinite;
         }
         @keyframes tailWagCelestial {
           0%, 100% { transform: rotate(-5deg); filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.45)); }
-          50% { transform: rotate(15deg); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)); }
+          50% { transform: rotate(16deg); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)); }
         }
         .tail-wag-celestial {
           transform-origin: 32px 105px;
@@ -2601,14 +2696,22 @@
         }
         @keyframes sigilPulse {
           0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(250, 204, 21, 0.7)); }
-          50% { transform: scale(1.15); filter: drop-shadow(0 0 7px rgba(250, 204, 21, 1)); }
+          50% { transform: scale(1.18); filter: drop-shadow(0 0 8px rgba(250, 204, 21, 1)); }
         }
         .sigil-pulse {
           transform-origin: 60px 36px;
           animation: sigilPulse 2.4s ease-in-out infinite;
         }
-        .cat-celestial-glow {
-          filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+        .cat-divine-aura {
+          filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.65)) drop-shadow(0 0 20px rgba(251, 191, 36, 0.3));
+        }
+        @keyframes petPatterWalk {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          25% { transform: translateY(-3px) rotate(-1.5deg); }
+          75% { transform: translateY(-3px) rotate(1.5deg); }
+        }
+        .pet-walking {
+          animation: petPatterWalk 0.35s ease-in-out infinite;
         }
       `;
       document.head.appendChild(style);
@@ -2619,10 +2722,11 @@
       const lvl = Math.max(1, Math.min(5, parseInt(level || 1, 10)));
       currentCatLevel = lvl;
 
-      const scaleMap = { 1: 0.88, 2: 1.00, 3: 1.03, 4: 1.07, 5: 1.12 };
+      // Unmistakable Scale Differences (Lv.1 Cute Kitten 0.80x -> Lv.5 Majestic Celestial Beast 1.28x)
+      const scaleMap = { 1: 0.80, 2: 0.96, 3: 1.08, 4: 1.18, 5: 1.28 };
       const currentScale = scaleMap[lvl] || 1.0;
 
-      ['mainCat', 'wardrobeCat'].forEach(prefix => {
+      ['mainCat', 'wardrobeCat', 'roamingCat'].forEach(prefix => {
         const svg = document.getElementById(prefix + 'Svg');
         const scaleGroup = document.getElementById(prefix + 'MorphScaleGroup');
         const tail = document.getElementById(prefix + 'Tail');
@@ -2643,7 +2747,7 @@
           svg.classList.remove('cat-divine-aura');
         }
 
-        // 2. Tail Morph & Tail Animation Class
+        // 2. Tail Evolution
         if (tail) {
           tail.classList.remove(
             'tail-wag', 'tail-wag-kitten', 'tail-wag-normal',
@@ -2687,9 +2791,10 @@
           }
         }
 
-        // 3. Body Morph (Lv.1 Baby Kitten Chubby Belly & Toe Beans -> Lv.5 Celestial Beast)
+        // 3. Body & Paws Evolution
         if (body) {
           if (lvl === 1) {
+            // Lv.1: Chubby Baby Kitten Body with cute pink toe beans & small belly
             body.innerHTML = `
               <path d="M 36,84 C 30,94 32,112 44,114 C 53,115 67,115 76,114 C 88,112 90,94 84,84 C 78,76 42,76 36,84 Z" fill="#fbbf24" />
               <path d="M 33,96 C 33,106 40,113 47,113 C 43,106 42,98 38,92 Z" fill="#f97316" />
@@ -2699,10 +2804,12 @@
               <ellipse cx="83" cy="115" rx="7.5" ry="4.5" fill="#ffffff" />
               <path d="M 50,96 L 50,113 C 50,116 56,116 56,113 L 56,96 Z" fill="#ffffff" />
               <path d="M 64,96 L 64,113 C 64,116 70,116 70,113 L 70,96 Z" fill="#ffffff" />
-              <circle cx="53" cy="113" r="1.2" fill="#fda4af" />
-              <circle cx="67" cy="113" r="1.2" fill="#fda4af" />
+              <!-- Pink Toe Beans -->
+              <circle cx="53" cy="113" r="1.3" fill="#fda4af" />
+              <circle cx="67" cy="113" r="1.3" fill="#fda4af" />
             `;
           } else if (lvl === 2) {
+            // Lv.2: Standard Agile Explorer Body
             body.innerHTML = `
               <path d="M 32,80 C 26,92 28,114 42,116 C 52,117 68,117 78,116 C 92,114 94,92 88,80 C 84,70 36,70 32,80 Z" fill="#fbbf24" />
               <path d="M 28,95 C 28,108 38,116 46,116 C 42,108 40,96 35,90 Z" fill="#f97316" />
@@ -2718,6 +2825,7 @@
               <path d="M 64,94 L 64,115 C 64,118 72,118 72,115 L 72,94 Z" fill="#ffffff" />
             `;
           } else if (lvl === 3) {
+            // Lv.3: Slender Elegant Scholar Body with clean white cuffs
             body.innerHTML = `
               <path d="M 33,79 C 27,90 29,114 43,116 C 53,117 67,117 77,116 C 91,114 93,90 87,79 C 83,69 37,69 33,79 Z" fill="#fbbf24" />
               <path d="M 28,94 C 29,106 37,115 45,115 C 42,107 41,96 36,90 Z" fill="#f97316" />
@@ -2729,10 +2837,14 @@
               <path d="M 64,93 L 64,115 C 64,118 72,118 72,115 L 72,93 Z" fill="#ffffff" />
             `;
           } else if (lvl === 4) {
+            // Lv.4: Athletic Heroic Body with bold adventurer tiger stripes
             body.innerHTML = `
               <path d="M 31,78 C 24,91 26,114 41,116 C 52,117 68,117 79,116 C 94,114 96,91 89,78 C 84,68 36,68 31,78 Z" fill="#fbbf24" />
               <path d="M 26,92 C 26,106 36,116 46,116 C 41,107 39,95 33,88 Z" fill="#ea580c" />
               <path d="M 87,88 C 90,97 88,109 81,115 C 85,106 83,94 79,88 Z" fill="#334155" />
+              <!-- Tiger Stripes -->
+              <path d="M 36,88 Q 44,92 40,96" stroke="#c2410c" stroke-width="1.5" fill="none" stroke-linecap="round" />
+              <path d="M 84,88 Q 76,92 80,96" stroke="#1e293b" stroke-width="1.5" fill="none" stroke-linecap="round" />
               <ellipse cx="60" cy="98" rx="16.5" ry="14" fill="#ffffff" />
               <ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" />
               <ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" />
@@ -2740,6 +2852,7 @@
               <path d="M 64,93 L 64,115 C 64,118.5 73,118.5 73,115 L 73,93 Z" fill="#ffffff" />
             `;
           } else {
+            // Lv.5: Celestial Sacred Beast Body with Gold Filigree & Cloud Anklets
             body.innerHTML = `
               <g class="cat-celestial-glow">
                 <path d="M 30,77 C 23,90 25,114 41,116 C 52,117.5 68,117.5 79,116 C 95,114 97,90 90,77 C 84,67 36,67 30,77 Z" fill="#fbbf24" />
@@ -2747,107 +2860,496 @@
                 <path d="M 87,87 C 91,97 88,110 80,115 C 85,106 83,94 79,87 Z" fill="#475569" />
                 <ellipse cx="60" cy="98" rx="17" ry="14.5" fill="#ffffff" />
                 <path d="M 52,98 Q 60,105 68,98 Q 60,102 52,98 Z" fill="#fde047" opacity="0.8" />
-                <ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.2" />
-                <ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.2" />
-                <path d="M 47,92 L 47,115 C 47,118.5 56,118.5 56,115 L 56,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="0.8" />
-                <path d="M 64,92 L 64,115 C 64,118.5 73,118.5 73,115 L 73,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="0.8" />
+                <!-- Sacred Cloud Anklets -->
+                <ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.4" />
+                <ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.4" />
+                <path d="M 47,92 L 47,115 C 47,118.5 56,118.5 56,115 L 56,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="1" />
+                <path d="M 64,92 L 64,115 C 64,118.5 73,118.5 73,115 L 73,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="1" />
               </g>
             `;
           }
         }
 
-        // 4. Chest Fluff & Distinct Accessories
+        // 4. Iconic Chest Features (Lv.1 Baby Bib -> Lv.2 Yarn Bow -> Lv.3 Fluffy Plume -> Lv.4 Fur Mantle -> Lv.5 Sun Jewel)
         if (chest) {
           if (lvl === 1) {
+            // Lv.1 幼幼小奶貓: 可愛粉嫩小口水巾 (Baby Bib with heart)
             chest.innerHTML = `
-              <ellipse cx="60" cy="79" rx="7" ry="4" fill="#ffffff" opacity="0.85" />
+              <g id="${prefix}BabyBib">
+                <path d="M 50,76 Q 60,86 70,76 Q 67,89 60,91 Q 53,89 50,76 Z" fill="#fee2e2" stroke="#f43f5e" stroke-width="0.8" />
+                <circle cx="60" cy="83" r="1.6" fill="#f43f5e" />
+              </g>
             `;
           } else if (lvl === 2) {
-            // Lv.2 活潑好奇貓 (🧶): 專屬好奇毛線紅領巾與金色小鈴鐺！
+            // Lv.2 活潑好奇貓 (🧶): 鮮明紅色毛線蝴蝶結大領巾與金色小鈴鐺！
             chest.innerHTML = `
-              <path d="M 50,78 Q 60,82 70,78" stroke="#ef4444" stroke-width="2.5" fill="none" stroke-linecap="round" />
-              <circle cx="60" cy="81" r="2.8" fill="#facc15" stroke="#b45309" stroke-width="0.6" />
-              <circle cx="60" cy="81.8" r="0.8" fill="#b45309" />
+              <g id="${prefix}YarnRibbon">
+                <path d="M 48,77 Q 60,83 72,77" stroke="#dc2626" stroke-width="3" fill="none" stroke-linecap="round" />
+                <!-- Red Yarn Bow Wings -->
+                <polygon points="60,81 53,77 54,85" fill="#ef4444" stroke="#b91c1c" stroke-width="0.6" />
+                <polygon points="60,81 67,77 66,85" fill="#ef4444" stroke="#b91c1c" stroke-width="0.6" />
+                <!-- Gold Jingle Bell -->
+                <circle cx="60" cy="83" r="3.2" fill="#facc15" stroke="#a16207" stroke-width="0.7" />
+                <circle cx="60" cy="83.8" r="0.9" fill="#a16207" />
+              </g>
             `;
           } else if (lvl === 3) {
-            // Lv.3 聰明學霸貓 (🎓): 華麗優雅的多層次白羽毛領巾
+            // Lv.3 聰明學霸貓 (🎓): 華麗優雅的多層次純白羽毛長領巾！
             chest.innerHTML = `
-              <path d="M 46,74 C 42,79 44,85 49,86 C 46,89 51,93 57,92 C 55,96 65,96 63,92 C 69,93 74,89 71,86 C 76,85 78,79 74,74 C 67,77 53,77 46,74 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.06))" />
-              <path d="M 50,76 C 47,81 51,87 56,86 C 54,89 66,89 64,86 C 69,87 73,81 70,76 C 65,78 55,78 50,76 Z" fill="#f8fafc" />
+              <g id="${prefix}ScholarFluff" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))">
+                <path d="M 44,74 C 40,80 42,87 48,88 C 44,92 50,96 56,95 C 54,101 66,101 64,95 C 70,96 76,92 72,88 C 78,87 80,80 76,74 C 67,78 53,78 44,74 Z" fill="#ffffff" />
+                <path d="M 48,76 C 45,82 49,88 55,87 C 53,91 67,91 65,87 C 71,88 75,82 72,76 C 66,79 54,79 48,76 Z" fill="#f1f5f9" />
+                <circle cx="60" cy="83" r="2.2" fill="#38bdf8" stroke="#0284c7" stroke-width="0.6" />
+              </g>
             `;
           } else if (lvl === 4) {
-            // Lv.4 英勇旅伴貓 (🦸): 霸氣冒險家厚實鬃毛
+            // Lv.4 英勇旅伴貓 (🦸): 霸氣厚實的冒險家絨毛厚披肩！
             chest.innerHTML = `
-              <path d="M 42,73 C 37,80 40,88 47,89 C 43,93 49,97 55,96 C 53,101 67,101 65,96 C 71,97 77,93 73,89 C 80,88 83,80 78,73 C 69,77 51,77 42,73 Z" fill="#ffffff" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))" />
-              <path d="M 52,82 Q 60,90 68,82" stroke="#cbd5e1" stroke-width="1.2" fill="none" />
-            `;
-          } else {
-            // Lv.5 傳奇貓神獸 (👑): 祥雲金印與天焰神石
-            chest.innerHTML = `
-              <path d="M 40,72 C 34,80 38,90 46,91 C 41,96 48,101 55,100 C 52,106 68,106 65,100 C 72,101 79,96 74,91 C 82,90 86,80 80,72 C 70,76 50,76 40,72 Z" fill="#ffffff" filter="drop-shadow(0 0 6px rgba(251, 191, 36, 0.5))" />
-              <circle cx="60" cy="85" r="4.2" fill="#f59e0b" stroke="#ffffff" stroke-width="1.2" />
-              <polygon points="60,81 61.5,84 64.5,85 61.5,86 60,89 58.5,86 55.5,85 58.5,84" fill="#ffffff" />
-            `;
-          }
-        }
-
-        // 5. Head Morph (Ear Tufts on Lv.4, Forehead Sigil on Lv.5)
-        if (headMorph) {
-          if (lvl === 4) {
-            headMorph.innerHTML = `
-              <line x1="20" y1="16" x2="15" y2="8" stroke="#334155" stroke-width="2" stroke-linecap="round" />
-              <line x1="22" y1="17" x2="18" y2="10" stroke="#f97316" stroke-width="1.3" stroke-linecap="round" />
-              <line x1="100" y1="16" x2="105" y2="8" stroke="#334155" stroke-width="2" stroke-linecap="round" />
-              <line x1="98" y1="17" x2="102" y2="10" stroke="#f97316" stroke-width="1.3" stroke-linecap="round" />
-              <polygon points="60,33 63,37 60,41 57,37" fill="#b91c1c" />
-              <polygon points="60,34.5 61.8,37 60,39.5 58.2,37" fill="#facc15" />
-            `;
-          } else if (lvl === 5) {
-            headMorph.innerHTML = `
-              <line x1="20" y1="16" x2="14" y2="7" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
-              <line x1="100" y1="16" x2="106" y2="7" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
-              <g class="sigil-pulse">
-                <circle cx="60" cy="36" r="8" fill="#fef08a" opacity="0.3" />
-                <path d="M 54,34 C 54,41 66,41 66,34 C 64,38 56,38 54,34 Z" fill="#f59e0b" />
-                <polygon points="60,28 62,34.5 68.5,36 62,37.5 60,44 58,37.5 51.5,36 58,34.5" fill="#fbbf24" stroke="#d97706" stroke-width="0.7" />
-                <circle cx="60" cy="36" r="1.5" fill="#ffffff" />
+              <g id="${prefix}AdventurerMantle" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.15))">
+                <path d="M 40,73 C 34,81 37,90 45,91 C 40,96 47,102 54,100 C 52,107 68,107 66,100 C 73,102 80,96 75,91 C 83,90 86,81 80,73 C 70,78 50,78 40,73 Z" fill="#f8fafc" />
+                <path d="M 48,80 Q 60,92 72,80" stroke="#94a3b8" stroke-width="1.5" fill="none" />
+                <polygon points="60,82 56,86 60,90 64,86" fill="#dc2626" stroke="#991b1b" stroke-width="0.8" />
               </g>
             `;
           } else {
-            headMorph.innerHTML = '';
+            // Lv.5 傳奇貓神獸 (👑): 太陽神星之核寶石與祥雲胸鬃
+            chest.innerHTML = `
+              <g id="${prefix}DivineChest" filter="drop-shadow(0 0 8px rgba(251, 191, 36, 0.6))">
+                <path d="M 38,72 C 32,81 36,92 45,93 C 39,98 47,105 54,103 C 50,111 70,111 66,103 C 73,105 81,98 75,93 C 84,92 88,81 82,72 C 70,77 50,77 38,72 Z" fill="#ffffff" />
+                <!-- Sun Star Jewel -->
+                <circle cx="60" cy="85" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.4" />
+                <polygon points="60,80 62,84 66,85 62,86 60,90 58,86 54,85 58,84" fill="#ffffff" />
+              </g>
+            `;
           }
         }
 
-        // 6. Eyes Morph
+        // 5. Head Morph & Iconic Headgear (Lv.3 Scholar Cap + Glasses! Lv.5 Royal Crown!)
+        if (headMorph) {
+          if (lvl === 1) {
+            // Lv.1: Big cute blushing baby cheeks
+            headMorph.innerHTML = `
+              <ellipse cx="36" cy="62" rx="6" ry="4" fill="#fb7185" opacity="0.65" />
+              <ellipse cx="84" cy="62" rx="6" ry="4" fill="#fb7185" opacity="0.65" />
+            `;
+          } else if (lvl === 2) {
+            // Lv.2: Alert adventurer ear twitches & whiskers
+            headMorph.innerHTML = `
+              <line x1="24" y1="55" x2="38" y2="58" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="96" y1="55" x2="82" y2="58" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" />
+            `;
+          } else if (lvl === 3) {
+            // Lv.3 聰明學霸貓 (🎓): 黑色小學士帽 + 金色長流蘇 + 金絲圓框眼鏡！
+            headMorph.innerHTML = `
+              <!-- Graduation Scholar Cap -->
+              <g id="${prefix}ScholarCap" transform="translate(60, 22)">
+                <polygon points="0,-12 24,-4 0,4 -24,-4" fill="#1e293b" stroke="#0f172a" stroke-width="1" />
+                <polygon points="0,-10 21,-4 0,3 -21,-4" fill="#334155" />
+                <path d="M -11,-4 Q 0,5 11,-4 L 9,5 Q 0,11 -9,5 Z" fill="#0f172a" />
+                <circle cx="0" cy="-4" r="2.4" fill="#facc15" stroke="#ca8a04" stroke-width="0.6" />
+                <!-- Gold Draping Tassel -->
+                <path d="M 0,-4 Q 14,-2 17,7" stroke="#eab308" stroke-width="1.4" fill="none" stroke-linecap="round" />
+                <ellipse cx="17.5" cy="10" rx="2" ry="3.5" fill="#eab308" />
+                <line x1="17.5" y1="13.5" x2="17.5" y2="16" stroke="#ca8a04" stroke-width="1.2" />
+              </g>
+              <!-- Gold Wire Round Spectacles -->
+              <g id="${prefix}ScholarGlasses">
+                <circle cx="46" cy="52" r="8" fill="rgba(224, 242, 254, 0.3)" stroke="#eab308" stroke-width="1.5" />
+                <circle cx="48" cy="49" r="1.6" fill="#ffffff" opacity="0.85" />
+                <circle cx="74" cy="52" r="8" fill="rgba(224, 242, 254, 0.3)" stroke="#eab308" stroke-width="1.5" />
+                <circle cx="76" cy="49" r="1.6" fill="#ffffff" opacity="0.85" />
+                <path d="M 54,50 Q 60,46 66,50" stroke="#eab308" stroke-width="1.5" fill="none" />
+                <line x1="38" y1="51" x2="30" y2="48" stroke="#eab308" stroke-width="1.2" stroke-linecap="round" />
+                <line x1="82" y1="51" x2="90" y2="48" stroke="#eab308" stroke-width="1.2" stroke-linecap="round" />
+              </g>
+            `;
+          } else if (lvl === 4) {
+            // Lv.4 英勇旅伴貓 (🦸): 猞猁長耳羽 + 額頭英勇戰印
+            headMorph.innerHTML = `
+              <!-- Lynx Ear Tufts -->
+              <line x1="20" y1="16" x2="13" y2="6" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round" />
+              <line x1="22" y1="17" x2="17" y2="8" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round" />
+              <line x1="100" y1="16" x2="107" y2="6" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round" />
+              <line x1="98" y1="17" x2="103" y2="8" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round" />
+              <!-- Heroic Diamond Emblem -->
+              <g transform="translate(60, 36)">
+                <polygon points="0,-6 4,0 0,6 -4,0" fill="#dc2626" stroke="#991b1b" stroke-width="0.8" />
+                <polygon points="0,-3.5 2.5,0 0,3.5 -2.5,0" fill="#facc15" />
+              </g>
+            `;
+          } else {
+            // Lv.5 傳奇貓神獸 (👑): 璀璨黃金小皇冠 + 額頭星月呼吸金印！
+            headMorph.innerHTML = `
+              <!-- Royal Golden Crown with Ruby & Emeralds -->
+              <g id="${prefix}RoyalCrown" transform="translate(60, 18)" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))">
+                <path d="M -14,4 L -16,-6 L -7,-1 L 0,-10 L 7,-1 L 16,-6 L 14,4 Z" fill="#facc15" stroke="#b45309" stroke-width="1.2" />
+                <circle cx="-16" cy="-6" r="1.6" fill="#ef4444" />
+                <circle cx="0" cy="-10" r="2.2" fill="#ef4444" stroke="#ffffff" stroke-width="0.6" />
+                <circle cx="16" cy="-6" r="1.6" fill="#10b981" />
+                <rect x="-13" y="1" width="26" height="3" fill="#ca8a04" rx="1" />
+              </g>
+              <!-- Forehead Celestial Sigil -->
+              <g class="sigil-pulse">
+                <circle cx="60" cy="38" r="9" fill="#fef08a" opacity="0.35" />
+                <path d="M 53,35 C 53,43 67,43 67,35 C 65,39 55,39 53,35 Z" fill="#f59e0b" />
+                <polygon points="60,28 62.5,35 69.5,37 62.5,39 60,46 57.5,39 50.5,37 57.5,35" fill="#fbbf24" stroke="#d97706" stroke-width="0.8" />
+                <circle cx="60" cy="37" r="1.8" fill="#ffffff" />
+              </g>
+            `;
+          }
+        }
+
+        // 6. Eyes Evolution
         if (eyes) {
           if (lvl === 1) {
             eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="5.5" ry="7" fill="#1e293b" />
-              <circle cx="48" cy="49" r="2.2" fill="#ffffff" />
-              <circle cx="44.2" cy="54.5" r="1.2" fill="#ffffff" />
-              <ellipse cx="74" cy="52" rx="5.5" ry="7" fill="#1e293b" />
-              <circle cx="76" cy="49" r="2.2" fill="#ffffff" />
-              <circle cx="72.2" cy="54.5" r="1.2" fill="#ffffff" />
+              <ellipse cx="46" cy="52" rx="5.8" ry="7.2" fill="#1e293b" />
+              <circle cx="48" cy="49" r="2.3" fill="#ffffff" />
+              <circle cx="44" cy="55" r="1.2" fill="#ffffff" />
+              <ellipse cx="74" cy="52" rx="5.8" ry="7.2" fill="#1e293b" />
+              <circle cx="76" cy="49" r="2.3" fill="#ffffff" />
+              <circle cx="72" cy="55" r="1.2" fill="#ffffff" />
             `;
-          } else if (lvl === 2 || lvl === 3) {
+          } else if (lvl === 2) {
             eyes.innerHTML = `
               <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
               <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
               <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
               <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
             `;
+          } else if (lvl === 3) {
+            // Calm scholarly glint
+            eyes.innerHTML = `
+              <ellipse cx="46" cy="52" rx="4.4" ry="5.8" fill="#0f172a" />
+              <circle cx="48" cy="50" r="1.4" fill="#ffffff" />
+              <circle cx="45" cy="53" r="0.8" fill="#93c5fd" />
+              <ellipse cx="74" cy="52" rx="4.4" ry="5.8" fill="#0f172a" />
+              <circle cx="76" cy="50" r="1.4" fill="#ffffff" />
+              <circle cx="73" cy="53" r="0.8" fill="#93c5fd" />
+            `;
           } else {
+            // Golden adventurer / celestial starlight eyes
             eyes.innerHTML = `
               <ellipse cx="46" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
               <circle cx="48" cy="49.5" r="1.8" fill="#ffffff" />
-              <circle cx="44.5" cy="53" r="0.9" fill="#fde047" />
+              <circle cx="44.5" cy="53" r="1" fill="#fde047" />
               <ellipse cx="74" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
               <circle cx="76" cy="49.5" r="1.8" fill="#ffffff" />
-              <circle cx="72.5" cy="53" r="0.9" fill="#fde047" />
+              <circle cx="72.5" cy="53" r="1" fill="#fde047" />
             `;
           }
         }
       });
+    }
+
+    // ==================== SCREEN ROAMING PET MIMI ENGINE ====================
+    const ScreenPet = window.ScreenPet = {
+      isRoaming: true,
+      currentX: 80,
+      currentY: 24,
+      targetX: 80,
+      targetY: 24,
+      isMoving: false,
+      isDragging: false,
+      dragOffsetX: 0,
+      dragOffsetY: 0,
+      facing: 1, // 1 for right, -1 for left
+      idleTimer: null,
+      moveTimer: null,
+      speechHideTimer: null,
+
+      init() {
+        const petEl = document.getElementById('screenPetMimi');
+        const container = document.getElementById('screenPetContainer');
+        if (!petEl || !container) return;
+
+        // Restore user preference if saved
+        const savedMode = localStorage.getItem('wordchecking_pet_roam_mode');
+        if (savedMode === 'docked') {
+          this.dockPet(false);
+        } else {
+          this.isRoaming = true;
+          this.scheduleNextAction();
+        }
+
+        // Register Mouse Drag & Drop
+        this.bindDragEvents(petEl, container);
+
+        // Register Mouse Move (Eye Glance Interaction)
+        window.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+
+        // Shift+Click or Double Click screen to summon Mimi
+        window.addEventListener('dblclick', (e) => {
+          if (!this.isRoaming) return;
+          // Don't interfere if clicking buttons or inputs
+          if (['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'].includes(e.target.tagName)) return;
+          this.moveTo(e.clientX - 50, window.innerHeight - e.clientY);
+          this.say("喵！我來了喵～🐾", "🏃");
+        });
+
+        // Click on Pet to Pet / Cheer
+        petEl.addEventListener('click', (e) => {
+          if (this.isDragging) return;
+          this.pet();
+        });
+      },
+
+      scheduleNextAction() {
+        if (!this.isRoaming) return;
+        clearTimeout(this.idleTimer);
+        const nextDelay = 3500 + Math.random() * 4500; // 3.5 ~ 8 sec
+        this.idleTimer = setTimeout(() => {
+          if (!this.isRoaming || this.isDragging) return;
+          const roll = Math.random();
+          if (roll < 0.65) {
+            // Walk to a new position along the floor
+            const minX = 30;
+            const maxX = Math.max(minX + 50, window.innerWidth - 140);
+            const newX = minX + Math.random() * (maxX - minX);
+            const newY = 15 + Math.random() * 25; // slight floor variance
+            this.moveTo(newX, newY);
+          } else if (roll < 0.85) {
+            // Random cute cheer speech
+            this.playRandomCheerSpeech();
+            this.scheduleNextAction();
+          } else {
+            // Stretch / Groom
+            this.playCuteIdleAction();
+            this.scheduleNextAction();
+          }
+        }, nextDelay);
+      },
+
+      moveTo(x, y) {
+        const container = document.getElementById('screenPetContainer');
+        const mimi = document.getElementById('screenPetMimi');
+        if (!container || !mimi) return;
+
+        const clampedX = Math.max(10, Math.min(window.innerWidth - 120, x));
+        const clampedY = Math.max(10, Math.min(window.innerHeight - 130, y));
+
+        // Determine facing direction
+        const deltaX = clampedX - this.currentX;
+        if (Math.abs(deltaX) > 10) {
+          this.facing = deltaX > 0 ? 1 : -1;
+          mimi.style.transform = `scaleX(${this.facing})`;
+        }
+
+        // Calculate travel duration based on distance
+        const dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(clampedY - this.currentY, 2));
+        const duration = Math.min(2.5, Math.max(0.6, dist / 220));
+
+        container.style.transition = `left ${duration}s ease-in-out, bottom ${duration}s ease-in-out`;
+        container.style.left = `${clampedX}px`;
+        container.style.bottom = `${clampedY}px`;
+
+        mimi.classList.add('pet-walking');
+        this.isMoving = true;
+
+        clearTimeout(this.moveTimer);
+        this.moveTimer = setTimeout(() => {
+          this.currentX = clampedX;
+          this.currentY = clampedY;
+          this.isMoving = false;
+          mimi.classList.remove('pet-walking');
+          this.scheduleNextAction();
+        }, duration * 1000);
+      },
+
+      bindDragEvents(petEl, container) {
+        let isMouseDown = false;
+        let startX, startY;
+
+        const onMouseDown = (e) => {
+          isMouseDown = true;
+          this.isDragging = false;
+          const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+          const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+          startX = clientX;
+          startY = clientY;
+
+          const rect = container.getBoundingClientRect();
+          this.dragOffsetX = clientX - rect.left;
+          this.dragOffsetY = clientY - rect.top;
+
+          container.style.transition = 'none';
+        };
+
+        const onMouseMove = (e) => {
+          if (!isMouseDown) return;
+          const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+          const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+
+          if (Math.abs(clientX - startX) > 5 || Math.abs(clientY - startY) > 5) {
+            this.isDragging = true;
+          }
+
+          if (this.isDragging) {
+            const newLeft = Math.max(0, Math.min(window.innerWidth - 110, clientX - this.dragOffsetX));
+            const newBottom = Math.max(0, Math.min(window.innerHeight - 120, window.innerHeight - (clientY - this.dragOffsetY + 115)));
+            container.style.left = `${newLeft}px`;
+            container.style.bottom = `${newBottom}px`;
+            this.currentX = newLeft;
+            this.currentY = newBottom;
+          }
+        };
+
+        const onMouseUp = () => {
+          if (isMouseDown) {
+            isMouseDown = false;
+            if (this.isDragging) {
+              setTimeout(() => { this.isDragging = false; }, 50);
+              this.say("好耶～就坐在這裡陪妳背單字！🐾", "🛋️");
+              this.scheduleNextAction();
+            }
+          }
+        };
+
+        petEl.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+
+        petEl.addEventListener('touchstart', onMouseDown, { passive: true });
+        window.addEventListener('touchmove', onMouseMove, { passive: true });
+        window.addEventListener('touchend', onMouseUp);
+      },
+
+      handleMouseMove(e) {
+        if (this.isMoving || this.isDragging) return;
+        const container = document.getElementById('screenPetContainer');
+        if (!container) return;
+        const rect = container.getBoundingClientRect();
+        const petCenterX = rect.left + rect.width / 2;
+        const petCenterY = rect.top + rect.height / 2;
+
+        const dist = Math.hypot(e.clientX - petCenterX, e.clientY - petCenterY);
+        if (dist < 220) {
+          // Look towards cursor
+          const mimi = document.getElementById('screenPetMimi');
+          if (mimi) {
+            const faceDir = e.clientX < petCenterX ? -1 : 1;
+            mimi.style.transform = `scaleX(${faceDir})`;
+          }
+        }
+      },
+
+      pet() {
+        const mimi = document.getElementById('screenPetMimi');
+        if (mimi) {
+          mimi.classList.remove('cat-hop');
+          void mimi.offsetWidth;
+          mimi.classList.add('cat-hop');
+        }
+        if (typeof playCatMeowSound === 'function') playCatMeowSound();
+        if (typeof gainAffection === 'function') gainAffection(1);
+
+        const cheers = [
+          "喵嗚～摸得好舒服喵！🐾❤️",
+          "妳背單字超認真，咪咪最喜歡妳了！✨",
+          "咕嚕嚕～今天也要一起把單字記熟喔！🐟",
+          "考上好學校，咪咪請妳吃大餐喵！🎓",
+          "加油加油～咪咪一直在這裡為妳應援！🐾"
+        ];
+        const speech = cheers[Math.floor(Math.random() * cheers.length)];
+        this.say(speech, "❤️");
+      },
+
+      say(text, icon = "🐾") {
+        const bubble = document.getElementById('screenPetSpeechBubble');
+        const textEl = document.getElementById('screenPetSpeechText');
+        const iconEl = document.getElementById('screenPetSpeechIcon');
+        if (!bubble || !textEl) return;
+
+        textEl.innerText = text;
+        if (iconEl) iconEl.innerText = icon;
+        bubble.classList.remove('opacity-0');
+        bubble.classList.add('opacity-100');
+
+        clearTimeout(this.speechHideTimer);
+        this.speechHideTimer = setTimeout(() => {
+          bubble.classList.remove('opacity-100');
+          bubble.classList.add('opacity-0');
+        }, 3200);
+      },
+
+      playRandomCheerSpeech() {
+        const speeches = [
+          "背完這個單元，給自己拍拍手喵～👏",
+          "多複習兩次，大腦記得更牢固喔！🧠✨",
+          "累了就喝口水、看看窗外休息一下喵！🍵",
+          "一步一步走，妳每天都在變厲害！🐾"
+        ];
+        this.say(speeches[Math.floor(Math.random() * speeches.length)], "💡");
+      },
+
+      playCuteIdleAction() {
+        const mimi = document.getElementById('screenPetMimi');
+        if (mimi) {
+          mimi.classList.add('cat-hop');
+          setTimeout(() => mimi.classList.remove('cat-hop'), 600);
+        }
+      },
+
+      dockPet(showMessage = true) {
+        this.isRoaming = false;
+        clearTimeout(this.idleTimer);
+        clearTimeout(this.moveTimer);
+        localStorage.setItem('wordchecking_pet_roam_mode', 'docked');
+
+        const container = document.getElementById('screenPetContainer');
+        const mimi = document.getElementById('screenPetMimi');
+        const btnText = document.getElementById('screenPetModeText');
+        const btnIcon = document.getElementById('screenPetModeIcon');
+
+        if (container) {
+          container.style.transition = 'left 0.8s ease-in-out, bottom 0.8s ease-in-out';
+          container.style.left = `${window.innerWidth - 130}px`;
+          container.style.bottom = '20px';
+          this.currentX = window.innerWidth - 130;
+          this.currentY = 20;
+        }
+        if (mimi) {
+          mimi.style.transform = 'scaleX(1)';
+          mimi.classList.remove('pet-walking');
+        }
+        if (btnText) btnText.innerText = '入座中';
+        if (btnIcon) btnIcon.innerText = '💤';
+
+        if (showMessage) {
+          this.say("我在右下角乖乖坐著為妳加油喵～🐾", "💤");
+        }
+      },
+
+      startRoaming() {
+        this.isRoaming = true;
+        localStorage.setItem('wordchecking_pet_roam_mode', 'roaming');
+
+        const btnText = document.getElementById('screenPetModeText');
+        const btnIcon = document.getElementById('screenPetModeIcon');
+        if (btnText) btnText.innerText = '漫遊中';
+        if (btnIcon) btnIcon.innerText = '🐾';
+
+        this.say("出發漫遊囉！今天也要元氣滿滿！✨", "🐾");
+        this.scheduleNextAction();
+      },
+
+      toggleMode() {
+        if (this.isRoaming) {
+          this.dockPet(true);
+        } else {
+          this.startRoaming();
+        }
+      }
+    };
+
+    function toggleScreenPetRoamingMode(event) {
+      if (event) event.stopPropagation();
+      ScreenPet.toggleMode();
+    }
+
+    function petRoamingMimi(event) {
+      if (event) event.stopPropagation();
+      ScreenPet.pet();
     }
 
 
@@ -3241,7 +3743,7 @@
     }
 
     function renderCatAccessories() {
-      ['mainCat', 'wardrobeCat'].forEach(prefix => {
+      ['mainCat', 'wardrobeCat', 'roamingCat'].forEach(prefix => {
         const auraEl = document.getElementById(prefix + 'AccAura');
         const faceEl = document.getElementById(prefix + 'AccFace');
         const headEl = document.getElementById(prefix + 'AccHead');
@@ -6492,6 +6994,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       try { initPiSyncUI(); } catch (e) {}
       try { updateCatGrowthUI(); } catch (e) {}
       try { updateCatGrowthMorph(currentCatLevel); } catch (e) {}
+      try { if (typeof ScreenPet !== 'undefined') ScreenPet.init(); } catch (e) {}
 
       // Initialize Adventure Map Mode with hooks
       try {
