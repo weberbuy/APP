@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -168,7 +168,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -492,73 +492,74 @@
 
 
 
-    <!-- Scope Filter & Mode Selection -->
-    <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
-      <!-- Mode Tabs (Including Exam) -->
-      <div class="flex bg-slate-200/80 dark:bg-slate-700/80 p-1.5 rounded-2xl w-full md:w-auto text-xs sm:text-sm font-semibold overflow-x-auto">
-        <button onclick="switchMode('map')" id="tabMap" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 cursor-pointer whitespace-nowrap font-bold">
-          <span>🗺️</span>
-          <span>冒險地圖</span>
-        </button>
-        <button onclick="switchMode('card')" id="tabCard" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5 cursor-pointer whitespace-nowrap">🐾</span>
-          <span>翻轉卡片</span>
-        </button>
-        <button onclick="switchMode('quiz')" id="tabQuiz" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
-          <i class="fa-solid fa-circle-question"></i>
-          <span>四選一</span>
-        </button>
-        <button onclick="switchMode('spelling')" id="tabSpelling" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
-          <i class="fa-solid fa-keyboard"></i>
-          <span>拼字練習</span>
-        </button>
-        <button onclick="switchMode('speaking')" id="tabSpeaking" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
-          <i class="fa-solid fa-microphone"></i>
-          <span>口語跟讀</span>
-        </button>
-        <!-- NEW TAB: MOCK EXAM -->
-        <button onclick="switchMode('exam')" id="tabExam" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5 bg-amber-100/60 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
-          <i class="fa-solid fa-file-pen text-amber-500"></i>
-          <span>聽寫模考 📝</span>
-        </button>
-        <button onclick="switchMode('list')" id="tabList" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5">
-          <i class="fa-solid fa-list-check"></i>
-          <span>單字總表</span>
-        </button>
+    <!-- Header & Mode Selection (Dedicated 7-Col Grid & Separated Filters) -->
+    <div class="space-y-3.5">
+      <!-- 7 Feature Modes Bar (Independent full-width row with elegant 7-col grid on PC / smooth scroll on mobile) -->
+      <div class="bg-slate-200/80 dark:bg-slate-800/90 p-1.5 sm:p-2 rounded-2xl shadow-sm border border-slate-300/70 dark:border-slate-700/80">
+        <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar md:grid md:grid-cols-7 text-xs sm:text-sm">
+          <button onclick="switchMode('map')" id="tabMap" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 active-tab shadow-sm bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold ring-1 ring-rose-400/40 whitespace-nowrap cursor-pointer">
+            <span class="text-sm sm:text-base">🗺️</span>
+            <span>冒險地圖</span>
+          </button>
+          <button onclick="switchMode('card')" id="tabCard" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer">
+            <span class="text-sm sm:text-base">🐾</span>
+            <span>翻轉卡片</span>
+          </button>
+          <button onclick="switchMode('quiz')" id="tabQuiz" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-circle-question text-sm sm:text-base"></i>
+            <span>四選一</span>
+          </button>
+          <button onclick="switchMode('spelling')" id="tabSpelling" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-keyboard text-sm sm:text-base"></i>
+            <span>拼字練習</span>
+          </button>
+          <button onclick="switchMode('speaking')" id="tabSpeaking" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-microphone text-sm sm:text-base"></i>
+            <span>口語跟讀</span>
+          </button>
+          <button onclick="switchMode('exam')" id="tabExam" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-amber-700 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 hover:bg-amber-200/80 dark:hover:bg-amber-900/60 flex items-center justify-center space-x-1.5 font-semibold whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-file-pen text-sm sm:text-base text-amber-500"></i>
+            <span>聽寫模考 📝</span>
+          </button>
+          <button onclick="switchMode('list')" id="tabList" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-list-check text-sm sm:text-base"></i>
+            <span>單字總表</span>
+          </button>
+        </div>
       </div>
 
+      <!-- Theme & Scope Selectors (Separated row, never squished!) -->
+      <div class="flex flex-wrap items-center justify-between gap-2.5 px-0.5">
+        <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+          <!-- Theme Unit Dropdown -->
+          <div class="flex items-center space-x-1.5 bg-amber-100/70 dark:bg-slate-800 px-3.5 py-2 rounded-2xl border border-amber-300/80 dark:border-slate-700 shadow-sm">
+            <label for="themeSelect" class="text-xs font-bold text-amber-900 dark:text-amber-300 whitespace-nowrap flex items-center gap-1">
+              <span>📚</span>
+              <span>單元：</span>
+            </label>
+            <select id="themeSelect" onchange="onThemeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer">
+              <option value="all1200">📚 全集篇：國中會考 1200 單字全集</option>
+              <option value="numbers">🔢 專題篇：1-100 基礎數字</option>
+              <option value="family">👨‍👩‍👧‍👦 專題篇：人物與家庭親屬</option>
+            </select>
+          </div>
 
-
-
-      <!-- Theme & Scope Selectors -->
-      <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-        <!-- Theme Unit Dropdown -->
-        <div class="flex items-center space-x-1.5 bg-amber-100/70 dark:bg-slate-800 px-3 py-1.5 rounded-2xl border border-amber-300/80 dark:border-slate-700 shadow-sm">
-          <label for="themeSelect" class="text-xs font-bold text-amber-900 dark:text-amber-300 whitespace-nowrap flex items-center gap-1">
-            <span>📚</span>
-            <span>單元：</span>
-          </label>
-          <select id="themeSelect" onchange="onThemeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer">
-            <option value="all1200">📚 全集篇：國中會考 1200 單字全集</option>
-            <option value="numbers">🔢 專題篇：1-100 基礎數字</option>
-            <option value="family">👨‍👩‍👧‍👦 專題篇：人物與家庭親屬</option>
-          </select>
+          <!-- Sub-Scope Dropdown -->
+          <div class="flex items-center space-x-1.5 bg-white dark:bg-slate-800 px-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <label for="scopeFilter" class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">範圍：</label>
+            <select id="scopeFilter" onchange="onScopeChange()" class="bg-transparent text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer">
+              <option value="all">全部單字</option>
+              <option value="weak">★ 貓貓待加強清單</option>
+            </select>
+          </div>
         </div>
 
-
-
-
-        <!-- Sub-Scope Dropdown -->
-        <div class="flex items-center space-x-1.5 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <label for="scopeFilter" class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">範圍：</label>
-          <select id="scopeFilter" onchange="onScopeChange()" class="bg-transparent text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer">
-            <option value="all">全部單字</option>
-            <option value="weak">★ 貓貓待加強清單</option>
-          </select>
+        <div class="hidden sm:flex items-center text-xs text-slate-500 dark:text-slate-400 gap-1.5">
+          <span>🐾</span>
+          <span>點選上方功能卡片隨時切換學習模式</span>
         </div>
       </div>
     </div>
-
-
 
 
     <!-- ==================== MODE 1: FLASHCARDS ==================== -->
@@ -2500,11 +2501,19 @@
       updateCatGrowthMorph(level);
 
 
-      // 4. Level-up Celebration Check
+      // 4. Level-up / Downgrade Check & Synchronize Wardrobe
       if (level > lastKnownCatLevel) {
         lastKnownCatLevel = level;
         localStorage.setItem('wordchecking_cat_level_v1', level);
         triggerLevelUpCelebration(currentConfig);
+      } else if (level < lastKnownCatLevel) {
+        lastKnownCatLevel = level;
+        localStorage.setItem('wordchecking_cat_level_v1', level);
+      }
+
+      // Synchronize wardrobe unlocks & auto-unequip higher level gear on downgrade
+      if (typeof checkLevelUnlocks === 'function') {
+        checkLevelUnlocks(false);
       }
     }
 
@@ -3722,22 +3731,57 @@
       const totalMastered = calculateTotalMasteredWords();
       const catLevel = getCatLevelInfo(totalMastered).level;
       let newUnlocks = [];
+      let relockedItems = [];
+      let unequippedItems = [];
+
+      // Ensure catWardrobe.unlocked exists
+      if (!catWardrobe.unlocked) catWardrobe.unlocked = [];
 
       Object.keys(WARDROBE_CATALOG).forEach(catKey => {
         WARDROBE_CATALOG[catKey].forEach(item => {
-          if (item.unlockType === 'level' && catLevel >= item.reqLevel) {
-            if (!catWardrobe.unlocked.includes(item.id)) {
-              catWardrobe.unlocked.push(item.id);
-              newUnlocks.push(item.name);
+          // 1. Level-based unlocks: lock or unlock based on current level
+          if (item.unlockType === 'level') {
+            if (catLevel >= item.reqLevel) {
+              if (!catWardrobe.unlocked.includes(item.id)) {
+                catWardrobe.unlocked.push(item.id);
+                newUnlocks.push(item.name);
+              }
+            } else {
+              // Level downgraded: RELOCK THE ITEM!
+              const uIdx = catWardrobe.unlocked.indexOf(item.id);
+              if (uIdx !== -1) {
+                catWardrobe.unlocked.splice(uIdx, 1);
+                relockedItems.push(item.name);
+              }
+            }
+          }
+
+          // 2. Strict Level Requirement on Equipped Gear:
+          // If the item requires a higher level than current catLevel, UNEQUIP IT!
+          if (item.reqLevel && catLevel < item.reqLevel) {
+            if (catWardrobe.equipped && catWardrobe.equipped[catKey] === item.id) {
+              catWardrobe.equipped[catKey] = catKey + '_none';
+              unequippedItems.push(item.name);
             }
           }
         });
       });
 
-      if (newUnlocks.length > 0) {
-        saveCatWardrobe();
-        if (notify) {
+      // Always save and re-render accessories on all 3 cat instances
+      saveCatWardrobe();
+      renderCatAccessories();
+
+      // If wardrobe modal is currently open, refresh the items view immediately
+      const wModal = document.getElementById('wardrobeModal');
+      if (wModal && !wModal.classList.contains('hidden')) {
+        if (typeof renderWardrobeItems === 'function') renderWardrobeItems(currentWardrobeTab);
+      }
+
+      if (notify) {
+        if (newUnlocks.length > 0) {
           sayCatSpeech(`恭喜升級！衣櫥解鎖了里程碑專屬獎勵：【${newUnlocks.join('、')}】！快去換裝室試穿吧～👗🐾`, "解鎖里程碑新裝");
+        } else if (unequippedItems.length > 0 || relockedItems.length > 0) {
+          sayCatSpeech(`等級變更為 Lv.${catLevel}，已自動將未解鎖的進階裝備卸下並鎖定喵～🐾`, "裝備重整");
         }
       }
     }
@@ -7391,10 +7435,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         if (sec && tab) {
           if (m === mode) {
             sec.classList.remove('hidden');
-            tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold";
+            tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 active-tab shadow-sm bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold ring-1 ring-rose-400/40 whitespace-nowrap cursor-pointer";
           } else {
             sec.classList.add('hidden');
-            tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5";
+            if (m === 'exam') {
+              tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-amber-700 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 hover:bg-amber-200/80 dark:hover:bg-amber-900/60 flex items-center justify-center space-x-1.5 font-semibold whitespace-nowrap cursor-pointer";
+            } else {
+              tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer";
+            }
           }
         }
       });
