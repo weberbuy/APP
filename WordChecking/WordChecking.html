@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.5.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.5.2-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -168,7 +168,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.5.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.5.2-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -2050,6 +2050,10 @@
             RAW_VOCAB = JSON.parse(cached);
           } catch(e) {}
         }
+        if ((!RAW_VOCAB || RAW_VOCAB.length === 0) && (themeKey === 'all1200' || !themeKey)) {
+          console.log('✔ 啟用內建 1200 單字全集備援資料庫！');
+          RAW_VOCAB = [];
+        }
       }
 
 
@@ -2100,6 +2104,7 @@
 
     // >>>>>>>>>> [MODULE START: 02_cat_morph_engine.js] >>>>>>>>>>
 
+    let currentCatLevel = parseInt(localStorage.getItem('wordchecking_cat_level_v1') || '1', 10);
 // ==================== CAT SOUND SYNTHESIZER ====================
     function playCatMunchSound() {
       if (!catSoundEnabled) return;
@@ -2332,6 +2337,7 @@
       const totalMastered = calculateTotalMasteredWords();
       const currentConfig = getCatLevelInfo(totalMastered);
       const level = currentConfig.level;
+      currentCatLevel = level;
 
 
       // 1. Update Badge & Title
@@ -3606,6 +3612,7 @@
 (function (root, factory) {
   const instance = factory();
   if (typeof window !== 'undefined') window.WordCheckingAdventure = instance;
+  if (typeof globalThis !== 'undefined') globalThis.WordCheckingAdventure = instance;
   if (typeof module === 'object' && module.exports) module.exports = instance;
   root.WordCheckingAdventure = instance;
 }(typeof self !== 'undefined' ? self : this, function () {
@@ -3758,7 +3765,7 @@
   }
 
 
-  function getStageWords(stageId, vocabList) {
+    function getStageWords(stageId, vocabList) {
     stageId = parseInt(stageId || activeChallenge.stageId || 1, 10);
     const info = getStageInfo(stageId);
     if (!info) return [];
@@ -3774,22 +3781,22 @@
 
     let words = (list && list.length > 0) ? list.slice(startIndex, endIndex) : [];
 
-    // Fallback word objects if master dataset is still loading or insufficient
-    if (!words || words.length < WORDS_PER_STAGE) {
-      if (!words) words = [];
-      const worldName = info.world ? info.world.name : '冒險單字';
-      for (let i = words.length; i < WORDS_PER_STAGE; i++) {
-        const wordNum = startIndex + i + 1;
-        words.push({
-          id: wordNum,
-          word: `word_${wordNum}`,
-          pos: 'n.',
-          zh: `第 ${wordNum} 個核心單字`,
-          eg: `This is example sentence for word #${wordNum}.`,
-          category: worldName
-        });
-      }
-    }
+    // Normalize words ensuring both chinese/zh and example/eg exist
+    words = words.map((w, idx) => ({
+      id: w.num || w.id || (startIndex + idx + 1),
+      num: w.num || w.id || (startIndex + idx + 1),
+      word: w.word || `word_${startIndex + idx + 1}`,
+      pos: w.pos || 'n.',
+      chinese: w.chinese || w.zh || '',
+      zh: w.chinese || w.zh || '',
+      example: w.example || w.eg || '',
+      eg: w.example || w.eg || '',
+      kk: w.kk || '',
+      category: w.category || (info.world ? info.world.name : '核心單字'),
+      note: w.note || ''
+    }));
+var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckingAdventure) ? window.WordCheckingAdventure : (typeof WordCheckingAdventure !== 'undefined' ? WordCheckingAdventure : null);
+
     return words;
   }
 
@@ -4387,9 +4394,9 @@
               <span class="font-bold text-slate-900 dark:text-white truncate">${w.word}</span>
               <span class="text-[10px] text-amber-600 dark:text-amber-400 font-mono">${w.pos || ''}</span>
             </div>
-            <div class="text-[11px] text-slate-600 dark:text-slate-300 truncate">${w.zh || ''}</div>
+            <div class="text-[11px] text-slate-600 dark:text-slate-300 truncate font-medium">${w.chinese || w.zh || ''}</div>
           </div>
-          <button onclick="WordCheckingAdventure.playWordAudio('${w.word.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 flex items-center justify-center transition shadow-2xs cursor-pointer" title="聆聽發音">
+          <button onclick="event.stopPropagation(); WordCheckingAdventure.playWordAudio('${w.word.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 flex items-center justify-center transition shadow-2xs cursor-pointer" title="點擊聆聽發音">
             🔊
           </button>
         </div>
@@ -4408,8 +4415,12 @@
 
 
   function playWordAudio(word) {
-    if (appHooks.playAudio) {
+    if (!word) return;
+    if (appHooks && typeof appHooks.playAudio === 'function') {
       appHooks.playAudio(word);
+    }
+    if (typeof playVoiceText === 'function') {
+      playVoiceText(word);
     }
   }
 
@@ -4542,17 +4553,18 @@
       // 3 distractors from remaining 9 words
       const otherWords = words.filter((_, i) => i !== idx);
       const shuffledOthers = [...otherWords].sort(() => Math.random() - 0.5);
-      const distractors = shuffledOthers.slice(0, 3).map(o => o.zh);
+      const distractors = shuffledOthers.slice(0, 3).map(o => (o.chinese || o.zh || o.word));
 
 
-      const options = [w.zh, ...distractors].sort(() => Math.random() - 0.5);
-      const correctIndex = options.indexOf(w.zh);
+      const correctZh = w.chinese || w.zh || w.word;
+      const options = [correctZh, ...distractors].sort(() => Math.random() - 0.5);
+      const correctIndex = options.indexOf(correctZh);
 
 
       return {
         word: w.word,
         pos: w.pos,
-        zh: w.zh,
+        zh: (w.chinese || w.zh || ''),
         eg: w.eg,
         options,
         correctIndex
@@ -4658,9 +4670,10 @@
     activeChallenge.questions = activeChallenge.words.map(w => ({
       word: w.word,
       pos: w.pos,
-      zh: w.zh,
+      zh: (w.chinese || w.zh || ''),
       eg: w.eg
     }));
+var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckingAdventure) ? window.WordCheckingAdventure : (typeof WordCheckingAdventure !== 'undefined' ? WordCheckingAdventure : null);
   }
 
 
@@ -4965,6 +4978,7 @@
     getAdventureStyles
   };
 }));
+var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckingAdventure) ? window.WordCheckingAdventure : (typeof WordCheckingAdventure !== 'undefined' ? WordCheckingAdventure : null);
 
     // <<<<<<<<<< [MODULE END: 04_adventure_map.js] <<<<<<<<<<
 
@@ -6297,48 +6311,54 @@
 
     // >>>>>>>>>> [MODULE START: 07_main_init.js] >>>>>>>>>>
 
-document.addEventListener('DOMContentLoaded', () => {
-      initTheme();
-      document.getElementById('fishCount').innerText = fishCount;
-      initSpeechRecognition();
-      initPiSyncUI();
-      updateCatGrowthUI();
-      updateCatGrowthMorph(currentCatLevel);
+    document.addEventListener('DOMContentLoaded', () => {
+      try { initTheme(); } catch (e) { console.warn('initTheme error:', e); }
+      try {
+        const fc = document.getElementById('fishCount');
+        if (fc) fc.innerText = fishCount;
+      } catch (e) {}
+      try { initSpeechRecognition(); } catch (e) {}
+      try { initPiSyncUI(); } catch (e) {}
+      try { updateCatGrowthUI(); } catch (e) {}
+      try { updateCatGrowthMorph(currentCatLevel); } catch (e) {}
 
       // Initialize Adventure Map Mode with hooks
-      if (window.WordCheckingAdventure) {
-        WordCheckingAdventure.initAdventureMap({
-          rawVocabList: RAW_VOCAB,
-          hooks: {
-            getFishCount: () => fishCount,
-            addFish: (n) => {
-              fishCount += n;
-              localStorage.setItem(FISH_STORAGE_KEY, fishCount);
-              const fc = document.getElementById('fishCount');
-              if (fc) fc.innerText = fishCount;
-              const wfc = document.getElementById('wardrobeFishCount');
-              if (wfc) wfc.innerText = fishCount;
-            },
-            addAffection: (n) => gainAffection(n),
-            playAudio: (word) => playVoiceText(word),
-            playCheerSound: () => playCatCheerSound(),
-            playMeowSound: () => playCatMeowSound(),
-            saySpeech: (text, tag) => sayCatSpeech(text, tag),
-            triggerSaveToPi: () => triggerAutoSaveToPi()
-          }
-        });
-        WordCheckingAdventure.renderAdventureMap();
+      try {
+        if (window.WordCheckingAdventure) {
+          WordCheckingAdventure.initAdventureMap({
+            rawVocabList: RAW_VOCAB,
+            hooks: {
+              getFishCount: () => fishCount,
+              addFish: (n) => {
+                fishCount += n;
+                localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+                const fc = document.getElementById('fishCount');
+                if (fc) fc.innerText = fishCount;
+                const wfc = document.getElementById('wardrobeFishCount');
+                if (wfc) wfc.innerText = fishCount;
+              },
+              addAffection: (n) => gainAffection(n),
+              playAudio: (word) => playVoiceText(word),
+              playCheerSound: () => playCatCheerSound(),
+              playMeowSound: () => playCatMeowSound(),
+              saySpeech: (text, tag) => sayCatSpeech(text, tag),
+              triggerSaveToPi: () => triggerAutoSaveToPi()
+            }
+          });
+          WordCheckingAdventure.renderAdventureMap();
+        }
+      } catch (e) {
+        console.warn('initAdventureMap error:', e);
       }
+
+      // ALWAYS load current theme data from Web Server!
       loadThemeData(currentThemeKey);
-      checkAndAutoSyncFromPi(true);
+      try { checkAndAutoSyncFromPi(true); } catch (e) {}
 
-
-      if (isMimiHungry()) {
+      if (typeof isMimiHungry === 'function' && isMimiHungry()) {
         const hungrySpeech = HUNGRY_CAT_SPEECHES[Math.floor(Math.random() * HUNGRY_CAT_SPEECHES.length)];
         sayCatSpeech(hungrySpeech, "肚子扁扁想妳中 🐾");
       }
-
-
 
 
       // Keyboard shortcuts for Flashcard
@@ -6376,21 +6396,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initTheme() {
       const isDark = localStorage.getItem('theme') === 'dark' || 
-                     (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                     (!('theme' in localStorage) && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
       if (isDark) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
 
-
-
-
-      document.getElementById('themeToggle').addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-        const darkActive = document.documentElement.classList.contains('dark');
-        localStorage.setItem('theme', darkActive ? 'dark' : 'light');
-      });
+      const toggleBtn = document.getElementById('themeToggle');
+      if (toggleBtn) {
+        toggleBtn.onclick = () => {
+          document.documentElement.classList.toggle('dark');
+          const darkActive = document.documentElement.classList.contains('dark');
+          localStorage.setItem('theme', darkActive ? 'dark' : 'light');
+        };
+      }
     }
 
 
@@ -6653,12 +6673,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Text to Speech
     function playVoiceText(text, rate = 1.0) {
+      if (!text || typeof text !== 'string') return;
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = rate;
-        window.speechSynthesis.speak(utterance);
+        try {
+          window.speechSynthesis.resume();
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+          }
+          const cleanText = text.trim();
+          const utterance = new SpeechSynthesisUtterance(cleanText);
+          utterance.lang = 'en-US';
+          utterance.rate = rate;
+          const voices = window.speechSynthesis.getVoices();
+          if (voices && voices.length > 0) {
+            const enVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US' || v.lang.startsWith('en'));
+            if (enVoice) utterance.voice = enVoice;
+          }
+          window.speechSynthesis.speak(utterance);
+        } catch (e) {
+          console.warn("SpeechSynthesis error:", e);
+        }
       }
     }
 
