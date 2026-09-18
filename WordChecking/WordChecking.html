@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.4.1-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.5.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -168,7 +168,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.4.1-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.5.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1840,7 +1840,10 @@
 
   <!-- Data & Logic script -->
   <script>
-    // ==================== MULTI-THEME REGISTRY ====================
+    
+    // >>>>>>>>>> [MODULE START: 01_theme_registry.js] >>>>>>>>>>
+
+// ==================== MULTI-THEME REGISTRY ====================
     const THEME_REGISTRY = {
       all1200: {
         id: "all1200",
@@ -1980,7 +1983,124 @@
 
     // Audio Synth for Cat Meow
     let audioCtx = null;
-    // ==================== CAT SOUND SYNTHESIZER ====================
+    
+
+// ==================== THEME MANAGEMENT ====================
+    function onThemeChange() {
+      currentThemeKey = document.getElementById('themeSelect').value;
+      localStorage.setItem('wordchecking_current_theme', currentThemeKey);
+      const themeSelectEl = document.getElementById('themeSelect');
+      if (themeSelectEl) themeSelectEl.value = currentThemeKey;
+      loadThemeData(currentThemeKey);
+    }
+
+
+
+
+    function updateScopeDropdown(themeObj) {
+      const scopeSel = document.getElementById('scopeFilter');
+      scopeSel.innerHTML = '';
+      themeObj.scopes.forEach(sc => {
+        const opt = document.createElement('option');
+        opt.value = sc.value;
+        opt.innerText = sc.label;
+        scopeSel.appendChild(opt);
+      });
+      currentScope = 'all';
+      scopeSel.value = 'all';
+    }
+
+
+
+
+    async function loadThemeData(themeKey) {
+      const theme = THEME_REGISTRY[themeKey];
+      if (!theme) return;
+
+
+
+
+      sayCatSpeech(`喵～正在載入【${theme.name}】資料庫...🐾`, "準備中");
+      updateScopeDropdown(theme);
+
+
+
+
+      // Load user progress for this theme
+      userProgress = JSON.parse(localStorage.getItem(theme.storageKey) || '{}');
+
+
+
+
+      try {
+        let res = await fetch(theme.url);
+        if (!res.ok) res = await fetch(theme.fallbackUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        RAW_VOCAB = await res.json();
+        
+        // Cache to local storage
+        try {
+          localStorage.setItem(`cached_vocab_${themeKey}_v1`, JSON.stringify(RAW_VOCAB));
+        } catch(e) {}
+      } catch (err) {
+        console.warn("Fetch 載入失敗，嘗試載入本地快取：", err);
+        const cached = localStorage.getItem(`cached_vocab_${themeKey}_v1`);
+        if (cached) {
+          try {
+            RAW_VOCAB = JSON.parse(cached);
+          } catch(e) {}
+        }
+      }
+
+
+
+
+      if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
+        sayCatSpeech(`喵嗚！【${theme.name}】單字庫載入受限 (本機直接雙擊 file:// 可能被瀏覽器安全性阻擋 fetch，建議用 Web Server 或 GitHub Pages 開啟喔) 🐾`, "提醒");
+        RAW_VOCAB = [];
+      } else {
+        sayCatSpeech(theme.catIntro, "元氣滿滿");
+      }
+
+
+
+
+      currentIndex = 0;
+      updateFilteredList();
+      renderCurrentCard();
+      renderStats();
+
+      // Sync data to Adventure Map
+      if (window.WordCheckingAdventure && RAW_VOCAB && RAW_VOCAB.length > 0) {
+        WordCheckingAdventure.initAdventureMap({ rawVocabList: RAW_VOCAB });
+        WordCheckingAdventure.renderAdventureMap();
+      }
+
+
+
+
+      // Refresh active mode view
+      const activeMode = getActiveMode();
+      if (activeMode === 'quiz') startNewQuiz();
+      if (activeMode === 'spelling') startNewSpelling();
+      if (activeMode === 'speaking') startNewSpeaking();
+      if (activeMode === 'exam') initExamSetup();
+      if (activeMode === 'list') renderWordTable();
+    }
+
+
+
+
+    // Init App
+    
+    
+
+    // <<<<<<<<<< [MODULE END: 01_theme_registry.js] <<<<<<<<<<
+
+
+    // >>>>>>>>>> [MODULE START: 02_cat_morph_engine.js] >>>>>>>>>>
+
+// ==================== CAT SOUND SYNTHESIZER ====================
     function playCatMunchSound() {
       if (!catSoundEnabled) return;
       try {
@@ -2415,115 +2535,1067 @@
 
 
 
-    // ==================== THEME MANAGEMENT ====================
-    function onThemeChange() {
-      currentThemeKey = document.getElementById('themeSelect').value;
-      localStorage.setItem('wordchecking_current_theme', currentThemeKey);
-      const themeSelectEl = document.getElementById('themeSelect');
-      if (themeSelectEl) themeSelectEl.value = currentThemeKey;
-      loadThemeData(currentThemeKey);
-    }
+    
 
+// ==================== CAT DYNAMIC GROWTH & MORPH SYSTEM (Lv.1 ~ Lv.5) ====================
+    function updateCatGrowthMorph(level) {
+      ['mainCat', 'wardrobeCat'].forEach(prefix => {
+        const svg = document.getElementById(prefix + 'Svg');
+        const tail = document.getElementById(prefix + 'Tail');
+        const eyes = document.getElementById(prefix + 'Eyes');
+        const chest = document.getElementById(prefix + 'MorphChest');
+        const headMorph = document.getElementById(prefix + 'MorphHead');
 
+        if (!tail) return;
 
+        // 1. Overall Cat Scale / Divine Aura
+        if (svg) {
+          if (level === 1) {
+            svg.classList.remove('cat-divine-aura');
+          } else if (level === 5) {
+            svg.classList.add('cat-divine-aura');
+          } else {
+            svg.classList.remove('cat-divine-aura');
+          }
+        }
 
-    function updateScopeDropdown(themeObj) {
-      const scopeSel = document.getElementById('scopeFilter');
-      scopeSel.innerHTML = '';
-      themeObj.scopes.forEach(sc => {
-        const opt = document.createElement('option');
-        opt.value = sc.value;
-        opt.innerText = sc.label;
-        scopeSel.appendChild(opt);
+        // 2. Tail Evolution
+        if (level === 1) {
+          // Cute short kitten tail
+          tail.innerHTML = `
+            <path d="M 32,105 C 20,107 16,92 23,83 C 26,79 30,83 27,87 C 22,93 25,100 34,101 Z" fill="#f97316" />
+            <path d="M 23,83 C 25,81 29,84 26,87 C 23,90 20,86 23,83 Z" fill="#ffffff" />
+          `;
+        } else if (level === 2 || level === 3) {
+          // Standard / Sleek long tail
+          tail.innerHTML = `
+            <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
+            <path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />
+          `;
+        } else if (level === 4) {
+          // Thick adventurer fox tail
+          tail.innerHTML = `
+            <path d="M 32,105 C 10,110 2,82 14,64 C 18,58 24,62 20,68 C 12,78 12,90 20,96 C 24,100 28,95 34,98 Z" fill="#f97316" />
+            <path d="M 14,64 C 18,60 25,65 21,71 C 17,76 13,71 14,64 Z" fill="#ffffff" />
+            <path d="M 15,75 Q 8,72 13,83 Q 8,85 18,92" stroke="#ea580c" stroke-width="1.2" fill="none" />
+          `;
+        } else {
+          // Level 5: Divine Cloud / Heavenly flame tail
+          tail.innerHTML = `
+            <path d="M 32,105 C 8,112 -5,75 8,52 C 14,42 24,46 19,56 C 8,72 12,88 22,96 C 26,100 30,95 34,98 Z" fill="#f59e0b" filter="drop-shadow(0 0 4px #fbbf24)" />
+            <path d="M 8,52 C 14,40 28,45 22,58 C 14,68 6,60 8,52 Z" fill="#fef08a" />
+            <path d="M 16,68 Q 2,62 10,78 Q 2,82 18,92" stroke="#d97706" stroke-width="1.8" fill="none" stroke-linecap="round" />
+            <circle cx="12" cy="56" r="2" fill="#ffffff" opacity="0.9" />
+            <circle cx="6" cy="72" r="1.5" fill="#fef08a" opacity="0.8" />
+          `;
+        }
+
+        // 3. Chest Fluff Evolution
+        if (chest) {
+          if (level === 3) {
+            // Elegant scholar white chest bib
+            chest.innerHTML = `
+              <path d="M 52,78 C 50,86 44,90 48,93 C 54,95 58,88 60,94 C 62,88 66,95 72,93 C 76,90 70,86 68,78 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.06))" />
+            `;
+          } else if (level === 4) {
+            // Strong adventurer chest mane
+            chest.innerHTML = `
+              <path d="M 50,77 C 46,86 40,91 46,95 C 52,98 56,90 60,96 C 64,90 68,98 74,95 C 80,91 74,86 70,77 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.08))" />
+              <path d="M 54,82 Q 60,90 66,82" stroke="#cbd5e1" stroke-width="1" fill="none" />
+            `;
+          } else if (level === 5) {
+            // Divine chest mane with gold star gem
+            chest.innerHTML = `
+              <path d="M 48,76 C 44,87 38,93 44,97 C 52,100 56,92 60,98 C 64,92 68,100 76,97 C 82,93 76,87 72,76 Z" fill="#ffffff" filter="drop-shadow(0 0 5px rgba(251, 191, 36, 0.4))" />
+              <circle cx="60" cy="85" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1" />
+              <polygon points="60,82 61,84 63,85 61,86 60,88 59,86 57,85 59,84" fill="#ffffff" />
+            `;
+          } else {
+            chest.innerHTML = '';
+          }
+        }
+
+        // 4. Head Morphing (Ear Tufts on Lv.4, Golden Sigil on Lv.5)
+        if (headMorph) {
+          if (level === 4) {
+            headMorph.innerHTML = `
+              <line x1="20" y1="16" x2="16" y2="9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="22" y1="17" x2="19" y2="11" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+              <line x1="100" y1="16" x2="104" y2="9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="98" y1="17" x2="101" y2="11" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+            `;
+          } else if (level === 5) {
+            headMorph.innerHTML = `
+              <line x1="20" y1="16" x2="15" y2="8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
+              <line x1="100" y1="16" x2="105" y2="8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
+              <!-- Forehead Divine Star Sigil -->
+              <g class="divine-sigil-pulse">
+                <ellipse cx="60" cy="38" rx="6" ry="6" fill="#fef08a" opacity="0.3" />
+                <polygon points="60,33 62,37 66,38 62,39 60,43 58,39 54,38 58,37" fill="#fbbf24" stroke="#d97706" stroke-width="0.7" />
+                <circle cx="60" cy="38" r="1.5" fill="#ffffff" />
+                <path d="M 57,42 Q 60,45 63,42" stroke="#f59e0b" stroke-width="1.2" fill="none" stroke-linecap="round" />
+              </g>
+            `;
+          } else {
+            headMorph.innerHTML = '';
+          }
+        }
+
+        // 5. Eyes Morphing (Baby round eyes for Lv.1)
+        if (eyes) {
+          if (level === 1) {
+            eyes.innerHTML = `
+              <ellipse cx="46" cy="52" rx="5.5" ry="7" fill="#1e293b" />
+              <circle cx="48" cy="49" r="2.2" fill="#ffffff" />
+              <circle cx="44" cy="54" r="1" fill="#ffffff" opacity="0.7" />
+              <ellipse cx="74" cy="52" rx="5.5" ry="7" fill="#1e293b" />
+              <circle cx="76" cy="49" r="2.2" fill="#ffffff" />
+              <circle cx="72" cy="54" r="1" fill="#ffffff" opacity="0.7" />
+            `;
+          } else if (level === 4 || level === 5) {
+            eyes.innerHTML = `
+              <ellipse cx="46" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
+              <circle cx="48" cy="49.5" r="1.8" fill="#ffffff" />
+              <circle cx="44.5" cy="53" r="0.9" fill="#fde047" />
+              <ellipse cx="74" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
+              <circle cx="76" cy="49.5" r="1.8" fill="#ffffff" />
+              <circle cx="72.5" cy="53" r="0.9" fill="#fde047" />
+            `;
+          } else {
+            eyes.innerHTML = `
+              <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+              <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
+              <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+              <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
+            `;
+          }
+        }
       });
-      currentScope = 'all';
-      scopeSel.value = 'all';
     }
 
 
+    
+
+    // <<<<<<<<<< [MODULE END: 02_cat_morph_engine.js] <<<<<<<<<<
 
 
-    async function loadThemeData(themeKey) {
-      const theme = THEME_REGISTRY[themeKey];
-      if (!theme) return;
+    // >>>>>>>>>> [MODULE START: 03_wardrobe_gacha.js] >>>>>>>>>>
 
+// ==================== CAT WARDROBE & FULL-BODY INTERACTIVE SYSTEM (v2.3.0) ====================
+    const WARDROBE_STORAGE_KEY = 'wordchecking_cat_wardrobe_v1';
 
+    const ACCESSORIES_SVG = {
+      aura: {
+        aura_none: "",
+        aura_sparkle: `
+          <g id="acc_aura_sparkle" class="animate-pulse">
+            <path d="M 16,25 Q 22,25 22,19 Q 22,25 28,25 Q 22,25 22,31 Q 22,25 16,25 Z" fill="#facc15" />
+            <path d="M 96,22 Q 102,22 102,16 Q 102,22 108,22 Q 102,22 102,28 Q 102,22 96,22 Z" fill="#facc15" />
+            <path d="M 8,82 Q 12,82 12,78 Q 12,82 16,82 Q 12,82 12,86 Q 12,82 8,82 Z" fill="#fde047" />
+            <path d="M 104,85 Q 108,85 108,81 Q 108,85 112,85 Q 108,85 108,89 Q 108,85 104,85 Z" fill="#fde047" />
+          </g>`,
+        aura_fish: `
+          <g id="acc_aura_fish" opacity="0.95">
+            <g transform="translate(14, 30) rotate(-15)">
+              <path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
+            </g>
+            <g transform="translate(94, 25) rotate(20)">
+              <path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
+            </g>
+            <g transform="translate(10, 85) rotate(12)">
+              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
+            </g>
+            <g transform="translate(96, 80) rotate(-10)">
+              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
+            </g>
+          </g>`,
+        aura_sakura: `
+          <g id="acc_aura_sakura" opacity="0.9">
+            <circle cx="18" cy="24" r="3.5" fill="#f472b6" />
+            <circle cx="26" cy="18" r="2.5" fill="#fda4af" />
+            <circle cx="98" cy="20" r="3.5" fill="#f472b6" />
+            <circle cx="106" cy="28" r="2.2" fill="#fda4af" />
+            <circle cx="12" cy="75" r="3" fill="#fbcfe8" />
+            <circle cx="106" cy="80" r="3.2" fill="#fbcfe8" />
+          </g>`,
+        aura_wings: `
+          <!-- Lv.4 Adventurer Wings -->
+          <g id="acc_aura_wings" opacity="0.92">
+            <path d="M 36,75 C 10,65 -5,40 10,32 C 16,30 22,35 24,42 C 18,48 24,62 38,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+            <path d="M 24,42 C 28,45 32,56 38,65" stroke="#cbd5e1" stroke-width="1" fill="none" />
+            <path d="M 84,75 C 110,65 125,40 110,32 C 104,30 98,35 96,42 C 102,48 96,62 82,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+            <path d="M 96,42 C 92,45 88,56 82,65" stroke="#cbd5e1" stroke-width="1" fill="none" />
+          </g>`,
+        aura_rainbow: `
+          <g id="acc_aura_rainbow">
+            <path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" />
+            <path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" />
+            <path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" />
+            <path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" />
+            <path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" />
+          </g>`
+      },
+      head: {
+        head_none: "",
+        head_sakura: `
+          <g id="acc_head_sakura" transform="translate(80, 24)">
+            <circle cx="-4" cy="-1" r="3.5" fill="#f472b6" />
+            <circle cx="4" cy="-1" r="3.5" fill="#f472b6" />
+            <circle cx="0" cy="-5" r="3.5" fill="#f472b6" />
+            <circle cx="-3" cy="4" r="3.5" fill="#f472b6" />
+            <circle cx="3" cy="4" r="3.5" fill="#f472b6" />
+            <circle cx="0" cy="0" r="2.8" fill="#fef08a" />
+          </g>`,
+        head_ribbon: `
+          <g id="acc_head_ribbon" transform="translate(60, 24)">
+            <polygon points="-1,-1 -16,-9 -13,7 -1,1" fill="#ec4899" />
+            <polygon points="1,-1 16,-9 13,7 1,1" fill="#ec4899" />
+            <ellipse cx="0" cy="0" rx="4.5" ry="4" fill="#db2777" />
+            <circle cx="0" cy="0" r="2" fill="#fbcfe8" />
+          </g>`,
+        head_cap: `
+          <g id="acc_head_cap" transform="translate(60, 22)">
+            <ellipse cx="0" cy="2" rx="28" ry="11" fill="#ef4444" />
+            <path d="M -26,3 Q 0,-12 26,3 Q 0,-8 -26,3 Z" fill="#b91c1c" />
+            <path d="M 12,2 Q 30,-2 42,4 Q 28,10 14,5 Z" fill="#1e3a8a" />
+            <circle cx="0" cy="-6" r="2.5" fill="#ffffff" />
+          </g>`,
+        head_grad: `
+          <g id="acc_head_grad" transform="translate(60, 18)">
+            <polygon points="0,-12 -28,-3 0,6 28,-3" fill="#1e293b" />
+            <polygon points="-16,0 -16,8 16,8 16,0" fill="#334155" />
+            <path d="M 0,-3 L 24,2 L 26,14" stroke="#f59e0b" stroke-width="2" fill="none" />
+            <circle cx="26" cy="15" r="2" fill="#d97706" />
+          </g>`,
+        head_ranger: `
+          <!-- Lv.4 Adventurer Ranger Hat -->
+          <g id="acc_head_ranger" transform="translate(60, 20)">
+            <ellipse cx="0" cy="4" rx="30" ry="7" fill="#15803d" />
+            <path d="M -22,4 C -16,-10 16,-10 22,4 Z" fill="#16a34a" />
+            <rect x="-18" y="2" width="36" height="3" fill="#ca8a04" />
+            <path d="M 10,2 C 16,-12 28,-20 36,-18 C 30,-12 22,-4 16,2 Z" fill="#ef4444" />
+            <line x1="12" y1="2" x2="32" y2="-17" stroke="#b91c1c" stroke-width="0.8" />
+          </g>`,
+        head_wizard: `
+          <g id="acc_head_wizard" transform="translate(60, 18)">
+            <ellipse cx="0" cy="8" rx="30" ry="6" fill="#312e81" />
+            <path d="M -20,7 Q -8,-8 10,-24 Q 2,-6 20,7 Z" fill="#4338ca" />
+            <ellipse cx="0" cy="6" rx="20" ry="3" fill="#fbbf24" />
+            <polygon points="10,-24 13,-21 16,-24 14,-21 17,-19 13,-19 12,-16 11,-19 7,-19 10,-21" fill="#facc15" />
+          </g>`,
+        head_crown: `
+          <g id="acc_head_crown" transform="translate(60, 16)">
+            <path d="M -22,8 L -18,-7 L -9,2 L 0,-11 L 9,2 L 18,-7 L 22,8 Z" fill="#eab308" stroke="#ca8a04" stroke-width="1.5" />
+            <rect x="-21" y="6" width="42" height="4" rx="2" fill="#ca8a04" />
+            <circle cx="0" cy="-11" r="2.8" fill="#ef4444" />
+            <circle cx="-18" cy="-7" r="2" fill="#3b82f6" />
+            <circle cx="18" cy="-7" r="2" fill="#10b981" />
+            <circle cx="0" cy="8" r="1.5" fill="#ffffff" />
+          </g>`
+      },
+      face: {
+        face_none: "",
+        face_blush: `
+          <g id="acc_face_blush">
+            <g transform="translate(38, 61)">
+              <path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" />
+            </g>
+            <g transform="translate(82, 61)">
+              <path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" />
+            </g>
+          </g>`,
+        face_glasses: `
+          <g id="acc_face_glasses">
+            <circle cx="46" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
+            <circle cx="74" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
+            <path d="M 55.5,52 Q 60,48.5 64.5,52" stroke="#78350f" stroke-width="2.2" fill="none" />
+            <line x1="36.5" y1="51" x2="26" y2="48" stroke="#78350f" stroke-width="1.8" />
+            <line x1="83.5" y1="51" x2="94" y2="48" stroke="#78350f" stroke-width="1.8" />
+          </g>`,
+        face_sunglasses: `
+          <g id="acc_face_sunglasses">
+            <path d="M 34,46 L 56,46 L 54,58 Q 45,63 36,58 Z" fill="#0f172a" />
+            <path d="M 64,46 L 86,46 L 84,58 Q 75,63 66,58 Z" fill="#0f172a" />
+            <line x1="56" y1="48" x2="64" y2="48" stroke="#0f172a" stroke-width="3" />
+            <line x1="34" y1="48" x2="25" y2="46" stroke="#0f172a" stroke-width="2.2" />
+            <line x1="86" y1="48" x2="95" y2="46" stroke="#0f172a" stroke-width="2.2" />
+            <path d="M 37,48 L 46,48 L 40,55 Z" fill="#ffffff" opacity="0.35" />
+            <path d="M 67,48 L 76,48 L 70,55 Z" fill="#ffffff" opacity="0.35" />
+          </g>`
+      },
+      neck: {
+        neck_none: "",
+        neck_bell: `
+          <g id="acc_neck_bell">
+            <path d="M 35,74 Q 60,86 85,74" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" fill="none" />
+            <circle cx="60" cy="82" r="5.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.2" />
+            <line x1="56" y1="81" x2="64" y2="81" stroke="#854d0e" stroke-width="1" />
+            <circle cx="60" cy="84" r="1.3" fill="#713f12" />
+          </g>`,
+        neck_scarf: `
+          <g id="acc_neck_scarf">
+            <path d="M 30,73 Q 60,88 90,73 Q 60,93 30,73 Z" fill="#dc2626" />
+            <rect x="63" y="78" width="10" height="18" rx="3" fill="#b91c1c" transform="rotate(-15 63 78)" />
+            <line x1="63" y1="94" x2="72" y2="92" stroke="#fecaca" stroke-width="1.5" />
+          </g>`,
+        neck_bowtie: `
+          <g id="acc_neck_bowtie">
+            <polygon points="60,78 48,71 48,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
+            <polygon points="60,78 72,71 72,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
+            <ellipse cx="60" cy="78" rx="3.5" ry="3.5" fill="#2563eb" />
+          </g>`,
+        neck_medal: `
+          <g id="acc_neck_medal">
+            <path d="M 52,74 L 60,82 L 68,74" stroke="#2563eb" stroke-width="3" fill="none" />
+            <circle cx="60" cy="86" r="6.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" />
+            <text x="60" y="89" text-anchor="middle" font-size="7" font-weight="900" fill="#78350f">1</text>
+          </g>`
+      },
+      outfit: {
+        outfit_none: "",
+        outfit_backpack: `
+          <!-- Lv.2 Explorer Backpack -->
+          <g id="acc_outfit_backpack">
+            <path d="M 42,75 L 44,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" />
+            <path d="M 78,75 L 76,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" />
+            <rect x="42" y="84" width="4" height="4" rx="1" fill="#facc15" />
+            <rect x="74" y="84" width="4" height="4" rx="1" fill="#facc15" />
+          </g>`,
+        outfit_cloak: `
+          <!-- Lv.4 Hero Adventurer Cloak -->
+          <g id="acc_outfit_cloak">
+            <path d="M 32,74 C 20,86 16,112 25,116 C 36,118 42,105 46,95 C 54,92 66,92 74,95 C 78,105 84,118 95,116 C 104,112 100,86 88,74 Z" fill="#b91c1c" />
+            <path d="M 25,116 C 36,118 42,105 46,95" stroke="#facc15" stroke-width="2" fill="none" />
+            <path d="M 74,95 C 78,105 84,118 95,116" stroke="#facc15" stroke-width="2" fill="none" />
+            <circle cx="60" cy="76" r="4.5" fill="#facc15" />
+            <circle cx="60" cy="76" r="2.5" fill="#ef4444" />
+          </g>`,
+        outfit_sailor: `
+          <!-- Japanese Sailor Uniform -->
+          <g id="acc_outfit_sailor">
+            <path d="M 36,80 C 32,95 44,106 60,106 C 76,106 88,95 84,80 Z" fill="#1e3a8a" />
+            <polygon points="60,95 48,78 72,78" fill="#ffffff" />
+            <polygon points="60,82 56,92 64,92" fill="#ef4444" />
+            <polygon points="60,92 54,102 66,102" fill="#dc2626" />
+            <path d="M 44,76 L 36,86 L 46,86" stroke="#ffffff" stroke-width="2" fill="none" />
+            <path d="M 76,76 L 84,86 L 74,86" stroke="#ffffff" stroke-width="2" fill="none" />
+          </g>`,
+        outfit_dress: `
+          <!-- Princess Frilly Dress -->
+          <g id="acc_outfit_dress">
+            <path d="M 40,78 C 30,94 28,108 34,112 C 45,115 75,115 86,112 C 92,108 90,94 80,78 Z" fill="#f472b6" />
+            <path d="M 34,112 Q 47,108 60,112 Q 73,108 86,112" stroke="#ffffff" stroke-width="3" fill="none" />
+            <rect x="42" y="86" width="36" height="4" rx="2" fill="#db2777" />
+            <circle cx="60" cy="88" r="3.5" fill="#fbcfe8" />
+          </g>`
+      },
+      hand: {
+        hand_none: "",
+        hand_fishbone: `
+          <g id="acc_hand_fishbone" transform="translate(82, 100) rotate(-20)">
+            <line x1="0" y1="0" x2="20" y2="0" stroke="#94a3b8" stroke-width="2" />
+            <line x1="5" y1="-5" x2="5" y2="5" stroke="#94a3b8" stroke-width="1.8" />
+            <line x1="10" y1="-6" x2="10" y2="6" stroke="#94a3b8" stroke-width="1.8" />
+            <line x1="15" y1="-5" x2="15" y2="5" stroke="#94a3b8" stroke-width="1.8" />
+            <polygon points="20,0 26,-6 26,6" fill="#94a3b8" />
+            <circle cx="0" cy="0" r="3.5" fill="#cbd5e1" />
+          </g>`,
+        hand_book: `
+          <!-- Lv.3 English Dictionary -->
+          <g id="acc_hand_book" transform="translate(75, 96) rotate(15)">
+            <rect x="0" y="0" width="18" height="22" rx="2" fill="#2563eb" stroke="#1d4ed8" stroke-width="1" />
+            <rect x="2" y="2" width="14" height="18" rx="1" fill="#ffffff" />
+            <text x="9" y="14" text-anchor="middle" font-size="8" font-weight="bold" fill="#1e3a8a">EN</text>
+          </g>`,
+        hand_icecream: `
+          <g id="acc_hand_icecream" transform="translate(80, 94)">
+            <polygon points="0,6 12,6 6,24" fill="#d97706" />
+            <circle cx="6" cy="4" r="6.5" fill="#f472b6" />
+            <circle cx="6" cy="4" r="2" fill="#ef4444" />
+          </g>`,
+        hand_wand: `
+          <!-- Lv.5 Magic Star Wand -->
+          <g id="acc_hand_wand" transform="translate(76, 92) rotate(25)">
+            <line x1="0" y1="0" x2="0" y2="28" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" />
+            <polygon points="0,-8 2.5,-2 8.5,-2 4,1.5 6,7.5 0,4 -6,7.5 -4,1.5 -8.5,-2 -2.5,-2" fill="#facc15" />
+            <circle cx="0" cy="0" r="2.5" fill="#ef4444" />
+          </g>`
+      }
+    };
 
+    // Balanced Tiered Wardrobe Catalog with Clear Level Rewards
+    const WARDROBE_CATALOG = {
+      head: [
+        { id: 'head_none', name: '無飾品', icon: '🚫', desc: '純真自然小貓樣貌', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'head_sakura', name: '🌸 櫻花小花飾', icon: '🌸', desc: '【Lv.1 免費】粉嫩櫻花初春氣息', unlockType: 'level', price: 0, reqLevel: 1 },
+        { id: 'head_ribbon', name: '🎀 萌萌蝴蝶結', icon: '🎀', desc: '俏皮可愛的大粉紅蝴蝶結', unlockType: 'fish', price: 15, reqLevel: 1 },
+        { id: 'head_cap', name: '🧢 活力運動帽', icon: '🧢', desc: '反戴潮流街頭風棒球帽', unlockType: 'fish', price: 30, reqLevel: 2 },
+        { id: 'head_grad', name: '🎓 學霸博士帽', icon: '🎓', desc: '【Lv.3 免費】掌握400字學霸象徵！', unlockType: 'level', price: 0, reqLevel: 3 },
+        { id: 'head_ranger', name: '🏹 冒險獵鷹羽毛帽', icon: '🏹', desc: '【Lv.4 免費】750字英勇旅伴專屬勳章！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'head_wizard', name: '🧙 魔法巫師帽', icon: '🧙', desc: '蘊藏強大魔力的神秘巫師帽', unlockType: 'fish', price: 60, reqLevel: 3 },
+        { id: 'head_crown', name: '👑 傳奇璀璨皇冠', icon: '👑', desc: '【Lv.5 免費】1200會考傳奇守護神至高榮耀！', unlockType: 'level', price: 0, reqLevel: 5 }
+      ],
+      face: [
+        { id: 'face_none', name: '無飾品', icon: '🚫', desc: '清秀乾淨的小臉龐', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'face_blush', name: '✨ 星光微醺腮紅', icon: '✨', desc: '【Lv.1 免費】臉頰閃爍害羞星芒', unlockType: 'level', price: 0, reqLevel: 1 },
+        { id: 'face_glasses', name: '👓 知性圓圓眼鏡', icon: '👓', desc: '智慧加倍，背單字超專注！', unlockType: 'fish', price: 25, reqLevel: 2 },
+        { id: 'face_sunglasses', name: '🕶️ 酷黑潮流墨鏡', icon: '🕶️', desc: '街頭酷帥潮流，回頭率百分百', unlockType: 'fish', price: 40, reqLevel: 3 }
+      ],
+      neck: [
+        { id: 'neck_none', name: '無飾品', icon: '🚫', desc: '輕便舒適無束縛', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'neck_bell', name: '🔔 招財黃金鈴鐺', icon: '🔔', desc: '【Lv.1 免費】走動叮噹作響帶來好運', unlockType: 'level', price: 0, reqLevel: 1 },
+        { id: 'neck_scarf', name: '🧣 暖冬經典圍巾', icon: '🧣', desc: '冬日最溫暖厚實的紅色圍巾', unlockType: 'fish', price: 25, reqLevel: 2 },
+        { id: 'neck_bowtie', name: '👔 英倫貴族領結', icon: '👔', desc: '優雅俐落的小紳士風格領結', unlockType: 'fish', price: 35, reqLevel: 3 },
+        { id: 'neck_medal', name: '🥇 會考榮譽金牌', icon: '🥇', desc: '【Lv.5 免費】征服1200單字最高榮譽勳章！', unlockType: 'level', price: 0, reqLevel: 5 }
+      ],
+      outfit: [
+        { id: 'outfit_none', name: '自然毛皮', icon: '🚫', desc: '柔軟三花貓毛皮與白襪肉球', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'outfit_backpack', name: '🎒 探險雙肩包', icon: '🎒', desc: '【Lv.2 免費】背起小書包探索單字世界！', unlockType: 'level', price: 0, reqLevel: 2 },
+        { id: 'outfit_cloak', name: '🧥 英勇冒險披風', icon: '🧥', desc: '【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'outfit_sailor', name: '⚓ 可愛水手制服', icon: '⚓', desc: '日系海軍領水手服，青春活力', unlockType: 'fish', price: 70, reqLevel: 2 },
+        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '粉紅夢幻公主裙，散發華麗光彩', unlockType: 'fish', price: 80, reqLevel: 3 }
+      ],
+      hand: [
+        { id: 'hand_none', name: '雙手空空', icon: '🚫', desc: '隨時準備擊掌或摸摸肉球', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'hand_fishbone', name: '🐟 脆脆魚骨點心', icon: '🐟', desc: '啃著最愛的小魚骨零嘴', unlockType: 'fish', price: 20, reqLevel: 1 },
+        { id: 'hand_book', name: '📘 智慧英文字典', icon: '📘', desc: '【Lv.3 免費】隨身攜帶會考必備英文字典！', unlockType: 'level', price: 0, reqLevel: 3 },
+        { id: 'hand_icecream', name: '🍦 貓爪草莓甜筒', icon: '🍦', desc: '甜滋滋的草莓冰淇淋消暑點心', unlockType: 'fish', price: 35, reqLevel: 2 },
+        { id: 'hand_wand', name: '🪄 傳奇星月魔法杖', icon: '🪄', desc: '【Lv.5 免費】揮動星星法杖，單字通通滿分！', unlockType: 'level', price: 0, reqLevel: 5 }
+      ],
+      aura: [
+        { id: 'aura_none', name: '無特效', icon: '🚫', desc: '回歸純粹的貓咪氛圍', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '周圍閃爍璀璨的金色呼吸光芒', unlockType: 'fish', price: 40, reqLevel: 2 },
+        { id: 'aura_sakura', name: '🌸 飛舞落櫻花瓣', icon: '🌸', desc: '浪漫櫻花瓣在身邊翩翩起舞', unlockType: 'fish', price: 50, reqLevel: 3 },
+        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】750字英勇旅伴展翅高飛！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'aura_fish', name: '🐟 游動小魚乾群', icon: '🐟', desc: '小魚乾環繞身旁，貓咪的天堂！', unlockType: 'fish', price: 65, reqLevel: 3 },
+        { id: 'aura_rainbow', name: '🌈 傳奇幸運彩虹', icon: '🌈', desc: '【Lv.5 免費】1200字會考傳奇守護神七彩光暈！', unlockType: 'level', price: 0, reqLevel: 5 }
+      ]
+    };
 
-      sayCatSpeech(`喵～正在載入【${theme.name}】資料庫...🐾`, "準備中");
-      updateScopeDropdown(theme);
+    const ACCESSORY_REACTIONS = {
+      head_sakura: "喵～耳朵邊夾了小櫻花，有沒有像花仙子一樣漂亮呀？🌸🐾",
+      head_ribbon: "喵嗚～大粉紅蝴蝶結！我今天就是全天下最可愛的小貓！🎀💖",
+      head_cap: "喵！棒球帽反戴超帥氣，今天背單字我也要全力打出全壘打！⚾🧢",
+      head_grad: "喵哈哈～戴上學霸博士帽，1200 單字會考通通交給我吧！🎓✨",
+      head_ranger: "呼嚕嚕～戴上冒險獵鷹羽毛帽，我們已經征服 750 個單字囉！英勇旅伴出發！🏹🐾",
+      head_wizard: "（揮舞法杖）喵拉哩拉～把易錯單字通通變成小魚乾！🧙‍♀️✨",
+      head_crown: "呼嚕嚕～頭戴璀璨皇冠，感謝妳一路陪我進化成 1200 單字傳奇神獸！👑🐾",
+      face_blush: "喵...臉紅紅的被妳發現了！因為妳今天背單字好認真嘛～✨",
+      face_glasses: "推推眼鏡～看清楚了！forty 真的沒有 u，我都記在腦子裡了！👓📚",
+      face_sunglasses: "喵～戴上酷炫墨鏡，本喵就是夜市最拉風的街頭貓霸！🕶️😎",
+      neck_bell: "叮噹～叮噹～聽到了嗎？這是小魚乾快要來敲門的聲音喵！🔔",
+      neck_scarf: "好暖和喔～戴上紅色圍巾，就算外面吹冷風也能精神滿滿背單字！🧣❤️",
+      neck_bowtie: "喵～英倫紳士領結！今天上英文課我有沒有特別有氣質呢？👔✨",
+      neck_medal: "第一名金牌！這是我們一起努力征服 1200 單字的榮耀證書喵！🥇🌟",
+      outfit_backpack: "喵！背起小探險背包，今天也要去單字森林挖掘好多新寶藏！🎒✨",
+      outfit_cloak: "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
+      outfit_sailor: "水手服登場！青春活力滿點，今天模擬考一定能拿滿分喵！⚓💙",
+      outfit_dress: "哇～夢幻粉紅蓬蓬裙！轉圈圈好漂亮喔，謝謝主人幫我打扮！👗💖",
+      hand_fishbone: "嚼嚼嚼～啃著香噴噴的魚骨點心，背單字更有力氣了！🐟😋",
+      hand_book: "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
+      hand_icecream: "草莓貓爪冰淇淋！好冰好甜好滿足～吃完再來背十個單字！🍦🍓",
+      hand_wand: "星星魔法杖發光了！點石成金，祝福妳所有的英文考試都順利通過！🪄⭐",
+      aura_sparkle: "哇～閃閃發光的金色星芒！咪咪周圍都在發光耶！✨",
+      aura_sakura: "喵～花瓣飄飄好浪漫喔，一邊賞花一邊背單字最幸福了～🌸",
+      aura_wings: "展開天使羽翼！我們已經跨過 750 字難關，向著會考巔峰展翅高飛！🪽✨",
+      aura_fish: "好多小魚乾在身邊游來游去！天啊～這是貓咪的天堂喵！🐟🐟🐟",
+      aura_rainbow: "喵嗚～！七彩祥雲彩虹光芒！我是守護會考的傳奇神獸咪咪！🌈👑"
+    };
 
+    let currentWardrobeTab = 'head';
+    let catWardrobe = {
+      equipped: {
+        head: 'head_none',
+        face: 'face_none',
+        neck: 'neck_none',
+        outfit: 'outfit_none',
+        hand: 'hand_none',
+        aura: 'aura_none'
+      },
+      unlocked: [
+        'head_none', 'head_sakura',
+        'face_none', 'face_blush',
+        'neck_none', 'neck_bell',
+        'outfit_none', 'hand_none', 'aura_none'
+      ]
+    };
 
-
-
-      // Load user progress for this theme
-      userProgress = JSON.parse(localStorage.getItem(theme.storageKey) || '{}');
-
-
-
-
+    function loadCatWardrobe() {
       try {
-        let res = await fetch(theme.url);
-        if (!res.ok) res = await fetch(theme.fallbackUrl);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        RAW_VOCAB = await res.json();
-        
-        // Cache to local storage
-        try {
-          localStorage.setItem(`cached_vocab_${themeKey}_v1`, JSON.stringify(RAW_VOCAB));
-        } catch(e) {}
-      } catch (err) {
-        console.warn("Fetch 載入失敗，嘗試載入本地快取：", err);
-        const cached = localStorage.getItem(`cached_vocab_${themeKey}_v1`);
-        if (cached) {
-          try {
-            RAW_VOCAB = JSON.parse(cached);
-          } catch(e) {}
+        const saved = JSON.parse(localStorage.getItem(WARDROBE_STORAGE_KEY) || 'null');
+        if (saved && saved.equipped && saved.unlocked) {
+          catWardrobe = saved;
+          if (!catWardrobe.equipped.outfit) catWardrobe.equipped.outfit = 'outfit_none';
+          if (!catWardrobe.equipped.hand) catWardrobe.equipped.hand = 'hand_none';
+        }
+      } catch (e) {
+        console.warn("Wardrobe load error:", e);
+      }
+      checkLevelUnlocks(false);
+    }
+
+    function saveCatWardrobe() {
+      localStorage.setItem(WARDROBE_STORAGE_KEY, JSON.stringify(catWardrobe));
+      triggerAutoSaveToPi();
+    }
+
+    function checkLevelUnlocks(notify = true) {
+      const totalMastered = calculateTotalMasteredWords();
+      const catLevel = getCatLevelInfo(totalMastered).level;
+      let newUnlocks = [];
+
+      Object.keys(WARDROBE_CATALOG).forEach(catKey => {
+        WARDROBE_CATALOG[catKey].forEach(item => {
+          if (item.unlockType === 'level' && catLevel >= item.reqLevel) {
+            if (!catWardrobe.unlocked.includes(item.id)) {
+              catWardrobe.unlocked.push(item.id);
+              newUnlocks.push(item.name);
+            }
+          }
+        });
+      });
+
+      if (newUnlocks.length > 0) {
+        saveCatWardrobe();
+        if (notify) {
+          sayCatSpeech(`恭喜升級！衣櫥解鎖了里程碑專屬獎勵：【${newUnlocks.join('、')}】！快去換裝室試穿吧～👗🐾`, "解鎖里程碑新裝");
         }
       }
-
-
-
-
-      if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
-        sayCatSpeech(`喵嗚！【${theme.name}】單字庫載入受限 (本機直接雙擊 file:// 可能被瀏覽器安全性阻擋 fetch，建議用 Web Server 或 GitHub Pages 開啟喔) 🐾`, "提醒");
-        RAW_VOCAB = [];
-      } else {
-        sayCatSpeech(theme.catIntro, "元氣滿滿");
-      }
-
-
-
-
-      currentIndex = 0;
-      updateFilteredList();
-      renderCurrentCard();
-      renderStats();
-
-      // Sync data to Adventure Map
-      if (window.WordCheckingAdventure && RAW_VOCAB && RAW_VOCAB.length > 0) {
-        WordCheckingAdventure.initAdventureMap({ rawVocabList: RAW_VOCAB });
-        WordCheckingAdventure.renderAdventureMap();
-      }
-
-
-
-
-      // Refresh active mode view
-      const activeMode = getActiveMode();
-      if (activeMode === 'quiz') startNewQuiz();
-      if (activeMode === 'spelling') startNewSpelling();
-      if (activeMode === 'speaking') startNewSpeaking();
-      if (activeMode === 'exam') initExamSetup();
-      if (activeMode === 'list') renderWordTable();
     }
 
+    function renderCatAccessories() {
+      ['mainCat', 'wardrobeCat'].forEach(prefix => {
+        const auraEl = document.getElementById(prefix + 'AccAura');
+        const faceEl = document.getElementById(prefix + 'AccFace');
+        const headEl = document.getElementById(prefix + 'AccHead');
+        const neckEl = document.getElementById(prefix + 'AccNeck');
+        const outfitEl = document.getElementById(prefix + 'AccOutfit');
+        const handEl = document.getElementById(prefix + 'AccHand');
+
+        if (auraEl) auraEl.innerHTML = ACCESSORIES_SVG.aura[catWardrobe.equipped.aura] || '';
+        if (faceEl) faceEl.innerHTML = ACCESSORIES_SVG.face[catWardrobe.equipped.face] || '';
+        if (headEl) headEl.innerHTML = ACCESSORIES_SVG.head[catWardrobe.equipped.head] || '';
+        if (neckEl) neckEl.innerHTML = ACCESSORIES_SVG.neck[catWardrobe.equipped.neck] || '';
+        if (outfitEl) outfitEl.innerHTML = (ACCESSORIES_SVG.outfit && ACCESSORIES_SVG.outfit[catWardrobe.equipped.outfit]) || '';
+        if (handEl) handEl.innerHTML = (ACCESSORIES_SVG.hand && ACCESSORIES_SVG.hand[catWardrobe.equipped.hand]) || '';
+      });
+      updateWardrobeTags();
+    }
+
+    function updateWardrobeTags() {
+      const tagsContainer = document.getElementById('wardrobeOutfitTags');
+      if (!tagsContainer) return;
+      tagsContainer.innerHTML = '';
+
+      const eq = catWardrobe.equipped;
+      let count = 0;
+      Object.keys(eq).forEach(slot => {
+        const id = eq[slot];
+        if (id && !id.endsWith('_none')) {
+          count++;
+          const catalogList = WARDROBE_CATALOG[slot] || [];
+          const item = catalogList.find(x => x.id === id);
+          if (item) {
+            const tag = document.createElement('span');
+            tag.className = 'text-[11px] px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950/70 text-pink-700 dark:text-pink-300 font-bold border border-pink-200 dark:border-pink-800';
+            tag.innerText = item.name;
+            tagsContainer.appendChild(tag);
+          }
+        }
+      });
+
+      if (count === 0) {
+        const tag = document.createElement('span');
+        tag.className = 'text-[11px] text-slate-400 dark:text-slate-500';
+        tag.innerText = '目前穿搭：自然小貓樣貌 🐾';
+        tagsContainer.appendChild(tag);
+      }
+    }
+
+    // Interactive Mascot Click Handlers
+    function handleMascotClick(event) {
+      // Delegated click on cat areas
+    }
+
+    function handleHeadClick(event) {
+      if (event) event.stopPropagation();
+      petTheCat();
+    }
+
+    function handleBellyClick(event) {
+      if (event) event.stopPropagation();
+      const box = document.getElementById('catAvatarBox');
+      if (box) {
+        box.classList.remove('cat-hop');
+        void box.offsetWidth;
+        box.classList.add('cat-hop');
+      }
+      playCatMeowSound();
+      spawnFloatingHeart("🐾");
+      sayCatSpeech("呼嚕嚕～搔小肚肚好癢好舒服喔！精神百倍喵～🐾", "搔肚肚");
+      gainAffection(3);
+    }
+
+    function handleTailClick(event) {
+      if (event) event.stopPropagation();
+      const tail = document.getElementById('mainCatTail');
+      if (tail) {
+        tail.classList.remove('tail-wag');
+        tail.classList.remove('tail-wag-fast');
+        void tail.offsetWidth;
+        tail.classList.add('tail-wag-fast');
+        setTimeout(() => {
+          if (tail) {
+            tail.classList.remove('tail-wag-fast');
+            tail.classList.add('tail-wag');
+          }
+        }, 1600);
+      }
+      playCatMeowSound();
+      sayCatSpeech("喵嗚～！尾巴很敏感的啦！不要偷拉尾巴喵～🐾", "被拉尾巴");
+    }
+
+    // Gourmet Feasting System (Balances Fish Treats Economy)
+    function openFeedGourmetModal() {
+      document.getElementById('feedGourmetModal').classList.remove('hidden');
+    }
+
+    function closeFeedGourmetModal() {
+      document.getElementById('feedGourmetModal').classList.add('hidden');
+    }
+
+    function feedMimiGourmet(type, cost, affectionGain, extraFever = 0) {
+      if (fishCount < cost) {
+        alert(`小魚乾不足喔！這道點心需要 ${cost} 條小魚乾，多背背單字賺小魚乾吧喵～🐟`);
+        return;
+      }
+
+      fishCount -= cost;
+      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+      document.getElementById('fishCount').innerText = fishCount;
+      const wFish = document.getElementById('wardrobeFishCount');
+      if (wFish) wFish.innerText = fishCount;
+
+      playCatMunchSound();
+      spawnFloatingHeart("🐟");
+      spawnFloatingHeart("💖");
+
+      gainAffection(affectionGain);
+
+      if (extraFever > 0) {
+        feverRemainingQuestions += extraFever;
+        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
+        updateFeverBadge();
+      }
+
+      touchMimiInteraction();
+
+      if (type === 'snack') {
+        sayCatSpeech("嚼嚼嚼～脆脆小魚乾真好吃！親密度 +5% 喵～🐟", "吃小魚乾");
+      } else if (type === 'sashimi') {
+        spawnFloatingHeart("🍣");
+        sayCatSpeech("哇！特級鮭魚生魚片好鮮甜多汁喔！咪咪太幸福了～親密度 +30% 💖！", "大啖鮭魚");
+      } else if (type === 'banquet') {
+        spawnFloatingHeart("👑");
+        spawnFloatingHeart("🍱");
+        sayCatSpeech("天啊～！是頂級滿漢海鮮全席！親密度直接補滿 100%！加贈 10 題狂熱雙倍小魚乾時段！🔥🐟", "海鮮盛宴");
+      }
+
+      closeFeedGourmetModal();
+      triggerAutoSaveToPi();
+    }
+
+    // Lucky Gacha Modal Helpers
+    function closeGachaModal() {
+      const modal = document.getElementById('gachaResultModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openGachaModal(data) {
+      const modal = document.getElementById('gachaResultModal');
+      if (!modal) return;
+
+      const iconEl = document.getElementById('gachaModalIcon');
+      const titleEl = document.getElementById('gachaModalTitle');
+      const subEl = document.getElementById('gachaModalSubtitle');
+      const bodyEl = document.getElementById('gachaModalBody');
+      const actionsEl = document.getElementById('gachaModalActions');
+
+      if (data.status === 'NOT_ENOUGH_FISH') {
+        iconEl.innerHTML = '🐟';
+        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-rose-400 to-pink-500 flex items-center justify-center text-3xl shadow-lg shadow-rose-400/20';
+        titleEl.innerText = '小魚乾還不夠開盲盒喵！';
+        titleEl.className = 'font-black text-lg text-rose-600 dark:text-rose-400 pt-2';
+        subEl.innerText = '每次抽取幸運盲盒需要 20 條小魚乾';
+
+        bodyEl.innerHTML = `
+          <div class="text-sm text-slate-700 dark:text-slate-200 space-y-2">
+            <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-rose-100 dark:border-slate-600">
+              <span class="text-xs text-slate-500 dark:text-slate-400">目前擁有小魚乾：</span>
+              <span class="font-black text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                <span>🐟</span> <span>${data.currentFish}</span> 條
+              </span>
+            </div>
+            <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-rose-100 dark:border-slate-600">
+              <span class="text-xs text-slate-500 dark:text-slate-400">還缺少小魚乾：</span>
+              <span class="font-black text-rose-600 dark:text-rose-400">
+                ${data.cost - data.currentFish} 條
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 pt-1 leading-relaxed">
+              🐾 <b>賺魚乾秘笈</b>：只要背單字或做測驗，每答對一題就能獲得 1 條小魚乾（若觸發狂熱雙倍時段可得 2 條）！累積滿 20 條就能來抽驚喜大獎囉！
+            </p>
+          </div>
+        `;
+
+        actionsEl.innerHTML = `
+          <button onclick="closeGachaModal()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
+            我知道了喵！去背單字賺魚乾
+          </button>
+        `;
+      } else if (data.status === 'SUCCESS') {
+        iconEl.innerHTML = '🎁';
+        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-400/20 cat-hop';
+        titleEl.innerText = '🎉 幸運盲盒大驚喜！';
+        titleEl.className = 'font-black text-lg text-amber-600 dark:text-amber-400 pt-2';
+        subEl.innerText = `成功消耗 20 條小魚乾（剩餘：${data.remainingFish} 條）`;
+
+        const slotMap = {
+          head: '🎀 頭飾帽子',
+          face: '👓 面部裝飾',
+          neck: '🧣 頸部項鍊',
+          outfit: '👗 全身服裝',
+          hand: '🐾 手持道具',
+          aura: '✨ 特效光環'
+        };
+        const slotText = slotMap[data.item.slot] || '造型配件';
+
+        bodyEl.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-2xl border border-amber-200 dark:border-slate-600 shadow-xs">
+              <div class="w-14 h-14 rounded-xl bg-amber-100 dark:bg-amber-950/60 flex items-center justify-center text-3xl">
+                ${data.item.icon}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200">
+                    ${slotText}
+                  </span>
+                </div>
+                <h4 class="font-black text-base text-slate-900 dark:text-white truncate pt-0.5">
+                  ${data.item.name}
+                </h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  ${data.item.desc}
+                </p>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300 font-semibold text-center flex items-center justify-center gap-1.5">
+              <span>✨</span>
+              <span>已自動為咪咪穿戴上新造型！外觀已立即更新！</span>
+            </div>
+          </div>
+        `;
+
+        actionsEl.innerHTML = `
+          <button onclick="closeGachaModal(); openWardrobeModal();" class="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
+            👗 前往換裝室查看
+          </button>
+          <button onclick="closeGachaModal()" class="px-5 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
+            太棒了！
+          </button>
+        `;
+      } else if (data.status === 'ALL_UNLOCKED') {
+        iconEl.innerHTML = '👑';
+        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-purple-500/20';
+        titleEl.innerText = '🏆 全圖鑑收藏大師！';
+        titleEl.className = 'font-black text-lg text-purple-600 dark:text-purple-400 pt-2';
+        subEl.innerText = `成功消耗 20 條小魚乾（剩餘：${data.remainingFish} 條）`;
+
+        bodyEl.innerHTML = `
+          <div class="text-sm text-slate-700 dark:text-slate-200 space-y-2.5">
+            <div class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 text-xs leading-relaxed text-purple-900 dark:text-purple-200">
+              🌟 <b>太震撼了！</b>衣櫥中的所有配件與服裝已經被妳全部收集齊全囉！目前沒有尚未解鎖的衣物了！
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-purple-100 dark:border-slate-600">
+                <span class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <span class="text-base">🔥</span> 狂熱雙倍時段加碼
+                </span>
+                <span class="font-black text-amber-600 dark:text-amber-400">+15 題雙倍魚乾</span>
+              </div>
+              <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-purple-100 dark:border-slate-600">
+                <span class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <span class="text-base">💖</span> 咪咪親密度爆棚
+                </span>
+                <span class="font-black text-rose-500">+50% 親密度</span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        actionsEl.innerHTML = `
+          <button onclick="closeGachaModal()" class="w-full py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
+            收下傳奇大獎喵！🔥
+          </button>
+        `;
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    // Lucky Gacha Box (20 Fish Treats Sink)
+    function playLuckyGacha() {
+      const GACHA_COST = 20;
+      if (fishCount < GACHA_COST) {
+        openGachaModal({
+          status: 'NOT_ENOUGH_FISH',
+          currentFish: fishCount,
+          cost: GACHA_COST
+        });
+        return;
+      }
+
+      // Collect locked fish-purchasable items
+      let candidates = [];
+      Object.keys(WARDROBE_CATALOG).forEach(catKey => {
+        WARDROBE_CATALOG[catKey].forEach(item => {
+          if (!catWardrobe.unlocked.includes(item.id)) {
+            candidates.push({ slot: catKey, ...item });
+          }
+        });
+      });
+
+      fishCount -= GACHA_COST;
+      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+      document.getElementById('fishCount').innerText = fishCount;
+      const wFish = document.getElementById('wardrobeFishCount');
+      if (wFish) wFish.innerText = fishCount;
+
+      playCatCheerSound();
+      spawnFloatingHeart("🎁");
+      spawnFloatingHeart("✨");
+
+      if (candidates.length > 0) {
+        // Pick random locked accessory
+        const prize = candidates[Math.floor(Math.random() * candidates.length)];
+        catWardrobe.unlocked.push(prize.id);
+        catWardrobe.equipped[prize.slot] = prize.id;
+        saveCatWardrobe();
+        renderCatAccessories();
+
+        sayCatSpeech(`🎁 哇！幸運盲盒大驚喜！成功開出【${prize.name}】並已自動換上！太美了喵～✨🐾`, "開箱大獎");
+        
+        openGachaModal({
+          status: 'SUCCESS',
+          item: prize,
+          remainingFish: fishCount
+        });
+      } else {
+        // All items unlocked! Award Fever Ticket & Affection
+        feverRemainingQuestions += 15;
+        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
+        updateFeverBadge();
+        gainAffection(50);
+        sayCatSpeech(`🎁 妳已經解鎖了所有造型！盲盒獎勵轉化為「15 題狂熱雙倍小魚乾時段」與 +50% 親密度喵！🔥✨`, "全造型傳奇");
+        
+        openGachaModal({
+          status: 'ALL_UNLOCKED',
+          remainingFish: fishCount
+        });
+      }
+
+      triggerAutoSaveToPi();
+    }
+
+    function openWardrobeModal() {
+      checkLevelUnlocks(false);
+      document.getElementById('wardrobeFishCount').innerText = fishCount;
+      document.getElementById('wardrobeModal').classList.remove('hidden');
+      renderCatAccessories();
+      switchWardrobeTab(currentWardrobeTab);
+      playCatMeowSound();
+    }
+
+    function closeWardrobeModal() {
+      document.getElementById('wardrobeModal').classList.add('hidden');
+    }
+
+    function switchWardrobeTab(tabKey) {
+      currentWardrobeTab = tabKey;
+      ['head', 'face', 'neck', 'outfit', 'hand', 'aura'].forEach(k => {
+        const btn = document.getElementById('tabBtn_' + k);
+        if (btn) {
+          if (k === tabKey) {
+            btn.className = 'wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs font-black';
+          } else {
+            btn.className = 'wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900 font-medium';
+          }
+        }
+      });
+      renderWardrobeItems(tabKey);
+    }
+
+    function renderWardrobeItems(tabKey) {
+      const grid = document.getElementById('wardrobeItemsGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const items = WARDROBE_CATALOG[tabKey] || [];
+      const equippedId = catWardrobe.equipped[tabKey] || (tabKey + '_none');
+
+      items.forEach(item => {
+        const isEquipped = equippedId === item.id;
+        const isUnlocked = catWardrobe.unlocked.includes(item.id);
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-2xl border transition relative flex flex-col justify-between ${
+          isEquipped
+            ? 'bg-pink-50/90 dark:bg-pink-950/40 border-pink-400 dark:border-pink-600 shadow-xs'
+            : isUnlocked
+            ? 'bg-white dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 hover:border-pink-300'
+            : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 opacity-80'
+        }`;
+
+        let actionBtnHtml = '';
+        if (isEquipped) {
+          actionBtnHtml = `
+            <button onclick="equipAccessory('${tabKey}', '${item.id}')" class="w-full mt-2 py-1 px-2 text-xs font-black rounded-xl bg-pink-500 text-white shadow-2xs hover:bg-pink-600 transition flex items-center justify-center gap-1 cursor-pointer">
+              <span>✔</span> 穿戴中 (卸下)
+            </button>`;
+        } else if (isUnlocked) {
+          actionBtnHtml = `
+            <button onclick="equipAccessory('${tabKey}', '${item.id}')" class="w-full mt-2 py-1 px-2 text-xs font-bold rounded-xl bg-slate-100 hover:bg-pink-100 dark:bg-slate-600 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-200 hover:text-pink-600 transition flex items-center justify-center cursor-pointer">
+              穿戴造型
+            </button>`;
+        } else {
+          if (item.unlockType === 'level') {
+            actionBtnHtml = `
+              <div class="w-full mt-2 py-1 px-2 text-[11px] font-bold rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-center flex items-center justify-center gap-1">
+                <span>🔒</span> Lv.${item.reqLevel} 里程碑解鎖
+              </div>`;
+          } else if (item.unlockType === 'fish') {
+            const canAfford = fishCount >= item.price;
+            actionBtnHtml = `
+              <button onclick="unlockAccessoryWithFish('${tabKey}', '${item.id}', ${item.price})" class="w-full mt-2 py-1 px-2 text-xs font-bold rounded-xl ${
+                canAfford
+                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs cursor-pointer'
+                  : 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+              } transition flex items-center justify-center gap-1" ${canAfford ? '' : 'disabled'}>
+                <span>🐟</span> 兌換 (${item.price}魚)
+              </button>`;
+          }
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">${item.icon}</span>
+              ${isEquipped ? '<span class="text-[10px] px-2 py-0.2 rounded-full bg-pink-500 text-white font-black">已裝備</span>' : ''}
+              ${!isUnlocked && item.unlockType === 'fish' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold dark:bg-amber-950 dark:text-amber-300">🐟 ${item.price}</span>` : ''}
+              ${!isUnlocked && item.unlockType === 'level' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-800 font-bold dark:bg-purple-950 dark:text-purple-300">Lv.${item.reqLevel}</span>` : ''}
+            </div>
+            <div class="font-bold text-xs text-slate-800 dark:text-white mt-1.5">${item.name}</div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-tight">${item.desc}</div>
+          </div>
+          ${actionBtnHtml}
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function equipAccessory(category, itemId) {
+      const isAlreadyEquipped = catWardrobe.equipped[category] === itemId;
+      if (isAlreadyEquipped && itemId !== (category + '_none')) {
+        catWardrobe.equipped[category] = category + '_none';
+        sayCatSpeech("喵～脫下飾品，回歸純真自然的可愛小貓樣貌！🐾", "輕鬆換裝");
+        document.getElementById('wardrobeCatSpeech').innerText = "喵～脫下飾品，清清爽爽好舒服！🐾";
+      } else {
+        catWardrobe.equipped[category] = itemId;
+        playCatMeowSound();
+        spawnFloatingHeart("✨");
+        const reaction = ACCESSORY_REACTIONS[itemId] || "喵～這套造型好漂亮喔！謝謝主人幫我打扮～💖";
+        sayCatSpeech(reaction, "開心換裝");
+        document.getElementById('wardrobeCatSpeech').innerText = reaction;
+      }
+
+      saveCatWardrobe();
+      renderCatAccessories();
+      renderWardrobeItems(currentWardrobeTab);
+    }
+
+    function unlockAccessoryWithFish(category, itemId, price) {
+      if (fishCount < price) {
+        alert(`小魚乾不足喔！需要 ${price} 條小魚乾，多背背單字做測驗就能獲得囉喵～🐟`);
+        return;
+      }
+
+      fishCount -= price;
+      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+      document.getElementById('fishCount').innerText = fishCount;
+      document.getElementById('wardrobeFishCount').innerText = fishCount;
+
+      if (!catWardrobe.unlocked.includes(itemId)) {
+        catWardrobe.unlocked.push(itemId);
+      }
+
+      catWardrobe.equipped[category] = itemId;
+      saveCatWardrobe();
+
+      playCatCheerSound();
+      spawnFloatingHeart("💖");
+      spawnFloatingHeart("🐟");
+
+      const reaction = ACCESSORY_REACTIONS[itemId] || "哇！太棒了～新衣服好適合咪咪喔！💖";
+      sayCatSpeech(`消耗 ${price} 條魚乾兌換造型！${reaction}`, "開箱新衣服");
+      document.getElementById('wardrobeCatSpeech').innerText = reaction;
+
+      renderCatAccessories();
+      renderWardrobeItems(currentWardrobeTab);
+    }
+
+    function randomizeCatOutfit() {
+      ['head', 'face', 'neck', 'outfit', 'hand', 'aura'].forEach(catKey => {
+        const items = (WARDROBE_CATALOG[catKey] || []).filter(item => catWardrobe.unlocked.includes(item.id));
+        if (items.length > 0) {
+          const picked = items[Math.floor(Math.random() * items.length)];
+          catWardrobe.equipped[catKey] = picked.id;
+        }
+      });
+
+      playCatMeowSound();
+      spawnFloatingHeart("🎲");
+      const speech = "喵嗚～今天的全身隨機穿搭真特別！妳覺得我有沒有變更漂亮呢？✨🐾";
+      sayCatSpeech(speech, "隨機打扮");
+      document.getElementById('wardrobeCatSpeech').innerText = speech;
+
+      saveCatWardrobe();
+      renderCatAccessories();
+      renderWardrobeItems(currentWardrobeTab);
+    }
+
+    function resetCatOutfit() {
+      catWardrobe.equipped = {
+        head: 'head_none',
+        face: 'face_none',
+        neck: 'neck_none',
+        outfit: 'outfit_none',
+        hand: 'hand_none',
+        aura: 'aura_none'
+      };
+      saveCatWardrobe();
+      renderCatAccessories();
+      renderWardrobeItems(currentWardrobeTab);
+      sayCatSpeech("喵～所有衣服飾品都收進衣櫥囉！素顏小貓最純真可愛了對不對？🐾", "素顏小貓");
+      document.getElementById('wardrobeCatSpeech').innerText = "喵～所有衣服飾品都收好囉！素顏小貓也超可愛對不對？🐾";
+    }
+
+    // <<<<<<<<<< [MODULE END: 03_wardrobe_gacha.js] <<<<<<<<<<
 
 
+    // >>>>>>>>>> [MODULE START: 04_adventure_map.js] >>>>>>>>>>
 
-    // Init App
-    
-    // ==================== WORDCHECKING ADVENTURE MODULE (Phase 3) ====================
+// ==================== WORDCHECKING ADVENTURE MODULE (Phase 3) ====================
 /**
  * WordChecking Phase 3: 冒險闖關地圖模組 (Adventure Map Mode)
  * 適用於國中會考 1200 單字學習系統
@@ -3894,567 +4966,12 @@
   };
 }));
 
+    // <<<<<<<<<< [MODULE END: 04_adventure_map.js] <<<<<<<<<<
 
-    // ==================== CAT DYNAMIC GROWTH & MORPH SYSTEM (Lv.1 ~ Lv.5) ====================
-    function updateCatGrowthMorph(level) {
-      ['mainCat', 'wardrobeCat'].forEach(prefix => {
-        const svg = document.getElementById(prefix + 'Svg');
-        const tail = document.getElementById(prefix + 'Tail');
-        const eyes = document.getElementById(prefix + 'Eyes');
-        const chest = document.getElementById(prefix + 'MorphChest');
-        const headMorph = document.getElementById(prefix + 'MorphHead');
 
-        if (!tail) return;
+    // >>>>>>>>>> [MODULE START: 05_study_modes.js] >>>>>>>>>>
 
-        // 1. Overall Cat Scale / Divine Aura
-        if (svg) {
-          if (level === 1) {
-            svg.classList.remove('cat-divine-aura');
-          } else if (level === 5) {
-            svg.classList.add('cat-divine-aura');
-          } else {
-            svg.classList.remove('cat-divine-aura');
-          }
-        }
-
-        // 2. Tail Evolution
-        if (level === 1) {
-          // Cute short kitten tail
-          tail.innerHTML = `
-            <path d="M 32,105 C 20,107 16,92 23,83 C 26,79 30,83 27,87 C 22,93 25,100 34,101 Z" fill="#f97316" />
-            <path d="M 23,83 C 25,81 29,84 26,87 C 23,90 20,86 23,83 Z" fill="#ffffff" />
-          `;
-        } else if (level === 2 || level === 3) {
-          // Standard / Sleek long tail
-          tail.innerHTML = `
-            <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
-            <path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />
-          `;
-        } else if (level === 4) {
-          // Thick adventurer fox tail
-          tail.innerHTML = `
-            <path d="M 32,105 C 10,110 2,82 14,64 C 18,58 24,62 20,68 C 12,78 12,90 20,96 C 24,100 28,95 34,98 Z" fill="#f97316" />
-            <path d="M 14,64 C 18,60 25,65 21,71 C 17,76 13,71 14,64 Z" fill="#ffffff" />
-            <path d="M 15,75 Q 8,72 13,83 Q 8,85 18,92" stroke="#ea580c" stroke-width="1.2" fill="none" />
-          `;
-        } else {
-          // Level 5: Divine Cloud / Heavenly flame tail
-          tail.innerHTML = `
-            <path d="M 32,105 C 8,112 -5,75 8,52 C 14,42 24,46 19,56 C 8,72 12,88 22,96 C 26,100 30,95 34,98 Z" fill="#f59e0b" filter="drop-shadow(0 0 4px #fbbf24)" />
-            <path d="M 8,52 C 14,40 28,45 22,58 C 14,68 6,60 8,52 Z" fill="#fef08a" />
-            <path d="M 16,68 Q 2,62 10,78 Q 2,82 18,92" stroke="#d97706" stroke-width="1.8" fill="none" stroke-linecap="round" />
-            <circle cx="12" cy="56" r="2" fill="#ffffff" opacity="0.9" />
-            <circle cx="6" cy="72" r="1.5" fill="#fef08a" opacity="0.8" />
-          `;
-        }
-
-        // 3. Chest Fluff Evolution
-        if (chest) {
-          if (level === 3) {
-            // Elegant scholar white chest bib
-            chest.innerHTML = `
-              <path d="M 52,78 C 50,86 44,90 48,93 C 54,95 58,88 60,94 C 62,88 66,95 72,93 C 76,90 70,86 68,78 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.06))" />
-            `;
-          } else if (level === 4) {
-            // Strong adventurer chest mane
-            chest.innerHTML = `
-              <path d="M 50,77 C 46,86 40,91 46,95 C 52,98 56,90 60,96 C 64,90 68,98 74,95 C 80,91 74,86 70,77 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.08))" />
-              <path d="M 54,82 Q 60,90 66,82" stroke="#cbd5e1" stroke-width="1" fill="none" />
-            `;
-          } else if (level === 5) {
-            // Divine chest mane with gold star gem
-            chest.innerHTML = `
-              <path d="M 48,76 C 44,87 38,93 44,97 C 52,100 56,92 60,98 C 64,92 68,100 76,97 C 82,93 76,87 72,76 Z" fill="#ffffff" filter="drop-shadow(0 0 5px rgba(251, 191, 36, 0.4))" />
-              <circle cx="60" cy="85" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1" />
-              <polygon points="60,82 61,84 63,85 61,86 60,88 59,86 57,85 59,84" fill="#ffffff" />
-            `;
-          } else {
-            chest.innerHTML = '';
-          }
-        }
-
-        // 4. Head Morphing (Ear Tufts on Lv.4, Golden Sigil on Lv.5)
-        if (headMorph) {
-          if (level === 4) {
-            headMorph.innerHTML = `
-              <line x1="20" y1="16" x2="16" y2="9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" />
-              <line x1="22" y1="17" x2="19" y2="11" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
-              <line x1="100" y1="16" x2="104" y2="9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" />
-              <line x1="98" y1="17" x2="101" y2="11" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
-            `;
-          } else if (level === 5) {
-            headMorph.innerHTML = `
-              <line x1="20" y1="16" x2="15" y2="8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
-              <line x1="100" y1="16" x2="105" y2="8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
-              <!-- Forehead Divine Star Sigil -->
-              <g class="divine-sigil-pulse">
-                <ellipse cx="60" cy="38" rx="6" ry="6" fill="#fef08a" opacity="0.3" />
-                <polygon points="60,33 62,37 66,38 62,39 60,43 58,39 54,38 58,37" fill="#fbbf24" stroke="#d97706" stroke-width="0.7" />
-                <circle cx="60" cy="38" r="1.5" fill="#ffffff" />
-                <path d="M 57,42 Q 60,45 63,42" stroke="#f59e0b" stroke-width="1.2" fill="none" stroke-linecap="round" />
-              </g>
-            `;
-          } else {
-            headMorph.innerHTML = '';
-          }
-        }
-
-        // 5. Eyes Morphing (Baby round eyes for Lv.1)
-        if (eyes) {
-          if (level === 1) {
-            eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="5.5" ry="7" fill="#1e293b" />
-              <circle cx="48" cy="49" r="2.2" fill="#ffffff" />
-              <circle cx="44" cy="54" r="1" fill="#ffffff" opacity="0.7" />
-              <ellipse cx="74" cy="52" rx="5.5" ry="7" fill="#1e293b" />
-              <circle cx="76" cy="49" r="2.2" fill="#ffffff" />
-              <circle cx="72" cy="54" r="1" fill="#ffffff" opacity="0.7" />
-            `;
-          } else if (level === 4 || level === 5) {
-            eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
-              <circle cx="48" cy="49.5" r="1.8" fill="#ffffff" />
-              <circle cx="44.5" cy="53" r="0.9" fill="#fde047" />
-              <ellipse cx="74" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
-              <circle cx="76" cy="49.5" r="1.8" fill="#ffffff" />
-              <circle cx="72.5" cy="53" r="0.9" fill="#fde047" />
-            `;
-          } else {
-            eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
-              <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
-              <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
-              <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
-            `;
-          }
-        }
-      });
-    }
-
-
-    document.addEventListener('DOMContentLoaded', () => {
-      initTheme();
-      document.getElementById('fishCount').innerText = fishCount;
-      initSpeechRecognition();
-      initPiSyncUI();
-      updateCatGrowthUI();
-      updateCatGrowthMorph(currentCatLevel);
-
-      // Initialize Adventure Map Mode with hooks
-      if (window.WordCheckingAdventure) {
-        WordCheckingAdventure.initAdventureMap({
-          rawVocabList: RAW_VOCAB,
-          hooks: {
-            getFishCount: () => fishCount,
-            addFish: (n) => {
-              fishCount += n;
-              localStorage.setItem(FISH_STORAGE_KEY, fishCount);
-              const fc = document.getElementById('fishCount');
-              if (fc) fc.innerText = fishCount;
-              const wfc = document.getElementById('wardrobeFishCount');
-              if (wfc) wfc.innerText = fishCount;
-            },
-            addAffection: (n) => gainAffection(n),
-            playAudio: (word) => playVoiceText(word),
-            playCheerSound: () => playCatCheerSound(),
-            playMeowSound: () => playCatMeowSound(),
-            saySpeech: (text, tag) => sayCatSpeech(text, tag),
-            triggerSaveToPi: () => triggerAutoSaveToPi()
-          }
-        });
-        WordCheckingAdventure.renderAdventureMap();
-      }
-      loadThemeData(currentThemeKey);
-      checkAndAutoSyncFromPi(true);
-
-
-      if (isMimiHungry()) {
-        const hungrySpeech = HUNGRY_CAT_SPEECHES[Math.floor(Math.random() * HUNGRY_CAT_SPEECHES.length)];
-        sayCatSpeech(hungrySpeech, "肚子扁扁想妳中 🐾");
-      }
-
-
-
-
-      // Keyboard shortcuts for Flashcard
-      document.addEventListener('keydown', (e) => {
-        const activeMode = getActiveMode();
-        if (activeMode === 'card') {
-          if (e.code === 'Space') {
-            e.preventDefault();
-            flipCard();
-          } else if (e.code === 'ArrowRight') {
-            nextCard();
-          } else if (e.code === 'ArrowLeft') {
-            prevCard();
-          }
-        }
-      });
-    });
-
-
-
-
-    function getActiveMode() {
-      const modeMap = document.getElementById('modeMap');
-      if (modeMap && !modeMap.classList.contains('hidden')) return 'map';
-      if (!document.getElementById('modeCard').classList.contains('hidden')) return 'card';
-      if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
-      if (!document.getElementById('modeSpelling').classList.contains('hidden')) return 'spelling';
-      if (!document.getElementById('modeSpeaking').classList.contains('hidden')) return 'speaking';
-      if (!document.getElementById('modeExam').classList.contains('hidden')) return 'exam';
-      return 'list';
-    }
-
-
-
-
-    function initTheme() {
-      const isDark = localStorage.getItem('theme') === 'dark' || 
-                     (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-
-
-
-
-      document.getElementById('themeToggle').addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-        const darkActive = document.documentElement.classList.contains('dark');
-        localStorage.setItem('theme', darkActive ? 'dark' : 'light');
-      });
-    }
-
-
-
-
-    function onScopeChange() {
-      currentScope = document.getElementById('scopeFilter').value;
-      updateFilteredList();
-      currentIndex = 0;
-      renderCurrentCard();
-      if (getActiveMode() === 'quiz') startNewQuiz();
-      if (getActiveMode() === 'spelling') startNewSpelling();
-      if (getActiveMode() === 'speaking') startNewSpeaking();
-      if (getActiveMode() === 'list') renderWordTable();
-    }
-
-
-
-
-    function updateFilteredList() {
-      if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
-        filteredList = [];
-        return;
-      }
-
-
-
-
-      if (currentScope === 'all') {
-        filteredList = [...RAW_VOCAB];
-      } else if (currentScope === 'weak') {
-        filteredList = RAW_VOCAB.filter(x => userProgress[x.word || x.num] === 'weak');
-        if (filteredList.length === 0) {
-          alert('喵～目前沒有標記為「待加強」的單字！咪咪為您自動切換回全部單字。');
-          document.getElementById('scopeFilter').value = 'all';
-          currentScope = 'all';
-          filteredList = [...RAW_VOCAB];
-        }
-      } else if (currentThemeKey === 'numbers') {
-        if (currentScope === '1-12') {
-          filteredList = RAW_VOCAB.filter(x => x.num <= 12);
-        } else if (currentScope === '13-19') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 13 && x.num <= 19);
-        } else if (currentScope === '20-99') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 20 && x.num <= 99);
-        } else if (currentScope === 'tens') {
-          filteredList = RAW_VOCAB.filter(x => x.num % 10 === 0 && x.num >= 20 && x.num <= 90);
-        } else {
-          filteredList = [...RAW_VOCAB];
-        }
-      } else if (currentThemeKey === 'all1200') {
-        if (currentScope === '1-150') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 1 && x.num <= 150);
-        } else if (currentScope === '151-400') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 151 && x.num <= 400);
-        } else if (currentScope === '401-750') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 401 && x.num <= 750);
-        } else if (currentScope === '751-1050') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 751 && x.num <= 1050);
-        } else if (currentScope === '1051-1200') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 1051 && x.num <= 1200);
-        } else if (currentScope.startsWith('cat:')) {
-          const targetCat = currentScope.replace('cat:', '');
-          filteredList = RAW_VOCAB.filter(x => (
-            x.category === targetCat ||
-            (targetCat === '動物與寵物' && (x.category === '動物與昆蟲' || x.category === '動物與寵物')) ||
-            (targetCat === '常用動詞' && (x.category === '核心動詞' || x.category === '常用動詞')) ||
-            (targetCat === '形容詞與副詞' && (x.category === '修飾與語法詞' || x.category === '形容詞與副詞')) ||
-            (targetCat === '代名詞與文法詞' && (x.category === '代名詞與文法詞' || x.category === '修飾與語法詞'))
-          ));
-        } else {
-          filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
-        }
-        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
-      } else {
-        // Filter by category name
-        filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
-        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
-      }
-    }
-
-
-
-
-    function renderStats() {
-      let mastered = 0;
-      let weak = 0;
-      const total = RAW_VOCAB.length;
-
-
-
-
-      RAW_VOCAB.forEach(item => {
-        const key = item.word || item.num;
-        if (userProgress[key] === 'mastered') mastered++;
-        else if (userProgress[key] === 'weak') weak++;
-      });
-
-
-
-
-      document.getElementById('statTotal').innerText = total;
-      document.getElementById('statMastered').innerText = mastered;
-      document.getElementById('statWeak').innerText = weak;
-
-
-
-
-      const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
-      document.getElementById('progressText').innerText = `${pct}% (${mastered}/${total})`;
-      document.getElementById('progressBarMastered').style.width = total > 0 ? `${(mastered / total) * 100}%` : '0%';
-      document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
-
-
-
-
-      const catFavor = document.getElementById('catFavorText');
-      if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
-      else if (pct < 50) catFavor.innerText = "（友善踏踏貓 🐱）";
-      else if (pct < 80) catFavor.innerText = "（默契好學伴 ✨）";
-      else catFavor.innerText = "（滿分神喵喵 👑）";
-
-
-
-
-      if (quizStats.total > 0) {
-        const acc = Math.round((quizStats.correct / quizStats.total) * 100);
-        document.getElementById('statAccuracy').innerText = `${acc}%`;
-      } else {
-        document.getElementById('statAccuracy').innerText = '--%';
-      }
-      updateCatGrowthUI();
-    }
-
-
-
-
-    // Flashcard Rendering
-    function renderCurrentCard() {
-      if (!filteredList || filteredList.length === 0) return;
-      const item = filteredList[currentIndex];
-      
-      cardFlipped = false;
-      document.getElementById('flashcardInner').classList.remove('rotate-y-180');
-
-
-
-
-      document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
-      document.getElementById('cardCategory').innerText = item.category || '核心單字';
-      
-      const digitEl = document.getElementById('cardDigit');
-      digitEl.innerText = item.chinese;
-      digitEl.className = item.chinese.length > 4 
-        ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight" 
-        : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
-
-
-
-
-      document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${item.category || '核心單字'}</span>`;
-      document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
-      document.getElementById('cardEnglish').innerText = item.word;
-      document.getElementById('cardPhonetic').innerText = item.kk || '';
-
-
-
-
-      const noteBox = document.getElementById('cardNoteBox');
-      if (item.note) {
-        noteBox.classList.remove('hidden');
-        document.getElementById('cardNote').innerText = item.note;
-      } else {
-        noteBox.classList.add('hidden');
-      }
-
-
-
-
-      const exampleBox = document.getElementById('cardExampleBox');
-      if (item.example) {
-        exampleBox.classList.remove('hidden');
-        document.getElementById('cardExample').innerText = `例句：${item.example}`;
-      } else {
-        exampleBox.classList.add('hidden');
-      }
-    }
-
-
-
-
-    function flipCard() {
-      cardFlipped = !cardFlipped;
-      const inner = document.getElementById('flashcardInner');
-      if (cardFlipped) {
-        inner.classList.add('rotate-y-180');
-        playVoiceCurrent(1.0);
-        sayCatSpeech(`翻面看拼寫囉！"${filteredList[currentIndex].word}"，記起來了嗎喵？🐾`, "專心看牌");
-      } else {
-        inner.classList.remove('rotate-y-180');
-      }
-    }
-
-
-
-
-    function nextCard() {
-      if (currentIndex < filteredList.length - 1) {
-        currentIndex++;
-      } else {
-        currentIndex = 0;
-      }
-      renderCurrentCard();
-    }
-
-
-
-
-    function prevCard() {
-      if (currentIndex > 0) {
-        currentIndex--;
-      } else {
-        currentIndex = filteredList.length - 1;
-      }
-      renderCurrentCard();
-    }
-
-
-
-
-    function markCurrent(isMastered) {
-      if (!filteredList || filteredList.length === 0) return;
-      const item = filteredList[currentIndex];
-      const key = item.word || item.num;
-      const theme = THEME_REGISTRY[currentThemeKey];
-
-
-
-
-      userProgress[key] = isMastered ? 'mastered' : 'weak';
-      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
-      
-      if (isMastered) {
-        addFish();
-        playCatMeowSound();
-        sayCatSpeech(`太棒了！"${item.word}" 已記住！送妳 1 條小魚乾 🐟～`, "開心歡呼");
-      } else {
-        sayCatSpeech(`沒關係！貓貓幫妳把 "${item.word}" 記在待加強名單，等等多看兩眼喵～🐾`, "貼心鼓勵");
-      }
-      renderStats();
-      gainAffection(2);
-      touchMimiInteraction();
-      updateCatGrowthUI();
-      triggerAutoSaveToPi();
-      nextCard();
-    }
-
-
-
-
-    // Text to Speech
-    function playVoiceText(text, rate = 1.0) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = rate;
-        window.speechSynthesis.speak(utterance);
-      }
-    }
-
-
-
-
-    function playVoiceCurrent(rate = 1.0) {
-      if (filteredList && filteredList[currentIndex]) {
-        playVoiceText(filteredList[currentIndex].word, rate);
-      }
-    }
-
-
-
-
-    // Mode Switching
-    function switchMode(mode) {
-      const modes = ['map', 'card', 'quiz', 'spelling', 'speaking', 'exam', 'list'];
-      modes.forEach(m => {
-        const sec = document.getElementById('mode' + capitalize(m));
-        const tab = document.getElementById('tab' + capitalize(m));
-        if (sec && tab) {
-          if (m === mode) {
-            sec.classList.remove('hidden');
-            tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold";
-          } else {
-            sec.classList.add('hidden');
-            tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5";
-          }
-        }
-      });
-
-      if (mode === 'map') {
-        if (window.WordCheckingAdventure) {
-          WordCheckingAdventure.renderAdventureMap();
-        }
-        sayCatSpeech("冒險闖關地圖模式：沿著石板古道漫遊 5 大世界，挑戰 120 關贏取三星與寶箱吧喵！🐾");
-      }
-
-
-
-
-      if (mode === 'card') sayCatSpeech("翻翻卡片模式：看中文想英文，翻面看拼寫與例句喔！🐾");
-      if (mode === 'quiz') startNewQuiz();
-      if (mode === 'spelling') startNewSpelling();
-      if (mode === 'speaking') startNewSpeaking();
-      if (mode === 'exam') initExamSetup();
-      if (mode === 'list') renderWordTable();
-    }
-
-
-
-
-    function capitalize(s) {
-      return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-
-
-
-
-    // ==================== QUIZ LOGIC ====================
+// ==================== QUIZ LOGIC ====================
     function startNewQuiz() {
       document.getElementById('quizFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
@@ -5200,921 +5717,12 @@
       });
     }
 
+    // <<<<<<<<<< [MODULE END: 05_study_modes.js] <<<<<<<<<<
 
 
+    // >>>>>>>>>> [MODULE START: 06_pi_sync.js] >>>>>>>>>>
 
-    
-    // ==================== CAT WARDROBE & FULL-BODY INTERACTIVE SYSTEM (v2.3.0) ====================
-    const WARDROBE_STORAGE_KEY = 'wordchecking_cat_wardrobe_v1';
-
-    const ACCESSORIES_SVG = {
-      aura: {
-        aura_none: "",
-        aura_sparkle: `
-          <g id="acc_aura_sparkle" class="animate-pulse">
-            <path d="M 16,25 Q 22,25 22,19 Q 22,25 28,25 Q 22,25 22,31 Q 22,25 16,25 Z" fill="#facc15" />
-            <path d="M 96,22 Q 102,22 102,16 Q 102,22 108,22 Q 102,22 102,28 Q 102,22 96,22 Z" fill="#facc15" />
-            <path d="M 8,82 Q 12,82 12,78 Q 12,82 16,82 Q 12,82 12,86 Q 12,82 8,82 Z" fill="#fde047" />
-            <path d="M 104,85 Q 108,85 108,81 Q 108,85 112,85 Q 108,85 108,89 Q 108,85 104,85 Z" fill="#fde047" />
-          </g>`,
-        aura_fish: `
-          <g id="acc_aura_fish" opacity="0.95">
-            <g transform="translate(14, 30) rotate(-15)">
-              <path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
-            </g>
-            <g transform="translate(94, 25) rotate(20)">
-              <path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
-            </g>
-            <g transform="translate(10, 85) rotate(12)">
-              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
-            </g>
-            <g transform="translate(96, 80) rotate(-10)">
-              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
-            </g>
-          </g>`,
-        aura_sakura: `
-          <g id="acc_aura_sakura" opacity="0.9">
-            <circle cx="18" cy="24" r="3.5" fill="#f472b6" />
-            <circle cx="26" cy="18" r="2.5" fill="#fda4af" />
-            <circle cx="98" cy="20" r="3.5" fill="#f472b6" />
-            <circle cx="106" cy="28" r="2.2" fill="#fda4af" />
-            <circle cx="12" cy="75" r="3" fill="#fbcfe8" />
-            <circle cx="106" cy="80" r="3.2" fill="#fbcfe8" />
-          </g>`,
-        aura_wings: `
-          <!-- Lv.4 Adventurer Wings -->
-          <g id="acc_aura_wings" opacity="0.92">
-            <path d="M 36,75 C 10,65 -5,40 10,32 C 16,30 22,35 24,42 C 18,48 24,62 38,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-            <path d="M 24,42 C 28,45 32,56 38,65" stroke="#cbd5e1" stroke-width="1" fill="none" />
-            <path d="M 84,75 C 110,65 125,40 110,32 C 104,30 98,35 96,42 C 102,48 96,62 82,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-            <path d="M 96,42 C 92,45 88,56 82,65" stroke="#cbd5e1" stroke-width="1" fill="none" />
-          </g>`,
-        aura_rainbow: `
-          <g id="acc_aura_rainbow">
-            <path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" />
-            <path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" />
-            <path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" />
-            <path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" />
-            <path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" />
-          </g>`
-      },
-      head: {
-        head_none: "",
-        head_sakura: `
-          <g id="acc_head_sakura" transform="translate(80, 24)">
-            <circle cx="-4" cy="-1" r="3.5" fill="#f472b6" />
-            <circle cx="4" cy="-1" r="3.5" fill="#f472b6" />
-            <circle cx="0" cy="-5" r="3.5" fill="#f472b6" />
-            <circle cx="-3" cy="4" r="3.5" fill="#f472b6" />
-            <circle cx="3" cy="4" r="3.5" fill="#f472b6" />
-            <circle cx="0" cy="0" r="2.8" fill="#fef08a" />
-          </g>`,
-        head_ribbon: `
-          <g id="acc_head_ribbon" transform="translate(60, 24)">
-            <polygon points="-1,-1 -16,-9 -13,7 -1,1" fill="#ec4899" />
-            <polygon points="1,-1 16,-9 13,7 1,1" fill="#ec4899" />
-            <ellipse cx="0" cy="0" rx="4.5" ry="4" fill="#db2777" />
-            <circle cx="0" cy="0" r="2" fill="#fbcfe8" />
-          </g>`,
-        head_cap: `
-          <g id="acc_head_cap" transform="translate(60, 22)">
-            <ellipse cx="0" cy="2" rx="28" ry="11" fill="#ef4444" />
-            <path d="M -26,3 Q 0,-12 26,3 Q 0,-8 -26,3 Z" fill="#b91c1c" />
-            <path d="M 12,2 Q 30,-2 42,4 Q 28,10 14,5 Z" fill="#1e3a8a" />
-            <circle cx="0" cy="-6" r="2.5" fill="#ffffff" />
-          </g>`,
-        head_grad: `
-          <g id="acc_head_grad" transform="translate(60, 18)">
-            <polygon points="0,-12 -28,-3 0,6 28,-3" fill="#1e293b" />
-            <polygon points="-16,0 -16,8 16,8 16,0" fill="#334155" />
-            <path d="M 0,-3 L 24,2 L 26,14" stroke="#f59e0b" stroke-width="2" fill="none" />
-            <circle cx="26" cy="15" r="2" fill="#d97706" />
-          </g>`,
-        head_ranger: `
-          <!-- Lv.4 Adventurer Ranger Hat -->
-          <g id="acc_head_ranger" transform="translate(60, 20)">
-            <ellipse cx="0" cy="4" rx="30" ry="7" fill="#15803d" />
-            <path d="M -22,4 C -16,-10 16,-10 22,4 Z" fill="#16a34a" />
-            <rect x="-18" y="2" width="36" height="3" fill="#ca8a04" />
-            <path d="M 10,2 C 16,-12 28,-20 36,-18 C 30,-12 22,-4 16,2 Z" fill="#ef4444" />
-            <line x1="12" y1="2" x2="32" y2="-17" stroke="#b91c1c" stroke-width="0.8" />
-          </g>`,
-        head_wizard: `
-          <g id="acc_head_wizard" transform="translate(60, 18)">
-            <ellipse cx="0" cy="8" rx="30" ry="6" fill="#312e81" />
-            <path d="M -20,7 Q -8,-8 10,-24 Q 2,-6 20,7 Z" fill="#4338ca" />
-            <ellipse cx="0" cy="6" rx="20" ry="3" fill="#fbbf24" />
-            <polygon points="10,-24 13,-21 16,-24 14,-21 17,-19 13,-19 12,-16 11,-19 7,-19 10,-21" fill="#facc15" />
-          </g>`,
-        head_crown: `
-          <g id="acc_head_crown" transform="translate(60, 16)">
-            <path d="M -22,8 L -18,-7 L -9,2 L 0,-11 L 9,2 L 18,-7 L 22,8 Z" fill="#eab308" stroke="#ca8a04" stroke-width="1.5" />
-            <rect x="-21" y="6" width="42" height="4" rx="2" fill="#ca8a04" />
-            <circle cx="0" cy="-11" r="2.8" fill="#ef4444" />
-            <circle cx="-18" cy="-7" r="2" fill="#3b82f6" />
-            <circle cx="18" cy="-7" r="2" fill="#10b981" />
-            <circle cx="0" cy="8" r="1.5" fill="#ffffff" />
-          </g>`
-      },
-      face: {
-        face_none: "",
-        face_blush: `
-          <g id="acc_face_blush">
-            <g transform="translate(38, 61)">
-              <path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" />
-            </g>
-            <g transform="translate(82, 61)">
-              <path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" />
-            </g>
-          </g>`,
-        face_glasses: `
-          <g id="acc_face_glasses">
-            <circle cx="46" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
-            <circle cx="74" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
-            <path d="M 55.5,52 Q 60,48.5 64.5,52" stroke="#78350f" stroke-width="2.2" fill="none" />
-            <line x1="36.5" y1="51" x2="26" y2="48" stroke="#78350f" stroke-width="1.8" />
-            <line x1="83.5" y1="51" x2="94" y2="48" stroke="#78350f" stroke-width="1.8" />
-          </g>`,
-        face_sunglasses: `
-          <g id="acc_face_sunglasses">
-            <path d="M 34,46 L 56,46 L 54,58 Q 45,63 36,58 Z" fill="#0f172a" />
-            <path d="M 64,46 L 86,46 L 84,58 Q 75,63 66,58 Z" fill="#0f172a" />
-            <line x1="56" y1="48" x2="64" y2="48" stroke="#0f172a" stroke-width="3" />
-            <line x1="34" y1="48" x2="25" y2="46" stroke="#0f172a" stroke-width="2.2" />
-            <line x1="86" y1="48" x2="95" y2="46" stroke="#0f172a" stroke-width="2.2" />
-            <path d="M 37,48 L 46,48 L 40,55 Z" fill="#ffffff" opacity="0.35" />
-            <path d="M 67,48 L 76,48 L 70,55 Z" fill="#ffffff" opacity="0.35" />
-          </g>`
-      },
-      neck: {
-        neck_none: "",
-        neck_bell: `
-          <g id="acc_neck_bell">
-            <path d="M 35,74 Q 60,86 85,74" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" fill="none" />
-            <circle cx="60" cy="82" r="5.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.2" />
-            <line x1="56" y1="81" x2="64" y2="81" stroke="#854d0e" stroke-width="1" />
-            <circle cx="60" cy="84" r="1.3" fill="#713f12" />
-          </g>`,
-        neck_scarf: `
-          <g id="acc_neck_scarf">
-            <path d="M 30,73 Q 60,88 90,73 Q 60,93 30,73 Z" fill="#dc2626" />
-            <rect x="63" y="78" width="10" height="18" rx="3" fill="#b91c1c" transform="rotate(-15 63 78)" />
-            <line x1="63" y1="94" x2="72" y2="92" stroke="#fecaca" stroke-width="1.5" />
-          </g>`,
-        neck_bowtie: `
-          <g id="acc_neck_bowtie">
-            <polygon points="60,78 48,71 48,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
-            <polygon points="60,78 72,71 72,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
-            <ellipse cx="60" cy="78" rx="3.5" ry="3.5" fill="#2563eb" />
-          </g>`,
-        neck_medal: `
-          <g id="acc_neck_medal">
-            <path d="M 52,74 L 60,82 L 68,74" stroke="#2563eb" stroke-width="3" fill="none" />
-            <circle cx="60" cy="86" r="6.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" />
-            <text x="60" y="89" text-anchor="middle" font-size="7" font-weight="900" fill="#78350f">1</text>
-          </g>`
-      },
-      outfit: {
-        outfit_none: "",
-        outfit_backpack: `
-          <!-- Lv.2 Explorer Backpack -->
-          <g id="acc_outfit_backpack">
-            <path d="M 42,75 L 44,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" />
-            <path d="M 78,75 L 76,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" />
-            <rect x="42" y="84" width="4" height="4" rx="1" fill="#facc15" />
-            <rect x="74" y="84" width="4" height="4" rx="1" fill="#facc15" />
-          </g>`,
-        outfit_cloak: `
-          <!-- Lv.4 Hero Adventurer Cloak -->
-          <g id="acc_outfit_cloak">
-            <path d="M 32,74 C 20,86 16,112 25,116 C 36,118 42,105 46,95 C 54,92 66,92 74,95 C 78,105 84,118 95,116 C 104,112 100,86 88,74 Z" fill="#b91c1c" />
-            <path d="M 25,116 C 36,118 42,105 46,95" stroke="#facc15" stroke-width="2" fill="none" />
-            <path d="M 74,95 C 78,105 84,118 95,116" stroke="#facc15" stroke-width="2" fill="none" />
-            <circle cx="60" cy="76" r="4.5" fill="#facc15" />
-            <circle cx="60" cy="76" r="2.5" fill="#ef4444" />
-          </g>`,
-        outfit_sailor: `
-          <!-- Japanese Sailor Uniform -->
-          <g id="acc_outfit_sailor">
-            <path d="M 36,80 C 32,95 44,106 60,106 C 76,106 88,95 84,80 Z" fill="#1e3a8a" />
-            <polygon points="60,95 48,78 72,78" fill="#ffffff" />
-            <polygon points="60,82 56,92 64,92" fill="#ef4444" />
-            <polygon points="60,92 54,102 66,102" fill="#dc2626" />
-            <path d="M 44,76 L 36,86 L 46,86" stroke="#ffffff" stroke-width="2" fill="none" />
-            <path d="M 76,76 L 84,86 L 74,86" stroke="#ffffff" stroke-width="2" fill="none" />
-          </g>`,
-        outfit_dress: `
-          <!-- Princess Frilly Dress -->
-          <g id="acc_outfit_dress">
-            <path d="M 40,78 C 30,94 28,108 34,112 C 45,115 75,115 86,112 C 92,108 90,94 80,78 Z" fill="#f472b6" />
-            <path d="M 34,112 Q 47,108 60,112 Q 73,108 86,112" stroke="#ffffff" stroke-width="3" fill="none" />
-            <rect x="42" y="86" width="36" height="4" rx="2" fill="#db2777" />
-            <circle cx="60" cy="88" r="3.5" fill="#fbcfe8" />
-          </g>`
-      },
-      hand: {
-        hand_none: "",
-        hand_fishbone: `
-          <g id="acc_hand_fishbone" transform="translate(82, 100) rotate(-20)">
-            <line x1="0" y1="0" x2="20" y2="0" stroke="#94a3b8" stroke-width="2" />
-            <line x1="5" y1="-5" x2="5" y2="5" stroke="#94a3b8" stroke-width="1.8" />
-            <line x1="10" y1="-6" x2="10" y2="6" stroke="#94a3b8" stroke-width="1.8" />
-            <line x1="15" y1="-5" x2="15" y2="5" stroke="#94a3b8" stroke-width="1.8" />
-            <polygon points="20,0 26,-6 26,6" fill="#94a3b8" />
-            <circle cx="0" cy="0" r="3.5" fill="#cbd5e1" />
-          </g>`,
-        hand_book: `
-          <!-- Lv.3 English Dictionary -->
-          <g id="acc_hand_book" transform="translate(75, 96) rotate(15)">
-            <rect x="0" y="0" width="18" height="22" rx="2" fill="#2563eb" stroke="#1d4ed8" stroke-width="1" />
-            <rect x="2" y="2" width="14" height="18" rx="1" fill="#ffffff" />
-            <text x="9" y="14" text-anchor="middle" font-size="8" font-weight="bold" fill="#1e3a8a">EN</text>
-          </g>`,
-        hand_icecream: `
-          <g id="acc_hand_icecream" transform="translate(80, 94)">
-            <polygon points="0,6 12,6 6,24" fill="#d97706" />
-            <circle cx="6" cy="4" r="6.5" fill="#f472b6" />
-            <circle cx="6" cy="4" r="2" fill="#ef4444" />
-          </g>`,
-        hand_wand: `
-          <!-- Lv.5 Magic Star Wand -->
-          <g id="acc_hand_wand" transform="translate(76, 92) rotate(25)">
-            <line x1="0" y1="0" x2="0" y2="28" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" />
-            <polygon points="0,-8 2.5,-2 8.5,-2 4,1.5 6,7.5 0,4 -6,7.5 -4,1.5 -8.5,-2 -2.5,-2" fill="#facc15" />
-            <circle cx="0" cy="0" r="2.5" fill="#ef4444" />
-          </g>`
-      }
-    };
-
-    // Balanced Tiered Wardrobe Catalog with Clear Level Rewards
-    const WARDROBE_CATALOG = {
-      head: [
-        { id: 'head_none', name: '無飾品', icon: '🚫', desc: '純真自然小貓樣貌', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'head_sakura', name: '🌸 櫻花小花飾', icon: '🌸', desc: '【Lv.1 免費】粉嫩櫻花初春氣息', unlockType: 'level', price: 0, reqLevel: 1 },
-        { id: 'head_ribbon', name: '🎀 萌萌蝴蝶結', icon: '🎀', desc: '俏皮可愛的大粉紅蝴蝶結', unlockType: 'fish', price: 15, reqLevel: 1 },
-        { id: 'head_cap', name: '🧢 活力運動帽', icon: '🧢', desc: '反戴潮流街頭風棒球帽', unlockType: 'fish', price: 30, reqLevel: 2 },
-        { id: 'head_grad', name: '🎓 學霸博士帽', icon: '🎓', desc: '【Lv.3 免費】掌握400字學霸象徵！', unlockType: 'level', price: 0, reqLevel: 3 },
-        { id: 'head_ranger', name: '🏹 冒險獵鷹羽毛帽', icon: '🏹', desc: '【Lv.4 免費】750字英勇旅伴專屬勳章！', unlockType: 'level', price: 0, reqLevel: 4 },
-        { id: 'head_wizard', name: '🧙 魔法巫師帽', icon: '🧙', desc: '蘊藏強大魔力的神秘巫師帽', unlockType: 'fish', price: 60, reqLevel: 3 },
-        { id: 'head_crown', name: '👑 傳奇璀璨皇冠', icon: '👑', desc: '【Lv.5 免費】1200會考傳奇守護神至高榮耀！', unlockType: 'level', price: 0, reqLevel: 5 }
-      ],
-      face: [
-        { id: 'face_none', name: '無飾品', icon: '🚫', desc: '清秀乾淨的小臉龐', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'face_blush', name: '✨ 星光微醺腮紅', icon: '✨', desc: '【Lv.1 免費】臉頰閃爍害羞星芒', unlockType: 'level', price: 0, reqLevel: 1 },
-        { id: 'face_glasses', name: '👓 知性圓圓眼鏡', icon: '👓', desc: '智慧加倍，背單字超專注！', unlockType: 'fish', price: 25, reqLevel: 2 },
-        { id: 'face_sunglasses', name: '🕶️ 酷黑潮流墨鏡', icon: '🕶️', desc: '街頭酷帥潮流，回頭率百分百', unlockType: 'fish', price: 40, reqLevel: 3 }
-      ],
-      neck: [
-        { id: 'neck_none', name: '無飾品', icon: '🚫', desc: '輕便舒適無束縛', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'neck_bell', name: '🔔 招財黃金鈴鐺', icon: '🔔', desc: '【Lv.1 免費】走動叮噹作響帶來好運', unlockType: 'level', price: 0, reqLevel: 1 },
-        { id: 'neck_scarf', name: '🧣 暖冬經典圍巾', icon: '🧣', desc: '冬日最溫暖厚實的紅色圍巾', unlockType: 'fish', price: 25, reqLevel: 2 },
-        { id: 'neck_bowtie', name: '👔 英倫貴族領結', icon: '👔', desc: '優雅俐落的小紳士風格領結', unlockType: 'fish', price: 35, reqLevel: 3 },
-        { id: 'neck_medal', name: '🥇 會考榮譽金牌', icon: '🥇', desc: '【Lv.5 免費】征服1200單字最高榮譽勳章！', unlockType: 'level', price: 0, reqLevel: 5 }
-      ],
-      outfit: [
-        { id: 'outfit_none', name: '自然毛皮', icon: '🚫', desc: '柔軟三花貓毛皮與白襪肉球', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'outfit_backpack', name: '🎒 探險雙肩包', icon: '🎒', desc: '【Lv.2 免費】背起小書包探索單字世界！', unlockType: 'level', price: 0, reqLevel: 2 },
-        { id: 'outfit_cloak', name: '🧥 英勇冒險披風', icon: '🧥', desc: '【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！', unlockType: 'level', price: 0, reqLevel: 4 },
-        { id: 'outfit_sailor', name: '⚓ 可愛水手制服', icon: '⚓', desc: '日系海軍領水手服，青春活力', unlockType: 'fish', price: 70, reqLevel: 2 },
-        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '粉紅夢幻公主裙，散發華麗光彩', unlockType: 'fish', price: 80, reqLevel: 3 }
-      ],
-      hand: [
-        { id: 'hand_none', name: '雙手空空', icon: '🚫', desc: '隨時準備擊掌或摸摸肉球', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'hand_fishbone', name: '🐟 脆脆魚骨點心', icon: '🐟', desc: '啃著最愛的小魚骨零嘴', unlockType: 'fish', price: 20, reqLevel: 1 },
-        { id: 'hand_book', name: '📘 智慧英文字典', icon: '📘', desc: '【Lv.3 免費】隨身攜帶會考必備英文字典！', unlockType: 'level', price: 0, reqLevel: 3 },
-        { id: 'hand_icecream', name: '🍦 貓爪草莓甜筒', icon: '🍦', desc: '甜滋滋的草莓冰淇淋消暑點心', unlockType: 'fish', price: 35, reqLevel: 2 },
-        { id: 'hand_wand', name: '🪄 傳奇星月魔法杖', icon: '🪄', desc: '【Lv.5 免費】揮動星星法杖，單字通通滿分！', unlockType: 'level', price: 0, reqLevel: 5 }
-      ],
-      aura: [
-        { id: 'aura_none', name: '無特效', icon: '🚫', desc: '回歸純粹的貓咪氛圍', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '周圍閃爍璀璨的金色呼吸光芒', unlockType: 'fish', price: 40, reqLevel: 2 },
-        { id: 'aura_sakura', name: '🌸 飛舞落櫻花瓣', icon: '🌸', desc: '浪漫櫻花瓣在身邊翩翩起舞', unlockType: 'fish', price: 50, reqLevel: 3 },
-        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】750字英勇旅伴展翅高飛！', unlockType: 'level', price: 0, reqLevel: 4 },
-        { id: 'aura_fish', name: '🐟 游動小魚乾群', icon: '🐟', desc: '小魚乾環繞身旁，貓咪的天堂！', unlockType: 'fish', price: 65, reqLevel: 3 },
-        { id: 'aura_rainbow', name: '🌈 傳奇幸運彩虹', icon: '🌈', desc: '【Lv.5 免費】1200字會考傳奇守護神七彩光暈！', unlockType: 'level', price: 0, reqLevel: 5 }
-      ]
-    };
-
-    const ACCESSORY_REACTIONS = {
-      head_sakura: "喵～耳朵邊夾了小櫻花，有沒有像花仙子一樣漂亮呀？🌸🐾",
-      head_ribbon: "喵嗚～大粉紅蝴蝶結！我今天就是全天下最可愛的小貓！🎀💖",
-      head_cap: "喵！棒球帽反戴超帥氣，今天背單字我也要全力打出全壘打！⚾🧢",
-      head_grad: "喵哈哈～戴上學霸博士帽，1200 單字會考通通交給我吧！🎓✨",
-      head_ranger: "呼嚕嚕～戴上冒險獵鷹羽毛帽，我們已經征服 750 個單字囉！英勇旅伴出發！🏹🐾",
-      head_wizard: "（揮舞法杖）喵拉哩拉～把易錯單字通通變成小魚乾！🧙‍♀️✨",
-      head_crown: "呼嚕嚕～頭戴璀璨皇冠，感謝妳一路陪我進化成 1200 單字傳奇神獸！👑🐾",
-      face_blush: "喵...臉紅紅的被妳發現了！因為妳今天背單字好認真嘛～✨",
-      face_glasses: "推推眼鏡～看清楚了！forty 真的沒有 u，我都記在腦子裡了！👓📚",
-      face_sunglasses: "喵～戴上酷炫墨鏡，本喵就是夜市最拉風的街頭貓霸！🕶️😎",
-      neck_bell: "叮噹～叮噹～聽到了嗎？這是小魚乾快要來敲門的聲音喵！🔔",
-      neck_scarf: "好暖和喔～戴上紅色圍巾，就算外面吹冷風也能精神滿滿背單字！🧣❤️",
-      neck_bowtie: "喵～英倫紳士領結！今天上英文課我有沒有特別有氣質呢？👔✨",
-      neck_medal: "第一名金牌！這是我們一起努力征服 1200 單字的榮耀證書喵！🥇🌟",
-      outfit_backpack: "喵！背起小探險背包，今天也要去單字森林挖掘好多新寶藏！🎒✨",
-      outfit_cloak: "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
-      outfit_sailor: "水手服登場！青春活力滿點，今天模擬考一定能拿滿分喵！⚓💙",
-      outfit_dress: "哇～夢幻粉紅蓬蓬裙！轉圈圈好漂亮喔，謝謝主人幫我打扮！👗💖",
-      hand_fishbone: "嚼嚼嚼～啃著香噴噴的魚骨點心，背單字更有力氣了！🐟😋",
-      hand_book: "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
-      hand_icecream: "草莓貓爪冰淇淋！好冰好甜好滿足～吃完再來背十個單字！🍦🍓",
-      hand_wand: "星星魔法杖發光了！點石成金，祝福妳所有的英文考試都順利通過！🪄⭐",
-      aura_sparkle: "哇～閃閃發光的金色星芒！咪咪周圍都在發光耶！✨",
-      aura_sakura: "喵～花瓣飄飄好浪漫喔，一邊賞花一邊背單字最幸福了～🌸",
-      aura_wings: "展開天使羽翼！我們已經跨過 750 字難關，向著會考巔峰展翅高飛！🪽✨",
-      aura_fish: "好多小魚乾在身邊游來游去！天啊～這是貓咪的天堂喵！🐟🐟🐟",
-      aura_rainbow: "喵嗚～！七彩祥雲彩虹光芒！我是守護會考的傳奇神獸咪咪！🌈👑"
-    };
-
-    let currentWardrobeTab = 'head';
-    let catWardrobe = {
-      equipped: {
-        head: 'head_none',
-        face: 'face_none',
-        neck: 'neck_none',
-        outfit: 'outfit_none',
-        hand: 'hand_none',
-        aura: 'aura_none'
-      },
-      unlocked: [
-        'head_none', 'head_sakura',
-        'face_none', 'face_blush',
-        'neck_none', 'neck_bell',
-        'outfit_none', 'hand_none', 'aura_none'
-      ]
-    };
-
-    function loadCatWardrobe() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(WARDROBE_STORAGE_KEY) || 'null');
-        if (saved && saved.equipped && saved.unlocked) {
-          catWardrobe = saved;
-          if (!catWardrobe.equipped.outfit) catWardrobe.equipped.outfit = 'outfit_none';
-          if (!catWardrobe.equipped.hand) catWardrobe.equipped.hand = 'hand_none';
-        }
-      } catch (e) {
-        console.warn("Wardrobe load error:", e);
-      }
-      checkLevelUnlocks(false);
-    }
-
-    function saveCatWardrobe() {
-      localStorage.setItem(WARDROBE_STORAGE_KEY, JSON.stringify(catWardrobe));
-      triggerAutoSaveToPi();
-    }
-
-    function checkLevelUnlocks(notify = true) {
-      const totalMastered = calculateTotalMasteredWords();
-      const catLevel = getCatLevelInfo(totalMastered).level;
-      let newUnlocks = [];
-
-      Object.keys(WARDROBE_CATALOG).forEach(catKey => {
-        WARDROBE_CATALOG[catKey].forEach(item => {
-          if (item.unlockType === 'level' && catLevel >= item.reqLevel) {
-            if (!catWardrobe.unlocked.includes(item.id)) {
-              catWardrobe.unlocked.push(item.id);
-              newUnlocks.push(item.name);
-            }
-          }
-        });
-      });
-
-      if (newUnlocks.length > 0) {
-        saveCatWardrobe();
-        if (notify) {
-          sayCatSpeech(`恭喜升級！衣櫥解鎖了里程碑專屬獎勵：【${newUnlocks.join('、')}】！快去換裝室試穿吧～👗🐾`, "解鎖里程碑新裝");
-        }
-      }
-    }
-
-    function renderCatAccessories() {
-      ['mainCat', 'wardrobeCat'].forEach(prefix => {
-        const auraEl = document.getElementById(prefix + 'AccAura');
-        const faceEl = document.getElementById(prefix + 'AccFace');
-        const headEl = document.getElementById(prefix + 'AccHead');
-        const neckEl = document.getElementById(prefix + 'AccNeck');
-        const outfitEl = document.getElementById(prefix + 'AccOutfit');
-        const handEl = document.getElementById(prefix + 'AccHand');
-
-        if (auraEl) auraEl.innerHTML = ACCESSORIES_SVG.aura[catWardrobe.equipped.aura] || '';
-        if (faceEl) faceEl.innerHTML = ACCESSORIES_SVG.face[catWardrobe.equipped.face] || '';
-        if (headEl) headEl.innerHTML = ACCESSORIES_SVG.head[catWardrobe.equipped.head] || '';
-        if (neckEl) neckEl.innerHTML = ACCESSORIES_SVG.neck[catWardrobe.equipped.neck] || '';
-        if (outfitEl) outfitEl.innerHTML = (ACCESSORIES_SVG.outfit && ACCESSORIES_SVG.outfit[catWardrobe.equipped.outfit]) || '';
-        if (handEl) handEl.innerHTML = (ACCESSORIES_SVG.hand && ACCESSORIES_SVG.hand[catWardrobe.equipped.hand]) || '';
-      });
-      updateWardrobeTags();
-    }
-
-    function updateWardrobeTags() {
-      const tagsContainer = document.getElementById('wardrobeOutfitTags');
-      if (!tagsContainer) return;
-      tagsContainer.innerHTML = '';
-
-      const eq = catWardrobe.equipped;
-      let count = 0;
-      Object.keys(eq).forEach(slot => {
-        const id = eq[slot];
-        if (id && !id.endsWith('_none')) {
-          count++;
-          const catalogList = WARDROBE_CATALOG[slot] || [];
-          const item = catalogList.find(x => x.id === id);
-          if (item) {
-            const tag = document.createElement('span');
-            tag.className = 'text-[11px] px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950/70 text-pink-700 dark:text-pink-300 font-bold border border-pink-200 dark:border-pink-800';
-            tag.innerText = item.name;
-            tagsContainer.appendChild(tag);
-          }
-        }
-      });
-
-      if (count === 0) {
-        const tag = document.createElement('span');
-        tag.className = 'text-[11px] text-slate-400 dark:text-slate-500';
-        tag.innerText = '目前穿搭：自然小貓樣貌 🐾';
-        tagsContainer.appendChild(tag);
-      }
-    }
-
-    // Interactive Mascot Click Handlers
-    function handleMascotClick(event) {
-      // Delegated click on cat areas
-    }
-
-    function handleHeadClick(event) {
-      if (event) event.stopPropagation();
-      petTheCat();
-    }
-
-    function handleBellyClick(event) {
-      if (event) event.stopPropagation();
-      const box = document.getElementById('catAvatarBox');
-      if (box) {
-        box.classList.remove('cat-hop');
-        void box.offsetWidth;
-        box.classList.add('cat-hop');
-      }
-      playCatMeowSound();
-      spawnFloatingHeart("🐾");
-      sayCatSpeech("呼嚕嚕～搔小肚肚好癢好舒服喔！精神百倍喵～🐾", "搔肚肚");
-      gainAffection(3);
-    }
-
-    function handleTailClick(event) {
-      if (event) event.stopPropagation();
-      const tail = document.getElementById('mainCatTail');
-      if (tail) {
-        tail.classList.remove('tail-wag');
-        tail.classList.remove('tail-wag-fast');
-        void tail.offsetWidth;
-        tail.classList.add('tail-wag-fast');
-        setTimeout(() => {
-          if (tail) {
-            tail.classList.remove('tail-wag-fast');
-            tail.classList.add('tail-wag');
-          }
-        }, 1600);
-      }
-      playCatMeowSound();
-      sayCatSpeech("喵嗚～！尾巴很敏感的啦！不要偷拉尾巴喵～🐾", "被拉尾巴");
-    }
-
-    // Gourmet Feasting System (Balances Fish Treats Economy)
-    function openFeedGourmetModal() {
-      document.getElementById('feedGourmetModal').classList.remove('hidden');
-    }
-
-    function closeFeedGourmetModal() {
-      document.getElementById('feedGourmetModal').classList.add('hidden');
-    }
-
-    function feedMimiGourmet(type, cost, affectionGain, extraFever = 0) {
-      if (fishCount < cost) {
-        alert(`小魚乾不足喔！這道點心需要 ${cost} 條小魚乾，多背背單字賺小魚乾吧喵～🐟`);
-        return;
-      }
-
-      fishCount -= cost;
-      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
-      document.getElementById('fishCount').innerText = fishCount;
-      const wFish = document.getElementById('wardrobeFishCount');
-      if (wFish) wFish.innerText = fishCount;
-
-      playCatMunchSound();
-      spawnFloatingHeart("🐟");
-      spawnFloatingHeart("💖");
-
-      gainAffection(affectionGain);
-
-      if (extraFever > 0) {
-        feverRemainingQuestions += extraFever;
-        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
-        updateFeverBadge();
-      }
-
-      touchMimiInteraction();
-
-      if (type === 'snack') {
-        sayCatSpeech("嚼嚼嚼～脆脆小魚乾真好吃！親密度 +5% 喵～🐟", "吃小魚乾");
-      } else if (type === 'sashimi') {
-        spawnFloatingHeart("🍣");
-        sayCatSpeech("哇！特級鮭魚生魚片好鮮甜多汁喔！咪咪太幸福了～親密度 +30% 💖！", "大啖鮭魚");
-      } else if (type === 'banquet') {
-        spawnFloatingHeart("👑");
-        spawnFloatingHeart("🍱");
-        sayCatSpeech("天啊～！是頂級滿漢海鮮全席！親密度直接補滿 100%！加贈 10 題狂熱雙倍小魚乾時段！🔥🐟", "海鮮盛宴");
-      }
-
-      closeFeedGourmetModal();
-      triggerAutoSaveToPi();
-    }
-
-    // Lucky Gacha Modal Helpers
-    function closeGachaModal() {
-      const modal = document.getElementById('gachaResultModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function openGachaModal(data) {
-      const modal = document.getElementById('gachaResultModal');
-      if (!modal) return;
-
-      const iconEl = document.getElementById('gachaModalIcon');
-      const titleEl = document.getElementById('gachaModalTitle');
-      const subEl = document.getElementById('gachaModalSubtitle');
-      const bodyEl = document.getElementById('gachaModalBody');
-      const actionsEl = document.getElementById('gachaModalActions');
-
-      if (data.status === 'NOT_ENOUGH_FISH') {
-        iconEl.innerHTML = '🐟';
-        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-rose-400 to-pink-500 flex items-center justify-center text-3xl shadow-lg shadow-rose-400/20';
-        titleEl.innerText = '小魚乾還不夠開盲盒喵！';
-        titleEl.className = 'font-black text-lg text-rose-600 dark:text-rose-400 pt-2';
-        subEl.innerText = '每次抽取幸運盲盒需要 20 條小魚乾';
-
-        bodyEl.innerHTML = `
-          <div class="text-sm text-slate-700 dark:text-slate-200 space-y-2">
-            <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-rose-100 dark:border-slate-600">
-              <span class="text-xs text-slate-500 dark:text-slate-400">目前擁有小魚乾：</span>
-              <span class="font-black text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                <span>🐟</span> <span>${data.currentFish}</span> 條
-              </span>
-            </div>
-            <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-rose-100 dark:border-slate-600">
-              <span class="text-xs text-slate-500 dark:text-slate-400">還缺少小魚乾：</span>
-              <span class="font-black text-rose-600 dark:text-rose-400">
-                ${data.cost - data.currentFish} 條
-              </span>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 pt-1 leading-relaxed">
-              🐾 <b>賺魚乾秘笈</b>：只要背單字或做測驗，每答對一題就能獲得 1 條小魚乾（若觸發狂熱雙倍時段可得 2 條）！累積滿 20 條就能來抽驚喜大獎囉！
-            </p>
-          </div>
-        `;
-
-        actionsEl.innerHTML = `
-          <button onclick="closeGachaModal()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
-            我知道了喵！去背單字賺魚乾
-          </button>
-        `;
-      } else if (data.status === 'SUCCESS') {
-        iconEl.innerHTML = '🎁';
-        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-400/20 cat-hop';
-        titleEl.innerText = '🎉 幸運盲盒大驚喜！';
-        titleEl.className = 'font-black text-lg text-amber-600 dark:text-amber-400 pt-2';
-        subEl.innerText = `成功消耗 20 條小魚乾（剩餘：${data.remainingFish} 條）`;
-
-        const slotMap = {
-          head: '🎀 頭飾帽子',
-          face: '👓 面部裝飾',
-          neck: '🧣 頸部項鍊',
-          outfit: '👗 全身服裝',
-          hand: '🐾 手持道具',
-          aura: '✨ 特效光環'
-        };
-        const slotText = slotMap[data.item.slot] || '造型配件';
-
-        bodyEl.innerHTML = `
-          <div class="space-y-3">
-            <div class="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-2xl border border-amber-200 dark:border-slate-600 shadow-xs">
-              <div class="w-14 h-14 rounded-xl bg-amber-100 dark:bg-amber-950/60 flex items-center justify-center text-3xl">
-                ${data.item.icon}
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200">
-                    ${slotText}
-                  </span>
-                </div>
-                <h4 class="font-black text-base text-slate-900 dark:text-white truncate pt-0.5">
-                  ${data.item.name}
-                </h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
-                  ${data.item.desc}
-                </p>
-              </div>
-            </div>
-            <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300 font-semibold text-center flex items-center justify-center gap-1.5">
-              <span>✨</span>
-              <span>已自動為咪咪穿戴上新造型！外觀已立即更新！</span>
-            </div>
-          </div>
-        `;
-
-        actionsEl.innerHTML = `
-          <button onclick="closeGachaModal(); openWardrobeModal();" class="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
-            👗 前往換裝室查看
-          </button>
-          <button onclick="closeGachaModal()" class="px-5 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
-            太棒了！
-          </button>
-        `;
-      } else if (data.status === 'ALL_UNLOCKED') {
-        iconEl.innerHTML = '👑';
-        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-purple-500/20';
-        titleEl.innerText = '🏆 全圖鑑收藏大師！';
-        titleEl.className = 'font-black text-lg text-purple-600 dark:text-purple-400 pt-2';
-        subEl.innerText = `成功消耗 20 條小魚乾（剩餘：${data.remainingFish} 條）`;
-
-        bodyEl.innerHTML = `
-          <div class="text-sm text-slate-700 dark:text-slate-200 space-y-2.5">
-            <div class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 text-xs leading-relaxed text-purple-900 dark:text-purple-200">
-              🌟 <b>太震撼了！</b>衣櫥中的所有配件與服裝已經被妳全部收集齊全囉！目前沒有尚未解鎖的衣物了！
-            </div>
-            <div class="space-y-1.5">
-              <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-purple-100 dark:border-slate-600">
-                <span class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                  <span class="text-base">🔥</span> 狂熱雙倍時段加碼
-                </span>
-                <span class="font-black text-amber-600 dark:text-amber-400">+15 題雙倍魚乾</span>
-              </div>
-              <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-purple-100 dark:border-slate-600">
-                <span class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                  <span class="text-base">💖</span> 咪咪親密度爆棚
-                </span>
-                <span class="font-black text-rose-500">+50% 親密度</span>
-              </div>
-            </div>
-          </div>
-        `;
-
-        actionsEl.innerHTML = `
-          <button onclick="closeGachaModal()" class="w-full py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
-            收下傳奇大獎喵！🔥
-          </button>
-        `;
-      }
-
-      modal.classList.remove('hidden');
-    }
-
-    // Lucky Gacha Box (20 Fish Treats Sink)
-    function playLuckyGacha() {
-      const GACHA_COST = 20;
-      if (fishCount < GACHA_COST) {
-        openGachaModal({
-          status: 'NOT_ENOUGH_FISH',
-          currentFish: fishCount,
-          cost: GACHA_COST
-        });
-        return;
-      }
-
-      // Collect locked fish-purchasable items
-      let candidates = [];
-      Object.keys(WARDROBE_CATALOG).forEach(catKey => {
-        WARDROBE_CATALOG[catKey].forEach(item => {
-          if (!catWardrobe.unlocked.includes(item.id)) {
-            candidates.push({ slot: catKey, ...item });
-          }
-        });
-      });
-
-      fishCount -= GACHA_COST;
-      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
-      document.getElementById('fishCount').innerText = fishCount;
-      const wFish = document.getElementById('wardrobeFishCount');
-      if (wFish) wFish.innerText = fishCount;
-
-      playCatCheerSound();
-      spawnFloatingHeart("🎁");
-      spawnFloatingHeart("✨");
-
-      if (candidates.length > 0) {
-        // Pick random locked accessory
-        const prize = candidates[Math.floor(Math.random() * candidates.length)];
-        catWardrobe.unlocked.push(prize.id);
-        catWardrobe.equipped[prize.slot] = prize.id;
-        saveCatWardrobe();
-        renderCatAccessories();
-
-        sayCatSpeech(`🎁 哇！幸運盲盒大驚喜！成功開出【${prize.name}】並已自動換上！太美了喵～✨🐾`, "開箱大獎");
-        
-        openGachaModal({
-          status: 'SUCCESS',
-          item: prize,
-          remainingFish: fishCount
-        });
-      } else {
-        // All items unlocked! Award Fever Ticket & Affection
-        feverRemainingQuestions += 15;
-        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
-        updateFeverBadge();
-        gainAffection(50);
-        sayCatSpeech(`🎁 妳已經解鎖了所有造型！盲盒獎勵轉化為「15 題狂熱雙倍小魚乾時段」與 +50% 親密度喵！🔥✨`, "全造型傳奇");
-        
-        openGachaModal({
-          status: 'ALL_UNLOCKED',
-          remainingFish: fishCount
-        });
-      }
-
-      triggerAutoSaveToPi();
-    }
-
-    function openWardrobeModal() {
-      checkLevelUnlocks(false);
-      document.getElementById('wardrobeFishCount').innerText = fishCount;
-      document.getElementById('wardrobeModal').classList.remove('hidden');
-      renderCatAccessories();
-      switchWardrobeTab(currentWardrobeTab);
-      playCatMeowSound();
-    }
-
-    function closeWardrobeModal() {
-      document.getElementById('wardrobeModal').classList.add('hidden');
-    }
-
-    function switchWardrobeTab(tabKey) {
-      currentWardrobeTab = tabKey;
-      ['head', 'face', 'neck', 'outfit', 'hand', 'aura'].forEach(k => {
-        const btn = document.getElementById('tabBtn_' + k);
-        if (btn) {
-          if (k === tabKey) {
-            btn.className = 'wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs font-black';
-          } else {
-            btn.className = 'wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900 font-medium';
-          }
-        }
-      });
-      renderWardrobeItems(tabKey);
-    }
-
-    function renderWardrobeItems(tabKey) {
-      const grid = document.getElementById('wardrobeItemsGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      const items = WARDROBE_CATALOG[tabKey] || [];
-      const equippedId = catWardrobe.equipped[tabKey] || (tabKey + '_none');
-
-      items.forEach(item => {
-        const isEquipped = equippedId === item.id;
-        const isUnlocked = catWardrobe.unlocked.includes(item.id);
-
-        const card = document.createElement('div');
-        card.className = `p-3 rounded-2xl border transition relative flex flex-col justify-between ${
-          isEquipped
-            ? 'bg-pink-50/90 dark:bg-pink-950/40 border-pink-400 dark:border-pink-600 shadow-xs'
-            : isUnlocked
-            ? 'bg-white dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 hover:border-pink-300'
-            : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 opacity-80'
-        }`;
-
-        let actionBtnHtml = '';
-        if (isEquipped) {
-          actionBtnHtml = `
-            <button onclick="equipAccessory('${tabKey}', '${item.id}')" class="w-full mt-2 py-1 px-2 text-xs font-black rounded-xl bg-pink-500 text-white shadow-2xs hover:bg-pink-600 transition flex items-center justify-center gap-1 cursor-pointer">
-              <span>✔</span> 穿戴中 (卸下)
-            </button>`;
-        } else if (isUnlocked) {
-          actionBtnHtml = `
-            <button onclick="equipAccessory('${tabKey}', '${item.id}')" class="w-full mt-2 py-1 px-2 text-xs font-bold rounded-xl bg-slate-100 hover:bg-pink-100 dark:bg-slate-600 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-200 hover:text-pink-600 transition flex items-center justify-center cursor-pointer">
-              穿戴造型
-            </button>`;
-        } else {
-          if (item.unlockType === 'level') {
-            actionBtnHtml = `
-              <div class="w-full mt-2 py-1 px-2 text-[11px] font-bold rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-center flex items-center justify-center gap-1">
-                <span>🔒</span> Lv.${item.reqLevel} 里程碑解鎖
-              </div>`;
-          } else if (item.unlockType === 'fish') {
-            const canAfford = fishCount >= item.price;
-            actionBtnHtml = `
-              <button onclick="unlockAccessoryWithFish('${tabKey}', '${item.id}', ${item.price})" class="w-full mt-2 py-1 px-2 text-xs font-bold rounded-xl ${
-                canAfford
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs cursor-pointer'
-                  : 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-              } transition flex items-center justify-center gap-1" ${canAfford ? '' : 'disabled'}>
-                <span>🐟</span> 兌換 (${item.price}魚)
-              </button>`;
-          }
-        }
-
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="text-2xl">${item.icon}</span>
-              ${isEquipped ? '<span class="text-[10px] px-2 py-0.2 rounded-full bg-pink-500 text-white font-black">已裝備</span>' : ''}
-              ${!isUnlocked && item.unlockType === 'fish' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold dark:bg-amber-950 dark:text-amber-300">🐟 ${item.price}</span>` : ''}
-              ${!isUnlocked && item.unlockType === 'level' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-800 font-bold dark:bg-purple-950 dark:text-purple-300">Lv.${item.reqLevel}</span>` : ''}
-            </div>
-            <div class="font-bold text-xs text-slate-800 dark:text-white mt-1.5">${item.name}</div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-tight">${item.desc}</div>
-          </div>
-          ${actionBtnHtml}
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function equipAccessory(category, itemId) {
-      const isAlreadyEquipped = catWardrobe.equipped[category] === itemId;
-      if (isAlreadyEquipped && itemId !== (category + '_none')) {
-        catWardrobe.equipped[category] = category + '_none';
-        sayCatSpeech("喵～脫下飾品，回歸純真自然的可愛小貓樣貌！🐾", "輕鬆換裝");
-        document.getElementById('wardrobeCatSpeech').innerText = "喵～脫下飾品，清清爽爽好舒服！🐾";
-      } else {
-        catWardrobe.equipped[category] = itemId;
-        playCatMeowSound();
-        spawnFloatingHeart("✨");
-        const reaction = ACCESSORY_REACTIONS[itemId] || "喵～這套造型好漂亮喔！謝謝主人幫我打扮～💖";
-        sayCatSpeech(reaction, "開心換裝");
-        document.getElementById('wardrobeCatSpeech').innerText = reaction;
-      }
-
-      saveCatWardrobe();
-      renderCatAccessories();
-      renderWardrobeItems(currentWardrobeTab);
-    }
-
-    function unlockAccessoryWithFish(category, itemId, price) {
-      if (fishCount < price) {
-        alert(`小魚乾不足喔！需要 ${price} 條小魚乾，多背背單字做測驗就能獲得囉喵～🐟`);
-        return;
-      }
-
-      fishCount -= price;
-      localStorage.setItem(FISH_STORAGE_KEY, fishCount);
-      document.getElementById('fishCount').innerText = fishCount;
-      document.getElementById('wardrobeFishCount').innerText = fishCount;
-
-      if (!catWardrobe.unlocked.includes(itemId)) {
-        catWardrobe.unlocked.push(itemId);
-      }
-
-      catWardrobe.equipped[category] = itemId;
-      saveCatWardrobe();
-
-      playCatCheerSound();
-      spawnFloatingHeart("💖");
-      spawnFloatingHeart("🐟");
-
-      const reaction = ACCESSORY_REACTIONS[itemId] || "哇！太棒了～新衣服好適合咪咪喔！💖";
-      sayCatSpeech(`消耗 ${price} 條魚乾兌換造型！${reaction}`, "開箱新衣服");
-      document.getElementById('wardrobeCatSpeech').innerText = reaction;
-
-      renderCatAccessories();
-      renderWardrobeItems(currentWardrobeTab);
-    }
-
-    function randomizeCatOutfit() {
-      ['head', 'face', 'neck', 'outfit', 'hand', 'aura'].forEach(catKey => {
-        const items = (WARDROBE_CATALOG[catKey] || []).filter(item => catWardrobe.unlocked.includes(item.id));
-        if (items.length > 0) {
-          const picked = items[Math.floor(Math.random() * items.length)];
-          catWardrobe.equipped[catKey] = picked.id;
-        }
-      });
-
-      playCatMeowSound();
-      spawnFloatingHeart("🎲");
-      const speech = "喵嗚～今天的全身隨機穿搭真特別！妳覺得我有沒有變更漂亮呢？✨🐾";
-      sayCatSpeech(speech, "隨機打扮");
-      document.getElementById('wardrobeCatSpeech').innerText = speech;
-
-      saveCatWardrobe();
-      renderCatAccessories();
-      renderWardrobeItems(currentWardrobeTab);
-    }
-
-    function resetCatOutfit() {
-      catWardrobe.equipped = {
-        head: 'head_none',
-        face: 'face_none',
-        neck: 'neck_none',
-        outfit: 'outfit_none',
-        hand: 'hand_none',
-        aura: 'aura_none'
-      };
-      saveCatWardrobe();
-      renderCatAccessories();
-      renderWardrobeItems(currentWardrobeTab);
-      sayCatSpeech("喵～所有衣服飾品都收進衣櫥囉！素顏小貓最純真可愛了對不對？🐾", "素顏小貓");
-      document.getElementById('wardrobeCatSpeech').innerText = "喵～所有衣服飾品都收好囉！素顏小貓也超可愛對不對？🐾";
-    }
-
-
-    // ==================== RASPBERRY PI MULTI-USER SYNC & AUTO BACKUP ====================
+// ==================== RASPBERRY PI MULTI-USER SYNC & AUTO BACKUP ====================
     let piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     let piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
     let piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -6683,8 +6291,432 @@
         alert(`喵！已重置【${theme.name}】的所有紀錄！`);
       }
     }
-  
-    // Auto sync when returning to tab or window focus
+
+    // <<<<<<<<<< [MODULE END: 06_pi_sync.js] <<<<<<<<<<
+
+
+    // >>>>>>>>>> [MODULE START: 07_main_init.js] >>>>>>>>>>
+
+document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      document.getElementById('fishCount').innerText = fishCount;
+      initSpeechRecognition();
+      initPiSyncUI();
+      updateCatGrowthUI();
+      updateCatGrowthMorph(currentCatLevel);
+
+      // Initialize Adventure Map Mode with hooks
+      if (window.WordCheckingAdventure) {
+        WordCheckingAdventure.initAdventureMap({
+          rawVocabList: RAW_VOCAB,
+          hooks: {
+            getFishCount: () => fishCount,
+            addFish: (n) => {
+              fishCount += n;
+              localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+              const fc = document.getElementById('fishCount');
+              if (fc) fc.innerText = fishCount;
+              const wfc = document.getElementById('wardrobeFishCount');
+              if (wfc) wfc.innerText = fishCount;
+            },
+            addAffection: (n) => gainAffection(n),
+            playAudio: (word) => playVoiceText(word),
+            playCheerSound: () => playCatCheerSound(),
+            playMeowSound: () => playCatMeowSound(),
+            saySpeech: (text, tag) => sayCatSpeech(text, tag),
+            triggerSaveToPi: () => triggerAutoSaveToPi()
+          }
+        });
+        WordCheckingAdventure.renderAdventureMap();
+      }
+      loadThemeData(currentThemeKey);
+      checkAndAutoSyncFromPi(true);
+
+
+      if (isMimiHungry()) {
+        const hungrySpeech = HUNGRY_CAT_SPEECHES[Math.floor(Math.random() * HUNGRY_CAT_SPEECHES.length)];
+        sayCatSpeech(hungrySpeech, "肚子扁扁想妳中 🐾");
+      }
+
+
+
+
+      // Keyboard shortcuts for Flashcard
+      document.addEventListener('keydown', (e) => {
+        const activeMode = getActiveMode();
+        if (activeMode === 'card') {
+          if (e.code === 'Space') {
+            e.preventDefault();
+            flipCard();
+          } else if (e.code === 'ArrowRight') {
+            nextCard();
+          } else if (e.code === 'ArrowLeft') {
+            prevCard();
+          }
+        }
+      });
+    });
+
+
+
+
+    function getActiveMode() {
+      const modeMap = document.getElementById('modeMap');
+      if (modeMap && !modeMap.classList.contains('hidden')) return 'map';
+      if (!document.getElementById('modeCard').classList.contains('hidden')) return 'card';
+      if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
+      if (!document.getElementById('modeSpelling').classList.contains('hidden')) return 'spelling';
+      if (!document.getElementById('modeSpeaking').classList.contains('hidden')) return 'speaking';
+      if (!document.getElementById('modeExam').classList.contains('hidden')) return 'exam';
+      return 'list';
+    }
+
+
+
+
+    function initTheme() {
+      const isDark = localStorage.getItem('theme') === 'dark' || 
+                     (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+
+
+
+      document.getElementById('themeToggle').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const darkActive = document.documentElement.classList.contains('dark');
+        localStorage.setItem('theme', darkActive ? 'dark' : 'light');
+      });
+    }
+
+
+
+
+    function onScopeChange() {
+      currentScope = document.getElementById('scopeFilter').value;
+      updateFilteredList();
+      currentIndex = 0;
+      renderCurrentCard();
+      if (getActiveMode() === 'quiz') startNewQuiz();
+      if (getActiveMode() === 'spelling') startNewSpelling();
+      if (getActiveMode() === 'speaking') startNewSpeaking();
+      if (getActiveMode() === 'list') renderWordTable();
+    }
+
+
+
+
+    function updateFilteredList() {
+      if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
+        filteredList = [];
+        return;
+      }
+
+
+
+
+      if (currentScope === 'all') {
+        filteredList = [...RAW_VOCAB];
+      } else if (currentScope === 'weak') {
+        filteredList = RAW_VOCAB.filter(x => userProgress[x.word || x.num] === 'weak');
+        if (filteredList.length === 0) {
+          alert('喵～目前沒有標記為「待加強」的單字！咪咪為您自動切換回全部單字。');
+          document.getElementById('scopeFilter').value = 'all';
+          currentScope = 'all';
+          filteredList = [...RAW_VOCAB];
+        }
+      } else if (currentThemeKey === 'numbers') {
+        if (currentScope === '1-12') {
+          filteredList = RAW_VOCAB.filter(x => x.num <= 12);
+        } else if (currentScope === '13-19') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 13 && x.num <= 19);
+        } else if (currentScope === '20-99') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 20 && x.num <= 99);
+        } else if (currentScope === 'tens') {
+          filteredList = RAW_VOCAB.filter(x => x.num % 10 === 0 && x.num >= 20 && x.num <= 90);
+        } else {
+          filteredList = [...RAW_VOCAB];
+        }
+      } else if (currentThemeKey === 'all1200') {
+        if (currentScope === '1-150') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 1 && x.num <= 150);
+        } else if (currentScope === '151-400') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 151 && x.num <= 400);
+        } else if (currentScope === '401-750') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 401 && x.num <= 750);
+        } else if (currentScope === '751-1050') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 751 && x.num <= 1050);
+        } else if (currentScope === '1051-1200') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 1051 && x.num <= 1200);
+        } else if (currentScope.startsWith('cat:')) {
+          const targetCat = currentScope.replace('cat:', '');
+          filteredList = RAW_VOCAB.filter(x => (
+            x.category === targetCat ||
+            (targetCat === '動物與寵物' && (x.category === '動物與昆蟲' || x.category === '動物與寵物')) ||
+            (targetCat === '常用動詞' && (x.category === '核心動詞' || x.category === '常用動詞')) ||
+            (targetCat === '形容詞與副詞' && (x.category === '修飾與語法詞' || x.category === '形容詞與副詞')) ||
+            (targetCat === '代名詞與文法詞' && (x.category === '代名詞與文法詞' || x.category === '修飾與語法詞'))
+          ));
+        } else {
+          filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
+        }
+        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
+      } else {
+        // Filter by category name
+        filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
+        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
+      }
+    }
+
+
+
+
+    function renderStats() {
+      let mastered = 0;
+      let weak = 0;
+      const total = RAW_VOCAB.length;
+
+
+
+
+      RAW_VOCAB.forEach(item => {
+        const key = item.word || item.num;
+        if (userProgress[key] === 'mastered') mastered++;
+        else if (userProgress[key] === 'weak') weak++;
+      });
+
+
+
+
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statMastered').innerText = mastered;
+      document.getElementById('statWeak').innerText = weak;
+
+
+
+
+      const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
+      document.getElementById('progressText').innerText = `${pct}% (${mastered}/${total})`;
+      document.getElementById('progressBarMastered').style.width = total > 0 ? `${(mastered / total) * 100}%` : '0%';
+      document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
+
+
+
+
+      const catFavor = document.getElementById('catFavorText');
+      if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
+      else if (pct < 50) catFavor.innerText = "（友善踏踏貓 🐱）";
+      else if (pct < 80) catFavor.innerText = "（默契好學伴 ✨）";
+      else catFavor.innerText = "（滿分神喵喵 👑）";
+
+
+
+
+      if (quizStats.total > 0) {
+        const acc = Math.round((quizStats.correct / quizStats.total) * 100);
+        document.getElementById('statAccuracy').innerText = `${acc}%`;
+      } else {
+        document.getElementById('statAccuracy').innerText = '--%';
+      }
+      updateCatGrowthUI();
+    }
+
+
+
+
+    // Flashcard Rendering
+    function renderCurrentCard() {
+      if (!filteredList || filteredList.length === 0) return;
+      const item = filteredList[currentIndex];
+      
+      cardFlipped = false;
+      document.getElementById('flashcardInner').classList.remove('rotate-y-180');
+
+
+
+
+      document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
+      document.getElementById('cardCategory').innerText = item.category || '核心單字';
+      
+      const digitEl = document.getElementById('cardDigit');
+      digitEl.innerText = item.chinese;
+      digitEl.className = item.chinese.length > 4 
+        ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight" 
+        : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
+
+
+
+
+      document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${item.category || '核心單字'}</span>`;
+      document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
+      document.getElementById('cardEnglish').innerText = item.word;
+      document.getElementById('cardPhonetic').innerText = item.kk || '';
+
+
+
+
+      const noteBox = document.getElementById('cardNoteBox');
+      if (item.note) {
+        noteBox.classList.remove('hidden');
+        document.getElementById('cardNote').innerText = item.note;
+      } else {
+        noteBox.classList.add('hidden');
+      }
+
+
+
+
+      const exampleBox = document.getElementById('cardExampleBox');
+      if (item.example) {
+        exampleBox.classList.remove('hidden');
+        document.getElementById('cardExample').innerText = `例句：${item.example}`;
+      } else {
+        exampleBox.classList.add('hidden');
+      }
+    }
+
+
+
+
+    function flipCard() {
+      cardFlipped = !cardFlipped;
+      const inner = document.getElementById('flashcardInner');
+      if (cardFlipped) {
+        inner.classList.add('rotate-y-180');
+        playVoiceCurrent(1.0);
+        sayCatSpeech(`翻面看拼寫囉！"${filteredList[currentIndex].word}"，記起來了嗎喵？🐾`, "專心看牌");
+      } else {
+        inner.classList.remove('rotate-y-180');
+      }
+    }
+
+
+
+
+    function nextCard() {
+      if (currentIndex < filteredList.length - 1) {
+        currentIndex++;
+      } else {
+        currentIndex = 0;
+      }
+      renderCurrentCard();
+    }
+
+
+
+
+    function prevCard() {
+      if (currentIndex > 0) {
+        currentIndex--;
+      } else {
+        currentIndex = filteredList.length - 1;
+      }
+      renderCurrentCard();
+    }
+
+
+
+
+    function markCurrent(isMastered) {
+      if (!filteredList || filteredList.length === 0) return;
+      const item = filteredList[currentIndex];
+      const key = item.word || item.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+
+
+
+
+      userProgress[key] = isMastered ? 'mastered' : 'weak';
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
+      
+      if (isMastered) {
+        addFish();
+        playCatMeowSound();
+        sayCatSpeech(`太棒了！"${item.word}" 已記住！送妳 1 條小魚乾 🐟～`, "開心歡呼");
+      } else {
+        sayCatSpeech(`沒關係！貓貓幫妳把 "${item.word}" 記在待加強名單，等等多看兩眼喵～🐾`, "貼心鼓勵");
+      }
+      renderStats();
+      gainAffection(2);
+      touchMimiInteraction();
+      updateCatGrowthUI();
+      triggerAutoSaveToPi();
+      nextCard();
+    }
+
+
+
+
+    // Text to Speech
+    function playVoiceText(text, rate = 1.0) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = rate;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+
+
+
+    function playVoiceCurrent(rate = 1.0) {
+      if (filteredList && filteredList[currentIndex]) {
+        playVoiceText(filteredList[currentIndex].word, rate);
+      }
+    }
+
+
+
+
+    // Mode Switching
+    function switchMode(mode) {
+      const modes = ['map', 'card', 'quiz', 'spelling', 'speaking', 'exam', 'list'];
+      modes.forEach(m => {
+        const sec = document.getElementById('mode' + capitalize(m));
+        const tab = document.getElementById('tab' + capitalize(m));
+        if (sec && tab) {
+          if (m === mode) {
+            sec.classList.remove('hidden');
+            tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold";
+          } else {
+            sec.classList.add('hidden');
+            tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5";
+          }
+        }
+      });
+
+      if (mode === 'map') {
+        if (window.WordCheckingAdventure) {
+          WordCheckingAdventure.renderAdventureMap();
+        }
+        sayCatSpeech("冒險闖關地圖模式：沿著石板古道漫遊 5 大世界，挑戰 120 關贏取三星與寶箱吧喵！🐾");
+      }
+
+
+
+
+      if (mode === 'card') sayCatSpeech("翻翻卡片模式：看中文想英文，翻面看拼寫與例句喔！🐾");
+      if (mode === 'quiz') startNewQuiz();
+      if (mode === 'spelling') startNewSpelling();
+      if (mode === 'speaking') startNewSpeaking();
+      if (mode === 'exam') initExamSetup();
+      if (mode === 'list') renderWordTable();
+    }
+
+
+
+
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+// Auto sync when returning to tab or window focus
     window.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         checkAndAutoSyncFromPi(true);
@@ -6693,6 +6725,10 @@
     window.addEventListener('focus', () => {
       checkAndAutoSyncFromPi(true);
     });
+
+    // <<<<<<<<<< [MODULE END: 07_main_init.js] <<<<<<<<<<
+
   </script>
 </body>
 </html>
+
