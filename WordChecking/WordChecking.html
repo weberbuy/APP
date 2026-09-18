@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.5.2-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.5.3-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -168,7 +168,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.5.2-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.5.3-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -254,6 +254,8 @@
 
               <!-- Ground Shadow -->
               <ellipse cx="60" cy="120" rx="34" ry="6" fill="#000000" opacity="0.1" />
+              <g id="mainCatMorphScaleGroup" style="transform-origin: 60px 116px; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);">
+
 
               <!-- 1. Tail (Animated) -->
               <g id="mainCatTail" class="tail-wag origin-bottom-left cursor-pointer" onclick="handleTailClick(event)" title="點擊拉拉尾巴">
@@ -330,6 +332,8 @@
 
               <!-- 6. Handheld / Props -->
               <g id="mainCatAccHand"></g>
+            
+              </g>
             </svg>
           </div>
           <span class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold mt-1 block">摸摸咪咪 🐾</span>
@@ -1483,6 +1487,8 @@
                 <g id="wardrobeCatAccAura"></g>
                 <!-- Ground Shadow -->
                 <ellipse cx="60" cy="120" rx="34" ry="6" fill="#000000" opacity="0.1" />
+              <g id="wardrobeCatMorphScaleGroup" style="transform-origin: 60px 116px; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);">
+
                 <!-- 1. Tail -->
                 <g id="wardrobeCatTail" class="tail-wag origin-bottom-left">
                   <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
@@ -1533,7 +1539,9 @@
                 </g>
                 <!-- 6. Handheld Layer -->
                 <g id="wardrobeCatAccHand"></g>
-              </svg>
+              
+              </g>
+            </svg>
             </div>
 
             <!-- Dialogue Speech Bubble -->
@@ -2544,102 +2552,265 @@
     
 
 // ==================== CAT DYNAMIC GROWTH & MORPH SYSTEM (Lv.1 ~ Lv.5) ====================
+    // ==================== CAT DYNAMIC GROWTH & MORPH ENGINE ====================
+    const CAT_MORPH_STYLES_ID = 'wordchecking-cat-morph-styles';
+    function injectCatMorphStyles() {
+      if (document.getElementById(CAT_MORPH_STYLES_ID)) return;
+      const style = document.createElement('style');
+      style.id = CAT_MORPH_STYLES_ID;
+      style.textContent = `
+        @keyframes tailWagKitten {
+          0%, 100% { transform: rotate(-8deg); }
+          50% { transform: rotate(18deg); }
+        }
+        .tail-wag-kitten {
+          transform-origin: 32px 105px;
+          animation: tailWagKitten 0.9s ease-in-out infinite;
+        }
+        @keyframes tailWagNormal {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(12deg); }
+        }
+        .tail-wag-normal {
+          transform-origin: 32px 105px;
+          animation: tailWagNormal 1.8s ease-in-out infinite;
+        }
+        @keyframes tailWagGraceful {
+          0%, 100% { transform: rotate(-2deg); }
+          50% { transform: rotate(10deg); }
+        }
+        .tail-wag-graceful {
+          transform-origin: 32px 105px;
+          animation: tailWagGraceful 2.4s ease-in-out infinite;
+        }
+        @keyframes tailWagHero {
+          0%, 100% { transform: rotate(-6deg); }
+          50% { transform: rotate(16deg); }
+        }
+        .tail-wag-hero {
+          transform-origin: 32px 105px;
+          animation: tailWagHero 1.6s ease-in-out infinite;
+        }
+        @keyframes tailWagCelestial {
+          0%, 100% { transform: rotate(-5deg); filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.45)); }
+          50% { transform: rotate(15deg); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)); }
+        }
+        .tail-wag-celestial {
+          transform-origin: 32px 105px;
+          animation: tailWagCelestial 2.1s ease-in-out infinite;
+        }
+        @keyframes sigilPulse {
+          0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(250, 204, 21, 0.7)); }
+          50% { transform: scale(1.15); filter: drop-shadow(0 0 7px rgba(250, 204, 21, 1)); }
+        }
+        .sigil-pulse {
+          transform-origin: 60px 36px;
+          animation: sigilPulse 2.4s ease-in-out infinite;
+        }
+        .cat-celestial-glow {
+          filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     function updateCatGrowthMorph(level) {
+      injectCatMorphStyles();
+      const lvl = Math.max(1, Math.min(5, parseInt(level || 1, 10)));
+      currentCatLevel = lvl;
+
+      const scaleMap = { 1: 0.88, 2: 1.00, 3: 1.03, 4: 1.07, 5: 1.12 };
+      const currentScale = scaleMap[lvl] || 1.0;
+
       ['mainCat', 'wardrobeCat'].forEach(prefix => {
         const svg = document.getElementById(prefix + 'Svg');
+        const scaleGroup = document.getElementById(prefix + 'MorphScaleGroup');
         const tail = document.getElementById(prefix + 'Tail');
+        const body = document.getElementById(prefix + 'Body');
         const eyes = document.getElementById(prefix + 'Eyes');
         const chest = document.getElementById(prefix + 'MorphChest');
         const headMorph = document.getElementById(prefix + 'MorphHead');
 
-        if (!tail) return;
+        if (!svg) return;
 
-        // 1. Overall Cat Scale / Divine Aura
-        if (svg) {
-          if (level === 1) {
-            svg.classList.remove('cat-divine-aura');
-          } else if (level === 5) {
-            svg.classList.add('cat-divine-aura');
-          } else {
-            svg.classList.remove('cat-divine-aura');
-          }
+        // 1. Overall Morph Scale & Divine Glow
+        if (scaleGroup) {
+          scaleGroup.style.transform = `scale(${currentScale})`;
         }
-
-        // 2. Tail Evolution
-        if (level === 1) {
-          // Cute short kitten tail
-          tail.innerHTML = `
-            <path d="M 32,105 C 20,107 16,92 23,83 C 26,79 30,83 27,87 C 22,93 25,100 34,101 Z" fill="#f97316" />
-            <path d="M 23,83 C 25,81 29,84 26,87 C 23,90 20,86 23,83 Z" fill="#ffffff" />
-          `;
-        } else if (level === 2 || level === 3) {
-          // Standard / Sleek long tail
-          tail.innerHTML = `
-            <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
-            <path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />
-          `;
-        } else if (level === 4) {
-          // Thick adventurer fox tail
-          tail.innerHTML = `
-            <path d="M 32,105 C 10,110 2,82 14,64 C 18,58 24,62 20,68 C 12,78 12,90 20,96 C 24,100 28,95 34,98 Z" fill="#f97316" />
-            <path d="M 14,64 C 18,60 25,65 21,71 C 17,76 13,71 14,64 Z" fill="#ffffff" />
-            <path d="M 15,75 Q 8,72 13,83 Q 8,85 18,92" stroke="#ea580c" stroke-width="1.2" fill="none" />
-          `;
+        if (lvl === 5) {
+          svg.classList.add('cat-divine-aura');
         } else {
-          // Level 5: Divine Cloud / Heavenly flame tail
-          tail.innerHTML = `
-            <path d="M 32,105 C 8,112 -5,75 8,52 C 14,42 24,46 19,56 C 8,72 12,88 22,96 C 26,100 30,95 34,98 Z" fill="#f59e0b" filter="drop-shadow(0 0 4px #fbbf24)" />
-            <path d="M 8,52 C 14,40 28,45 22,58 C 14,68 6,60 8,52 Z" fill="#fef08a" />
-            <path d="M 16,68 Q 2,62 10,78 Q 2,82 18,92" stroke="#d97706" stroke-width="1.8" fill="none" stroke-linecap="round" />
-            <circle cx="12" cy="56" r="2" fill="#ffffff" opacity="0.9" />
-            <circle cx="6" cy="72" r="1.5" fill="#fef08a" opacity="0.8" />
-          `;
+          svg.classList.remove('cat-divine-aura');
         }
 
-        // 3. Chest Fluff Evolution
-        if (chest) {
-          if (level === 3) {
-            // Elegant scholar white chest bib
-            chest.innerHTML = `
-              <path d="M 52,78 C 50,86 44,90 48,93 C 54,95 58,88 60,94 C 62,88 66,95 72,93 C 76,90 70,86 68,78 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.06))" />
+        // 2. Tail Morph & Tail Animation Class
+        if (tail) {
+          tail.classList.remove(
+            'tail-wag', 'tail-wag-kitten', 'tail-wag-normal',
+            'tail-wag-graceful', 'tail-wag-hero', 'tail-wag-celestial'
+          );
+          if (lvl === 1) {
+            tail.classList.add('tail-wag-kitten');
+            tail.innerHTML = `
+              <path d="M 32,105 C 20,107 16,94 24,84 C 27,80 32,84 29,88 C 24,95 27,100 34,100 Z" fill="#f97316" />
+              <path d="M 24,84 C 26,81 31,83 28,87 C 25,89 23,87 24,84 Z" fill="#ffffff" />
             `;
-          } else if (level === 4) {
-            // Strong adventurer chest mane
-            chest.innerHTML = `
-              <path d="M 50,77 C 46,86 40,91 46,95 C 52,98 56,90 60,96 C 64,90 68,98 74,95 C 80,91 74,86 70,77 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.08))" />
-              <path d="M 54,82 Q 60,90 66,82" stroke="#cbd5e1" stroke-width="1" fill="none" />
+          } else if (lvl === 2) {
+            tail.classList.add('tail-wag-normal');
+            tail.innerHTML = `
+              <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
+              <path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />
             `;
-          } else if (level === 5) {
-            // Divine chest mane with gold star gem
-            chest.innerHTML = `
-              <path d="M 48,76 C 44,87 38,93 44,97 C 52,100 56,92 60,98 C 64,92 68,100 76,97 C 82,93 76,87 72,76 Z" fill="#ffffff" filter="drop-shadow(0 0 5px rgba(251, 191, 36, 0.4))" />
-              <circle cx="60" cy="85" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1" />
-              <polygon points="60,82 61,84 63,85 61,86 60,88 59,86 57,85 59,84" fill="#ffffff" />
+          } else if (lvl === 3) {
+            tail.classList.add('tail-wag-graceful');
+            tail.innerHTML = `
+              <path d="M 32,105 C 13,109 7,83 17,68 C 21,63 26,67 22,73 C 16,83 19,95 34,98 Z" fill="#f97316" />
+              <path d="M 17,68 C 19,65 24,68 21,72 C 18,76 15,72 17,68 Z" fill="#ffffff" />
+              <path d="M 19,74 Q 14,70 17,78 Q 14,82 22,88" stroke="#ea580c" stroke-width="1.2" fill="none" />
+            `;
+          } else if (lvl === 4) {
+            tail.classList.add('tail-wag-hero');
+            tail.innerHTML = `
+              <path d="M 32,105 C 10,110 2,82 14,64 C 18,58 24,62 20,68 C 12,78 12,90 20,96 C 24,100 28,95 34,98 Z" fill="#f97316" />
+              <path d="M 14,64 C 18,60 25,65 21,71 C 17,76 13,71 14,64 Z" fill="#ffffff" />
+              <path d="M 15,75 Q 8,72 13,83 Q 8,85 18,92" stroke="#ea580c" stroke-width="1.2" fill="none" />
             `;
           } else {
-            chest.innerHTML = '';
+            tail.classList.add('tail-wag-celestial');
+            tail.innerHTML = `
+              <path d="M 32,105 C 8,112 -5,75 8,52 C 14,42 24,46 19,56 C 8,72 12,88 22,96 C 26,100 30,95 34,98 Z" fill="#f59e0b" filter="drop-shadow(0 0 4px #fbbf24)" />
+              <path d="M 8,52 C 14,40 28,45 22,58 C 14,68 6,60 8,52 Z" fill="#fef08a" />
+              <path d="M 16,68 Q 2,62 10,78 Q 2,82 18,92" stroke="#d97706" stroke-width="1.8" fill="none" stroke-linecap="round" />
+              <circle cx="12" cy="56" r="2" fill="#ffffff" opacity="0.9" />
+              <circle cx="6" cy="72" r="1.5" fill="#fef08a" opacity="0.8" />
+            `;
           }
         }
 
-        // 4. Head Morphing (Ear Tufts on Lv.4, Golden Sigil on Lv.5)
-        if (headMorph) {
-          if (level === 4) {
-            headMorph.innerHTML = `
-              <line x1="20" y1="16" x2="16" y2="9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" />
-              <line x1="22" y1="17" x2="19" y2="11" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
-              <line x1="100" y1="16" x2="104" y2="9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" />
-              <line x1="98" y1="17" x2="101" y2="11" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+        // 3. Body Morph (Lv.1 Baby Kitten Chubby Belly & Toe Beans -> Lv.5 Celestial Beast)
+        if (body) {
+          if (lvl === 1) {
+            body.innerHTML = `
+              <path d="M 36,84 C 30,94 32,112 44,114 C 53,115 67,115 76,114 C 88,112 90,94 84,84 C 78,76 42,76 36,84 Z" fill="#fbbf24" />
+              <path d="M 33,96 C 33,106 40,113 47,113 C 43,106 42,98 38,92 Z" fill="#f97316" />
+              <path d="M 83,92 C 86,98 84,107 79,112 C 82,105 81,96 78,92 Z" fill="#475569" />
+              <ellipse cx="60" cy="99" rx="13.5" ry="11.5" fill="#ffffff" />
+              <ellipse cx="37" cy="115" rx="7.5" ry="4.5" fill="#ffffff" />
+              <ellipse cx="83" cy="115" rx="7.5" ry="4.5" fill="#ffffff" />
+              <path d="M 50,96 L 50,113 C 50,116 56,116 56,113 L 56,96 Z" fill="#ffffff" />
+              <path d="M 64,96 L 64,113 C 64,116 70,116 70,113 L 70,96 Z" fill="#ffffff" />
+              <circle cx="53" cy="113" r="1.2" fill="#fda4af" />
+              <circle cx="67" cy="113" r="1.2" fill="#fda4af" />
             `;
-          } else if (level === 5) {
+          } else if (lvl === 2) {
+            body.innerHTML = `
+              <path d="M 32,80 C 26,92 28,114 42,116 C 52,117 68,117 78,116 C 92,114 94,92 88,80 C 84,70 36,70 32,80 Z" fill="#fbbf24" />
+              <path d="M 28,95 C 28,108 38,116 46,116 C 42,108 40,96 35,90 Z" fill="#f97316" />
+              <path d="M 85,90 C 88,98 86,110 80,115 C 84,106 82,95 78,90 Z" fill="#475569" />
+              <ellipse cx="60" cy="98" rx="16" ry="14" fill="#ffffff" />
+              <ellipse cx="36" cy="116" rx="9" ry="5" fill="#ffffff" />
+              <line x1="33" y1="115" x2="33" y2="118" stroke="#cbd5e1" stroke-width="1" />
+              <line x1="37" y1="115" x2="37" y2="118" stroke="#cbd5e1" stroke-width="1" />
+              <ellipse cx="84" cy="116" rx="9" ry="5" fill="#ffffff" />
+              <line x1="81" y1="115" x2="81" y2="118" stroke="#cbd5e1" stroke-width="1" />
+              <line x1="85" y1="115" x2="85" y2="118" stroke="#cbd5e1" stroke-width="1" />
+              <path d="M 48,94 L 48,115 C 48,118 56,118 56,115 L 56,94 Z" fill="#ffffff" />
+              <path d="M 64,94 L 64,115 C 64,118 72,118 72,115 L 72,94 Z" fill="#ffffff" />
+            `;
+          } else if (lvl === 3) {
+            body.innerHTML = `
+              <path d="M 33,79 C 27,90 29,114 43,116 C 53,117 67,117 77,116 C 91,114 93,90 87,79 C 83,69 37,69 33,79 Z" fill="#fbbf24" />
+              <path d="M 28,94 C 29,106 37,115 45,115 C 42,107 41,96 36,90 Z" fill="#f97316" />
+              <path d="M 85,90 C 87,97 85,108 79,114 C 83,106 82,95 78,90 Z" fill="#475569" />
+              <ellipse cx="60" cy="98" rx="15" ry="14.5" fill="#ffffff" />
+              <ellipse cx="36" cy="116" rx="8.5" ry="5" fill="#ffffff" />
+              <ellipse cx="84" cy="116" rx="8.5" ry="5" fill="#ffffff" />
+              <path d="M 48,93 L 48,115 C 48,118 56,118 56,115 L 56,93 Z" fill="#ffffff" />
+              <path d="M 64,93 L 64,115 C 64,118 72,118 72,115 L 72,93 Z" fill="#ffffff" />
+            `;
+          } else if (lvl === 4) {
+            body.innerHTML = `
+              <path d="M 31,78 C 24,91 26,114 41,116 C 52,117 68,117 79,116 C 94,114 96,91 89,78 C 84,68 36,68 31,78 Z" fill="#fbbf24" />
+              <path d="M 26,92 C 26,106 36,116 46,116 C 41,107 39,95 33,88 Z" fill="#ea580c" />
+              <path d="M 87,88 C 90,97 88,109 81,115 C 85,106 83,94 79,88 Z" fill="#334155" />
+              <ellipse cx="60" cy="98" rx="16.5" ry="14" fill="#ffffff" />
+              <ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" />
+              <ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" />
+              <path d="M 47,93 L 47,115 C 47,118.5 56,118.5 56,115 L 56,93 Z" fill="#ffffff" />
+              <path d="M 64,93 L 64,115 C 64,118.5 73,118.5 73,115 L 73,93 Z" fill="#ffffff" />
+            `;
+          } else {
+            body.innerHTML = `
+              <g class="cat-celestial-glow">
+                <path d="M 30,77 C 23,90 25,114 41,116 C 52,117.5 68,117.5 79,116 C 95,114 97,90 90,77 C 84,67 36,67 30,77 Z" fill="#fbbf24" />
+                <path d="M 25,92 C 26,107 37,116 46,116 C 41,107 39,94 33,87 Z" fill="#f97316" />
+                <path d="M 87,87 C 91,97 88,110 80,115 C 85,106 83,94 79,87 Z" fill="#475569" />
+                <ellipse cx="60" cy="98" rx="17" ry="14.5" fill="#ffffff" />
+                <path d="M 52,98 Q 60,105 68,98 Q 60,102 52,98 Z" fill="#fde047" opacity="0.8" />
+                <ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.2" />
+                <ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.2" />
+                <path d="M 47,92 L 47,115 C 47,118.5 56,118.5 56,115 L 56,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="0.8" />
+                <path d="M 64,92 L 64,115 C 64,118.5 73,118.5 73,115 L 73,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="0.8" />
+              </g>
+            `;
+          }
+        }
+
+        // 4. Chest Fluff & Distinct Accessories
+        if (chest) {
+          if (lvl === 1) {
+            chest.innerHTML = `
+              <ellipse cx="60" cy="79" rx="7" ry="4" fill="#ffffff" opacity="0.85" />
+            `;
+          } else if (lvl === 2) {
+            // Lv.2 活潑好奇貓 (🧶): 專屬好奇毛線紅領巾與金色小鈴鐺！
+            chest.innerHTML = `
+              <path d="M 50,78 Q 60,82 70,78" stroke="#ef4444" stroke-width="2.5" fill="none" stroke-linecap="round" />
+              <circle cx="60" cy="81" r="2.8" fill="#facc15" stroke="#b45309" stroke-width="0.6" />
+              <circle cx="60" cy="81.8" r="0.8" fill="#b45309" />
+            `;
+          } else if (lvl === 3) {
+            // Lv.3 聰明學霸貓 (🎓): 華麗優雅的多層次白羽毛領巾
+            chest.innerHTML = `
+              <path d="M 46,74 C 42,79 44,85 49,86 C 46,89 51,93 57,92 C 55,96 65,96 63,92 C 69,93 74,89 71,86 C 76,85 78,79 74,74 C 67,77 53,77 46,74 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.06))" />
+              <path d="M 50,76 C 47,81 51,87 56,86 C 54,89 66,89 64,86 C 69,87 73,81 70,76 C 65,78 55,78 50,76 Z" fill="#f8fafc" />
+            `;
+          } else if (lvl === 4) {
+            // Lv.4 英勇旅伴貓 (🦸): 霸氣冒險家厚實鬃毛
+            chest.innerHTML = `
+              <path d="M 42,73 C 37,80 40,88 47,89 C 43,93 49,97 55,96 C 53,101 67,101 65,96 C 71,97 77,93 73,89 C 80,88 83,80 78,73 C 69,77 51,77 42,73 Z" fill="#ffffff" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))" />
+              <path d="M 52,82 Q 60,90 68,82" stroke="#cbd5e1" stroke-width="1.2" fill="none" />
+            `;
+          } else {
+            // Lv.5 傳奇貓神獸 (👑): 祥雲金印與天焰神石
+            chest.innerHTML = `
+              <path d="M 40,72 C 34,80 38,90 46,91 C 41,96 48,101 55,100 C 52,106 68,106 65,100 C 72,101 79,96 74,91 C 82,90 86,80 80,72 C 70,76 50,76 40,72 Z" fill="#ffffff" filter="drop-shadow(0 0 6px rgba(251, 191, 36, 0.5))" />
+              <circle cx="60" cy="85" r="4.2" fill="#f59e0b" stroke="#ffffff" stroke-width="1.2" />
+              <polygon points="60,81 61.5,84 64.5,85 61.5,86 60,89 58.5,86 55.5,85 58.5,84" fill="#ffffff" />
+            `;
+          }
+        }
+
+        // 5. Head Morph (Ear Tufts on Lv.4, Forehead Sigil on Lv.5)
+        if (headMorph) {
+          if (lvl === 4) {
             headMorph.innerHTML = `
-              <line x1="20" y1="16" x2="15" y2="8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
-              <line x1="100" y1="16" x2="105" y2="8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
-              <!-- Forehead Divine Star Sigil -->
-              <g class="divine-sigil-pulse">
-                <ellipse cx="60" cy="38" rx="6" ry="6" fill="#fef08a" opacity="0.3" />
-                <polygon points="60,33 62,37 66,38 62,39 60,43 58,39 54,38 58,37" fill="#fbbf24" stroke="#d97706" stroke-width="0.7" />
-                <circle cx="60" cy="38" r="1.5" fill="#ffffff" />
-                <path d="M 57,42 Q 60,45 63,42" stroke="#f59e0b" stroke-width="1.2" fill="none" stroke-linecap="round" />
+              <line x1="20" y1="16" x2="15" y2="8" stroke="#334155" stroke-width="2" stroke-linecap="round" />
+              <line x1="22" y1="17" x2="18" y2="10" stroke="#f97316" stroke-width="1.3" stroke-linecap="round" />
+              <line x1="100" y1="16" x2="105" y2="8" stroke="#334155" stroke-width="2" stroke-linecap="round" />
+              <line x1="98" y1="17" x2="102" y2="10" stroke="#f97316" stroke-width="1.3" stroke-linecap="round" />
+              <polygon points="60,33 63,37 60,41 57,37" fill="#b91c1c" />
+              <polygon points="60,34.5 61.8,37 60,39.5 58.2,37" fill="#facc15" />
+            `;
+          } else if (lvl === 5) {
+            headMorph.innerHTML = `
+              <line x1="20" y1="16" x2="14" y2="7" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
+              <line x1="100" y1="16" x2="106" y2="7" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
+              <g class="sigil-pulse">
+                <circle cx="60" cy="36" r="8" fill="#fef08a" opacity="0.3" />
+                <path d="M 54,34 C 54,41 66,41 66,34 C 64,38 56,38 54,34 Z" fill="#f59e0b" />
+                <polygon points="60,28 62,34.5 68.5,36 62,37.5 60,44 58,37.5 51.5,36 58,34.5" fill="#fbbf24" stroke="#d97706" stroke-width="0.7" />
+                <circle cx="60" cy="36" r="1.5" fill="#ffffff" />
               </g>
             `;
           } else {
@@ -2647,18 +2818,25 @@
           }
         }
 
-        // 5. Eyes Morphing (Baby round eyes for Lv.1)
+        // 6. Eyes Morph
         if (eyes) {
-          if (level === 1) {
+          if (lvl === 1) {
             eyes.innerHTML = `
               <ellipse cx="46" cy="52" rx="5.5" ry="7" fill="#1e293b" />
               <circle cx="48" cy="49" r="2.2" fill="#ffffff" />
-              <circle cx="44" cy="54" r="1" fill="#ffffff" opacity="0.7" />
+              <circle cx="44.2" cy="54.5" r="1.2" fill="#ffffff" />
               <ellipse cx="74" cy="52" rx="5.5" ry="7" fill="#1e293b" />
               <circle cx="76" cy="49" r="2.2" fill="#ffffff" />
-              <circle cx="72" cy="54" r="1" fill="#ffffff" opacity="0.7" />
+              <circle cx="72.2" cy="54.5" r="1.2" fill="#ffffff" />
             `;
-          } else if (level === 4 || level === 5) {
+          } else if (lvl === 2 || lvl === 3) {
+            eyes.innerHTML = `
+              <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+              <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
+              <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+              <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
+            `;
+          } else {
             eyes.innerHTML = `
               <ellipse cx="46" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
               <circle cx="48" cy="49.5" r="1.8" fill="#ffffff" />
@@ -2667,20 +2845,13 @@
               <circle cx="76" cy="49.5" r="1.8" fill="#ffffff" />
               <circle cx="72.5" cy="53" r="0.9" fill="#fde047" />
             `;
-          } else {
-            eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
-              <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
-              <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
-              <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
-            `;
           }
         }
       });
     }
 
 
-    
+     
 
     // <<<<<<<<<< [MODULE END: 02_cat_morph_engine.js] <<<<<<<<<<
 
