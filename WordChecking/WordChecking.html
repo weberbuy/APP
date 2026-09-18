@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.3.2-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.4.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -110,7 +110,43 @@
       animation: tailWagFast 0.4s ease-in-out 4;
     }
 
-  </style>
+  
+      @keyframes pawPulse {
+        0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4)); }
+        50% { transform: scale(1.08) translateY(-4px); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8)); }
+      }
+      .current-node-pulse {
+        animation: pawPulse 1.8s ease-in-out infinite;
+      }
+      @keyframes starPop {
+        0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+        70% { transform: scale(1.25) rotate(10deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+      .star-pop-1 { animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s; }
+      .star-pop-2 { animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.45s; }
+      .star-pop-3 { animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.7s; }
+      .map-node-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      }
+      .map-path-line {
+        stroke-dasharray: 6 6;
+      }
+    
+
+    /* Cat Morphing & Growth Styling */
+    .cat-divine-aura {
+      filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.55));
+    }
+    @keyframes divineShimmer {
+      0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 3px #fbbf24); }
+      50% { opacity: 1; filter: drop-shadow(0 0 12px #f59e0b); }
+    }
+    .divine-sigil-pulse {
+      animation: divineShimmer 2.2s ease-in-out infinite;
+    }
+
+</style>
 </head>
 <body class="bg-amber-50/40 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
@@ -132,7 +168,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.3.2-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.4.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -244,6 +280,7 @@
               </g>
 
               <!-- 3. Body Clothing Layer (Outfits, Dresses, Cloaks) -->
+              <g id="mainCatMorphChest"></g>
               <g id="mainCatAccOutfit"></g>
 
               <!-- 4. Neck Layer (Collar, Scarf, Medal) -->
@@ -287,6 +324,7 @@
                 <!-- Face Accessories -->
                 <g id="mainCatAccFace"></g>
                 <!-- Head Accessories -->
+                <g id="mainCatMorphHead"></g>
                 <g id="mainCatAccHead"></g>
               </g>
 
@@ -454,7 +492,11 @@
     <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
       <!-- Mode Tabs (Including Exam) -->
       <div class="flex bg-slate-200/80 dark:bg-slate-700/80 p-1.5 rounded-2xl w-full md:w-auto text-xs sm:text-sm font-semibold overflow-x-auto">
-        <button onclick="switchMode('card')" id="tabCard" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5">
+        <button onclick="switchMode('map')" id="tabMap" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 cursor-pointer whitespace-nowrap font-bold">
+          <span>🗺️</span>
+          <span>冒險地圖</span>
+        </button>
+        <button onclick="switchMode('card')" id="tabCard" class="flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5"
           <span>🐾</span>
           <span>翻轉卡片</span>
         </button>
@@ -517,6 +559,239 @@
 
 
     <!-- ==================== MODE 1: FLASHCARDS ==================== -->
+    
+    <!-- ==================== MODE MAP: ADVENTURE MODE (Phase 3) ==================== -->
+    <section id="modeMap" class=" space-y-5">
+      <!-- 1. Map Header: Stats & Progress Bar -->
+      <div class="bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 rounded-3xl p-5 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🗺️</span>
+            <h2 class="text-lg sm:text-xl font-black tracking-wide">國中 1200 單字冒險闖關地圖</h2>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-xs">Phase 3</span>
+          </div>
+          <p class="text-xs text-white/80">沿著石板古道漫遊 5 大主題世界，120 道關卡等妳來征服喵！🐾</p>
+        </div>
+        <!-- Stats Badges -->
+        <div class="flex items-center gap-2.5">
+          <div class="bg-black/20 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex items-center gap-2">
+            <span class="text-xl">⭐</span>
+            <div>
+              <div class="text-[10px] text-white/70 font-semibold">冒險總星數</div>
+              <div class="text-sm font-black text-amber-300" id="advTotalStarsDisplay">0 / 360</div>
+            </div>
+          </div>
+          <div class="bg-black/20 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex items-center gap-2">
+            <span class="text-xl">🚩</span>
+            <div>
+              <div class="text-[10px] text-white/70 font-semibold">解鎖進度</div>
+              <div class="text-sm font-black text-white" id="advCurrentStageDisplay">第 1 關</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 2. World Tabs Navigation (5 Worlds) -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="advWorldTabsContainer">
+        <!-- Rendered by renderAdventureMap -->
+      </div>
+
+
+      <!-- 3. Current World Banner -->
+      <div id="advWorldBanner" class="p-4 rounded-2xl border transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-800 border-amber-200 dark:border-slate-700">
+        <!-- Rendered by renderAdventureMap -->
+      </div>
+
+
+      <!-- 4. Winding Map Container -->
+      <div class="relative bg-gradient-to-b from-amber-50/50 via-rose-50/30 to-amber-50/60 dark:from-slate-800/80 dark:via-slate-800/60 dark:to-slate-900/90 rounded-3xl p-4 sm:p-8 border border-amber-200/80 dark:border-slate-700 overflow-hidden shadow-inner min-h-[580px]">
+        
+        <!-- Ambient Decor in Background -->
+        <div class="absolute -top-10 -right-10 w-48 h-48 bg-amber-400/10 dark:bg-amber-400/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-rose-400/10 dark:bg-rose-400/5 rounded-full blur-3xl pointer-events-none"></div>
+
+
+        <!-- Serpentine Stage Nodes Container -->
+        <div id="advStageNodesContainer" class="relative max-w-sm mx-auto py-6 space-y-12">
+          <!-- Dynamic Nodes -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== ADVENTURE STAGE MODAL (PREVIEW & MODE SELECT) ==================== -->
+    <div id="advStageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="WordCheckingAdventure.closeStageModal()">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+        
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between border-b border-amber-100 dark:border-slate-700 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div id="advStageModalIcon" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-400 flex items-center justify-center text-white text-xl shadow-md">
+              🚩
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 id="advStageModalTitle" class="text-base font-black text-slate-900 dark:text-white">第 1 關</h3>
+                <span id="advStageModalWorldBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">新手村</span>
+              </div>
+              <p id="advStageModalSubtitle" class="text-xs text-slate-500 dark:text-slate-400">涵蓋單字 1 ～ 10 號</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div id="advStageModalStarRecord" class="flex text-amber-400 text-sm">
+              ⭐⭐⭐
+            </div>
+            <button onclick="WordCheckingAdventure.closeStageModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 flex items-center justify-center font-bold transition cursor-pointer">
+              ✕
+            </button>
+          </div>
+        </div>
+
+
+        <!-- Word Preview List (10 Words) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold px-1">
+            <span>📝 本關 10 個核心單字</span>
+            <span class="text-[10px] text-amber-600 dark:text-amber-400 font-mono">點擊 🔊 聽發音</span>
+          </div>
+          <div id="advStageWordList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+
+        <!-- Mode Select Action Cards -->
+        <div class="space-y-2 pt-2 border-t border-amber-100 dark:border-slate-700">
+          <div class="text-xs font-bold text-slate-700 dark:text-slate-300 px-1">
+            🎯 選擇闖關模式：
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <!-- Mode 1: Flashcard Preview -->
+            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'flashcard')" class="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100/80 dark:bg-slate-700/60 dark:hover:bg-slate-700 border border-amber-200 dark:border-slate-600 transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-2xs group">
+              <span class="text-2xl group-hover:scale-110 transition">🚀</span>
+              <div class="font-bold text-xs text-slate-800 dark:text-white">單字速記</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400">快速翻閱 10 單字</div>
+            </button>
+
+
+            <!-- Mode 2: Multiple Choice Challenge -->
+            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'quiz')" class="p-3 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-md shadow-rose-500/20 group">
+              <span class="text-2xl group-hover:scale-110 transition">🎯</span>
+              <div class="font-black text-xs">四選一挑戰</div>
+              <div class="text-[10px] text-white/80">10題選擇 奪三星⭐</div>
+            </button>
+
+
+            <!-- Mode 3: Spelling Challenge -->
+            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'spelling')" class="p-3 rounded-2xl bg-indigo-50 hover:bg-indigo-100/80 dark:bg-slate-700/60 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-600 transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-2xs group">
+              <span class="text-2xl group-hover:scale-110 transition">✍️</span>
+              <div class="font-bold text-xs text-slate-800 dark:text-white">拼字大考驗</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400">進階精準拼寫挑戰</div>
+            </button>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+
+    <!-- ==================== ADVENTURE ACTIVE CHALLENGE MODAL (INTERACTIVE) ==================== -->
+    <div id="advChallengeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-rose-200 dark:border-slate-700 space-y-4" onclick="event.stopPropagation()">
+        
+        <!-- Challenge Header -->
+        <div class="flex items-center justify-between border-b border-rose-100 dark:border-slate-700 pb-3">
+          <div class="flex items-center gap-2">
+            <span id="advChallengeModeIcon" class="text-2xl">🎯</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 id="advChallengeTitle" class="font-black text-base text-slate-900 dark:text-white">第 1 關四選一挑戰</h3>
+                <span id="advChallengeStreakBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 hidden">🔥 連擊 x2</span>
+              </div>
+              <p id="advChallengeProgressText" class="text-xs text-slate-500 dark:text-slate-400">第 1 / 10 題</p>
+            </div>
+          </div>
+          <button onclick="WordCheckingAdventure.abortChallenge()" class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-600 dark:text-slate-300 font-bold transition cursor-pointer">
+            放棄退出
+          </button>
+        </div>
+
+
+        <!-- Progress Bar -->
+        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div id="advChallengeProgressBar" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-300" style="width: 10%;"></div>
+        </div>
+
+
+        <!-- Challenge Interactive Body Container -->
+        <div id="advChallengeBody" class="py-2 space-y-4">
+          <!-- Dynamic Content based on mode -->
+        </div>
+
+
+      </div>
+    </div>
+
+
+    <!-- ==================== ADVENTURE VICTORY / RESULTS MODAL ==================== -->
+    <div id="advVictoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="WordCheckingAdventure.closeVictoryModal()">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 text-center animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
+        
+        <!-- Victory Animated Header -->
+        <div class="space-y-1">
+          <div id="advVictoryIcon" class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-400/20 current-node-pulse">
+            🎉
+          </div>
+          <h3 id="advVictoryTitle" class="font-black text-xl text-slate-900 dark:text-white pt-2">關卡大捷！</h3>
+          <p id="advVictorySubtitle" class="text-xs text-slate-500 dark:text-slate-400">第 1 關完成通關！</p>
+        </div>
+
+
+        <!-- Star Rating Display -->
+        <div class="py-2 flex items-center justify-center gap-3 text-4xl" id="advVictoryStarsContainer">
+          <span class="star-pop-1">⭐</span>
+          <span class="star-pop-2">⭐</span>
+          <span class="star-pop-3">⭐</span>
+        </div>
+
+
+        <!-- Stats & Rewards Box -->
+        <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-slate-700/50 border border-amber-200 dark:border-slate-600/60 space-y-2 text-left text-xs">
+          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
+            <span class="text-slate-500 dark:text-slate-400">🎯 本關答對率：</span>
+            <span class="font-black text-slate-800 dark:text-white" id="advVictoryScoreText">10 / 10 (100%)</span>
+          </div>
+          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
+            <span class="text-slate-500 dark:text-slate-400">🐟 獲得小魚乾獎勵：</span>
+            <span class="font-black text-amber-600 dark:text-amber-400" id="advVictoryFishText">+5 條小魚乾</span>
+          </div>
+          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
+            <span class="text-slate-500 dark:text-slate-400">💖 咪咪親密度提升：</span>
+            <span class="font-black text-rose-500">+10% 親密度</span>
+          </div>
+          <div id="advVictoryBossBonusBox" class="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200 font-bold text-center hidden">
+            🎁 擊敗區域 Boss！獲得額外 +20 魚乾寶箱大獎！
+          </div>
+        </div>
+
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2 justify-center pt-2">
+          <button onclick="WordCheckingAdventure.playAgain()" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
+            🔄 再玩一次
+          </button>
+          <button onclick="WordCheckingAdventure.nextStageOrMap()" id="advVictoryNextBtn" class="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
+            🐾 下一關
+          </button>
+        </div>
+
+
+      </div>
+    </div>
+    
+
     <section id="modeCard" class="space-y-4">
       <div class="relative w-full max-w-lg mx-auto h-84 perspective-1000 cursor-pointer" onclick="flipCard()">
         <div id="flashcardInner" class="relative w-full h-full min-h-[340px] transition-transform duration-500 transform-style-3d shadow-xl rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-200/80 dark:border-slate-700 p-6 flex flex-col justify-between">
@@ -1226,6 +1501,7 @@
                   <path d="M 64,94 L 64,115 C 64,118 72,118 72,115 L 72,94 Z" fill="#ffffff" />
                 </g>
                 <!-- 3. Outfit Layer -->
+                <g id="wardrobeCatMorphChest"></g>
                 <g id="wardrobeCatAccOutfit"></g>
                 <!-- 4. Neck Layer -->
                 <g id="wardrobeCatAccNeck"></g>
@@ -1253,6 +1529,7 @@
                   <line x1="94" y1="56" x2="82" y2="58" stroke="#78350f" stroke-width="1.3" />
                   <line x1="95" y1="63" x2="82" y2="62" stroke="#78350f" stroke-width="1.3" />
                   <g id="wardrobeCatAccFace"></g>
+                  <g id="wardrobeCatMorphHead"></g>
                   <g id="wardrobeCatAccHead"></g>
                 </g>
                 <!-- 6. Handheld Layer -->
@@ -2240,6 +2517,1507 @@
 
 
     // Init App
+    
+    // ==================== WORDCHECKING ADVENTURE MODULE (Phase 3) ====================
+/**
+ * WordChecking Phase 3: 冒險闖關地圖模組 (Adventure Map Mode)
+ * 適用於國中會考 1200 單字學習系統
+ * 支援 5 大主題世界、120 個冒險關卡、Boss 寶箱、三模式挑戰與雲端同步
+ */
+
+
+(function (root, factory) {
+  const instance = factory();
+  if (typeof window !== 'undefined') window.WordCheckingAdventure = instance;
+  if (typeof module === 'object' && module.exports) module.exports = instance;
+  root.WordCheckingAdventure = instance;
+}(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+
+  // ==================== 1. WORLD & STAGE DEFINITIONS ====================
+  const ADVENTURE_WORLDS = [
+    {
+      id: 1,
+      name: '萌喵初醒新手村',
+      icon: '🍼',
+      level: 1,
+      wordRange: [1, 150],
+      stageRange: [1, 15],
+      bossStage: 15,
+      themeColor: 'from-amber-400 to-rose-400',
+      badgeBg: 'bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300',
+      cardBorder: 'border-amber-200 dark:border-amber-800/60',
+      cardBg: 'bg-amber-50/70 dark:bg-amber-950/30',
+      accentColor: '#f59e0b',
+      desc: '基礎打底：1-150 字（基礎數字、家庭親屬、日常問候）'
+    },
+    {
+      id: 2,
+      name: '微風綠意森林',
+      icon: '🧶',
+      level: 2,
+      wordRange: [151, 400],
+      stageRange: [16, 40],
+      bossStage: 40,
+      themeColor: 'from-emerald-400 to-teal-500',
+      badgeBg: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300',
+      cardBorder: 'border-emerald-200 dark:border-emerald-800/60',
+      cardBg: 'bg-emerald-50/70 dark:bg-emerald-950/30',
+      accentColor: '#10b981',
+      desc: '生活拓展：151-400 字（身體部位、時間星期、飲食動物）'
+    },
+    {
+      id: 3,
+      name: '智慧水晶書城',
+      icon: '🎓',
+      level: 3,
+      wordRange: [401, 750],
+      stageRange: [41, 75],
+      bossStage: 75,
+      themeColor: 'from-indigo-400 to-purple-500',
+      badgeBg: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300',
+      cardBorder: 'border-indigo-200 dark:border-indigo-800/60',
+      cardBg: 'bg-indigo-50/70 dark:bg-indigo-950/30',
+      accentColor: '#6366f1',
+      desc: '核心詞彙：401-750 字（學校課堂、休閒運動、核心動詞）'
+    },
+    {
+      id: 4,
+      name: '英勇試煉峽谷',
+      icon: '🏹',
+      level: 4,
+      wordRange: [751, 1050],
+      stageRange: [76, 105],
+      bossStage: 105,
+      themeColor: 'from-orange-500 to-red-500',
+      badgeBg: 'bg-orange-100 text-orange-700 dark:bg-orange-950/70 dark:text-orange-300',
+      cardBorder: 'border-orange-200 dark:border-orange-800/60',
+      cardBg: 'bg-orange-50/70 dark:bg-orange-950/30',
+      accentColor: '#f97316',
+      desc: '語感淬鍊：751-1050 字（情緒感受、天氣自然、進階片語）'
+    },
+    {
+      id: 5,
+      name: '傳奇會考神殿',
+      icon: '👑',
+      level: 5,
+      wordRange: [1051, 1200],
+      stageRange: [106, 120],
+      bossStage: 120,
+      themeColor: 'from-amber-500 to-yellow-400',
+      badgeBg: 'bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200',
+      cardBorder: 'border-yellow-300 dark:border-yellow-700/60',
+      cardBg: 'bg-yellow-50/70 dark:bg-yellow-950/30',
+      accentColor: '#eab308',
+      desc: '會考登頂：1051-1200 字（抽象思維、會考高頻精通）'
+    }
+  ];
+
+
+  const STORAGE_KEY = 'wordchecking_adventure_v1';
+  const TOTAL_STAGES = 120;
+  const WORDS_PER_STAGE = 10;
+
+
+  // ==================== 2. MODULE STATE ====================
+  let state = {
+    unlockedStage: 1,
+    stageStars: {}, // { stageId: stars (1..3) }
+    totalStars: 0,
+    currentWorldId: 1,
+    rawVocabList: []
+  };
+
+
+  // Active Challenge Session State
+  let activeChallenge = {
+    stageId: 1,
+    type: 'quiz', // 'flashcard', 'quiz', 'spelling'
+    words: [],
+    questions: [],
+    currentIndex: 0,
+    score: 0,
+    streak: 0,
+    userAnswers: []
+  };
+
+
+  // External hooks (provided by main app or fallbacks)
+  let appHooks = {
+    getFishCount: () => 0,
+    addFish: (n) => {},
+    addAffection: (n) => {},
+    playAudio: (text) => {},
+    playCheerSound: () => {},
+    playMeowSound: () => {},
+    saySpeech: (text, tag) => {},
+    triggerSaveToPi: () => {}
+  };
+
+
+  // ==================== 3. DATA LOGIC & CALCULATIONS ====================
+
+
+  function getStageInfo(stageId) {
+    stageId = parseInt(stageId, 10);
+    if (isNaN(stageId) || stageId < 1 || stageId > TOTAL_STAGES) return null;
+
+
+    const world = ADVENTURE_WORLDS.find(
+      w => stageId >= w.stageRange[0] && stageId <= w.stageRange[1]
+    );
+    const startWord = (stageId - 1) * WORDS_PER_STAGE + 1;
+    const endWord = stageId * WORDS_PER_STAGE;
+    const isBoss = world ? stageId === world.bossStage : false;
+
+
+    return {
+      stageId,
+      world,
+      wordRange: [startWord, endWord],
+      isBoss
+    };
+  }
+
+
+  function getStageWords(stageId, vocabList) {
+    const list = (vocabList && vocabList.length > 0) ? vocabList : state.rawVocabList;
+    const info = getStageInfo(stageId);
+    if (!info || !list || list.length === 0) return [];
+
+
+    const startIndex = (info.stageId - 1) * WORDS_PER_STAGE;
+    const endIndex = info.stageId * WORDS_PER_STAGE;
+
+
+    const words = list.slice(startIndex, endIndex);
+
+
+    // Fallback word objects if master dataset is not yet loaded
+    if (words.length < WORDS_PER_STAGE) {
+      for (let i = words.length; i < WORDS_PER_STAGE; i++) {
+        const wordNum = startIndex + i + 1;
+        words.push({
+          id: wordNum,
+          word: `word_${wordNum}`,
+          pos: 'n.',
+          zh: `第 ${wordNum} 個單字`,
+          eg: `This is example sentence for word #${wordNum}.`,
+          category: info.world.name
+        });
+      }
+    }
+    return words;
+  }
+
+
+  function calculateStars(score, total) {
+    if (!total || total <= 0) return 0;
+    const pct = score / total;
+    if (pct >= 0.90) return 3; // >= 90%
+    if (pct >= 0.70) return 2; // 70% ~ 89%
+    if (pct >= 0.60) return 1; // 60% ~ 69%
+    return 0; // < 60% Challenge failed
+  }
+
+
+  function loadAdventureProgress() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        state.unlockedStage = Math.max(1, Math.min(TOTAL_STAGES, parseInt(saved.unlockedStage || '1', 10)));
+        state.stageStars = saved.stageStars || {};
+        state.currentWorldId = saved.currentWorldId || determineWorldByStage(state.unlockedStage);
+      } else {
+        state.unlockedStage = 1;
+        state.stageStars = {};
+        state.currentWorldId = 1;
+      }
+    } catch (e) {
+      console.warn('[AdventureMap] Failed to load progress from localStorage:', e);
+      state.unlockedStage = 1;
+      state.stageStars = {};
+      state.currentWorldId = 1;
+    }
+    recalculateTotalStars();
+    return state;
+  }
+
+
+  function saveAdventureProgress() {
+    try {
+      recalculateTotalStars();
+      const payload = {
+        unlockedStage: state.unlockedStage,
+        stageStars: state.stageStars,
+        totalStars: state.totalStars,
+        currentWorldId: state.currentWorldId,
+        updatedAt: new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      appHooks.triggerSaveToPi();
+    } catch (e) {
+      console.error('[AdventureMap] Failed to save progress to localStorage:', e);
+    }
+  }
+
+
+  function recalculateTotalStars() {
+    let total = 0;
+    Object.keys(state.stageStars).forEach(s => {
+      total += (state.stageStars[s] || 0);
+    });
+    state.totalStars = total;
+  }
+
+
+  function determineWorldByStage(stageId) {
+    const info = getStageInfo(stageId);
+    return info ? info.world.id : 1;
+  }
+
+
+  function getAdventureSaveData() {
+    recalculateTotalStars();
+    return {
+      unlockedStage: state.unlockedStage,
+      stageStars: state.stageStars,
+      totalStars: state.totalStars,
+      currentWorldId: state.currentWorldId
+    };
+  }
+
+
+  function loadAdventureSaveData(data) {
+    if (!data) return;
+    if (typeof data.unlockedStage === 'number') {
+      state.unlockedStage = Math.max(1, Math.min(TOTAL_STAGES, data.unlockedStage));
+    }
+    if (data.stageStars && typeof data.stageStars === 'object') {
+      state.stageStars = { ...data.stageStars };
+    }
+    if (typeof data.currentWorldId === 'number') {
+      state.currentWorldId = data.currentWorldId;
+    }
+    saveAdventureProgress();
+    renderAdventureMap();
+  }
+
+
+  // ==================== 4. UI TEMPLATES & INJECTION ====================
+
+
+  function getAdventureStyles() {
+    return `
+      @keyframes pawPulse {
+        0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4)); }
+        50% { transform: scale(1.08) translateY(-4px); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8)); }
+      }
+      .current-node-pulse {
+        animation: pawPulse 1.8s ease-in-out infinite;
+      }
+      @keyframes starPop {
+        0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+        70% { transform: scale(1.25) rotate(10deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+      .star-pop-1 { animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s; }
+      .star-pop-2 { animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.45s; }
+      .star-pop-3 { animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.7s; }
+      .map-node-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      }
+      .map-path-line {
+        stroke-dasharray: 6 6;
+      }
+    `;
+  }
+
+
+  function renderMapSectionHtml() {
+    return `
+    <!-- ==================== MODE MAP: ADVENTURE MODE (Phase 3) ==================== -->
+    <section id="modeMap" class="hidden space-y-5">
+      <!-- 1. Map Header: Stats & Progress Bar -->
+      <div class="bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 rounded-3xl p-5 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🗺️</span>
+            <h2 class="text-lg sm:text-xl font-black tracking-wide">國中 1200 單字冒險闖關地圖</h2>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-xs">Phase 3</span>
+          </div>
+          <p class="text-xs text-white/80">沿著石板古道漫遊 5 大主題世界，120 道關卡等妳來征服喵！🐾</p>
+        </div>
+        <!-- Stats Badges -->
+        <div class="flex items-center gap-2.5">
+          <div class="bg-black/20 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex items-center gap-2">
+            <span class="text-xl">⭐</span>
+            <div>
+              <div class="text-[10px] text-white/70 font-semibold">冒險總星數</div>
+              <div class="text-sm font-black text-amber-300" id="advTotalStarsDisplay">0 / 360</div>
+            </div>
+          </div>
+          <div class="bg-black/20 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex items-center gap-2">
+            <span class="text-xl">🚩</span>
+            <div>
+              <div class="text-[10px] text-white/70 font-semibold">解鎖進度</div>
+              <div class="text-sm font-black text-white" id="advCurrentStageDisplay">第 1 關</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 2. World Tabs Navigation (5 Worlds) -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="advWorldTabsContainer">
+        <!-- Rendered by renderAdventureMap -->
+      </div>
+
+
+      <!-- 3. Current World Banner -->
+      <div id="advWorldBanner" class="p-4 rounded-2xl border transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-800 border-amber-200 dark:border-slate-700">
+        <!-- Rendered by renderAdventureMap -->
+      </div>
+
+
+      <!-- 4. Winding Map Container -->
+      <div class="relative bg-gradient-to-b from-amber-50/50 via-rose-50/30 to-amber-50/60 dark:from-slate-800/80 dark:via-slate-800/60 dark:to-slate-900/90 rounded-3xl p-4 sm:p-8 border border-amber-200/80 dark:border-slate-700 overflow-hidden shadow-inner min-h-[580px]">
+        
+        <!-- Ambient Decor in Background -->
+        <div class="absolute -top-10 -right-10 w-48 h-48 bg-amber-400/10 dark:bg-amber-400/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-rose-400/10 dark:bg-rose-400/5 rounded-full blur-3xl pointer-events-none"></div>
+
+
+        <!-- Serpentine Stage Nodes Container -->
+        <div id="advStageNodesContainer" class="relative max-w-sm mx-auto py-6 space-y-12">
+          <!-- Dynamic Nodes -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== ADVENTURE STAGE MODAL (PREVIEW & MODE SELECT) ==================== -->
+    <div id="advStageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="WordCheckingAdventure.closeStageModal()">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+        
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between border-b border-amber-100 dark:border-slate-700 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div id="advStageModalIcon" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-400 flex items-center justify-center text-white text-xl shadow-md">
+              🚩
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 id="advStageModalTitle" class="text-base font-black text-slate-900 dark:text-white">第 1 關</h3>
+                <span id="advStageModalWorldBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">新手村</span>
+              </div>
+              <p id="advStageModalSubtitle" class="text-xs text-slate-500 dark:text-slate-400">涵蓋單字 1 ～ 10 號</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div id="advStageModalStarRecord" class="flex text-amber-400 text-sm">
+              ⭐⭐⭐
+            </div>
+            <button onclick="WordCheckingAdventure.closeStageModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 flex items-center justify-center font-bold transition cursor-pointer">
+              ✕
+            </button>
+          </div>
+        </div>
+
+
+        <!-- Word Preview List (10 Words) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold px-1">
+            <span>📝 本關 10 個核心單字</span>
+            <span class="text-[10px] text-amber-600 dark:text-amber-400 font-mono">點擊 🔊 聽發音</span>
+          </div>
+          <div id="advStageWordList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+
+        <!-- Mode Select Action Cards -->
+        <div class="space-y-2 pt-2 border-t border-amber-100 dark:border-slate-700">
+          <div class="text-xs font-bold text-slate-700 dark:text-slate-300 px-1">
+            🎯 選擇闖關模式：
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <!-- Mode 1: Flashcard Preview -->
+            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'flashcard')" class="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100/80 dark:bg-slate-700/60 dark:hover:bg-slate-700 border border-amber-200 dark:border-slate-600 transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-2xs group">
+              <span class="text-2xl group-hover:scale-110 transition">🚀</span>
+              <div class="font-bold text-xs text-slate-800 dark:text-white">單字速記</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400">快速翻閱 10 單字</div>
+            </button>
+
+
+            <!-- Mode 2: Multiple Choice Challenge -->
+            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'quiz')" class="p-3 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-md shadow-rose-500/20 group">
+              <span class="text-2xl group-hover:scale-110 transition">🎯</span>
+              <div class="font-black text-xs">四選一挑戰</div>
+              <div class="text-[10px] text-white/80">10題選擇 奪三星⭐</div>
+            </button>
+
+
+            <!-- Mode 3: Spelling Challenge -->
+            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'spelling')" class="p-3 rounded-2xl bg-indigo-50 hover:bg-indigo-100/80 dark:bg-slate-700/60 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-600 transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-2xs group">
+              <span class="text-2xl group-hover:scale-110 transition">✍️</span>
+              <div class="font-bold text-xs text-slate-800 dark:text-white">拼字大考驗</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400">進階精準拼寫挑戰</div>
+            </button>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+
+    <!-- ==================== ADVENTURE ACTIVE CHALLENGE MODAL (INTERACTIVE) ==================== -->
+    <div id="advChallengeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-rose-200 dark:border-slate-700 space-y-4" onclick="event.stopPropagation()">
+        
+        <!-- Challenge Header -->
+        <div class="flex items-center justify-between border-b border-rose-100 dark:border-slate-700 pb-3">
+          <div class="flex items-center gap-2">
+            <span id="advChallengeModeIcon" class="text-2xl">🎯</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 id="advChallengeTitle" class="font-black text-base text-slate-900 dark:text-white">第 1 關四選一挑戰</h3>
+                <span id="advChallengeStreakBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 hidden">🔥 連擊 x2</span>
+              </div>
+              <p id="advChallengeProgressText" class="text-xs text-slate-500 dark:text-slate-400">第 1 / 10 題</p>
+            </div>
+          </div>
+          <button onclick="WordCheckingAdventure.abortChallenge()" class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-600 dark:text-slate-300 font-bold transition cursor-pointer">
+            放棄退出
+          </button>
+        </div>
+
+
+        <!-- Progress Bar -->
+        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div id="advChallengeProgressBar" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-300" style="width: 10%;"></div>
+        </div>
+
+
+        <!-- Challenge Interactive Body Container -->
+        <div id="advChallengeBody" class="py-2 space-y-4">
+          <!-- Dynamic Content based on mode -->
+        </div>
+
+
+      </div>
+    </div>
+
+
+    <!-- ==================== ADVENTURE VICTORY / RESULTS MODAL ==================== -->
+    <div id="advVictoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="WordCheckingAdventure.closeVictoryModal()">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 text-center animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
+        
+        <!-- Victory Animated Header -->
+        <div class="space-y-1">
+          <div id="advVictoryIcon" class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-400/20 current-node-pulse">
+            🎉
+          </div>
+          <h3 id="advVictoryTitle" class="font-black text-xl text-slate-900 dark:text-white pt-2">關卡大捷！</h3>
+          <p id="advVictorySubtitle" class="text-xs text-slate-500 dark:text-slate-400">第 1 關完成通關！</p>
+        </div>
+
+
+        <!-- Star Rating Display -->
+        <div class="py-2 flex items-center justify-center gap-3 text-4xl" id="advVictoryStarsContainer">
+          <span class="star-pop-1">⭐</span>
+          <span class="star-pop-2">⭐</span>
+          <span class="star-pop-3">⭐</span>
+        </div>
+
+
+        <!-- Stats & Rewards Box -->
+        <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-slate-700/50 border border-amber-200 dark:border-slate-600/60 space-y-2 text-left text-xs">
+          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
+            <span class="text-slate-500 dark:text-slate-400">🎯 本關答對率：</span>
+            <span class="font-black text-slate-800 dark:text-white" id="advVictoryScoreText">10 / 10 (100%)</span>
+          </div>
+          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
+            <span class="text-slate-500 dark:text-slate-400">🐟 獲得小魚乾獎勵：</span>
+            <span class="font-black text-amber-600 dark:text-amber-400" id="advVictoryFishText">+5 條小魚乾</span>
+          </div>
+          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
+            <span class="text-slate-500 dark:text-slate-400">💖 咪咪親密度提升：</span>
+            <span class="font-black text-rose-500">+10% 親密度</span>
+          </div>
+          <div id="advVictoryBossBonusBox" class="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200 font-bold text-center hidden">
+            🎁 擊敗區域 Boss！獲得額外 +20 魚乾寶箱大獎！
+          </div>
+        </div>
+
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2 justify-center pt-2">
+          <button onclick="WordCheckingAdventure.playAgain()" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
+            🔄 再玩一次
+          </button>
+          <button onclick="WordCheckingAdventure.nextStageOrMap()" id="advVictoryNextBtn" class="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
+            🐾 下一關
+          </button>
+        </div>
+
+
+      </div>
+    </div>
+    `;
+  }
+
+
+  // ==================== 5. MAP RENDERING (WINDING STONE PATH) ====================
+
+
+  function renderAdventureMap() {
+    // 1. Update Global Header Stats
+    const totalStarsEl = document.getElementById('advTotalStarsDisplay');
+    const currStageEl = document.getElementById('advCurrentStageDisplay');
+    if (totalStarsEl) totalStarsEl.innerText = `${state.totalStars} / 360`;
+    if (currStageEl) currStageEl.innerText = `第 ${state.unlockedStage} 關`;
+
+
+    // 2. Render World Tabs
+    const tabsContainer = document.getElementById('advWorldTabsContainer');
+    if (tabsContainer) {
+      tabsContainer.innerHTML = ADVENTURE_WORLDS.map(w => {
+        const isActive = w.id === state.currentWorldId;
+        const isWorldUnlocked = state.unlockedStage >= w.stageRange[0];
+        const activeClass = isActive
+          ? 'bg-gradient-to-r ' + w.themeColor + ' text-white font-black shadow-md'
+          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700';
+
+
+        return `
+          <button onclick="WordCheckingAdventure.switchAdventureWorld(${w.id})" class="p-2.5 rounded-2xl text-xs flex flex-col items-center text-center transition cursor-pointer ${activeClass}">
+            <span class="text-xl mb-0.5">${w.icon}</span>
+            <span class="font-bold whitespace-nowrap">${w.name.slice(0, 4)}</span>
+            <span class="text-[10px] opacity-80 font-mono">${w.stageRange[0]}-${w.stageRange[1]}關</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+
+    // 3. Render Current World Banner
+    const bannerEl = document.getElementById('advWorldBanner');
+    const activeWorld = ADVENTURE_WORLDS.find(w => w.id === state.currentWorldId) || ADVENTURE_WORLDS[0];
+    if (bannerEl) {
+      // Calculate world completion
+      let worldCompletedStages = 0;
+      let worldStars = 0;
+      const totalInWorld = activeWorld.stageRange[1] - activeWorld.stageRange[0] + 1;
+      for (let s = activeWorld.stageRange[0]; s <= activeWorld.stageRange[1]; s++) {
+        if (state.stageStars[s] > 0) {
+          worldCompletedStages++;
+          worldStars += state.stageStars[s];
+        }
+      }
+      const worldPct = Math.round((worldCompletedStages / totalInWorld) * 100);
+
+
+      bannerEl.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${activeWorld.themeColor} flex items-center justify-center text-2xl text-white shadow-sm">
+            ${activeWorld.icon}
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-black text-slate-900 dark:text-white">${activeWorld.name}</h3>
+              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${activeWorld.badgeBg}">Lv.${activeWorld.level}</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${activeWorld.desc}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <div class="text-xs font-black text-slate-800 dark:text-white flex items-center justify-end gap-1">
+              <span>⭐</span> <span>${worldStars} / ${totalInWorld * 3}</span>
+            </div>
+            <div class="text-[10px] text-slate-400">通關進度 ${worldCompletedStages}/${totalInWorld} (${worldPct}%)</div>
+          </div>
+        </div>
+      `;
+    }
+
+
+    // 4. Render Serpentine Map Nodes
+    const nodesContainer = document.getElementById('advStageNodesContainer');
+    if (!nodesContainer) return;
+
+
+    let nodesHtml = '';
+    const startStage = activeWorld.stageRange[0];
+    const endStage = activeWorld.stageRange[1];
+
+
+    for (let s = startStage; s <= endStage; s++) {
+      const isUnlocked = s <= state.unlockedStage;
+      const isCurrent = s === state.unlockedStage;
+      const isBoss = s === activeWorld.bossStage;
+      const stars = state.stageStars[s] || 0;
+
+
+      // Serpentine offset: sine wave between -80px and +80px
+      const stageIndexInWorld = s - startStage;
+      const offset = Math.round(Math.sin(stageIndexInWorld * 0.9) * 80);
+
+
+      // Node styling
+      let nodeCircleHtml = '';
+      if (isCurrent) {
+        // Current Stage with glowing ring and cat mascot
+        nodeCircleHtml = `
+          <div class="relative group cursor-pointer" onclick="WordCheckingAdventure.openStageModal(${s})">
+            <!-- Cat Mascot Avatar on Top -->
+            <div class="absolute -top-7 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10 animate-bounce">
+              <span class="px-2 py-0.5 rounded-full bg-amber-500 text-white font-black text-[9px] shadow-sm whitespace-nowrap">
+                🐾 當前挑戰
+              </span>
+              <span class="text-base -mt-1">🐱</span>
+            </div>
+            <!-- Node Body -->
+            <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr ${activeWorld.themeColor} text-white font-black text-xl flex flex-col items-center justify-center shadow-lg shadow-amber-500/30 ring-4 ring-amber-400 ring-offset-2 dark:ring-offset-slate-900 current-node-pulse">
+              <span>${s}</span>
+              ${isBoss ? '<span class="text-[9px] -mt-1 font-bold">BOSS</span>' : ''}
+            </div>
+          </div>
+        `;
+      } else if (isUnlocked) {
+        // Completed Stage
+        let starIcons = '☆☆☆';
+        if (stars === 3) starIcons = '⭐⭐⭐';
+        else if (stars === 2) starIcons = '⭐⭐☆';
+        else if (stars === 1) starIcons = '⭐☆☆';
+
+
+        nodeCircleHtml = `
+          <div class="relative group cursor-pointer" onclick="WordCheckingAdventure.openStageModal(${s})">
+            <div class="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 font-black text-lg flex flex-col items-center justify-center border-2 border-amber-300 dark:border-amber-600 shadow-md hover:scale-105 transition">
+              <span>${s}</span>
+              <span class="text-[10px] text-amber-400 tracking-tighter -mt-0.5">${starIcons}</span>
+            </div>
+          </div>
+        `;
+      } else {
+        // Locked Stage
+        nodeCircleHtml = `
+          <div class="w-14 h-14 rounded-2xl bg-slate-200/80 dark:bg-slate-700/60 text-slate-400 font-bold text-sm flex flex-col items-center justify-center border border-slate-300 dark:border-slate-600/60 opacity-60 cursor-not-allowed" onclick="WordCheckingAdventure.notifyLockedStage(${s})">
+            <span>🔒</span>
+            <span class="text-[10px] font-mono">${s}</span>
+          </div>
+        `;
+      }
+
+
+      // Boss special wrapper
+      if (isBoss) {
+        nodeCircleHtml = `
+          <div class="flex flex-col items-center">
+            <div class="text-xs font-black text-amber-600 dark:text-amber-300 flex items-center gap-1 mb-1">
+              <span>🎁</span> <span>區域最終寶箱大關</span>
+            </div>
+            ${nodeCircleHtml}
+          </div>
+        `;
+      }
+
+
+      // Wrap in horizontal serpentine container with connecting stepping stones
+      nodesHtml += `
+        <div class="relative flex justify-center items-center w-full" style="transform: translateX(${offset}px);">
+          ${nodeCircleHtml}
+        </div>
+      `;
+    }
+
+
+    nodesContainer.innerHTML = nodesHtml;
+  }
+
+
+  function switchAdventureWorld(worldId) {
+    state.currentWorldId = worldId;
+    renderAdventureMap();
+  }
+
+
+  function notifyLockedStage(stageId) {
+    appHooks.saySpeech(`尚未解鎖第 ${stageId} 關喵！請先按照順序通過第 ${state.unlockedStage} 關吧🐾`, '關卡未解鎖');
+    appHooks.playMeowSound();
+  }
+
+
+  // ==================== 6. STAGE MODAL (PREVIEW 10 WORDS) ====================
+
+
+  function openStageModal(stageId) {
+    stageId = stageId || state.unlockedStage;
+    if (stageId > state.unlockedStage) {
+      notifyLockedStage(stageId);
+      return;
+    }
+
+
+    const info = getStageInfo(stageId);
+    if (!info) return;
+
+
+    activeChallenge.stageId = stageId;
+    activeChallenge.words = getStageWords(stageId, state.rawVocabList);
+
+
+    const modal = document.getElementById('advStageModal');
+    if (!modal) return;
+
+
+    // Header updates
+    document.getElementById('advStageModalTitle').innerText = `第 ${stageId} 關 ${info.isBoss ? '🎁 BOSS 關' : ''}`;
+    document.getElementById('advStageModalWorldBadge').innerText = `${info.world.icon} ${info.world.name}`;
+    document.getElementById('advStageModalSubtitle').innerText = `涵蓋教育部 1200 單字第 ${info.wordRange[0]} ～ ${info.wordRange[1]} 號`;
+
+
+    // Star record
+    const stars = state.stageStars[stageId] || 0;
+    const recordEl = document.getElementById('advStageModalStarRecord');
+    if (recordEl) {
+      if (stars === 3) recordEl.innerText = '⭐⭐⭐ 滿星通關！';
+      else if (stars === 2) recordEl.innerText = '⭐⭐ 二星紀錄';
+      else if (stars === 1) recordEl.innerText = '⭐ 一星紀錄';
+      else recordEl.innerText = '尚未挑戰';
+    }
+
+
+    // Word List
+    const listEl = document.getElementById('advStageWordList');
+    if (listEl) {
+      listEl.innerHTML = activeChallenge.words.map((w, idx) => `
+        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 flex items-center justify-between text-xs">
+          <div class="flex-1 min-w-0 pr-2">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-mono text-slate-400">#${w.id || (idx + 1)}</span>
+              <span class="font-bold text-slate-900 dark:text-white truncate">${w.word}</span>
+              <span class="text-[10px] text-amber-600 dark:text-amber-400 font-mono">${w.pos || ''}</span>
+            </div>
+            <div class="text-[11px] text-slate-600 dark:text-slate-300 truncate">${w.zh || ''}</div>
+          </div>
+          <button onclick="WordCheckingAdventure.playWordAudio('${w.word.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 flex items-center justify-center transition shadow-2xs cursor-pointer" title="聆聽發音">
+            🔊
+          </button>
+        </div>
+      `).join('');
+    }
+
+
+    modal.classList.remove('hidden');
+  }
+
+
+  function closeStageModal() {
+    const modal = document.getElementById('advStageModal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+
+  function playWordAudio(word) {
+    if (appHooks.playAudio) {
+      appHooks.playAudio(word);
+    }
+  }
+
+
+  // ==================== 7. INTERACTIVE CHALLENGE ENGINE ====================
+
+
+  function startStageChallenge(stageId, type) {
+    if (stageId) activeChallenge.stageId = stageId;
+    activeChallenge.type = type || 'quiz';
+    activeChallenge.words = getStageWords(activeChallenge.stageId, state.rawVocabList);
+    activeChallenge.currentIndex = 0;
+    activeChallenge.score = 0;
+    activeChallenge.streak = 0;
+    activeChallenge.userAnswers = [];
+
+
+    closeStageModal();
+
+
+    if (activeChallenge.type === 'flashcard') {
+      renderFlashcardMode();
+    } else if (activeChallenge.type === 'quiz') {
+      setupQuizQuestions();
+      renderQuizQuestion();
+    } else if (activeChallenge.type === 'spelling') {
+      setupSpellingQuestions();
+      renderSpellingQuestion();
+    }
+
+
+    const challengeModal = document.getElementById('advChallengeModal');
+    if (challengeModal) challengeModal.classList.remove('hidden');
+  }
+
+
+  function abortChallenge() {
+    const challengeModal = document.getElementById('advChallengeModal');
+    if (challengeModal) challengeModal.classList.add('hidden');
+    appHooks.saySpeech('隨時可以再回來挑戰喔喵～🐾', '暫停冒險');
+  }
+
+
+  // --- Sub-mode A: Flashcard Quick Preview ---
+  function renderFlashcardMode() {
+    const bodyEl = document.getElementById('advChallengeBody');
+    const titleEl = document.getElementById('advChallengeTitle');
+    const iconEl = document.getElementById('advChallengeModeIcon');
+    const progressEl = document.getElementById('advChallengeProgressText');
+    const pBar = document.getElementById('advChallengeProgressBar');
+
+
+    iconEl.innerText = '🚀';
+    titleEl.innerText = `第 ${activeChallenge.stageId} 關・單字速記過目`;
+    progressEl.innerText = `單字 ${activeChallenge.currentIndex + 1} / ${activeChallenge.words.length}`;
+    if (pBar) pBar.style.width = `${((activeChallenge.currentIndex + 1) / activeChallenge.words.length) * 100}%`;
+
+
+    const w = activeChallenge.words[activeChallenge.currentIndex];
+
+
+    bodyEl.innerHTML = `
+      <div class="p-6 rounded-3xl bg-amber-50 dark:bg-slate-700/60 border-2 border-amber-200 dark:border-slate-600 text-center space-y-3 min-h-[220px] flex flex-col justify-center items-center shadow-inner">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+            ${w.pos || '詞性'}
+          </span>
+          <span class="text-xs text-slate-400 font-mono">#${w.id || (activeChallenge.currentIndex + 1)}</span>
+        </div>
+        <div class="text-3xl font-black text-slate-900 dark:text-white tracking-wide">
+          ${w.word}
+        </div>
+        <button onclick="WordCheckingAdventure.playWordAudio('${w.word.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold shadow-2xs hover:bg-amber-100 transition flex items-center gap-1.5 cursor-pointer">
+          <span>🔊</span> <span>點我聆聽發音</span>
+        </button>
+        <div class="text-lg font-bold text-amber-700 dark:text-amber-400 pt-1">
+          ${w.zh || ''}
+        </div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 italic max-w-xs">
+          ${w.eg || ''}
+        </p>
+      </div>
+
+
+      <div class="flex items-center justify-between pt-2">
+        <button onclick="WordCheckingAdventure.prevFlashcard()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold transition cursor-pointer" ${activeChallenge.currentIndex === 0 ? 'disabled opacity-50' : ''}>
+          ⬅ 上一個
+        </button>
+        ${activeChallenge.currentIndex < activeChallenge.words.length - 1 ? `
+          <button onclick="WordCheckingAdventure.nextFlashcard()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition cursor-pointer">
+            下一個 ➡
+          </button>
+        ` : `
+          <button onclick="WordCheckingAdventure.startStageChallenge(null, 'quiz')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 text-white text-xs font-black transition shadow-xs cursor-pointer">
+            熟記了！開始測驗 🎯
+          </button>
+        `}
+      </div>
+    `;
+
+
+    playWordAudio(w.word);
+  }
+
+
+  function prevFlashcard() {
+    if (activeChallenge.currentIndex > 0) {
+      activeChallenge.currentIndex--;
+      renderFlashcardMode();
+    }
+  }
+
+
+  function nextFlashcard() {
+    if (activeChallenge.currentIndex < activeChallenge.words.length - 1) {
+      activeChallenge.currentIndex++;
+      renderFlashcardMode();
+    }
+  }
+
+
+  // --- Sub-mode B: 4-Choice Quiz ---
+  function setupQuizQuestions() {
+    const words = activeChallenge.words;
+    activeChallenge.questions = words.map((w, idx) => {
+      // 3 distractors from remaining 9 words
+      const otherWords = words.filter((_, i) => i !== idx);
+      const shuffledOthers = [...otherWords].sort(() => Math.random() - 0.5);
+      const distractors = shuffledOthers.slice(0, 3).map(o => o.zh);
+
+
+      const options = [w.zh, ...distractors].sort(() => Math.random() - 0.5);
+      const correctIndex = options.indexOf(w.zh);
+
+
+      return {
+        word: w.word,
+        pos: w.pos,
+        zh: w.zh,
+        eg: w.eg,
+        options,
+        correctIndex
+      };
+    });
+  }
+
+
+  function renderQuizQuestion() {
+    const q = activeChallenge.questions[activeChallenge.currentIndex];
+    const bodyEl = document.getElementById('advChallengeBody');
+    const titleEl = document.getElementById('advChallengeTitle');
+    const iconEl = document.getElementById('advChallengeModeIcon');
+    const progressEl = document.getElementById('advChallengeProgressText');
+    const streakEl = document.getElementById('advChallengeStreakBadge');
+    const pBar = document.getElementById('advChallengeProgressBar');
+
+
+    iconEl.innerText = '🎯';
+    titleEl.innerText = `第 ${activeChallenge.stageId} 關・四選一挑戰`;
+    progressEl.innerText = `第 ${activeChallenge.currentIndex + 1} / ${activeChallenge.questions.length} 題 ｜ 得分：${activeChallenge.score * 10}`;
+    if (pBar) pBar.style.width = `${((activeChallenge.currentIndex + 1) / activeChallenge.questions.length) * 100}%`;
+
+
+    if (activeChallenge.streak >= 2 && streakEl) {
+      streakEl.innerText = `🔥 連擊 x${activeChallenge.streak}`;
+      streakEl.classList.remove('hidden');
+    } else if (streakEl) {
+      streakEl.classList.add('hidden');
+    }
+
+
+    bodyEl.innerHTML = `
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 text-center space-y-2 shadow-xs">
+        <div class="text-xs text-slate-400 font-mono">請選出正確的中文釋義</div>
+        <div class="text-3xl font-black text-slate-900 dark:text-white tracking-wide">
+          ${q.word}
+        </div>
+        <div class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
+          ${q.pos || ''}
+        </div>
+      </div>
+
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1" id="advQuizOptionsContainer">
+        ${q.options.map((opt, oIdx) => `
+          <button onclick="WordCheckingAdventure.selectQuizAnswer(${oIdx})" id="advQuizOpt_${oIdx}" class="p-3.5 rounded-2xl bg-slate-50 hover:bg-amber-50 dark:bg-slate-700/50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold text-xs text-slate-800 dark:text-slate-100 transition text-left flex items-center gap-2 cursor-pointer shadow-2xs">
+            <span class="w-6 h-6 rounded-xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-mono flex items-center justify-center font-bold border border-slate-200 dark:border-slate-600">
+              ${['A', 'B', 'C', 'D'][oIdx]}
+            </span>
+            <span class="flex-1">${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    `;
+
+
+    playWordAudio(q.word);
+  }
+
+
+  function selectQuizAnswer(selectedIdx) {
+    const q = activeChallenge.questions[activeChallenge.currentIndex];
+    const isCorrect = (selectedIdx === q.correctIndex);
+
+
+    // Disable all option buttons
+    for (let i = 0; i < q.options.length; i++) {
+      const btn = document.getElementById(`advQuizOpt_${i}`);
+      if (!btn) continue;
+      btn.onclick = null;
+      btn.classList.remove('hover:bg-amber-50', 'dark:hover:bg-slate-700');
+      if (i === q.correctIndex) {
+        btn.className = 'p-3.5 rounded-2xl bg-emerald-500 text-white font-bold text-xs transition text-left flex items-center gap-2 shadow-md';
+      } else if (i === selectedIdx && !isCorrect) {
+        btn.className = 'p-3.5 rounded-2xl bg-rose-500 text-white font-bold text-xs transition text-left flex items-center gap-2 shadow-md';
+      }
+    }
+
+
+    if (isCorrect) {
+      activeChallenge.score++;
+      activeChallenge.streak++;
+      appHooks.playMeowSound();
+    } else {
+      activeChallenge.streak = 0;
+    }
+
+
+    setTimeout(() => {
+      activeChallenge.currentIndex++;
+      if (activeChallenge.currentIndex < activeChallenge.questions.length) {
+        renderQuizQuestion();
+      } else {
+        finishStageChallenge(activeChallenge.score, activeChallenge.questions.length, activeChallenge.stageId);
+      }
+    }, 1100);
+  }
+
+
+  // --- Sub-mode C: Spelling Challenge ---
+  function setupSpellingQuestions() {
+    activeChallenge.questions = activeChallenge.words.map(w => ({
+      word: w.word,
+      pos: w.pos,
+      zh: w.zh,
+      eg: w.eg
+    }));
+  }
+
+
+  function renderSpellingQuestion() {
+    const q = activeChallenge.questions[activeChallenge.currentIndex];
+    const bodyEl = document.getElementById('advChallengeBody');
+    const titleEl = document.getElementById('advChallengeTitle');
+    const iconEl = document.getElementById('advChallengeModeIcon');
+    const progressEl = document.getElementById('advChallengeProgressText');
+    const pBar = document.getElementById('advChallengeProgressBar');
+
+
+    iconEl.innerText = '✍️';
+    titleEl.innerText = `第 ${activeChallenge.stageId} 關・拼字考驗`;
+    progressEl.innerText = `第 ${activeChallenge.currentIndex + 1} / ${activeChallenge.questions.length} 題 ｜ 得分：${activeChallenge.score * 10}`;
+    if (pBar) pBar.style.width = `${((activeChallenge.currentIndex + 1) / activeChallenge.questions.length) * 100}%`;
+
+
+    // Masked hint: first letter + underscores
+    const wordLen = q.word.length;
+    const hint = q.word[0] + ' _'.repeat(wordLen - 1);
+
+
+    bodyEl.innerHTML = `
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 text-center space-y-2 shadow-xs">
+        <div class="text-xs text-slate-400 font-mono">請聽音並依中文提示拼出英文單字</div>
+        <div class="text-2xl font-black text-slate-900 dark:text-white">
+          ${q.zh}
+        </div>
+        <div class="text-xs font-mono text-amber-600 dark:text-amber-400">
+          ${q.pos || ''} ｜ 單字長度：${wordLen} 個字母
+        </div>
+        <div class="text-sm font-mono tracking-widest text-slate-500 dark:text-slate-300 pt-1">
+          ${hint}
+        </div>
+        <button onclick="WordCheckingAdventure.playWordAudio('${q.word.replace(/'/g, "\\'")}')" class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-300 rounded-xl font-bold hover:bg-slate-200 transition">
+          🔊 重聽單字
+        </button>
+      </div>
+
+
+      <div class="space-y-3 pt-1">
+        <input type="text" id="advSpellingInput" placeholder="請在此輸入英文拼寫..." class="w-full px-4 py-3 rounded-2xl border-2 border-indigo-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-center text-lg tracking-wider focus:outline-none focus:border-indigo-500" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter') WordCheckingAdventure.submitSpellingAnswer()">
+        
+        <button onclick="WordCheckingAdventure.submitSpellingAnswer()" class="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm transition shadow-md cursor-pointer">
+          確認送出 🐾
+        </button>
+      </div>
+    `;
+
+
+    playWordAudio(q.word);
+    setTimeout(() => {
+      const input = document.getElementById('advSpellingInput');
+      if (input) input.focus();
+    }, 200);
+  }
+
+
+  function submitSpellingAnswer() {
+    const input = document.getElementById('advSpellingInput');
+    if (!input) return;
+    const val = input.value.trim().toLowerCase();
+    const q = activeChallenge.questions[activeChallenge.currentIndex];
+    const isCorrect = (val === q.word.trim().toLowerCase());
+
+
+    if (isCorrect) {
+      input.className = 'w-full px-4 py-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 font-black text-center text-lg tracking-wider';
+      activeChallenge.score++;
+      appHooks.playMeowSound();
+    } else {
+      input.className = 'w-full px-4 py-3 rounded-2xl border-2 border-rose-500 bg-rose-50 dark:bg-rose-950 text-rose-800 dark:text-rose-200 font-black text-center text-lg tracking-wider';
+      input.value = `${val} ❌ (正確：${q.word})`;
+    }
+
+
+    setTimeout(() => {
+      activeChallenge.currentIndex++;
+      if (activeChallenge.currentIndex < activeChallenge.questions.length) {
+        renderSpellingQuestion();
+      } else {
+        finishStageChallenge(activeChallenge.score, activeChallenge.questions.length, activeChallenge.stageId);
+      }
+    }, 1300);
+  }
+
+
+  // ==================== 8. VICTORY & RESULTS SETTLEMENT ====================
+
+
+  function finishStageChallenge(score, total, stageId) {
+    stageId = stageId || activeChallenge.stageId;
+    const challengeModal = document.getElementById('advChallengeModal');
+    if (challengeModal) challengeModal.classList.add('hidden');
+
+
+    const info = getStageInfo(stageId);
+    const stars = calculateStars(score, total);
+    const isPassed = stars > 0;
+    const pct = Math.round((score / total) * 100);
+
+
+    // Save stars if better
+    const prevStars = state.stageStars[stageId] || 0;
+    if (stars > prevStars) {
+      state.stageStars[stageId] = stars;
+    }
+
+
+    // Advance unlocked stage if current stage cleared
+    let isNewUnlock = false;
+    if (isPassed && stageId === state.unlockedStage && stageId < TOTAL_STAGES) {
+      state.unlockedStage = stageId + 1;
+      isNewUnlock = true;
+    }
+
+
+    // Fish treat reward calculation
+    let fishReward = 0;
+    if (stars === 3) fishReward = 5;
+    else if (stars === 2) fishReward = 3;
+    else if (stars === 1) fishReward = 2;
+
+
+    // Boss stage bonus
+    let isBossBonus = false;
+    if (info && info.isBoss && isPassed) {
+      fishReward += 20;
+      isBossBonus = true;
+    }
+
+
+    // Apply rewards via hooks
+    if (fishReward > 0) {
+      appHooks.addFish(fishReward);
+    }
+    if (isPassed) {
+      appHooks.addAffection(10);
+      appHooks.playCheerSound();
+    }
+
+
+    saveAdventureProgress();
+    renderAdventureMap();
+
+
+    // Populate Victory Modal
+    const victoryModal = document.getElementById('advVictoryModal');
+    if (!victoryModal) return;
+
+
+    const vTitle = document.getElementById('advVictoryTitle');
+    const vSub = document.getElementById('advVictorySubtitle');
+    const vIcon = document.getElementById('advVictoryIcon');
+    const starsBox = document.getElementById('advVictoryStarsContainer');
+    const scoreText = document.getElementById('advVictoryScoreText');
+    const fishText = document.getElementById('advVictoryFishText');
+    const bossBonusBox = document.getElementById('advVictoryBossBonusBox');
+    const nextBtn = document.getElementById('advVictoryNextBtn');
+
+
+    if (isPassed) {
+      vTitle.innerText = stars === 3 ? '🎉 滿星大捷！完美通關！' : '🎉 恭喜通關！';
+      vTitle.className = 'font-black text-xl text-amber-600 dark:text-amber-400 pt-2';
+      vSub.innerText = `第 ${stageId} 關挑戰成功！`;
+      vIcon.innerText = info.isBoss ? '👑' : '🏆';
+
+
+      let starIconsHtml = '';
+      for (let i = 1; i <= 3; i++) {
+        if (i <= stars) {
+          starIconsHtml += `<span class="star-pop-${i}">⭐</span>`;
+        } else {
+          starIconsHtml += `<span class="opacity-30">☆</span>`;
+        }
+      }
+      starsBox.innerHTML = starIconsHtml;
+
+
+      scoreText.innerText = `${score} / ${total} 題 (${pct}%)`;
+      fishText.innerText = `+${fishReward} 條小魚乾 🐟`;
+
+
+      if (isBossBonus && bossBonusBox) {
+        bossBonusBox.classList.remove('hidden');
+      } else if (bossBonusBox) {
+        bossBonusBox.classList.add('hidden');
+      }
+
+
+      if (nextBtn) {
+        if (stageId < TOTAL_STAGES) {
+          nextBtn.innerText = '🐾 前進下一關';
+          nextBtn.onclick = () => {
+            closeVictoryModal();
+            openStageModal(stageId + 1);
+          };
+        } else {
+          nextBtn.innerText = '👑 登上傳奇頂峰！';
+          nextBtn.onclick = closeVictoryModal;
+        }
+      }
+
+
+      appHooks.saySpeech(`太厲害了！第 ${stageId} 關奪得 ${stars} 顆星！獲得 +${fishReward} 條小魚乾獎勵喵！🐾`, '關卡大捷');
+    } else {
+      vTitle.innerText = '差一點點就過關了喵！';
+      vTitle.className = 'font-black text-xl text-slate-700 dark:text-slate-200 pt-2';
+      vSub.innerText = '正確率需達 60% 才能通關，多複習一下再來挑戰！';
+      vIcon.innerText = '😿';
+      starsBox.innerHTML = '<span class="opacity-30">☆☆☆</span>';
+      scoreText.innerText = `${score} / ${total} 題 (${pct}%)`;
+      fishText.innerText = `+0 條小魚乾`;
+      if (bossBonusBox) bossBonusBox.classList.add('hidden');
+      if (nextBtn) {
+        nextBtn.innerText = '🗺️ 返回地圖';
+        nextBtn.onclick = closeVictoryModal;
+      }
+      appHooks.saySpeech('別灰心喵～先看看單字速記過目，咪咪相信妳一定可以通關的！🐾', '加油打氣');
+    }
+
+
+    victoryModal.classList.remove('hidden');
+  }
+
+
+  function closeVictoryModal() {
+    const victoryModal = document.getElementById('advVictoryModal');
+    if (victoryModal) victoryModal.classList.add('hidden');
+  }
+
+
+  function playAgain() {
+    closeVictoryModal();
+    startStageChallenge(activeChallenge.stageId, activeChallenge.type);
+  }
+
+
+  function nextStageOrMap() {
+    closeVictoryModal();
+  }
+
+
+  // ==================== 9. INITIALIZATION & EXPORTS ====================
+
+
+  function initAdventureMap(options) {
+    options = options || {};
+    if (options.rawVocabList) state.rawVocabList = options.rawVocabList;
+    if (options.hooks) {
+      appHooks = { ...appHooks, ...options.hooks };
+    }
+
+
+    // Inject CSS styles into DOM if document is available
+    if (typeof document !== 'undefined') {
+      let styleTag = document.getElementById('adventureMapStyles');
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = 'adventureMapStyles';
+        styleTag.innerHTML = getAdventureStyles();
+        document.head.appendChild(styleTag);
+      }
+    }
+
+
+    loadAdventureProgress();
+    renderAdventureMap();
+  }
+
+
+  return {
+    ADVENTURE_WORLDS,
+    TOTAL_STAGES,
+    WORDS_PER_STAGE,
+    getStageInfo,
+    getStageWords,
+    calculateStars,
+    loadAdventureProgress,
+    saveAdventureProgress,
+    getAdventureSaveData,
+    loadAdventureSaveData,
+    initAdventureMap,
+    renderAdventureMap,
+    switchAdventureWorld,
+    openStageModal,
+    closeStageModal,
+    playWordAudio,
+    startStageChallenge,
+    abortChallenge,
+    prevFlashcard,
+    nextFlashcard,
+    selectQuizAnswer,
+    submitSpellingAnswer,
+    finishStageChallenge,
+    closeVictoryModal,
+    playAgain,
+    nextStageOrMap,
+    notifyLockedStage,
+    renderMapSectionHtml,
+    getAdventureStyles
+  };
+}));
+
+
+    // ==================== CAT DYNAMIC GROWTH & MORPH SYSTEM (Lv.1 ~ Lv.5) ====================
+    function updateCatGrowthMorph(level) {
+      ['mainCat', 'wardrobeCat'].forEach(prefix => {
+        const svg = document.getElementById(prefix + 'Svg');
+        const tail = document.getElementById(prefix + 'Tail');
+        const eyes = document.getElementById(prefix + 'Eyes');
+        const chest = document.getElementById(prefix + 'MorphChest');
+        const headMorph = document.getElementById(prefix + 'MorphHead');
+
+        if (!tail) return;
+
+        // 1. Overall Cat Scale / Divine Aura
+        if (svg) {
+          if (level === 1) {
+            svg.classList.remove('cat-divine-aura');
+          } else if (level === 5) {
+            svg.classList.add('cat-divine-aura');
+          } else {
+            svg.classList.remove('cat-divine-aura');
+          }
+        }
+
+        // 2. Tail Evolution
+        if (level === 1) {
+          // Cute short kitten tail
+          tail.innerHTML = `
+            <path d="M 32,105 C 20,107 16,92 23,83 C 26,79 30,83 27,87 C 22,93 25,100 34,101 Z" fill="#f97316" />
+            <path d="M 23,83 C 25,81 29,84 26,87 C 23,90 20,86 23,83 Z" fill="#ffffff" />
+          `;
+        } else if (level === 2 || level === 3) {
+          // Standard / Sleek long tail
+          tail.innerHTML = `
+            <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
+            <path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />
+          `;
+        } else if (level === 4) {
+          // Thick adventurer fox tail
+          tail.innerHTML = `
+            <path d="M 32,105 C 10,110 2,82 14,64 C 18,58 24,62 20,68 C 12,78 12,90 20,96 C 24,100 28,95 34,98 Z" fill="#f97316" />
+            <path d="M 14,64 C 18,60 25,65 21,71 C 17,76 13,71 14,64 Z" fill="#ffffff" />
+            <path d="M 15,75 Q 8,72 13,83 Q 8,85 18,92" stroke="#ea580c" stroke-width="1.2" fill="none" />
+          `;
+        } else {
+          // Level 5: Divine Cloud / Heavenly flame tail
+          tail.innerHTML = `
+            <path d="M 32,105 C 8,112 -5,75 8,52 C 14,42 24,46 19,56 C 8,72 12,88 22,96 C 26,100 30,95 34,98 Z" fill="#f59e0b" filter="drop-shadow(0 0 4px #fbbf24)" />
+            <path d="M 8,52 C 14,40 28,45 22,58 C 14,68 6,60 8,52 Z" fill="#fef08a" />
+            <path d="M 16,68 Q 2,62 10,78 Q 2,82 18,92" stroke="#d97706" stroke-width="1.8" fill="none" stroke-linecap="round" />
+            <circle cx="12" cy="56" r="2" fill="#ffffff" opacity="0.9" />
+            <circle cx="6" cy="72" r="1.5" fill="#fef08a" opacity="0.8" />
+          `;
+        }
+
+        // 3. Chest Fluff Evolution
+        if (chest) {
+          if (level === 3) {
+            // Elegant scholar white chest bib
+            chest.innerHTML = `
+              <path d="M 52,78 C 50,86 44,90 48,93 C 54,95 58,88 60,94 C 62,88 66,95 72,93 C 76,90 70,86 68,78 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.06))" />
+            `;
+          } else if (level === 4) {
+            // Strong adventurer chest mane
+            chest.innerHTML = `
+              <path d="M 50,77 C 46,86 40,91 46,95 C 52,98 56,90 60,96 C 64,90 68,98 74,95 C 80,91 74,86 70,77 Z" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.08))" />
+              <path d="M 54,82 Q 60,90 66,82" stroke="#cbd5e1" stroke-width="1" fill="none" />
+            `;
+          } else if (level === 5) {
+            // Divine chest mane with gold star gem
+            chest.innerHTML = `
+              <path d="M 48,76 C 44,87 38,93 44,97 C 52,100 56,92 60,98 C 64,92 68,100 76,97 C 82,93 76,87 72,76 Z" fill="#ffffff" filter="drop-shadow(0 0 5px rgba(251, 191, 36, 0.4))" />
+              <circle cx="60" cy="85" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1" />
+              <polygon points="60,82 61,84 63,85 61,86 60,88 59,86 57,85 59,84" fill="#ffffff" />
+            `;
+          } else {
+            chest.innerHTML = '';
+          }
+        }
+
+        // 4. Head Morphing (Ear Tufts on Lv.4, Golden Sigil on Lv.5)
+        if (headMorph) {
+          if (level === 4) {
+            headMorph.innerHTML = `
+              <line x1="20" y1="16" x2="16" y2="9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="22" y1="17" x2="19" y2="11" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+              <line x1="100" y1="16" x2="104" y2="9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="98" y1="17" x2="101" y2="11" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+            `;
+          } else if (level === 5) {
+            headMorph.innerHTML = `
+              <line x1="20" y1="16" x2="15" y2="8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
+              <line x1="100" y1="16" x2="105" y2="8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" filter="drop-shadow(0 0 2px #fbbf24)" />
+              <!-- Forehead Divine Star Sigil -->
+              <g class="divine-sigil-pulse">
+                <ellipse cx="60" cy="38" rx="6" ry="6" fill="#fef08a" opacity="0.3" />
+                <polygon points="60,33 62,37 66,38 62,39 60,43 58,39 54,38 58,37" fill="#fbbf24" stroke="#d97706" stroke-width="0.7" />
+                <circle cx="60" cy="38" r="1.5" fill="#ffffff" />
+                <path d="M 57,42 Q 60,45 63,42" stroke="#f59e0b" stroke-width="1.2" fill="none" stroke-linecap="round" />
+              </g>
+            `;
+          } else {
+            headMorph.innerHTML = '';
+          }
+        }
+
+        // 5. Eyes Morphing (Baby round eyes for Lv.1)
+        if (eyes) {
+          if (level === 1) {
+            eyes.innerHTML = `
+              <ellipse cx="46" cy="52" rx="5.5" ry="7" fill="#1e293b" />
+              <circle cx="48" cy="49" r="2.2" fill="#ffffff" />
+              <circle cx="44" cy="54" r="1" fill="#ffffff" opacity="0.7" />
+              <ellipse cx="74" cy="52" rx="5.5" ry="7" fill="#1e293b" />
+              <circle cx="76" cy="49" r="2.2" fill="#ffffff" />
+              <circle cx="72" cy="54" r="1" fill="#ffffff" opacity="0.7" />
+            `;
+          } else if (level === 4 || level === 5) {
+            eyes.innerHTML = `
+              <ellipse cx="46" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
+              <circle cx="48" cy="49.5" r="1.8" fill="#ffffff" />
+              <circle cx="44.5" cy="53" r="0.9" fill="#fde047" />
+              <ellipse cx="74" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
+              <circle cx="76" cy="49.5" r="1.8" fill="#ffffff" />
+              <circle cx="72.5" cy="53" r="0.9" fill="#fde047" />
+            `;
+          } else {
+            eyes.innerHTML = `
+              <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+              <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
+              <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
+              <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
+            `;
+          }
+        }
+      });
+    }
+
+
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
       document.getElementById('fishCount').innerText = fishCount;
@@ -2591,18 +4369,27 @@
 
     // Mode Switching
     function switchMode(mode) {
-      const modes = ['card', 'quiz', 'spelling', 'speaking', 'exam', 'list'];
+      const modes = ['map', 'card', 'quiz', 'spelling', 'speaking', 'exam', 'list'];
       modes.forEach(m => {
         const sec = document.getElementById('mode' + capitalize(m));
         const tab = document.getElementById('tab' + capitalize(m));
-        if (m === mode) {
-          sec.classList.remove('hidden');
-          tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold";
-        } else {
-          sec.classList.add('hidden');
-          tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5";
+        if (sec && tab) {
+          if (m === mode) {
+            sec.classList.remove('hidden');
+            tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition active-tab shadow-sm bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold";
+          } else {
+            sec.classList.add('hidden');
+            tab.className = "flex-1 md:flex-initial px-3 sm:px-4 py-2 rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center space-x-1.5";
+          }
         }
       });
+
+      if (mode === 'map') {
+        if (window.WordCheckingAdventure) {
+          WordCheckingAdventure.renderAdventureMap();
+        }
+        sayCatSpeech("冒險闖關地圖模式：沿著石板古道漫遊 5 大世界，挑戰 120 關贏取三星與寶箱吧喵！🐾");
+      }
 
 
 
