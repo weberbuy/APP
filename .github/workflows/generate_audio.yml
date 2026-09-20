@@ -26,10 +26,17 @@ jobs:
         run: python3 generate_audio_1200.py
 
       - name: Commit and Push MP3s
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/audio
-          git add -A data/audio/
-          git commit -m "feat: auto-generate 1200 audio files via edge-tts" || echo "No changes to commit"
+        run: 
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # 明確加入產生的音檔資料夾
+        git add WordChecking/data/audio/
+        
+        # 檢查是否有檔案需要提交，避免無變更時 commit 報錯
+        if ! git diff --staged --quiet; then
+          git commit -m "Add generated audio files"
           git push
+        else
+          echo "No changes to commit"
+        fi
