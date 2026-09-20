@@ -12,8 +12,8 @@ import subprocess
 import sys
 
 VOICE = "en-US-JennyNeural"  # 專業美語自然女聲（亦可換 en-US-GuyNeural 男聲）
-OUTPUT_DIR = os.path.join(".", "data", "audio")
-VOCAB_FILE = os.path.join(".", "data", "vocab-1200.json")
+OUTPUT_DIR = os.path.join("./WordChecking", "data", "audio")
+VOCAB_FILE = os.path.join("./WordChecking", "data", "vocab-1200.json")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
