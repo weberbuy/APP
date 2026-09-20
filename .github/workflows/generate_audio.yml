@@ -1,31 +1,29 @@
 name: Generate 1200 Audio Files
 
 on:
-  workflow_dispatch: # 支援在 GitHub 網頁上手動點擊 Run workflow
+  workflow_dispatch: # 允許在 GitHub 網頁 Actions 頁面手動點擊執行
 
+# ★ 關鍵修正：給予 GitHub Actions Bot 自動 Push 推送檔案的寫入權限
 permissions:
   contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          pip install gTTS
+      - name: Install edge-tts
+        run: pip install edge-tts
 
-      - name: Generate Audio Files
-        run: |
-          python scripts/generate_audio.py
+      - name: Run Audio Generator
+        run: python3 generate_audio_1200.py
 
       - name: Commit and push audio files
         run: |
