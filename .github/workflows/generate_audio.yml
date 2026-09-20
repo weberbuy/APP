@@ -1,42 +1,44 @@
 name: Generate 1200 Audio Files
 
 on:
-  workflow_dispatch: # 允許在 GitHub 網頁 Actions 頁面手動點擊執行
+  workflow_dispatch: # 支援在 GitHub 網頁上手動點擊 Run workflow
 
-# ★ 關鍵修正：給予 GitHub Actions Bot 自動 Push 推送檔案的寫入權限
 permissions:
   contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install edge-tts
-        run: pip install edge-tts
+      - name: Install dependencies
+        run: |
+          pip install gTTS
 
-      - name: Run Audio Generator
-        run: python3 generate_audio_1200.py
+      - name: Generate Audio Files
+        run: |
+          python scripts/generate_audio.py
 
-      - name: Commit and Push MP3s
-        run: 
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        
-        # 明確加入產生的音檔資料夾
-        git add WordChecking/data/audio/
-        
-        # 檢查是否有檔案需要提交，避免無變更時 commit 報錯
-        if ! git diff --staged --quiet; then
-          git commit -m "Add generated audio files"
-          git push
-        else
-          echo "No changes to commit"
-        fi
+      - name: Commit and push audio files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 加入產生的音檔資料夾
+          git add WordChecking/data/audio/
+
+          # 檢查暫存區是否有變更，有變更才進行 commit 與 push
+          if ! git diff --staged --quiet; then
+            git commit -m "Generate 1200 audio files [skip ci]"
+            git push origin main
+          else
+            echo "No changes to commit. Everything is up to date."
+          fi
