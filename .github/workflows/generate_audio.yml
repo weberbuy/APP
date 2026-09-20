@@ -1,0 +1,24 @@
+name: Generate 1200 Audio Files
+on:
+  workflow_dispatch: # 允許在網頁手動點擊執行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install edge-tts
+        run: pip install edge-tts
+      - name: Run Audio Generator
+        run: python3 generate_audio_1200.py
+      - name: Commit and Push MP3s
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/audio/
+          git commit -m "feat: auto-generate 1200 audio files via edge-tts" || echo "No changes"
+          git push
