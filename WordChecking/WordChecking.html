@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.2-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.3-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -186,7 +186,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.2-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.3-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -2099,6 +2099,7 @@
     const FISH_STORAGE_KEY = 'wordchecking_fish_count_v1';
     let userProgress = {};
     let fishCount = parseInt(localStorage.getItem(FISH_STORAGE_KEY) || '0', 10);
+    if (typeof window !== 'undefined') { window.getFishCount = () => fishCount; window.setFishCount = (n) => { fishCount = n; localStorage.setItem(FISH_STORAGE_KEY, n); const el = document.getElementById('fishCount'); if (el) el.innerText = n; }; }
 
 
 
@@ -4620,16 +4621,23 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
   function loadAdventureSaveData(data) {
     if (!data) return;
-    if (typeof data.unlockedStage === 'number') {
-      state.unlockedStage = Math.max(1, Math.min(TOTAL_STAGES, data.unlockedStage));
-    }
-    if (data.stageStars && typeof data.stageStars === 'object') {
-      state.stageStars = { ...data.stageStars };
-    }
-    if (typeof data.currentWorldId === 'number') {
-      state.currentWorldId = data.currentWorldId;
-    }
+    state.unlockedStage = (typeof data.unlockedStage === 'number') ? Math.max(1, Math.min(TOTAL_STAGES, data.unlockedStage)) : 1;
+    state.stageStars = (data.stageStars && typeof data.stageStars === 'object') ? { ...data.stageStars } : {};
+    recalculateTotalStars();
+    state.currentWorldId = (typeof data.currentWorldId === 'number') ? data.currentWorldId : determineWorldByStage(state.unlockedStage);
     saveAdventureProgress();
+    renderAdventureMap();
+  }
+
+  function resetAdventureProgress() {
+    state.unlockedStage = 1;
+    state.stageStars = {};
+    state.totalStars = 0;
+    state.currentWorldId = 1;
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
+    recalculateTotalStars();
     renderAdventureMap();
   }
 
@@ -5696,6 +5704,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     saveAdventureProgress,
     getAdventureSaveData,
     loadAdventureSaveData,
+    resetAdventureProgress,
     initAdventureMap,
     renderAdventureMap,
     switchAdventureWorld,
@@ -6570,40 +6579,96 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
     // 處理更換帳號邏輯：查得新帳號備份則自動載入；若為全新帳號則自動清空本機暫存並初始化為 0 進度
+    // 本機帳號獨立快照保存與載入 (Local Multi-Account Snapshot Isolation)
+    function saveAccountLocalSnapshot(acc) {
+      if (!acc) return;
+      try {
+        const payload = getExportPayload();
+        payload.account = acc;
+        payload.snapshotTime = new Date().toISOString();
+        localStorage.setItem(`wordchecking_account_snapshot_${acc}_v1`, JSON.stringify(payload));
+      } catch (e) {
+        console.warn('[AccountSnapshot] Failed to save snapshot for', acc, e);
+      }
+    }
+
+    function loadAccountLocalSnapshot(acc) {
+      if (!acc) return false;
+      try {
+        const raw = localStorage.getItem(`wordchecking_account_snapshot_${acc}_v1`);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!data || !data.progress) return false;
+        return applyImportedData(data, `local-snapshot-${acc}`, true);
+      } catch (e) {
+        console.warn('[AccountSnapshot] Failed to load snapshot for', acc, e);
+        return false;
+      }
+    }
+
     async function handleAccountSwitch(oldAcc, newAcc) {
-      updatePiSyncBadge('檢查新帳號備份...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '🔍');
+      updatePiSyncBadge('切換帳號保護中...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '🔍');
 
+      // 步驟 1：立即封存舊帳號的所有本機最新進度 (單字、魚乾、親密度、紙娃娃、冒險地圖)
+      if (oldAcc) {
+        saveAccountLocalSnapshot(oldAcc);
+      }
 
-      if (!piServerUrl || !piApiKey) {
+      // 步驟 2：優先檢查並載入新帳號之本機獨立快照 (即使離線也 100% 安全)
+      const hasLocalSnapshot = loadAccountLocalSnapshot(newAcc);
+      if (!hasLocalSnapshot) {
+        // 本機未曾登入過此帳號：安全初始化為全新 0 進度
         resetLocalProgressToZero();
-        updatePiSyncBadge('未設定同步', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-200', '⚪');
-        alert(`已切換至帳號「${newAcc || '未指定'}」！畫面已初始化為全新 0 進度。`);
+      }
+
+      // 若未設定伺服器參數，直接以本機安全模式完成切換
+      if (!piServerUrl || !piApiKey) {
+        updatePiSyncBadge('本機獨立儲存', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
+        if (hasLocalSnapshot) {
+          playCatMeowSound();
+          sayCatSpeech(`歡迎回來【${newAcc}】！已載入您在本機的進度喵～🐾`, "本機載入");
+          alert(`已切換至帳號「${newAcc}」！\n已為您載入該帳號之本機歷史進度（離線安全模式）。`);
+        } else {
+          sayCatSpeech(`已建立新帳號【${newAcc || '未指定'}】！全新 0 進度喵～🐾`, "全新開始");
+          alert(`已切換至新帳號「${newAcc || '未指定'}」！\n畫面已初始化為全新 0 進度。`);
+        }
         return;
       }
 
-
+      // 步驟 3：若已設定伺服器，嘗試連線檢查伺服器上有無更新的雲端備份
       try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(newAcc);
         if (backupData && fileName && applyImportedData(backupData, fileName, true)) {
           localStorage.setItem('pi_last_synced_file', fileName);
+          // 同步成功後立即刷新本機快照
+          saveAccountLocalSnapshot(newAcc);
           updatePiSyncBadge('已同步最新', 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700', '🟢');
           playCatMeowSound();
-          sayCatSpeech(`歡迎回來【${newAcc}】！已為您載入最新進度，小魚乾有 ${fishCount} 條喵～🐟`, "切換帳號");
-          alert(`🎉 已切換至帳號「${newAcc}」並自動載入該帳號之最新備份！\n備份檔名：${fileName}\n小魚乾：${fishCount} 條`);
+          sayCatSpeech(`歡迎回來【${newAcc}】！已從樹莓派載入最新進度喵～🐟`, "切換帳號");
+          alert(`🎉 已切換至帳號「${newAcc}」並自動同步該帳號在樹莓派上的最新備份！\n備份檔名：${fileName}\n小魚乾：${fishCount} 條`);
         } else {
-          // 雲端尚未有新帳號之備份：立即清空本機快取，初始化為全新 0 進度，徹底防止帳號資料互相污染
-          resetLocalProgressToZero();
-          updatePiSyncBadge('尚無雲端備份', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
-          sayCatSpeech(`已切換至新帳號【${newAcc || '未指定'}】！全新 0 進度，一起加油背單字喵～🐾`, "全新開始");
-          alert(`已切換至帳號「${newAcc || '未指定'}」！\n樹莓派伺服器上尚未找到此帳號之備份，畫面已自動初始化為全新 0 進度 🐾`);
+          // 伺服器上尚未有新帳號備份：保留步驟 2 載入的本機資料，絕不清除！
+          if (hasLocalSnapshot) {
+            updatePiSyncBadge('已載入本機進度', 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700', '💾');
+            sayCatSpeech(`歡迎回來【${newAcc}】！已為您載入本機進度，伺服器尚無新備份喵～🐾`, "本機保護");
+            alert(`已切換至帳號「${newAcc}」！\n樹莓派伺服器上尚未有此帳號備份，已為您安全載入本機進度。`);
+          } else {
+            updatePiSyncBadge('尚無雲端備份', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
+            sayCatSpeech(`已切換至新帳號【${newAcc || '未指定'}】！全新 0 進度，一起加油背單字喵～🐾`, "全新開始");
+            alert(`已切換至帳號「${newAcc || '未指定'}」！\n樹莓派與本機均無歷史紀錄，已為您建立全新 0 進度。`);
+          }
         }
       } catch (err) {
-        resetLocalProgressToZero();
-        updatePiSyncBadge('離線模式', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
-        alert(`切換帳號時連線伺服器異常 (${err.message})，畫面已初始化為本機 0 進度。`);
+        // ★ 核心容錯安全保護：伺服器異常或斷線時，絕對不呼叫 resetLocalProgressToZero()！
+        updatePiSyncBadge('離線保護模式', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
+        if (hasLocalSnapshot) {
+          sayCatSpeech(`伺服器連線離線，已安全載入【${newAcc}】的本機離線進度喵～🐾`, "離線保護");
+          alert(`切換至帳號「${newAcc}」完成！\n（注意：伺服器連線離線或異常，但已安全載入本機離線進度，資料絕不遺失！）`);
+        } else {
+          alert(`切換至帳號「${newAcc}」完成！\n（注意：伺服器離線，已建立本機全新初始 0 進度）`);
+        }
       }
     }
-
 
     // 重設本機所有進度為 0 (乾淨狀態)
     function resetLocalProgressToZero() {
@@ -6637,6 +6702,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       renderCatAccessories();
 
 
+      // Reset Adventure Map
+      localStorage.removeItem('wordchecking_adventure_v1');
+      if (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.resetAdventureProgress === 'function') {
+        window.WordCheckingAdventure.resetAdventureProgress();
+      } else if (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.loadAdventureSaveData === 'function') {
+        window.WordCheckingAdventure.loadAdventureSaveData({ unlockedStage: 1, stageStars: {}, totalStars: 0, currentWorldId: 1 });
+      }
+
       userProgress = {};
       updateCatGrowthUI();
       renderStats();
@@ -6661,7 +6734,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.3.0-test",
+        version: "2.6.3-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -6676,7 +6749,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           all1200: JSON.parse(localStorage.getItem('wordchecking_progress_all1200_v1') || '{}'),
           numbers: JSON.parse(localStorage.getItem('wordchecking_progress_numbers_v1') || '{}'),
           family: JSON.parse(localStorage.getItem('wordchecking_progress_family_v1') || '{}')
-        }
+        },
+        adventure: (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.getAdventureSaveData === 'function') 
+          ? window.WordCheckingAdventure.getAdventureSaveData() 
+          : JSON.parse(localStorage.getItem('wordchecking_adventure_v1') || 'null')
       };
     }
 
@@ -6985,6 +7061,21 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         localStorage.setItem('wordchecking_progress_family_v1', JSON.stringify(payload.progress.family));
       }
 
+
+      // Restore Adventure Map Progress
+      if (payload.adventure) {
+        localStorage.setItem('wordchecking_adventure_v1', JSON.stringify(payload.adventure));
+        if (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.loadAdventureSaveData === 'function') {
+          window.WordCheckingAdventure.loadAdventureSaveData(payload.adventure);
+        }
+      } else {
+        localStorage.removeItem('wordchecking_adventure_v1');
+        if (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.resetAdventureProgress === 'function') {
+          window.WordCheckingAdventure.resetAdventureProgress();
+        } else if (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.loadAdventureSaveData === 'function') {
+          window.WordCheckingAdventure.loadAdventureSaveData({ unlockedStage: 1, stageStars: {}, totalStars: 0, currentWorldId: 1 });
+        }
+      }
 
       // Reload current theme progress
       const theme = THEME_REGISTRY[currentThemeKey];
