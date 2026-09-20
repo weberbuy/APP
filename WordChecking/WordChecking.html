@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.3-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.4-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -186,7 +186,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.3-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.4-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -2529,14 +2529,12 @@
         lastKnownCatLevel = level;
         localStorage.setItem('wordchecking_cat_level_v1', level);
         triggerLevelUpCelebration(currentConfig);
+        if (typeof checkLevelUnlocks === 'function') checkLevelUnlocks(true, false);
       } else if (level < lastKnownCatLevel) {
         lastKnownCatLevel = level;
         localStorage.setItem('wordchecking_cat_level_v1', level);
-      }
-
-      // Synchronize wardrobe unlocks & auto-unequip higher level gear on downgrade
-      if (typeof checkLevelUnlocks === 'function') {
-        checkLevelUnlocks(false);
+        // Trigger downgrade auto-unequip ONLY when level actually drops!
+        if (typeof checkLevelUnlocks === 'function') checkLevelUnlocks(false, true);
       }
     }
 
@@ -3449,22 +3447,37 @@
       head: {
         head_none: "",
         head_sakura: `
-          <g id="acc_head_sakura" transform="translate(80, 24)">
-            <circle cx="-4" cy="-1" r="3.5" fill="#f472b6" />
-            <circle cx="4" cy="-1" r="3.5" fill="#f472b6" />
-            <circle cx="0" cy="-5" r="3.5" fill="#f472b6" />
-            <circle cx="-3" cy="4" r="3.5" fill="#f472b6" />
-            <circle cx="3" cy="4" r="3.5" fill="#f472b6" />
-            <circle cx="0" cy="0" r="2.8" fill="#fef08a" />
+          <!-- 🌸 櫻花小花飾: 夾於右耳基部與臉龐輪廓交界處 (比照附圖 x=83, y=33) -->
+          <g id="acc_head_sakura" transform="translate(83, 33) rotate(12)">
+            <circle cx="-5" cy="-2" r="4.2" fill="#f472b6" />
+            <circle cx="4" cy="-3" r="4.2" fill="#f472b6" />
+            <circle cx="-1" cy="-7" r="4.2" fill="#f472b6" />
+            <circle cx="-4" cy="4" r="4.2" fill="#f472b6" />
+            <circle cx="3.5" cy="3.5" r="4.2" fill="#f472b6" />
+            <circle cx="-4.5" cy="-1.5" r="3" fill="#fbcfe8" />
+            <circle cx="3.5" cy="-2.5" r="3" fill="#fbcfe8" />
+            <circle cx="-1" cy="-6" r="3" fill="#fbcfe8" />
+            <circle cx="-3.5" cy="3.5" r="3" fill="#fbcfe8" />
+            <circle cx="3" cy="3" r="3" fill="#fbcfe8" />
+            <circle cx="0" cy="-0.5" r="3.2" fill="#facc15" stroke="#eab308" stroke-width="0.6" />
+            <circle cx="0" cy="-0.5" r="1.5" fill="#ffffff" />
+            <path d="M 5,2 Q 10,6 7,9 Q 3,7 5,2 Z" fill="#4ade80" />
           </g>`,
-        head_ribbon: `
-          <g id="acc_head_ribbon" transform="translate(60, 24)">
-            <polygon points="-1,-1 -16,-9 -13,7 -1,1" fill="#ec4899" />
-            <polygon points="1,-1 16,-9 13,7 1,1" fill="#ec4899" />
-            <ellipse cx="0" cy="0" rx="4.5" ry="4" fill="#db2777" />
-            <circle cx="0" cy="0" r="2" fill="#fbcfe8" />
+head_ribbon: `
+          <!-- 🎀 萌萌蝴蝶結: 夾於右耳基部與臉龐交界處 (比照附圖 x=83, y=32) -->
+          <g id="acc_head_ribbon" transform="translate(83, 32) rotate(22)">
+            <polygon points="-1,-1 -13,-10 -9,4 -1,1" fill="#ec4899" stroke="#be185d" stroke-width="0.6" />
+            <polygon points="-2,-1 -11,-8 -8,3 -2,0" fill="#f472b6" />
+            <line x1="-1" y1="0" x2="-8" y2="-4" stroke="#db2777" stroke-width="0.8" />
+            <polygon points="1,-1 13,-10 9,4 1,1" fill="#ec4899" stroke="#be185d" stroke-width="0.6" />
+            <polygon points="2,-1 11,-8 8,3 2,0" fill="#f472b6" />
+            <line x1="1" y1="0" x2="8" y2="-4" stroke="#db2777" stroke-width="0.8" />
+            <path d="M -2,2 Q -6,8 -8,11 Q -4,9 -1,4 Z" fill="#db2777" />
+            <path d="M 2,2 Q 6,8 8,11 Q 4,9 1,4 Z" fill="#db2777" />
+            <ellipse cx="0" cy="0" rx="3.8" ry="3.4" fill="#db2777" stroke="#9d174d" stroke-width="0.6" />
+            <ellipse cx="-0.6" cy="-0.6" rx="2" ry="1.6" fill="#fbcfe8" />
           </g>`,
-        head_cap: `
+head_cap: `
           <g id="acc_head_cap" transform="translate(60, 22)">
             <ellipse cx="0" cy="2" rx="28" ry="11" fill="#ef4444" />
             <path d="M -26,3 Q 0,-12 26,3 Q 0,-8 -26,3 Z" fill="#b91c1c" />
@@ -3750,61 +3763,55 @@
       triggerAutoSaveToPi();
     }
 
-    function checkLevelUnlocks(notify = true) {
+    function checkLevelUnlocks(notify = true, isDowngrade = false) {
       const totalMastered = calculateTotalMasteredWords();
       const catLevel = getCatLevelInfo(totalMastered).level;
       let newUnlocks = [];
       let relockedItems = [];
       let unequippedItems = [];
 
-      // Ensure catWardrobe.unlocked exists
       if (!catWardrobe.unlocked) catWardrobe.unlocked = [];
 
       Object.keys(WARDROBE_CATALOG).forEach(catKey => {
         WARDROBE_CATALOG[catKey].forEach(item => {
-          // 1. Level-based unlocks: lock or unlock based on current level
+          // 1. Milestone Level-based free rewards (unlockType === 'level')
           if (item.unlockType === 'level') {
             if (catLevel >= item.reqLevel) {
               if (!catWardrobe.unlocked.includes(item.id)) {
                 catWardrobe.unlocked.push(item.id);
                 newUnlocks.push(item.name);
               }
-            } else {
-              // Level downgraded: RELOCK THE ITEM!
+            } else if (isDowngrade) {
+              // Only relock and unequip milestone items when an actual level downgrade occurs!
               const uIdx = catWardrobe.unlocked.indexOf(item.id);
               if (uIdx !== -1) {
                 catWardrobe.unlocked.splice(uIdx, 1);
                 relockedItems.push(item.name);
               }
+              if (catWardrobe.equipped && catWardrobe.equipped[catKey] === item.id) {
+                catWardrobe.equipped[catKey] = catKey + '_none';
+                unequippedItems.push(item.name);
+              }
             }
           }
-
-          // 2. Strict Level Requirement on Equipped Gear:
-          // If the item requires a higher level than current catLevel, UNEQUIP IT!
-          if (item.reqLevel && catLevel < item.reqLevel) {
-            if (catWardrobe.equipped && catWardrobe.equipped[catKey] === item.id) {
-              catWardrobe.equipped[catKey] = catKey + '_none';
-              unequippedItems.push(item.name);
-            }
-          }
+          // Note: Fish-purchased & Gacha items (unlockType === 'fish') are owned by the user and NEVER auto-unequipped!
         });
       });
 
-      // Always save and re-render accessories on all 3 cat instances
-      saveCatWardrobe();
-      renderCatAccessories();
-
-      // If wardrobe modal is currently open, refresh the items view immediately
-      const wModal = document.getElementById('wardrobeModal');
-      if (wModal && !wModal.classList.contains('hidden')) {
-        if (typeof renderWardrobeItems === 'function') renderWardrobeItems(currentWardrobeTab);
+      if (newUnlocks.length > 0 || relockedItems.length > 0 || unequippedItems.length > 0) {
+        saveCatWardrobe();
+        renderCatAccessories();
+        const wModal = document.getElementById('wardrobeModal');
+        if (wModal && !wModal.classList.contains('hidden')) {
+          if (typeof renderWardrobeItems === 'function') renderWardrobeItems(currentWardrobeTab);
+        }
       }
 
       if (notify) {
         if (newUnlocks.length > 0) {
           sayCatSpeech(`恭喜升級！衣櫥解鎖了里程碑專屬獎勵：【${newUnlocks.join('、')}】！快去換裝室試穿吧～👗🐾`, "解鎖里程碑新裝");
         } else if (unequippedItems.length > 0 || relockedItems.length > 0) {
-          sayCatSpeech(`等級變更為 Lv.${catLevel}，已自動將未解鎖的進階裝備卸下並鎖定喵～🐾`, "裝備重整");
+          sayCatSpeech(`等級變更為 Lv.${catLevel}，已自動將未解鎖的進階里程碑裝備卸下並鎖定喵～🐾`, "裝備重整");
         }
       }
     }
