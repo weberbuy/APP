@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.7.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.7.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -186,7 +186,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.7.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.7.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -840,9 +840,12 @@
 
             <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/60">
               <span class="text-xs text-slate-400">提示：正面阿拉伯數字</span>
-              <button onclick="event.stopPropagation(); playVoiceCurrent()" class="p-2.5 rounded-full hover:bg-rose-50 dark:hover:bg-slate-700 text-rose-500 transition">
+              <div class="flex items-center gap-2">
+                <span class="audio-source-badge hidden text-[10px] font-bold px-2 py-0.5 rounded-full border"></span>
+                <button onclick="event.stopPropagation(); playVoiceCurrent()" class="p-2.5 rounded-full hover:bg-rose-50 dark:hover:bg-slate-700 text-rose-500 transition" title="播放發音">
                 <i class="fa-solid fa-volume-high text-lg"></i>
               </button>
+              </div>
             </div>
           </div>
 
@@ -879,6 +882,7 @@
 
 
             <div class="flex items-center justify-center space-x-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+              <span class="audio-source-badge hidden text-[10px] font-bold px-2 py-0.5 rounded-full border"></span>
               <button onclick="event.stopPropagation(); playVoiceCurrent(0.8)" class="text-xs text-slate-600 dark:text-slate-300 hover:text-rose-600 flex items-center space-x-1 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-xl">
                 <i class="fa-solid fa-play text-[10px]"></i>
                 <span>慢速 0.8x</span>
@@ -946,10 +950,13 @@
         <div class="text-center py-5">
           <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">請問這個數字的正確英文拼法是？</div>
           <div class="text-6xl font-black text-slate-900 dark:text-white font-mono" id="quizQuestionDigit">40</div>
-          <button onclick="playVoiceText(currentQuizItem.word)" class="mt-3 inline-flex items-center space-x-1.5 text-xs text-rose-500 dark:text-rose-400 hover:underline font-medium">
-            <i class="fa-solid fa-volume-high"></i>
-            <span>聽咪咪唸一次</span>
-          </button>
+          <div class="mt-3 flex items-center justify-center gap-2">
+            <span class="audio-source-badge hidden text-[10px] font-bold px-2 py-0.5 rounded-full border"></span>
+            <button onclick="playVoiceText(currentQuizItem.word)" class="inline-flex items-center space-x-1.5 text-xs text-rose-500 dark:text-rose-400 hover:underline font-medium">
+              <i class="fa-solid fa-volume-high"></i>
+              <span>聽發音</span>
+            </button>
+          </div>
         </div>
 
 
@@ -997,6 +1004,7 @@
           <div class="text-xs text-slate-400">請拼寫出這個數字的英文：</div>
           <div class="text-6xl font-black text-slate-900 dark:text-white font-mono my-3" id="spellDigit">12</div>
           <div class="flex items-center justify-center space-x-2">
+            <span class="audio-source-badge hidden text-[10px] font-bold px-2 py-0.5 rounded-full border"></span>
             <button onclick="playVoiceText(currentSpellItem.word)" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-xs text-slate-600 dark:text-slate-300 flex items-center space-x-1">
               <i class="fa-solid fa-volume-high text-rose-500"></i>
               <span>播放讀音</span>
@@ -1066,7 +1074,8 @@
 
 
 
-          <div class="mt-4 flex justify-center space-x-3">
+          <div class="mt-4 flex items-center justify-center space-x-3">
+            <span class="audio-source-badge hidden text-[10px] font-bold px-2 py-0.5 rounded-full border"></span>
             <button onclick="playVoiceText(currentSpeakItem.word)" class="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-xs text-slate-600 dark:text-slate-300 flex items-center space-x-1.5 shadow-sm">
               <i class="fa-solid fa-volume-high text-rose-500"></i>
               <span>咪咪示範發音</span>
@@ -1203,6 +1212,7 @@
 
           <!-- Audio Player Buttons -->
           <div class="flex items-center justify-center space-x-3 pt-2">
+            <span class="audio-source-badge hidden text-[10px] font-bold px-2 py-0.5 rounded-full border"></span>
             <button onclick="playExamAudio(1.0)" class="px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow transition">
               <i class="fa-solid fa-volume-high"></i>
               <span>播放讀音</span>
@@ -1964,10 +1974,30 @@
   <script>
     // ==================== GLOBAL AUDIO ENGINE (MP3 PRIORITY & WEB SPEECH FALLBACK) ====================
     let currentAudioInstance = null;
+    let currentAudioSourceType = null;
+    let currentAudioSourceInfo = '';
+    function updateAudioSourceBadge(type, info) {
+      currentAudioSourceType = type;
+      currentAudioSourceInfo = info || '';
+      const badges = document.querySelectorAll('.audio-source-badge');
+      badges.forEach(badge => {
+        badge.classList.remove('hidden');
+        if (type === 'mp3') {
+          badge.className = 'audio-source-badge inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs transition-all duration-300';
+          badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>🎵 MP3 原音</span>';
+          if (info) badge.title = `音訊來源：${info}`;
+        } else if (type === 'tts') {
+          badge.className = 'audio-source-badge inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shadow-2xs transition-all duration-300';
+          badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span><span>🗣️ 語音合成</span>';
+          badge.title = '音訊來源：瀏覽器 Web Speech API 語音合成';
+        }
+      });
+    }
     function playVoiceText(word, rate = 1.0) {
       if (!word) return;
       const cleanWord = String(word).trim();
       if (!cleanWord) return;
+      // 停止前一個正在播放的音訊
       if (currentAudioInstance) {
         try {
           currentAudioInstance.pause();
@@ -1975,10 +2005,12 @@
         } catch (e) {}
         currentAudioInstance = null;
       }
+      // 取消先前的語音合成
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
       }
       const safeFilename = encodeURIComponent(cleanWord.toLowerCase()) + '.mp3';
+      // 支援多種路徑層級（針對根目錄與 WordChecking 子目錄部署）
       const candidatePaths = [
         './data/audio/' + safeFilename,
         './WordChecking/data/audio/' + safeFilename,
@@ -1990,6 +2022,7 @@
       const triggerFallback = () => {
         if (fallbackTriggered) return;
         fallbackTriggered = true;
+        updateAudioSourceBadge('tts', 'Web Speech API');
         if ('speechSynthesis' in window) {
           try {
             window.speechSynthesis.cancel();
@@ -2004,6 +2037,7 @@
       };
       function tryNextAudio() {
         if (pathIndex >= candidatePaths.length) {
+          // 所有候選路徑均無法載入，回退至瀏覽器語音合成
           triggerFallback();
           return;
         }
@@ -2016,22 +2050,31 @@
         audio.addEventListener('error', () => {
           tryNextAudio();
         });
+        audio.addEventListener('play', () => {
+          updateAudioSourceBadge('mp3', audioUrl);
+        });
         const playPromise = audio.play();
         if (playPromise !== undefined) {
-          playPromise.catch((err) => {
+          playPromise.then(() => {
+            updateAudioSourceBadge('mp3', audioUrl);
+          }).catch((err) => {
             tryNextAudio();
           });
         }
       }
       tryNextAudio();
     }
+        currentAudioInstance = null;
+            tryNextAudio();
     function playVoiceCurrent(rate = 1.0) {
       if (typeof filteredList !== 'undefined' && filteredList && filteredList[currentIndex]) {
         playVoiceText(filteredList[currentIndex].word, rate);
       }
     }
+    // 嚴格掛載至 window 全域，確保 HTML onclick 與所有模式均可正常呼叫
     window.playVoiceText = playVoiceText;
     window.playVoiceCurrent = playVoiceCurrent;
+    window.updateAudioSourceBadge = updateAudioSourceBadge;
     // >>>>>>>>>> [MODULE START: 01_theme_registry.js] >>>>>>>>>>
     
     // >>>>>>>>>> [MODULE START: 01_theme_registry.js] >>>>>>>>>>
