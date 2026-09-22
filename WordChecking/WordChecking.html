@@ -1962,6 +1962,77 @@
 
   <!-- Data & Logic script -->
   <script>
+    // ==================== GLOBAL AUDIO ENGINE (MP3 PRIORITY & WEB SPEECH FALLBACK) ====================
+    let currentAudioInstance = null;
+    function playVoiceText(word, rate = 1.0) {
+      if (!word) return;
+      const cleanWord = String(word).trim();
+      if (!cleanWord) return;
+      if (currentAudioInstance) {
+        try {
+          currentAudioInstance.pause();
+          currentAudioInstance.currentTime = 0;
+        } catch (e) {}
+        currentAudioInstance = null;
+      }
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      const safeFilename = encodeURIComponent(cleanWord.toLowerCase()) + '.mp3';
+      const candidatePaths = [
+        './data/audio/' + safeFilename,
+        './WordChecking/data/audio/' + safeFilename,
+        'data/audio/' + safeFilename,
+        'WordChecking/data/audio/' + safeFilename
+      ];
+      let pathIndex = 0;
+      let fallbackTriggered = false;
+      const triggerFallback = () => {
+        if (fallbackTriggered) return;
+        fallbackTriggered = true;
+        if ('speechSynthesis' in window) {
+          try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(cleanWord);
+            utterance.lang = 'en-US';
+            utterance.rate = rate || 1.0;
+            window.speechSynthesis.speak(utterance);
+          } catch (err) {
+            console.warn('SpeechSynthesis fallback error:', err);
+          }
+        }
+      };
+      function tryNextAudio() {
+        if (pathIndex >= candidatePaths.length) {
+          triggerFallback();
+          return;
+        }
+        const audioUrl = candidatePaths[pathIndex++];
+        const audio = new Audio(audioUrl);
+        currentAudioInstance = audio;
+        if (rate && rate !== 1.0) {
+          audio.playbackRate = rate;
+        }
+        audio.addEventListener('error', () => {
+          tryNextAudio();
+        });
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err) => {
+            tryNextAudio();
+          });
+        }
+      }
+      tryNextAudio();
+    }
+    function playVoiceCurrent(rate = 1.0) {
+      if (typeof filteredList !== 'undefined' && filteredList && filteredList[currentIndex]) {
+        playVoiceText(filteredList[currentIndex].word, rate);
+      }
+    }
+    window.playVoiceText = playVoiceText;
+    window.playVoiceCurrent = playVoiceCurrent;
+    // >>>>>>>>>> [MODULE START: 01_theme_registry.js] >>>>>>>>>>
     
     // >>>>>>>>>> [MODULE START: 01_theme_registry.js] >>>>>>>>>>
 
@@ -5168,67 +5239,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   }
 
 
-  let currentAudioInstance = null;
-  function playVoiceText(word, rate = 1.0) {
-    if (!word) return;
-    const cleanWord = word.trim();
-    if (!cleanWord) return;
-    if (currentAudioInstance) {
-      try {
-        currentAudioInstance.pause();
-        currentAudioInstance.currentTime = 0;
-      } catch (e) {}
-      currentAudioInstance = null;
-    }
-    if ('speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
-    const audioUrl = './data/audio/' + encodeURIComponent(cleanWord.toLowerCase()) + '.mp3';
-    const audio = new Audio(audioUrl);
-    currentAudioInstance = audio;
-    if (rate && rate !== 1.0) {
-      audio.playbackRate = rate;
-    }
-    let fallbackTriggered = false;
-    const triggerFallback = () => {
-      if (fallbackTriggered) return;
-      fallbackTriggered = true;
-      if ('speechSynthesis' in window) {
-        try {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(cleanWord);
-          utterance.lang = 'en-US';
-          utterance.rate = rate || 1.0;
-          window.speechSynthesis.speak(utterance);
-        } catch (err) {
-          console.warn('SpeechSynthesis fallback error:', err);
-        }
-      }
-    };
-    audio.addEventListener('error', () => {
-      console.log(`Audio file not found or failed to load for "${cleanWord}", falling back to SpeechSynthesis.`);
-      triggerFallback();
-    });
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch((err) => {
-        console.warn('Audio play() failed, trying fallback:', err);
-        triggerFallback();
-      });
-    }
-  }
-  function playVoiceCurrent(rate = 1.0) {
-    if (filteredList && filteredList[currentIndex]) {
-      playVoiceText(filteredList[currentIndex].word, rate);
-    }
-  }
-  function playWordAudio(word) {
-    if (!word) return;
-    if (appHooks && typeof appHooks.playAudio === 'function') {
-      appHooks.playAudio(word);
-    }
-    playVoiceText(word);
-  }
 
 
   // ==================== 7. INTERACTIVE CHALLENGE ENGINE ====================
@@ -5479,7 +5489,15 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       zh: (w.chinese || w.zh || ''),
       eg: w.eg
     }));
-var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckingAdventure) ? window.WordCheckingAdventure : (typeof WordCheckingAdventure !== 'undefined' ? WordCheckingAdventure : null);
+  function playWordAudio(word) {
+    if (!word) return;
+    if (appHooks && typeof appHooks.playAudio === 'function') {
+      appHooks.playAudio(word);
+    }
+    if (typeof window.playVoiceText === 'function') {
+      window.playVoiceText(word);
+    }
+  }
   }
 
 
