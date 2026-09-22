@@ -2064,8 +2064,6 @@
       }
       tryNextAudio();
     }
-        currentAudioInstance = null;
-            tryNextAudio();
     function playVoiceCurrent(rate = 1.0) {
       if (typeof filteredList !== 'undefined' && filteredList && filteredList[currentIndex]) {
         playVoiceText(filteredList[currentIndex].word, rate);
