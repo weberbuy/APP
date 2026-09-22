@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.6.4-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.7.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -186,7 +186,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.6.4-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.7.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -5168,14 +5168,66 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   }
 
 
+  let currentAudioInstance = null;
+  function playVoiceText(word, rate = 1.0) {
+    if (!word) return;
+    const cleanWord = word.trim();
+    if (!cleanWord) return;
+    if (currentAudioInstance) {
+      try {
+        currentAudioInstance.pause();
+        currentAudioInstance.currentTime = 0;
+      } catch (e) {}
+      currentAudioInstance = null;
+    }
+    if ('speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+    const audioUrl = './data/audio/' + encodeURIComponent(cleanWord.toLowerCase()) + '.mp3';
+    const audio = new Audio(audioUrl);
+    currentAudioInstance = audio;
+    if (rate && rate !== 1.0) {
+      audio.playbackRate = rate;
+    }
+    let fallbackTriggered = false;
+    const triggerFallback = () => {
+      if (fallbackTriggered) return;
+      fallbackTriggered = true;
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(cleanWord);
+          utterance.lang = 'en-US';
+          utterance.rate = rate || 1.0;
+          window.speechSynthesis.speak(utterance);
+        } catch (err) {
+          console.warn('SpeechSynthesis fallback error:', err);
+        }
+      }
+    };
+    audio.addEventListener('error', () => {
+      console.log(`Audio file not found or failed to load for "${cleanWord}", falling back to SpeechSynthesis.`);
+      triggerFallback();
+    });
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.warn('Audio play() failed, trying fallback:', err);
+        triggerFallback();
+      });
+    }
+  }
+  function playVoiceCurrent(rate = 1.0) {
+    if (filteredList && filteredList[currentIndex]) {
+      playVoiceText(filteredList[currentIndex].word, rate);
+    }
+  }
   function playWordAudio(word) {
     if (!word) return;
     if (appHooks && typeof appHooks.playAudio === 'function') {
       appHooks.playAudio(word);
     }
-    if (typeof playVoiceText === 'function') {
-      playVoiceText(word);
-    }
+    playVoiceText(word);
   }
 
 
@@ -7537,11 +7589,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
 
-    function playVoiceCurrent(rate = 1.0) {
-      if (filteredList && filteredList[currentIndex]) {
-        playVoiceText(filteredList[currentIndex].word, rate);
-      }
-    }
 
 
 
