@@ -5238,9 +5238,17 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     if (modal) modal.classList.add('hidden');
   }
 
-
-
-
+  function playWordAudio(word) {
+    if (!word) return;
+    if (appHooks && typeof appHooks.playAudio === 'function') {
+      appHooks.playAudio(word);
+    }
+    if (typeof window.playVoiceText === 'function') {
+      window.playVoiceText(word);
+    } else if (typeof playVoiceText === 'function') {
+      playVoiceText(word);
+    }
+  }
   // ==================== 7. INTERACTIVE CHALLENGE ENGINE ====================
 
 
@@ -5482,6 +5490,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
   // --- Sub-mode C: Spelling Challenge ---
+  // --- Sub-mode C: Spelling Challenge ---
   function setupSpellingQuestions() {
     activeChallenge.questions = activeChallenge.words.map(w => ({
       word: w.word,
@@ -5489,15 +5498,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       zh: (w.chinese || w.zh || ''),
       eg: w.eg
     }));
-  function playWordAudio(word) {
-    if (!word) return;
-    if (appHooks && typeof appHooks.playAudio === 'function') {
-      appHooks.playAudio(word);
-    }
-    if (typeof window.playVoiceText === 'function') {
-      window.playVoiceText(word);
-    }
-  }
   }
 
 
