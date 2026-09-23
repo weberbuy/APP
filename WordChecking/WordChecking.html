@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全模式學習順序優化與新字錯題優先版 (v2.9.1-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全面代碼瘦身與模組輕量化版 (v2.10.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -55,7 +55,7 @@
     .transform-style-3d { transform-style: preserve-3d; }
     .backface-hidden { backface-visibility: hidden; }
     .rotate-y-180 { transform: rotateY(180deg); }
-    
+
     /* Custom scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
@@ -69,9 +69,6 @@
       border-radius: 9999px;
     }
 
-
-
-
     @keyframes catEarWiggle {
       0%, 100% { transform: rotate(0deg); }
       25% { transform: rotate(-6deg); }
@@ -81,9 +78,6 @@
       animation: catEarWiggle 2.5s ease-in-out infinite;
     }
 
-
-
-
     @keyframes tailWag {
       0%, 100% { transform: rotate(0deg); }
       50% { transform: rotate(12deg); }
@@ -92,7 +86,7 @@
       transform-origin: 32px 105px;
       animation: tailWag 1.8s ease-in-out infinite;
     }
-  
+
     @keyframes catHop {
       0%, 100% { transform: translateY(0) scale(1); }
       30% { transform: translateY(-14px) scale(1.06, 0.94); }
@@ -110,7 +104,6 @@
       animation: tailWagFast 0.4s ease-in-out 4;
     }
 
-  
       @keyframes pawPulse {
         0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4)); }
         50% { transform: scale(1.08) translateY(-4px); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8)); }
@@ -132,7 +125,6 @@
       .map-path-line {
         stroke-dasharray: 6 6;
       }
-    
 
     /* Cat Morphing & Growth Styling */
     .cat-divine-aura {
@@ -145,7 +137,6 @@
     .divine-sigil-pulse {
       animation: divineShimmer 2.2s ease-in-out infinite;
     }
-
 
     /* Select & Options High-Contrast Dark Mode Styling */
     select option {
@@ -168,9 +159,6 @@
 </head>
 <body class="bg-amber-50/40 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
-
-
-
   <!-- Navigation Bar -->
   <header class="sticky top-0 z-40 bg-white/85 dark:bg-slate-800/85 backdrop-blur border-b border-amber-200/70 dark:border-slate-700 shadow-sm">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -186,14 +174,11 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.9.1-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.10.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
       </div>
-
-
-
 
       <!-- Actions: Fish Counter, Theme toggle & Back -->
       <div class="flex items-center space-x-2">
@@ -203,9 +188,6 @@
           <span id="piSyncText" class="hidden sm:inline">未設定同步</span>
         </button>
 
-
-
-
         <!-- Cat Treat (Fish) Counter -->
         <div class="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-100/80 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800/60 rounded-xl text-amber-800 dark:text-amber-300 text-xs font-bold shadow-sm" title="已獲得的小魚乾獎勵">
           <span class="text-base">🐟</span>
@@ -213,23 +195,14 @@
           <span class="text-[10px] text-amber-600 dark:text-amber-400 font-normal">魚乾</span>
         </div>
 
-
-
-
         <button id="catSoundToggle" onclick="toggleCatSound()" class="p-2 rounded-xl text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-slate-700 transition" title="開關貓咪叫聲提示音">
           <i class="fa-solid fa-bell text-base" id="soundIcon"></i>
         </button>
-
-
-
 
         <button id="themeToggle" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="切換深色/淺色">
           <i class="fa-solid fa-moon dark:hidden text-lg"></i>
           <i class="fa-solid fa-sun hidden dark:inline text-lg text-amber-400"></i>
         </button>
-
-
-
 
         <button onclick="window.history.length > 1 ? window.history.back() : window.location.href='index.html'" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition flex items-center space-x-1">
           <i class="fa-solid fa-house text-xs"></i>
@@ -239,21 +212,14 @@
     </div>
   </header>
 
-
-
-
   <!-- Main Container -->
   <main class="max-w-5xl mx-auto px-4 py-5 space-y-5">
-
-
-
 
     <!-- Interactive Cat Mascot & Growth Center (v2.0.0 Gamification) -->
     <section class="bg-gradient-to-r from-amber-100/90 via-rose-50 to-pink-100/70 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800/90 rounded-3xl p-4 sm:p-5 border border-amber-200/80 dark:border-slate-700 shadow-sm relative overflow-hidden">
       <!-- Decorative Background Paws -->
       <div class="absolute -right-4 -bottom-4 text-amber-200/40 dark:text-slate-700/30 text-8xl pointer-events-none select-none">🐾</div>
       <div class="absolute right-24 top-2 text-rose-200/30 dark:text-slate-700/20 text-5xl pointer-events-none select-none">🐾</div>
-
 
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 relative z-10">
         <!-- Animated Cat Avatar with Level Badge -->
@@ -273,7 +239,6 @@
               <!-- Ground Shadow -->
               <ellipse cx="60" cy="120" rx="34" ry="6" fill="#000000" opacity="0.1" />
               <g id="mainCatMorphScaleGroup" style="transform-origin: 60px 116px; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);">
-
 
               <!-- 1. Tail (Animated) -->
               <g id="mainCatTail" class="tail-wag origin-bottom-left cursor-pointer" onclick="handleTailClick(event)" title="點擊拉拉尾巴">
@@ -350,18 +315,17 @@
 
               <!-- 6. Handheld / Props -->
               <g id="mainCatAccHand"></g>
-            
+
               </g>
             </svg>
           </div>
           <span class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold mt-1 block">摸摸咪咪 🐾</span>
         </div>
 
-
         <!-- Dialogue & Growth Status Bubble -->
         <div class="flex-1 w-full space-y-3">
           <div class="bg-white/95 dark:bg-slate-700/90 rounded-2xl p-3 sm:p-4 shadow-sm border border-amber-200/80 dark:border-slate-600 space-y-2.5">
-            
+
             <!-- Header: Cat Name, Title, Mood & Fever Badge -->
             <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-100 dark:border-slate-600 pb-2">
               <div class="flex items-center flex-wrap gap-1.5">
@@ -374,16 +338,14 @@
               </span>
             </div>
 
-
             <!-- Cat Dialogue Speech -->
             <p id="catSpeech" class="text-sm font-medium text-slate-800 dark:text-slate-100 leading-relaxed min-h-[1.5rem]">
               喵～今天想背背哪幾個單字呢？只要練習我就會陪著妳一起長大喔！🐾
             </p>
 
-
             <!-- Dual Progress: EXP & Affection Bars -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-              
+
               <!-- 1. Cat Level & 1200 Words EXP Bar -->
               <div class="bg-amber-50/70 dark:bg-slate-800/60 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
                 <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
@@ -402,7 +364,6 @@
                 </div>
               </div>
 
-
               <!-- 2. Cat Affection Heart Bar -->
               <div class="bg-pink-50/70 dark:bg-slate-800/60 p-2.5 rounded-xl border border-pink-100 dark:border-slate-600">
                 <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
@@ -420,9 +381,7 @@
                 </div>
               </div>
 
-
             </div>
-
 
             <!-- Quick Action Buttons -->
             <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-600">
@@ -448,12 +407,10 @@
               </button>
             </div>
 
-
           </div>
         </div>
       </div>
     </section>
-
 
     <!-- Progress & Overview Banner -->
     <section class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -495,9 +452,6 @@
         </div>
       </div>
 
-
-
-
       <!-- Progress bar with Cat Marker -->
       <div>
         <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
@@ -514,9 +468,6 @@
         </div>
       </div>
     </section>
-
-
-
 
     <!-- Header & Mode Selection (Dedicated 7-Col Grid & Separated Filters) -->
     <div class="space-y-3.5">
@@ -603,9 +554,8 @@
       </div>
     </div>
 
-
     <!-- ==================== MODE 1: FLASHCARDS ==================== -->
-    
+
     <!-- ==================== MODE MAP: ADVENTURE MODE (Phase 3) ==================== -->
     <section id="modeMap" class=" space-y-5">
       <!-- 1. Map Header: Stats & Progress Bar -->
@@ -637,26 +587,22 @@
         </div>
       </div>
 
-
       <!-- 2. World Tabs Navigation (5 Worlds) -->
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="advWorldTabsContainer">
         <!-- Rendered by renderAdventureMap -->
       </div>
-
 
       <!-- 3. Current World Banner -->
       <div id="advWorldBanner" class="p-4 rounded-2xl border transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-800 border-amber-200 dark:border-slate-700">
         <!-- Rendered by renderAdventureMap -->
       </div>
 
-
       <!-- 4. Winding Map Container -->
       <div class="relative bg-gradient-to-b from-amber-50/50 via-rose-50/30 to-amber-50/60 dark:from-slate-800/80 dark:via-slate-800/60 dark:to-slate-900/90 rounded-3xl p-4 sm:p-8 border border-amber-200/80 dark:border-slate-700 overflow-hidden shadow-inner min-h-[580px]">
-        
+
         <!-- Ambient Decor in Background -->
         <div class="absolute -top-10 -right-10 w-48 h-48 bg-amber-400/10 dark:bg-amber-400/5 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-rose-400/10 dark:bg-rose-400/5 rounded-full blur-3xl pointer-events-none"></div>
-
 
         <!-- Serpentine Stage Nodes Container -->
         <div id="advStageNodesContainer" class="relative max-w-sm mx-auto py-6 space-y-12">
@@ -665,11 +611,10 @@
       </div>
     </section>
 
-
     <!-- ==================== ADVENTURE STAGE MODAL (PREVIEW & MODE SELECT) ==================== -->
     <div id="advStageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="WordCheckingAdventure.closeStageModal()">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
-        
+
         <!-- Modal Header -->
         <div class="flex items-center justify-between border-b border-amber-100 dark:border-slate-700 pb-3">
           <div class="flex items-center gap-2.5">
@@ -694,7 +639,6 @@
           </div>
         </div>
 
-
         <!-- Word Preview List (10 Words) -->
         <div class="space-y-2">
           <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold px-1">
@@ -705,7 +649,6 @@
             <!-- Dynamically populated -->
           </div>
         </div>
-
 
         <!-- Mode Select Action Cards -->
         <div class="space-y-2 pt-2 border-t border-amber-100 dark:border-slate-700">
@@ -720,14 +663,12 @@
               <div class="text-[10px] text-slate-500 dark:text-slate-400">快速翻閱 10 單字</div>
             </button>
 
-
             <!-- Mode 2: Multiple Choice Challenge -->
             <button onclick="WordCheckingAdventure.startStageChallenge(null, 'quiz')" class="p-3 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-md shadow-rose-500/20 group">
               <span class="text-2xl group-hover:scale-110 transition">🎯</span>
               <div class="font-black text-xs">四選一挑戰</div>
               <div class="text-[10px] text-white/80">10題選擇 奪三星⭐</div>
             </button>
-
 
             <!-- Mode 3: Spelling Challenge -->
             <button onclick="WordCheckingAdventure.startStageChallenge(null, 'spelling')" class="p-3 rounded-2xl bg-indigo-50 hover:bg-indigo-100/80 dark:bg-slate-700/60 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-600 transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-2xs group">
@@ -738,15 +679,13 @@
           </div>
         </div>
 
-
       </div>
     </div>
-
 
     <!-- ==================== ADVENTURE ACTIVE CHALLENGE MODAL (INTERACTIVE) ==================== -->
     <div id="advChallengeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-rose-200 dark:border-slate-700 space-y-4" onclick="event.stopPropagation()">
-        
+
         <!-- Challenge Header -->
         <div class="flex items-center justify-between border-b border-rose-100 dark:border-slate-700 pb-3">
           <div class="flex items-center gap-2">
@@ -764,27 +703,23 @@
           </button>
         </div>
 
-
         <!-- Progress Bar -->
         <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
           <div id="advChallengeProgressBar" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-300" style="width: 10%;"></div>
         </div>
-
 
         <!-- Challenge Interactive Body Container -->
         <div id="advChallengeBody" class="py-2 space-y-4">
           <!-- Dynamic Content based on mode -->
         </div>
 
-
       </div>
     </div>
-
 
     <!-- ==================== ADVENTURE VICTORY / RESULTS MODAL ==================== -->
     <div id="advVictoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="WordCheckingAdventure.closeVictoryModal()">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 text-center animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
-        
+
         <!-- Victory Animated Header -->
         <div class="space-y-1">
           <div id="advVictoryIcon" class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-400/20 current-node-pulse">
@@ -794,14 +729,12 @@
           <p id="advVictorySubtitle" class="text-xs text-slate-500 dark:text-slate-400">第 1 關完成通關！</p>
         </div>
 
-
         <!-- Star Rating Display -->
         <div class="py-2 flex items-center justify-center gap-3 text-4xl" id="advVictoryStarsContainer">
           <span class="star-pop-1">⭐</span>
           <span class="star-pop-2">⭐</span>
           <span class="star-pop-3">⭐</span>
         </div>
-
 
         <!-- Stats & Rewards Box -->
         <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-slate-700/50 border border-amber-200 dark:border-slate-600/60 space-y-2 text-left text-xs">
@@ -822,7 +755,6 @@
           </div>
         </div>
 
-
         <!-- Action Buttons -->
         <div class="flex gap-2 justify-center pt-2">
           <button onclick="WordCheckingAdventure.playAgain()" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
@@ -833,10 +765,8 @@
           </button>
         </div>
 
-
       </div>
     </div>
-    
 
     <section id="modeCard" class="hidden space-y-4">
       <!-- Card Mode Header: Study Order Selector & Helper Notice -->
@@ -853,7 +783,7 @@
       </div>
       <div class="relative w-full max-w-lg mx-auto h-84 perspective-1000 cursor-pointer" onclick="flipCard()">
         <div id="flashcardInner" class="relative w-full h-full min-h-[340px] transition-transform duration-500 transform-style-3d shadow-xl rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-200/80 dark:border-slate-700 p-6 flex flex-col justify-between">
-          
+
           <!-- Front Face -->
           <div id="cardFront" class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white dark:bg-slate-800 rounded-3xl">
             <div class="flex justify-between items-center text-xs text-slate-400">
@@ -861,16 +791,13 @@
                 <span id="cardStatusBadge" class="hidden"></span>
               <span id="cardIndex" class="font-mono text-xs">1 / 100</span>
             </div>
-            
+
             <div class="text-center my-auto">
               <div class="text-7xl sm:text-8xl font-black text-slate-900 dark:text-white font-mono tracking-tight" id="cardDigit">1</div>
               <div class="text-xs text-rose-500 dark:text-rose-400 font-medium mt-3 flex items-center justify-center space-x-1.5">
                 <span>🐾 點擊卡片翻面看拼字</span>
               </div>
             </div>
-
-
-
 
             <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/60">
               <span class="text-xs text-slate-400">提示：正面阿拉伯數字</span>
@@ -885,9 +812,6 @@
             </div>
           </div>
 
-
-
-
           <!-- Back Face -->
           <div id="cardBack" class="absolute inset-0 backface-hidden rotate-y-180 p-6 flex flex-col justify-between bg-gradient-to-b from-rose-50/50 via-white to-amber-50/40 dark:from-slate-800 dark:to-slate-800 rounded-3xl border-2 border-rose-300 dark:border-rose-500">
             <div class="flex justify-between items-center text-xs text-slate-400">
@@ -898,13 +822,10 @@
               <span class="font-mono text-xs font-bold text-amber-600" id="cardBackDigit">#1</span>
             </div>
 
-
-
-
             <div class="text-center my-auto">
               <div class="text-4xl sm:text-5xl font-extrabold text-rose-600 dark:text-rose-400 tracking-wide" id="cardEnglish">one</div>
               <div class="text-lg text-slate-500 dark:text-slate-400 font-mono mt-1" id="cardPhonetic">[wʌn]</div>
-              
+
               <div id="cardNoteBox" class="mt-3 px-3.5 py-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded-2xl text-xs text-amber-800 dark:text-amber-300 inline-block text-left max-w-xs shadow-sm">
                 <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>
                 <span id="cardNote">規則說明</span>
@@ -913,9 +834,6 @@
                 <span id="cardExample"></span>
               </div>
             </div>
-
-
-
 
             <div class="flex items-center justify-center space-x-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
               <span onclick="event.stopPropagation(); playVoiceCurrent(1.0)" class="audio-source-badge inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600 shadow-2xs cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-600 hover:text-rose-500 transition active:scale-95" title="點擊播放發音">
@@ -932,14 +850,8 @@
             </div>
           </div>
 
-
-
-
         </div>
       </div>
-
-
-
 
       <!-- Action Buttons with Cat Accents -->
       <div class="flex items-center justify-center space-x-4 max-w-lg mx-auto">
@@ -952,9 +864,6 @@
           <span>已記住 (+1 魚乾)</span>
         </button>
       </div>
-
-
-
 
       <!-- Nav navigation -->
       <div class="flex items-center justify-center space-x-6 text-sm text-slate-500 dark:text-slate-400">
@@ -970,20 +879,14 @@
       </div>
     </section>
 
-
-
-
     <!-- ==================== MODE 2: QUIZ ==================== -->
     <section id="modeQuiz" class="hidden max-w-xl mx-auto space-y-5">
       <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border-2 border-amber-200/80 dark:border-slate-700 shadow-md">
-        
+
         <div class="flex justify-between items-center text-xs text-slate-400 mb-4">
           <span class="px-3 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold">🐾 四選一測驗</span>
           <span id="quizScoreText">第 1 題</span>
         </div>
-
-
-
 
         <div class="text-center py-5">
           <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">請問這個數字的正確英文拼法是？</div>
@@ -999,13 +902,7 @@
           </div>
         </div>
 
-
-
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" id="quizOptionsContainer"></div>
-
-
-
 
         <div id="quizFeedback" class="hidden mt-5 p-4 rounded-2xl text-sm transition">
           <div class="flex items-start space-x-3">
@@ -1020,14 +917,8 @@
           </button>
         </div>
 
-
-
-
       </div>
     </section>
-
-
-
 
     <!-- ==================== MODE 3: SPELLING ==================== -->
     <section id="modeSpelling" class="hidden max-w-xl mx-auto space-y-5">
@@ -1036,9 +927,6 @@
           <span class="px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 font-bold">🐾 拼字練習</span>
           <span id="spellCounter">第 1 題</span>
         </div>
-
-
-
 
         <div class="text-center py-4">
           <div class="text-xs text-slate-400">請拼寫出這個數字的英文：</div>
@@ -1059,9 +947,6 @@
           <div id="spellHintBox" class="hidden text-xs text-slate-400 tracking-widest font-mono mt-2 bg-slate-50 dark:bg-slate-700/50 py-1.5 px-3 rounded-lg inline-block"></div>
         </div>
 
-
-
-
         <form onsubmit="checkSpelling(event)" class="space-y-4">
           <div>
             <input type="text" id="spellInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="在此輸入英文單字 (例如: twelve)..." class="w-full text-center font-mono text-xl py-3 px-4 rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-300 transition">
@@ -1070,9 +955,6 @@
             檢查答案 🐾
           </button>
         </form>
-
-
-
 
         <div id="spellFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm">
           <div class="flex items-start space-x-3">
@@ -1087,14 +969,8 @@
           </button>
         </div>
 
-
-
-
       </div>
     </section>
-
-
-
 
     <!-- ==================== MODE 4: SPEAKING ==================== -->
     <section id="modeSpeaking" class="hidden max-w-xl mx-auto space-y-5">
@@ -1104,17 +980,11 @@
           <span id="speakCounter">第 1 題</span>
         </div>
 
-
-
-
         <div class="text-center py-4">
           <div class="text-xs text-slate-400">請跟著咪咪唸出這個數字的英文：</div>
           <div class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2 mb-1" id="speakEnglish">fourteen</div>
           <div class="text-sm font-mono text-slate-400" id="speakPhonetic">[ˋforˋtin]</div>
           <div class="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">數字：<span id="speakDigit">14</span></div>
-
-
-
 
           <div class="mt-4 flex items-center justify-center space-x-3">
             <span onclick="if(currentSpeakItem) playVoiceText(currentSpeakItem.word);" class="audio-source-badge inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600 shadow-2xs cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-600 hover:text-rose-500 transition active:scale-95" title="點擊播放讀音">
@@ -1127,18 +997,12 @@
           </div>
         </div>
 
-
-
-
         <div class="flex flex-col items-center justify-center my-6">
           <button id="micBtn" onclick="toggleSpeechRecognition()" onmouseup="this.blur()" tabindex="-1" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95">
             <i class="fa-solid fa-microphone text-2xl" id="micIcon"></i>
           </button>
           <div class="text-xs text-slate-500 dark:text-slate-400 mt-3" id="micStatus">點擊麥克風後說出英文單字給咪咪聽 🐾</div>
         </div>
-
-
-
 
         <div id="speakFeedback" class="hidden p-4 rounded-2xl text-sm border">
           <div class="flex items-start space-x-3">
@@ -1153,18 +1017,12 @@
           </button>
         </div>
 
-
-
-
       </div>
     </section>
 
-
-
-
     <!-- ==================== MODE 5: MOCK EXAM (NEW!) ==================== -->
     <section id="modeExam" class="hidden max-w-2xl mx-auto space-y-5">
-      
+
       <!-- 1. Exam Setup View -->
       <div id="examSetupBox" class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700/60 shadow-lg text-center space-y-6">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 text-3xl shadow-sm mb-1">
@@ -1174,9 +1032,6 @@
           <h2 class="text-2xl font-black text-slate-900 dark:text-white">數字聽寫模擬考</h2>
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">聽取發音並拼寫出單字，測驗結束即刻出分與錯題解析 🐾</p>
         </div>
-
-
-
 
         <!-- Exam Options Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-lg mx-auto">
@@ -1196,9 +1051,6 @@
             <p class="text-[11px] text-slate-400 mt-2" id="examScoreRateText">每題 10 分，滿分 100 分</p>
           </div>
 
-
-
-
           <!-- Prompt Mode -->
           <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-700/50 border border-amber-200/80 dark:border-slate-600">
             <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">
@@ -1216,21 +1068,15 @@
           </div>
         </div>
 
-
-
-
         <button onclick="startExamSession()" class="w-full max-w-md mx-auto py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-pink-500 text-white font-black text-base shadow-lg shadow-rose-500/25 hover:opacity-95 transform active:scale-98 transition flex items-center justify-center space-x-2">
           <span>開始模擬測驗</span>
           <span>🐾</span>
         </button>
       </div>
 
-
-
-
       <!-- 2. Exam Running View -->
       <div id="examRunningBox" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700/60 shadow-lg space-y-5">
-        
+
         <!-- Exam Header / Progress Bar -->
         <div class="flex justify-between items-center text-xs">
           <span class="font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-3 py-1 rounded-xl" id="examProgressBadge">第 1 / 10 題</span>
@@ -1240,19 +1086,13 @@
           <div id="examRunningProgressBar" class="bg-gradient-to-r from-amber-500 to-rose-500 h-full transition-all duration-300" style="width: 10%"></div>
         </div>
 
-
-
-
         <!-- Question Area -->
         <div class="text-center py-5 space-y-4">
           <div class="text-xs text-slate-400">🎧 請聽發音並輸入英文單字拼寫：</div>
-          
+
           <div id="examDigitDisplay" class="text-6xl sm:text-7xl font-black font-mono text-slate-900 dark:text-white">
             15
           </div>
-
-
-
 
           <!-- Audio Player Buttons -->
           <div class="flex items-center justify-center space-x-3 pt-2">
@@ -1270,9 +1110,6 @@
           </div>
         </div>
 
-
-
-
         <!-- Input Form -->
         <form onsubmit="submitExamAnswer(event)" class="space-y-4 max-w-md mx-auto">
           <div>
@@ -1289,22 +1126,16 @@
           </div>
         </form>
 
-
-
-
       </div>
-
-
-
 
       <!-- 3. Exam Result View (Report Card) -->
       <div id="examResultBox" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border-2 border-rose-300 dark:border-rose-700/60 shadow-xl space-y-6">
-        
+
         <!-- Score Banner -->
         <div class="text-center space-y-2">
           <div class="text-5xl" id="examCatEmoji">🐱</div>
           <h3 class="text-xl font-black text-slate-900 dark:text-white" id="examResultTitle">測驗結算成績</h3>
-          
+
           <!-- Big Score -->
           <div class="py-3">
             <div class="text-6xl sm:text-7xl font-black font-mono text-rose-500 dark:text-rose-400 tracking-tight" id="examScoreNumber">
@@ -1312,9 +1143,6 @@
             </div>
             <div class="text-xs font-bold text-slate-400 mt-1">滿分 100 分</div>
           </div>
-
-
-
 
           <!-- Score Metrics -->
           <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto text-center py-2">
@@ -1332,17 +1160,11 @@
             </div>
           </div>
 
-
-
-
           <!-- Cat Comment -->
           <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-slate-700 border border-amber-200 dark:border-slate-600 text-xs text-amber-900 dark:text-amber-200 max-w-md mx-auto text-left" id="examCatFeedback">
             喵嗚！太厲害了～這次測驗表現超好，咪咪送妳滿滿的魚乾獎勵！🐾
           </div>
         </div>
-
-
-
 
         <!-- Detailed Breakdown Table -->
         <div>
@@ -1368,9 +1190,6 @@
           </div>
         </div>
 
-
-
-
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-3 pt-2">
           <button onclick="retryExamSameScope()" class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-bold shadow transition text-center">
@@ -1384,18 +1203,9 @@
           </button>
         </div>
 
-
-
-
       </div>
 
-
-
-
     </section>
-
-
-
 
     <!-- ==================== MODE 6: WORD LIST ==================== -->
     <section id="modeList" class="hidden space-y-4">
@@ -1413,9 +1223,6 @@
             </button>
           </div>
         </div>
-
-
-
 
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm border-collapse">
@@ -1437,11 +1244,6 @@
       </div>
     </section>
 
-
-
-
-    
-    
     <!-- ==================== GOURMET FEED (FEAST) MODAL ==================== -->
     <div id="feedGourmetModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeFeedGourmetModal()">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4" onclick="event.stopPropagation()">
@@ -1502,7 +1304,6 @@
       </div>
     </div>
 
-    
     <!-- ==================== LUCKY GACHA RESULT & STATUS MODAL (v2.3.1) ==================== -->
     <div id="gachaResultModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeGachaModal()">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 text-center" onclick="event.stopPropagation()">
@@ -1527,7 +1328,7 @@
     <!-- ==================== CAT WARDROBE (PAPER DOLL) MODAL (v2.2.0) ==================== -->
     <div id="wardrobeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeWardrobeModal()">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-3xl w-full p-5 sm:p-6 shadow-2xl border border-pink-200 dark:border-slate-700 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
-        
+
         <!-- Modal Header -->
         <div class="flex items-center justify-between border-b border-pink-100 dark:border-slate-700 pb-3">
           <div class="flex items-center gap-2.5">
@@ -1556,7 +1357,7 @@
 
         <!-- Modal Body: Two Columns Layout -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-          
+
           <!-- Left Column: Live Cat Avatar Preview & Reaction Bubble -->
           <div class="md:col-span-5 bg-gradient-to-b from-amber-50/90 via-pink-50/60 to-purple-50/80 dark:from-slate-700/80 dark:via-slate-700/60 dark:to-slate-800/90 p-4 rounded-3xl border border-pink-200/80 dark:border-slate-600 flex flex-col items-center text-center shadow-inner relative">
             <div class="w-36 h-36 sm:w-40 sm:h-40 relative flex items-center justify-center">
@@ -1617,7 +1418,7 @@
                 </g>
                 <!-- 6. Handheld Layer -->
                 <g id="wardrobeCatAccHand"></g>
-              
+
               </g>
             </svg>
             </div>
@@ -1646,7 +1447,7 @@
 
           <!-- Right Column: Wardrobe Category Tabs & Items Grid -->
           <div class="md:col-span-7 space-y-3">
-            
+
             <!-- Category Tabs -->
             <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-700/70 rounded-2xl overflow-x-auto text-xs font-bold">
               <button onclick="switchWardrobeTab('head')" id="tabBtn_head" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs">
@@ -1683,7 +1484,7 @@
     <!-- ==================== CAT GROWTH & EVOLUTION GUIDE MODAL ==================== -->
     <div id="catGrowthGuideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="closeCatGrowthGuideModal()">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
-        
+
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
           <div class="flex items-center gap-2">
             <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-400 text-white flex items-center justify-center text-xl shadow-sm">
@@ -1696,7 +1497,6 @@
           </div>
           <button onclick="closeCatGrowthGuideModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">✕</button>
         </div>
-
 
         <!-- 5 Level Cards -->
         <div class="space-y-2.5">
@@ -1714,7 +1514,6 @@
             <span class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">0 - 150 字</span>
           </div>
 
-
           <div class="p-3 rounded-2xl border border-orange-200 dark:border-slate-600 bg-orange-50/60 dark:bg-slate-700/40 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">🧶</span>
@@ -1728,7 +1527,6 @@
             </div>
             <span class="text-xs font-mono font-bold text-orange-600 dark:text-orange-400">151 - 400 字</span>
           </div>
-
 
           <div class="p-3 rounded-2xl border border-indigo-200 dark:border-slate-600 bg-indigo-50/60 dark:bg-slate-700/40 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
@@ -1744,7 +1542,6 @@
             <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">401 - 750 字</span>
           </div>
 
-
           <div class="p-3 rounded-2xl border border-emerald-200 dark:border-slate-600 bg-emerald-50/60 dark:bg-slate-700/40 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">🦸</span>
@@ -1758,7 +1555,6 @@
             </div>
             <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">751 - 1050 字</span>
           </div>
-
 
           <div class="p-3 rounded-2xl border border-amber-300 dark:border-amber-600 bg-gradient-to-r from-amber-100/80 to-yellow-100/80 dark:from-slate-700 dark:to-slate-700 flex items-center justify-between shadow-xs">
             <div class="flex items-center gap-2.5">
@@ -1774,7 +1570,6 @@
             <span class="text-xs font-mono font-black text-amber-700 dark:text-amber-400">1051 - 1200 字</span>
           </div>
         </div>
-
 
         <!-- Rules & Affection Info -->
         <div class="p-4 rounded-2xl bg-pink-50/80 dark:bg-slate-700/40 border border-pink-200 dark:border-slate-600 space-y-2 text-xs text-slate-700 dark:text-slate-200 leading-relaxed">
@@ -1793,20 +1588,16 @@
           <p>• <b>溫馨陪伴提醒（肚子餓撒嬌機制）</b>：若超過 2 天（48 小時）未開啟練習，咪咪會出現「🐟 肚子扁扁想妳中」的可愛撒嬌狀態。只要點擊餵魚或背 1 個單字，咪咪立刻吃飽恢復元氣！<b>親密度與小魚乾 100% 不會倒扣</b>，純情境溫柔守護。🐾</p>
         </div>
 
-
         <button onclick="closeCatGrowthGuideModal()" class="w-full py-2.5 bg-slate-800 dark:bg-slate-600 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm">
           收到！咪咪我們一起加油 🐾
         </button>
       </div>
     </div>
 
-
-
-
     <!-- ==================== PI SETTINGS & MULTI-USER SYNC MODAL ==================== -->
     <div id="piSettingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="handleModalBackdropClick(event)">
       <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
-        
+
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
           <div class="flex items-center gap-2">
             <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
@@ -1820,9 +1611,6 @@
           <button onclick="closePiSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">✕</button>
         </div>
 
-
-
-
         <!-- Section 1: Server Connection Parameters -->
         <div class="space-y-3 bg-slate-50 dark:bg-slate-700/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-600">
           <div class="flex items-center justify-between">
@@ -1832,17 +1620,11 @@
             <span class="text-[10px] text-slate-400">多裝置通用</span>
           </div>
 
-
-
-
           <div class="space-y-2.5">
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">樹莓派伺服器網址 (URL)：</label>
               <input type="text" id="piServerUrlInput" placeholder="例如: https://pi.domain.com 或 http://192.168.1.100:3000" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
             </div>
-
-
-
 
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">使用者帳號 (Account)：</label>
@@ -1851,25 +1633,16 @@
               <p class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">✨ 支援切換帳號防污染：更換帳號時自動拉取該帳號最新備份，全新帳號自動初始化為 0 進度。</p>
             </div>
 
-
-
-
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">API 金鑰 (x-api-key)：</label>
               <input type="password" id="piApiKeyInput" placeholder="請輸入 API_KEY 密碼" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
             </div>
           </div>
 
-
-
-
           <button onclick="savePiSettings()" class="w-full py-2 bg-slate-800 dark:bg-slate-600 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm">
             儲存連線設定 🐾
           </button>
         </div>
-
-
-
 
         <!-- Section 2: Pi Cloud Sync Actions -->
         <div class="bg-emerald-50/70 dark:bg-emerald-950/30 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/40 space-y-2.5">
@@ -1892,7 +1665,6 @@
           </div>
         </div>
 
-
         <!-- Section 3: Local Backup / Restore -->
         <div class="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2.5">
           <div class="flex items-center justify-between">
@@ -1910,26 +1682,16 @@
           </div>
         </div>
 
-
-
-
         <div class="flex justify-end pt-1">
           <button onclick="closePiSettingsModal()" class="px-5 py-2 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl font-bold transition">
             關閉視窗
           </button>
         </div>
 
-
-
-
       </div>
     </div>
   </main>
 
-
-
-
-  
   <!-- ==================== SCREEN ROAMING PET MIMI ==================== -->
   <div id="screenPetContainer" class="fixed pointer-events-none z-30 select-none transition-all duration-500 ease-out" style="left: 60px; bottom: 24px;">
     <!-- Speech Bubble -->
@@ -2019,7 +1781,6 @@
       </button>
     </div>
   </div>
-
 
   <!-- Data & Logic script -->
   <script>
@@ -2258,9 +2019,6 @@ if (typeof window !== 'undefined') {
       }
     };
 
-
-
-
     // State
     let currentThemeKey = localStorage.getItem('wordchecking_current_theme') || 'all1200';
     let RAW_VOCAB = [];
@@ -2271,29 +2029,17 @@ if (typeof window !== 'undefined') {
     let cardFlipped = false;
     let catSoundEnabled = true;
 
-
-
-
     // Quiz State
     let currentQuizItem = null;
     let quizStats = { total: 0, correct: 0 };
 
-
-
-
     // Spelling State
     let currentSpellItem = null;
-
-
-
 
     // Speaking State
     let currentSpeakItem = null;
     let isRecording = false;
     let recognition = null;
-
-
-
 
     // Exam State
     let examConfig = {
@@ -2305,9 +2051,6 @@ if (typeof window !== 'undefined') {
     let examResults = [];
     let lastExamWeakItems = [];
 
-
-
-
     // Cat Dialogues
     const CAT_SPEECHES = [
       "喵～今天也要一起把單字全部背熟喔！🐾",
@@ -2318,21 +2061,14 @@ if (typeof window !== 'undefined') {
       "試試看聽寫模考！看妳 10 題或 20 題能拿幾分喵～🐾"
     ];
 
-
-
-
     // Storage keys
     const FISH_STORAGE_KEY = 'wordchecking_fish_count_v1';
     let userProgress = {};
     let fishCount = parseInt(localStorage.getItem(FISH_STORAGE_KEY) || '0', 10);
     if (typeof window !== 'undefined') { window.getFishCount = () => fishCount; window.setFishCount = (n) => { fishCount = n; localStorage.setItem(FISH_STORAGE_KEY, n); const el = document.getElementById('fishCount'); if (el) el.innerText = n; }; }
 
-
-
-
     // Audio Synth for Cat Meow
     let audioCtx = null;
-    
 
 // ==================== THEME MANAGEMENT ====================
     function onThemeChange() {
@@ -2342,9 +2078,6 @@ if (typeof window !== 'undefined') {
       if (themeSelectEl) themeSelectEl.value = currentThemeKey;
       loadThemeData(currentThemeKey);
     }
-
-
-
 
     function updateScopeDropdown(themeObj) {
       const scopeSel = document.getElementById('scopeFilter');
@@ -2360,34 +2093,22 @@ if (typeof window !== 'undefined') {
       scopeSel.value = 'all';
     }
 
-
-
-
     async function loadThemeData(themeKey) {
       const theme = THEME_REGISTRY[themeKey];
       if (!theme) return;
 
-
-
-
       sayCatSpeech(`喵～正在載入【${theme.name}】資料庫...🐾`, "準備中");
       updateScopeDropdown(theme);
 
-
-
-
       // Load user progress for this theme
       userProgress = JSON.parse(localStorage.getItem(theme.storageKey) || '{}');
-
-
-
 
       try {
         let res = await fetch(theme.url);
         if (!res.ok) res = await fetch(theme.fallbackUrl);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         RAW_VOCAB = await res.json();
-        
+
         // Cache to local storage
         try {
           localStorage.setItem(`cached_vocab_${themeKey}_v1`, JSON.stringify(RAW_VOCAB));
@@ -2406,18 +2127,12 @@ if (typeof window !== 'undefined') {
         }
       }
 
-
-
-
       if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
         sayCatSpeech(`喵嗚！【${theme.name}】單字庫載入受限 (本機直接雙擊 file:// 可能被瀏覽器安全性阻擋 fetch，建議用 Web Server 或 GitHub Pages 開啟喔) 🐾`, "提醒");
         RAW_VOCAB = [];
       } else {
         sayCatSpeech(theme.catIntro, "元氣滿滿");
       }
-
-
-
 
       currentIndex = 0;
       updateFilteredList();
@@ -2430,9 +2145,6 @@ if (typeof window !== 'undefined') {
         WordCheckingAdventure.renderAdventureMap();
       }
 
-
-
-
       // Refresh active mode view
       const activeMode = getActiveMode();
       if (activeMode === 'quiz') startNewQuiz();
@@ -2442,12 +2154,9 @@ if (typeof window !== 'undefined') {
       if (activeMode === 'list') renderWordTable();
     }
 
-
-
-
     // Init App
-    
-    
+
+
 
     // <<<<<<<<<< [MODULE END: 01_theme_registry.js] <<<<<<<<<<
 
@@ -2477,7 +2186,6 @@ if (typeof window !== 'undefined') {
         }
       } catch (e) {}
     }
-
 
         function playCatCheerSound() {
       if (!catSoundEnabled) return;
@@ -2523,7 +2231,6 @@ if (typeof window !== 'undefined') {
       } catch (e) {}
     }
 
-
     function playCatMeowSound() {
       if (!catSoundEnabled) return;
       try {
@@ -2531,21 +2238,15 @@ if (typeof window !== 'undefined') {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
-        
+
         const now = audioCtx.currentTime;
         osc.frequency.setValueAtTime(550, now);
         osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
         osc.frequency.exponentialRampToValueAtTime(620, now + 0.35);
 
-
-
-
         gain.gain.setValueAtTime(0.01, now);
         gain.gain.linearRampToValueAtTime(0.18, now + 0.08);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
-
-
-
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -2555,9 +2256,6 @@ if (typeof window !== 'undefined') {
         console.log("Audio not allowed yet:", e);
       }
     }
-
-
-
 
     function toggleCatSound() {
       catSoundEnabled = !catSoundEnabled;
@@ -2571,9 +2269,6 @@ if (typeof window !== 'undefined') {
         sayCatSpeech("音效已靜音，專心讀書喵～");
       }
     }
-
-
-
 
     function addFish(amount = 1) {
       let finalAmount = amount;
@@ -2598,9 +2293,6 @@ if (typeof window !== 'undefined') {
       triggerAutoSaveToPi();
     }
 
-
-
-
     // ==================== CAT GAMIFICATION & AFFECTION ENGINE (v2.0.0) ====================
     const CAT_LEVEL_CONFIG = [
       { level: 1, name: "Lv.1 幼幼小奶貓", title: "見習小貓奴", icon: "🍼", min: 0, max: 150 },
@@ -2610,11 +2302,9 @@ if (typeof window !== 'undefined') {
       { level: 5, name: "Lv.5 傳奇貓神獸", title: "1200會考傳奇守護神", icon: "👑", min: 1050, max: 1200 }
     ];
 
-
     const LAST_INTERACTION_KEY = 'wordchecking_last_interaction_v1';
     let lastInteractionTime = parseInt(localStorage.getItem(LAST_INTERACTION_KEY) || Date.now().toString(), 10);
     const HUNGER_THRESHOLD_MS = 48 * 60 * 60 * 1000; // 48 小時 (2 天)
-
 
     const HUNGRY_CAT_SPEECHES = [
       "喵嗚～咪咪好久沒見到妳了，肚子有點扁扁喵～快餵我一條小魚乾吧！🐾",
@@ -2623,11 +2313,9 @@ if (typeof window !== 'undefined') {
       "咪咪在等妳呢！肚子扁扁的小貓咪需要一條小魚乾充電喵～🐟❤️"
     ];
 
-
     let catAffection = parseInt(localStorage.getItem('wordchecking_cat_affection_v1') || '20', 10);
     let feverRemainingQuestions = parseInt(localStorage.getItem('wordchecking_fever_remaining_v1') || '0', 10);
     let lastKnownCatLevel = parseInt(localStorage.getItem('wordchecking_cat_level_v1') || '1', 10);
-
 
     function calculateTotalMasteredWords() {
       const masteredSet = new Set();
@@ -2645,7 +2333,6 @@ if (typeof window !== 'undefined') {
       return masteredSet.size;
     }
 
-
     function getCatLevelInfo(totalMastered) {
       if (totalMastered >= 1050) return CAT_LEVEL_CONFIG[4];
       if (totalMastered >= 750) return CAT_LEVEL_CONFIG[3];
@@ -2654,11 +2341,9 @@ if (typeof window !== 'undefined') {
       return CAT_LEVEL_CONFIG[0];
     }
 
-
     function isMimiHungry() {
       return (Date.now() - lastInteractionTime) > HUNGER_THRESHOLD_MS;
     }
-
 
     function checkMimiHungerState() {
       const moodEl = document.getElementById('catMood');
@@ -2672,7 +2357,6 @@ if (typeof window !== 'undefined') {
       }
     }
 
-
     function touchMimiInteraction() {
       const wasHungry = isMimiHungry();
       lastInteractionTime = Date.now();
@@ -2681,7 +2365,6 @@ if (typeof window !== 'undefined') {
       return wasHungry;
     }
 
-
     function updateCatGrowthUI() {
       checkMimiHungerState();
       const totalMastered = calculateTotalMasteredWords();
@@ -2689,22 +2372,18 @@ if (typeof window !== 'undefined') {
       const level = currentConfig.level;
       currentCatLevel = level;
 
-
       // 1. Update Badge & Title
       const badgeEl = document.getElementById('catAvatarLevelBadge');
       if (badgeEl) badgeEl.innerText = `${currentConfig.level === 5 ? '👑' : 'Lv.' + level} ${currentConfig.icon}`;
-      
+
       const titleEl = document.getElementById('catTitleBadge');
       if (titleEl) titleEl.innerText = `【${currentConfig.title}】`;
-
 
       const levelNameEl = document.getElementById('catLevelNameText');
       if (levelNameEl) levelNameEl.innerText = currentConfig.name;
 
-
       const totalEl = document.getElementById('catMasteredTotal');
       if (totalEl) totalEl.innerText = totalMastered;
-
 
       // 2. EXP Bar
       let pct = 0;
@@ -2719,23 +2398,18 @@ if (typeof window !== 'undefined') {
         pct = Math.min(100, Math.round((totalMastered / 1200) * 100));
       }
 
-
       const expBar = document.getElementById('catExpBar');
       if (expBar) expBar.style.width = `${pct}%`;
 
-
       const nextTargetEl = document.getElementById('catNextLevelTargetText');
       if (nextTargetEl) nextTargetEl.innerText = nextTargetText;
-
 
       // 3. Affection Bar & Fever Time
       const affEl = document.getElementById('catAffectionPct');
       if (affEl) affEl.innerText = `${catAffection}%`;
 
-
       const affBar = document.getElementById('catAffectionBar');
       if (affBar) affBar.style.width = `${catAffection}%`;
-
 
       const feverBadge = document.getElementById('feverBadge');
       const feverCount = document.getElementById('feverCount');
@@ -2748,7 +2422,6 @@ if (typeof window !== 'undefined') {
 
       // Automatically trigger Cat Morph & Roaming Pet update on level change
       updateCatGrowthMorph(level);
-
 
       // 4. Level-up / Downgrade Check & Synchronize Wardrobe
       if (level > lastKnownCatLevel) {
@@ -2764,7 +2437,6 @@ if (typeof window !== 'undefined') {
       }
     }
 
-
     function triggerLevelUpCelebration(config) {
       playLevelUpFanfare();
       const avatarBox = document.getElementById('catAvatarBox');
@@ -2777,17 +2449,14 @@ if (typeof window !== 'undefined') {
       spawnFloatingHeart("⭐");
       spawnFloatingHeart("🐟");
 
-
       fishCount += 10;
       localStorage.setItem(FISH_STORAGE_KEY, fishCount);
       document.getElementById('fishCount').innerText = fishCount;
-
 
       sayCatSpeech(`🎉 太神奇了喵！咪咪進化成長為【${config.name}】！獲得稱號【${config.title}】🐾 送妳 10 條小魚乾 🐟～`, "升級進化！");
       alert(`🎉 恭喜！咪咪升級進化囉！\n成長階級：${config.name}\n解鎖稱號：【${config.title}】\n咪咪好高興，獎勵 10 條小魚乾 🐟～`);
       triggerAutoSaveToPi();
     }
-
 
     function spawnFloatingHeart(symbol = "💖") {
       const container = document.getElementById('catHeartContainer');
@@ -2805,7 +2474,6 @@ if (typeof window !== 'undefined') {
       setTimeout(() => el.remove(), 1200);
     }
 
-
     function gainAffection(amount) {
       catAffection = Math.min(100, (catAffection || 0) + amount);
       localStorage.setItem('wordchecking_cat_affection_v1', catAffection);
@@ -2816,7 +2484,6 @@ if (typeof window !== 'undefined') {
       }
     }
 
-
     function triggerFeverTime() {
       feverRemainingQuestions = 10;
       catAffection = 100;
@@ -2826,7 +2493,6 @@ if (typeof window !== 'undefined') {
       sayCatSpeech("🎉 哇！好感度達到 100% 滿分！咪咪啟動「狂熱報恩時段」～接下來 10 次練習獲得雙倍小魚乾 🐟🐟 喵！", "狂熱雙倍中！");
       triggerAutoSaveToPi();
     }
-
 
     function petTheCat() {
       playCatMeowSound();
@@ -2839,7 +2505,6 @@ if (typeof window !== 'undefined') {
         randomSpeech = "喵～摸摸好舒服喔！咪咪精神好多了，但還是有點想吃小魚乾喵～🐟🐾";
       }
       sayCatSpeech(randomSpeech, "開心呼嚕中 🐾");
-
 
       const eyeL = document.getElementById('catEyeLeft');
       const eyeR = document.getElementById('catEyeRight');
@@ -2854,7 +2519,6 @@ if (typeof window !== 'undefined') {
       triggerAutoSaveToPi();
     }
 
-
     function feedFishToCat() {
       if (fishCount <= 0) {
         playCatMeowSound();
@@ -2865,13 +2529,11 @@ if (typeof window !== 'undefined') {
       localStorage.setItem(FISH_STORAGE_KEY, fishCount);
       document.getElementById('fishCount').innerText = fishCount;
 
-
       playCatMunchSound();
       spawnFloatingHeart("🐟");
       spawnFloatingHeart("💖");
       gainAffection(15);
       const wasHungry = touchMimiInteraction();
-
 
       if (wasHungry) {
         sayCatSpeech(`嚼嚼嚼～太美味了喵！肚子終於飽飽了，咪咪瞬間充滿元氣～親密度 +15% 💖 (目前: ${catAffection}%)`, "吃飽飽超幸福 🐟");
@@ -2881,26 +2543,18 @@ if (typeof window !== 'undefined') {
       triggerAutoSaveToPi();
     }
 
-
     function openCatGrowthGuideModal() {
       document.getElementById('catGrowthGuideModal').classList.remove('hidden');
     }
-
 
     function closeCatGrowthGuideModal() {
       document.getElementById('catGrowthGuideModal').classList.add('hidden');
     }
 
-
     function sayCatSpeech(text, mood = "活力滿滿") {
       document.getElementById('catSpeech').innerText = text;
       document.getElementById('catMood').innerText = mood;
     }
-
-
-
-
-    
 
 // ==================== CAT DYNAMIC GROWTH & MORPH SYSTEM (Lv.1 ~ Lv.5) ====================
     // ==================== CAT DYNAMIC GROWTH & MORPH ENGINE ====================
@@ -3011,39 +2665,19 @@ if (typeof window !== 'undefined') {
           );
           if (lvl === 1) {
             tail.classList.add('tail-wag-kitten');
-            tail.innerHTML = `
-              <path d="M 32,105 C 20,107 16,94 24,84 C 27,80 32,84 29,88 C 24,95 27,100 34,100 Z" fill="#f97316" />
-              <path d="M 24,84 C 26,81 31,83 28,87 C 25,89 23,87 24,84 Z" fill="#ffffff" />
-            `;
+            tail.innerHTML = `<path d="M 32,105 C 20,107 16,94 24,84 C 27,80 32,84 29,88 C 24,95 27,100 34,100 Z" fill="#f97316" /><path d="M 24,84 C 26,81 31,83 28,87 C 25,89 23,87 24,84 Z" fill="#ffffff" />`;
           } else if (lvl === 2) {
             tail.classList.add('tail-wag-normal');
-            tail.innerHTML = `
-              <path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" />
-              <path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />
-            `;
+            tail.innerHTML = `<path d="M 32,105 C 15,108 10,85 20,72 C 24,68 28,73 24,78 C 18,87 22,98 34,98 Z" fill="#f97316" /><path d="M 20,72 C 22,70 26,73 23,77 C 20,80 17,76 20,72 Z" fill="#ffffff" />`;
           } else if (lvl === 3) {
             tail.classList.add('tail-wag-graceful');
-            tail.innerHTML = `
-              <path d="M 32,105 C 13,109 7,83 17,68 C 21,63 26,67 22,73 C 16,83 19,95 34,98 Z" fill="#f97316" />
-              <path d="M 17,68 C 19,65 24,68 21,72 C 18,76 15,72 17,68 Z" fill="#ffffff" />
-              <path d="M 19,74 Q 14,70 17,78 Q 14,82 22,88" stroke="#ea580c" stroke-width="1.2" fill="none" />
-            `;
+            tail.innerHTML = `<path d="M 32,105 C 13,109 7,83 17,68 C 21,63 26,67 22,73 C 16,83 19,95 34,98 Z" fill="#f97316" /><path d="M 17,68 C 19,65 24,68 21,72 C 18,76 15,72 17,68 Z" fill="#ffffff" /><path d="M 19,74 Q 14,70 17,78 Q 14,82 22,88" stroke="#ea580c" stroke-width="1.2" fill="none" />`;
           } else if (lvl === 4) {
             tail.classList.add('tail-wag-hero');
-            tail.innerHTML = `
-              <path d="M 32,105 C 10,110 2,82 14,64 C 18,58 24,62 20,68 C 12,78 12,90 20,96 C 24,100 28,95 34,98 Z" fill="#f97316" />
-              <path d="M 14,64 C 18,60 25,65 21,71 C 17,76 13,71 14,64 Z" fill="#ffffff" />
-              <path d="M 15,75 Q 8,72 13,83 Q 8,85 18,92" stroke="#ea580c" stroke-width="1.2" fill="none" />
-            `;
+            tail.innerHTML = `<path d="M 32,105 C 10,110 2,82 14,64 C 18,58 24,62 20,68 C 12,78 12,90 20,96 C 24,100 28,95 34,98 Z" fill="#f97316" /><path d="M 14,64 C 18,60 25,65 21,71 C 17,76 13,71 14,64 Z" fill="#ffffff" /><path d="M 15,75 Q 8,72 13,83 Q 8,85 18,92" stroke="#ea580c" stroke-width="1.2" fill="none" />`;
           } else {
             tail.classList.add('tail-wag-celestial');
-            tail.innerHTML = `
-              <path d="M 32,105 C 8,112 -5,75 8,52 C 14,42 24,46 19,56 C 8,72 12,88 22,96 C 26,100 30,95 34,98 Z" fill="#f59e0b" filter="drop-shadow(0 0 4px #fbbf24)" />
-              <path d="M 8,52 C 14,40 28,45 22,58 C 14,68 6,60 8,52 Z" fill="#fef08a" />
-              <path d="M 16,68 Q 2,62 10,78 Q 2,82 18,92" stroke="#d97706" stroke-width="1.8" fill="none" stroke-linecap="round" />
-              <circle cx="12" cy="56" r="2" fill="#ffffff" opacity="0.9" />
-              <circle cx="6" cy="72" r="1.5" fill="#fef08a" opacity="0.8" />
-            `;
+            tail.innerHTML = `<path d="M 32,105 C 8,112 -5,75 8,52 C 14,42 24,46 19,56 C 8,72 12,88 22,96 C 26,100 30,95 34,98 Z" fill="#f59e0b" filter="drop-shadow(0 0 4px #fbbf24)" /><path d="M 8,52 C 14,40 28,45 22,58 C 14,68 6,60 8,52 Z" fill="#fef08a" /><path d="M 16,68 Q 2,62 10,78 Q 2,82 18,92" stroke="#d97706" stroke-width="1.8" fill="none" stroke-linecap="round" /><circle cx="12" cy="56" r="2" fill="#ffffff" opacity="0.9" /><circle cx="6" cy="72" r="1.5" fill="#fef08a" opacity="0.8" />`;
           }
         }
 
@@ -3051,78 +2685,19 @@ if (typeof window !== 'undefined') {
         if (body) {
           if (lvl === 1) {
             // Lv.1: Chubby Baby Kitten Body with cute pink toe beans & small belly
-            body.innerHTML = `
-              <path d="M 36,84 C 30,94 32,112 44,114 C 53,115 67,115 76,114 C 88,112 90,94 84,84 C 78,76 42,76 36,84 Z" fill="#fbbf24" />
-              <path d="M 33,96 C 33,106 40,113 47,113 C 43,106 42,98 38,92 Z" fill="#f97316" />
-              <path d="M 83,92 C 86,98 84,107 79,112 C 82,105 81,96 78,92 Z" fill="#475569" />
-              <ellipse cx="60" cy="99" rx="13.5" ry="11.5" fill="#ffffff" />
-              <ellipse cx="37" cy="115" rx="7.5" ry="4.5" fill="#ffffff" />
-              <ellipse cx="83" cy="115" rx="7.5" ry="4.5" fill="#ffffff" />
-              <path d="M 50,96 L 50,113 C 50,116 56,116 56,113 L 56,96 Z" fill="#ffffff" />
-              <path d="M 64,96 L 64,113 C 64,116 70,116 70,113 L 70,96 Z" fill="#ffffff" />
-              <!-- Pink Toe Beans -->
-              <circle cx="53" cy="113" r="1.3" fill="#fda4af" />
-              <circle cx="67" cy="113" r="1.3" fill="#fda4af" />
-            `;
+            body.innerHTML = `<path d="M 36,84 C 30,94 32,112 44,114 C 53,115 67,115 76,114 C 88,112 90,94 84,84 C 78,76 42,76 36,84 Z" fill="#fbbf24" /><path d="M 33,96 C 33,106 40,113 47,113 C 43,106 42,98 38,92 Z" fill="#f97316" /><path d="M 83,92 C 86,98 84,107 79,112 C 82,105 81,96 78,92 Z" fill="#475569" /><ellipse cx="60" cy="99" rx="13.5" ry="11.5" fill="#ffffff" /><ellipse cx="37" cy="115" rx="7.5" ry="4.5" fill="#ffffff" /><ellipse cx="83" cy="115" rx="7.5" ry="4.5" fill="#ffffff" /><path d="M 50,96 L 50,113 C 50,116 56,116 56,113 L 56,96 Z" fill="#ffffff" /><path d="M 64,96 L 64,113 C 64,116 70,116 70,113 L 70,96 Z" fill="#ffffff" /><!-- Pink Toe Beans --><circle cx="53" cy="113" r="1.3" fill="#fda4af" /><circle cx="67" cy="113" r="1.3" fill="#fda4af" />`;
           } else if (lvl === 2) {
             // Lv.2: Standard Agile Explorer Body
-            body.innerHTML = `
-              <path d="M 32,80 C 26,92 28,114 42,116 C 52,117 68,117 78,116 C 92,114 94,92 88,80 C 84,70 36,70 32,80 Z" fill="#fbbf24" />
-              <path d="M 28,95 C 28,108 38,116 46,116 C 42,108 40,96 35,90 Z" fill="#f97316" />
-              <path d="M 85,90 C 88,98 86,110 80,115 C 84,106 82,95 78,90 Z" fill="#475569" />
-              <ellipse cx="60" cy="98" rx="16" ry="14" fill="#ffffff" />
-              <ellipse cx="36" cy="116" rx="9" ry="5" fill="#ffffff" />
-              <line x1="33" y1="115" x2="33" y2="118" stroke="#cbd5e1" stroke-width="1" />
-              <line x1="37" y1="115" x2="37" y2="118" stroke="#cbd5e1" stroke-width="1" />
-              <ellipse cx="84" cy="116" rx="9" ry="5" fill="#ffffff" />
-              <line x1="81" y1="115" x2="81" y2="118" stroke="#cbd5e1" stroke-width="1" />
-              <line x1="85" y1="115" x2="85" y2="118" stroke="#cbd5e1" stroke-width="1" />
-              <path d="M 48,94 L 48,115 C 48,118 56,118 56,115 L 56,94 Z" fill="#ffffff" />
-              <path d="M 64,94 L 64,115 C 64,118 72,118 72,115 L 72,94 Z" fill="#ffffff" />
-            `;
+            body.innerHTML = `<path d="M 32,80 C 26,92 28,114 42,116 C 52,117 68,117 78,116 C 92,114 94,92 88,80 C 84,70 36,70 32,80 Z" fill="#fbbf24" /><path d="M 28,95 C 28,108 38,116 46,116 C 42,108 40,96 35,90 Z" fill="#f97316" /><path d="M 85,90 C 88,98 86,110 80,115 C 84,106 82,95 78,90 Z" fill="#475569" /><ellipse cx="60" cy="98" rx="16" ry="14" fill="#ffffff" /><ellipse cx="36" cy="116" rx="9" ry="5" fill="#ffffff" /><line x1="33" y1="115" x2="33" y2="118" stroke="#cbd5e1" stroke-width="1" /><line x1="37" y1="115" x2="37" y2="118" stroke="#cbd5e1" stroke-width="1" /><ellipse cx="84" cy="116" rx="9" ry="5" fill="#ffffff" /><line x1="81" y1="115" x2="81" y2="118" stroke="#cbd5e1" stroke-width="1" /><line x1="85" y1="115" x2="85" y2="118" stroke="#cbd5e1" stroke-width="1" /><path d="M 48,94 L 48,115 C 48,118 56,118 56,115 L 56,94 Z" fill="#ffffff" /><path d="M 64,94 L 64,115 C 64,118 72,118 72,115 L 72,94 Z" fill="#ffffff" />`;
           } else if (lvl === 3) {
             // Lv.3: Slender Elegant Scholar Body with clean white cuffs
-            body.innerHTML = `
-              <path d="M 33,79 C 27,90 29,114 43,116 C 53,117 67,117 77,116 C 91,114 93,90 87,79 C 83,69 37,69 33,79 Z" fill="#fbbf24" />
-              <path d="M 28,94 C 29,106 37,115 45,115 C 42,107 41,96 36,90 Z" fill="#f97316" />
-              <path d="M 85,90 C 87,97 85,108 79,114 C 83,106 82,95 78,90 Z" fill="#475569" />
-              <ellipse cx="60" cy="98" rx="15" ry="14.5" fill="#ffffff" />
-              <ellipse cx="36" cy="116" rx="8.5" ry="5" fill="#ffffff" />
-              <ellipse cx="84" cy="116" rx="8.5" ry="5" fill="#ffffff" />
-              <path d="M 48,93 L 48,115 C 48,118 56,118 56,115 L 56,93 Z" fill="#ffffff" />
-              <path d="M 64,93 L 64,115 C 64,118 72,118 72,115 L 72,93 Z" fill="#ffffff" />
-            `;
+            body.innerHTML = `<path d="M 33,79 C 27,90 29,114 43,116 C 53,117 67,117 77,116 C 91,114 93,90 87,79 C 83,69 37,69 33,79 Z" fill="#fbbf24" /><path d="M 28,94 C 29,106 37,115 45,115 C 42,107 41,96 36,90 Z" fill="#f97316" /><path d="M 85,90 C 87,97 85,108 79,114 C 83,106 82,95 78,90 Z" fill="#475569" /><ellipse cx="60" cy="98" rx="15" ry="14.5" fill="#ffffff" /><ellipse cx="36" cy="116" rx="8.5" ry="5" fill="#ffffff" /><ellipse cx="84" cy="116" rx="8.5" ry="5" fill="#ffffff" /><path d="M 48,93 L 48,115 C 48,118 56,118 56,115 L 56,93 Z" fill="#ffffff" /><path d="M 64,93 L 64,115 C 64,118 72,118 72,115 L 72,93 Z" fill="#ffffff" />`;
           } else if (lvl === 4) {
             // Lv.4: Athletic Heroic Body with bold adventurer tiger stripes
-            body.innerHTML = `
-              <path d="M 31,78 C 24,91 26,114 41,116 C 52,117 68,117 79,116 C 94,114 96,91 89,78 C 84,68 36,68 31,78 Z" fill="#fbbf24" />
-              <path d="M 26,92 C 26,106 36,116 46,116 C 41,107 39,95 33,88 Z" fill="#ea580c" />
-              <path d="M 87,88 C 90,97 88,109 81,115 C 85,106 83,94 79,88 Z" fill="#334155" />
-              <!-- Tiger Stripes -->
-              <path d="M 36,88 Q 44,92 40,96" stroke="#c2410c" stroke-width="1.5" fill="none" stroke-linecap="round" />
-              <path d="M 84,88 Q 76,92 80,96" stroke="#1e293b" stroke-width="1.5" fill="none" stroke-linecap="round" />
-              <ellipse cx="60" cy="98" rx="16.5" ry="14" fill="#ffffff" />
-              <ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" />
-              <ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" />
-              <path d="M 47,93 L 47,115 C 47,118.5 56,118.5 56,115 L 56,93 Z" fill="#ffffff" />
-              <path d="M 64,93 L 64,115 C 64,118.5 73,118.5 73,115 L 73,93 Z" fill="#ffffff" />
-            `;
+            body.innerHTML = `<path d="M 31,78 C 24,91 26,114 41,116 C 52,117 68,117 79,116 C 94,114 96,91 89,78 C 84,68 36,68 31,78 Z" fill="#fbbf24" /><path d="M 26,92 C 26,106 36,116 46,116 C 41,107 39,95 33,88 Z" fill="#ea580c" /><path d="M 87,88 C 90,97 88,109 81,115 C 85,106 83,94 79,88 Z" fill="#334155" /><!-- Tiger Stripes --><path d="M 36,88 Q 44,92 40,96" stroke="#c2410c" stroke-width="1.5" fill="none" stroke-linecap="round" /><path d="M 84,88 Q 76,92 80,96" stroke="#1e293b" stroke-width="1.5" fill="none" stroke-linecap="round" /><ellipse cx="60" cy="98" rx="16.5" ry="14" fill="#ffffff" /><ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" /><ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" /><path d="M 47,93 L 47,115 C 47,118.5 56,118.5 56,115 L 56,93 Z" fill="#ffffff" /><path d="M 64,93 L 64,115 C 64,118.5 73,118.5 73,115 L 73,93 Z" fill="#ffffff" />`;
           } else {
             // Lv.5: Celestial Sacred Beast Body with Gold Filigree & Cloud Anklets
-            body.innerHTML = `
-              <g class="cat-celestial-glow">
-                <path d="M 30,77 C 23,90 25,114 41,116 C 52,117.5 68,117.5 79,116 C 95,114 97,90 90,77 C 84,67 36,67 30,77 Z" fill="#fbbf24" />
-                <path d="M 25,92 C 26,107 37,116 46,116 C 41,107 39,94 33,87 Z" fill="#f97316" />
-                <path d="M 87,87 C 91,97 88,110 80,115 C 85,106 83,94 79,87 Z" fill="#475569" />
-                <ellipse cx="60" cy="98" rx="17" ry="14.5" fill="#ffffff" />
-                <path d="M 52,98 Q 60,105 68,98 Q 60,102 52,98 Z" fill="#fde047" opacity="0.8" />
-                <!-- Sacred Cloud Anklets -->
-                <ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.4" />
-                <ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.4" />
-                <path d="M 47,92 L 47,115 C 47,118.5 56,118.5 56,115 L 56,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="1" />
-                <path d="M 64,92 L 64,115 C 64,118.5 73,118.5 73,115 L 73,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="1" />
-              </g>
-            `;
+            body.innerHTML = `<g class="cat-celestial-glow"><path d="M 30,77 C 23,90 25,114 41,116 C 52,117.5 68,117.5 79,116 C 95,114 97,90 90,77 C 84,67 36,67 30,77 Z" fill="#fbbf24" /><path d="M 25,92 C 26,107 37,116 46,116 C 41,107 39,94 33,87 Z" fill="#f97316" /><path d="M 87,87 C 91,97 88,110 80,115 C 85,106 83,94 79,87 Z" fill="#475569" /><ellipse cx="60" cy="98" rx="17" ry="14.5" fill="#ffffff" /><path d="M 52,98 Q 60,105 68,98 Q 60,102 52,98 Z" fill="#fde047" opacity="0.8" /><!-- Sacred Cloud Anklets --><ellipse cx="35" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.4" /><ellipse cx="85" cy="116" rx="9.5" ry="5.5" fill="#ffffff" stroke="#fde047" stroke-width="1.4" /><path d="M 47,92 L 47,115 C 47,118.5 56,118.5 56,115 L 56,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="1" /><path d="M 64,92 L 64,115 C 64,118.5 73,118.5 73,115 L 73,92 Z" fill="#ffffff" stroke="#fde047" stroke-width="1" /></g>`;
           }
         }
 
@@ -3130,53 +2705,19 @@ if (typeof window !== 'undefined') {
         if (chest) {
           if (lvl === 1) {
             // Lv.1 幼幼小奶貓: 可愛粉嫩小口水巾 (Baby Bib with heart)
-            chest.innerHTML = `
-              <g id="${prefix}BabyBib">
-                <path d="M 50,76 Q 60,86 70,76 Q 67,89 60,91 Q 53,89 50,76 Z" fill="#fee2e2" stroke="#f43f5e" stroke-width="0.8" />
-                <circle cx="60" cy="83" r="1.6" fill="#f43f5e" />
-              </g>
-            `;
+            chest.innerHTML = `<g id="${prefix}BabyBib"><path d="M 50,76 Q 60,86 70,76 Q 67,89 60,91 Q 53,89 50,76 Z" fill="#fee2e2" stroke="#f43f5e" stroke-width="0.8" /><circle cx="60" cy="83" r="1.6" fill="#f43f5e" /></g>`;
           } else if (lvl === 2) {
             // Lv.2 活潑好奇貓 (🧶): 鮮明紅色毛線蝴蝶結大領巾與金色小鈴鐺！
-            chest.innerHTML = `
-              <g id="${prefix}YarnRibbon">
-                <path d="M 48,77 Q 60,83 72,77" stroke="#dc2626" stroke-width="3" fill="none" stroke-linecap="round" />
-                <!-- Red Yarn Bow Wings -->
-                <polygon points="60,81 53,77 54,85" fill="#ef4444" stroke="#b91c1c" stroke-width="0.6" />
-                <polygon points="60,81 67,77 66,85" fill="#ef4444" stroke="#b91c1c" stroke-width="0.6" />
-                <!-- Gold Jingle Bell -->
-                <circle cx="60" cy="83" r="3.2" fill="#facc15" stroke="#a16207" stroke-width="0.7" />
-                <circle cx="60" cy="83.8" r="0.9" fill="#a16207" />
-              </g>
-            `;
+            chest.innerHTML = `<g id="${prefix}YarnRibbon"><path d="M 48,77 Q 60,83 72,77" stroke="#dc2626" stroke-width="3" fill="none" stroke-linecap="round" /><!-- Red Yarn Bow Wings --><polygon points="60,81 53,77 54,85" fill="#ef4444" stroke="#b91c1c" stroke-width="0.6" /><polygon points="60,81 67,77 66,85" fill="#ef4444" stroke="#b91c1c" stroke-width="0.6" /><!-- Gold Jingle Bell --><circle cx="60" cy="83" r="3.2" fill="#facc15" stroke="#a16207" stroke-width="0.7" /><circle cx="60" cy="83.8" r="0.9" fill="#a16207" /></g>`;
           } else if (lvl === 3) {
             // Lv.3 聰明學霸貓 (🎓): 華麗優雅的多層次純白羽毛長領巾！
-            chest.innerHTML = `
-              <g id="${prefix}ScholarFluff" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))">
-                <path d="M 44,74 C 40,80 42,87 48,88 C 44,92 50,96 56,95 C 54,101 66,101 64,95 C 70,96 76,92 72,88 C 78,87 80,80 76,74 C 67,78 53,78 44,74 Z" fill="#ffffff" />
-                <path d="M 48,76 C 45,82 49,88 55,87 C 53,91 67,91 65,87 C 71,88 75,82 72,76 C 66,79 54,79 48,76 Z" fill="#f1f5f9" />
-                <circle cx="60" cy="83" r="2.2" fill="#38bdf8" stroke="#0284c7" stroke-width="0.6" />
-              </g>
-            `;
+            chest.innerHTML = `<g id="${prefix}ScholarFluff" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"><path d="M 44,74 C 40,80 42,87 48,88 C 44,92 50,96 56,95 C 54,101 66,101 64,95 C 70,96 76,92 72,88 C 78,87 80,80 76,74 C 67,78 53,78 44,74 Z" fill="#ffffff" /><path d="M 48,76 C 45,82 49,88 55,87 C 53,91 67,91 65,87 C 71,88 75,82 72,76 C 66,79 54,79 48,76 Z" fill="#f1f5f9" /><circle cx="60" cy="83" r="2.2" fill="#38bdf8" stroke="#0284c7" stroke-width="0.6" /></g>`;
           } else if (lvl === 4) {
             // Lv.4 英勇旅伴貓 (🦸): 霸氣厚實的冒險家絨毛厚披肩！
-            chest.innerHTML = `
-              <g id="${prefix}AdventurerMantle" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.15))">
-                <path d="M 40,73 C 34,81 37,90 45,91 C 40,96 47,102 54,100 C 52,107 68,107 66,100 C 73,102 80,96 75,91 C 83,90 86,81 80,73 C 70,78 50,78 40,73 Z" fill="#f8fafc" />
-                <path d="M 48,80 Q 60,92 72,80" stroke="#94a3b8" stroke-width="1.5" fill="none" />
-                <polygon points="60,82 56,86 60,90 64,86" fill="#dc2626" stroke="#991b1b" stroke-width="0.8" />
-              </g>
-            `;
+            chest.innerHTML = `<g id="${prefix}AdventurerMantle" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.15))"><path d="M 40,73 C 34,81 37,90 45,91 C 40,96 47,102 54,100 C 52,107 68,107 66,100 C 73,102 80,96 75,91 C 83,90 86,81 80,73 C 70,78 50,78 40,73 Z" fill="#f8fafc" /><path d="M 48,80 Q 60,92 72,80" stroke="#94a3b8" stroke-width="1.5" fill="none" /><polygon points="60,82 56,86 60,90 64,86" fill="#dc2626" stroke="#991b1b" stroke-width="0.8" /></g>`;
           } else {
             // Lv.5 傳奇貓神獸 (👑): 太陽神星之核寶石與祥雲胸鬃
-            chest.innerHTML = `
-              <g id="${prefix}DivineChest" filter="drop-shadow(0 0 8px rgba(251, 191, 36, 0.6))">
-                <path d="M 38,72 C 32,81 36,92 45,93 C 39,98 47,105 54,103 C 50,111 70,111 66,103 C 73,105 81,98 75,93 C 84,92 88,81 82,72 C 70,77 50,77 38,72 Z" fill="#ffffff" />
-                <!-- Sun Star Jewel -->
-                <circle cx="60" cy="85" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.4" />
-                <polygon points="60,80 62,84 66,85 62,86 60,90 58,86 54,85 58,84" fill="#ffffff" />
-              </g>
-            `;
+            chest.innerHTML = `<g id="${prefix}DivineChest" filter="drop-shadow(0 0 8px rgba(251, 191, 36, 0.6))"><path d="M 38,72 C 32,81 36,92 45,93 C 39,98 47,105 54,103 C 50,111 70,111 66,103 C 73,105 81,98 75,93 C 84,92 88,81 82,72 C 70,77 50,77 38,72 Z" fill="#ffffff" /><!-- Sun Star Jewel --><circle cx="60" cy="85" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.4" /><polygon points="60,80 62,84 66,85 62,86 60,90 58,86 54,85 58,84" fill="#ffffff" /></g>`;
           }
         }
 
@@ -3184,115 +2725,34 @@ if (typeof window !== 'undefined') {
         if (headMorph) {
           if (lvl === 1) {
             // Lv.1: Big cute blushing baby cheeks
-            headMorph.innerHTML = `
-              <ellipse cx="36" cy="62" rx="6" ry="4" fill="#fb7185" opacity="0.65" />
-              <ellipse cx="84" cy="62" rx="6" ry="4" fill="#fb7185" opacity="0.65" />
-            `;
+            headMorph.innerHTML = `<ellipse cx="36" cy="62" rx="6" ry="4" fill="#fb7185" opacity="0.65" /><ellipse cx="84" cy="62" rx="6" ry="4" fill="#fb7185" opacity="0.65" />`;
           } else if (lvl === 2) {
             // Lv.2: Alert adventurer ear twitches & whiskers
-            headMorph.innerHTML = `
-              <line x1="24" y1="55" x2="38" y2="58" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" />
-              <line x1="96" y1="55" x2="82" y2="58" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" />
-            `;
+            headMorph.innerHTML = `<line x1="24" y1="55" x2="38" y2="58" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" /><line x1="96" y1="55" x2="82" y2="58" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" />`;
           } else if (lvl === 3) {
             // Lv.3 聰明學霸貓 (🎓): 黑色小學士帽 + 金色長流蘇 + 金絲圓框眼鏡！
-            headMorph.innerHTML = `
-              <!-- Graduation Scholar Cap -->
-              <g id="${prefix}ScholarCap" transform="translate(60, 22)">
-                <polygon points="0,-12 24,-4 0,4 -24,-4" fill="#1e293b" stroke="#0f172a" stroke-width="1" />
-                <polygon points="0,-10 21,-4 0,3 -21,-4" fill="#334155" />
-                <path d="M -11,-4 Q 0,5 11,-4 L 9,5 Q 0,11 -9,5 Z" fill="#0f172a" />
-                <circle cx="0" cy="-4" r="2.4" fill="#facc15" stroke="#ca8a04" stroke-width="0.6" />
-                <!-- Gold Draping Tassel -->
-                <path d="M 0,-4 Q 14,-2 17,7" stroke="#eab308" stroke-width="1.4" fill="none" stroke-linecap="round" />
-                <ellipse cx="17.5" cy="10" rx="2" ry="3.5" fill="#eab308" />
-                <line x1="17.5" y1="13.5" x2="17.5" y2="16" stroke="#ca8a04" stroke-width="1.2" />
-              </g>
-              <!-- Gold Wire Round Spectacles -->
-              <g id="${prefix}ScholarGlasses">
-                <circle cx="46" cy="52" r="8" fill="rgba(224, 242, 254, 0.3)" stroke="#eab308" stroke-width="1.5" />
-                <circle cx="48" cy="49" r="1.6" fill="#ffffff" opacity="0.85" />
-                <circle cx="74" cy="52" r="8" fill="rgba(224, 242, 254, 0.3)" stroke="#eab308" stroke-width="1.5" />
-                <circle cx="76" cy="49" r="1.6" fill="#ffffff" opacity="0.85" />
-                <path d="M 54,50 Q 60,46 66,50" stroke="#eab308" stroke-width="1.5" fill="none" />
-                <line x1="38" y1="51" x2="30" y2="48" stroke="#eab308" stroke-width="1.2" stroke-linecap="round" />
-                <line x1="82" y1="51" x2="90" y2="48" stroke="#eab308" stroke-width="1.2" stroke-linecap="round" />
-              </g>
-            `;
+            headMorph.innerHTML = `<!-- Graduation Scholar Cap --><g id="${prefix}ScholarCap" transform="translate(60, 22)"><polygon points="0,-12 24,-4 0,4 -24,-4" fill="#1e293b" stroke="#0f172a" stroke-width="1" /><polygon points="0,-10 21,-4 0,3 -21,-4" fill="#334155" /><path d="M -11,-4 Q 0,5 11,-4 L 9,5 Q 0,11 -9,5 Z" fill="#0f172a" /><circle cx="0" cy="-4" r="2.4" fill="#facc15" stroke="#ca8a04" stroke-width="0.6" /><!-- Gold Draping Tassel --><path d="M 0,-4 Q 14,-2 17,7" stroke="#eab308" stroke-width="1.4" fill="none" stroke-linecap="round" /><ellipse cx="17.5" cy="10" rx="2" ry="3.5" fill="#eab308" /><line x1="17.5" y1="13.5" x2="17.5" y2="16" stroke="#ca8a04" stroke-width="1.2" /></g><!-- Gold Wire Round Spectacles --><g id="${prefix}ScholarGlasses"><circle cx="46" cy="52" r="8" fill="rgba(224, 242, 254, 0.3)" stroke="#eab308" stroke-width="1.5" /><circle cx="48" cy="49" r="1.6" fill="#ffffff" opacity="0.85" /><circle cx="74" cy="52" r="8" fill="rgba(224, 242, 254, 0.3)" stroke="#eab308" stroke-width="1.5" /><circle cx="76" cy="49" r="1.6" fill="#ffffff" opacity="0.85" /><path d="M 54,50 Q 60,46 66,50" stroke="#eab308" stroke-width="1.5" fill="none" /><line x1="38" y1="51" x2="30" y2="48" stroke="#eab308" stroke-width="1.2" stroke-linecap="round" /><line x1="82" y1="51" x2="90" y2="48" stroke="#eab308" stroke-width="1.2" stroke-linecap="round" /></g>`;
           } else if (lvl === 4) {
             // Lv.4 英勇旅伴貓 (🦸): 猞猁長耳羽 + 額頭英勇戰印
-            headMorph.innerHTML = `
-              <!-- Lynx Ear Tufts -->
-              <line x1="20" y1="16" x2="13" y2="6" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round" />
-              <line x1="22" y1="17" x2="17" y2="8" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round" />
-              <line x1="100" y1="16" x2="107" y2="6" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round" />
-              <line x1="98" y1="17" x2="103" y2="8" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round" />
-              <!-- Heroic Diamond Emblem -->
-              <g transform="translate(60, 36)">
-                <polygon points="0,-6 4,0 0,6 -4,0" fill="#dc2626" stroke="#991b1b" stroke-width="0.8" />
-                <polygon points="0,-3.5 2.5,0 0,3.5 -2.5,0" fill="#facc15" />
-              </g>
-            `;
+            headMorph.innerHTML = `<!-- Lynx Ear Tufts --><line x1="20" y1="16" x2="13" y2="6" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round" /><line x1="22" y1="17" x2="17" y2="8" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round" /><line x1="100" y1="16" x2="107" y2="6" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round" /><line x1="98" y1="17" x2="103" y2="8" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round" /><!-- Heroic Diamond Emblem --><g transform="translate(60, 36)"><polygon points="0,-6 4,0 0,6 -4,0" fill="#dc2626" stroke="#991b1b" stroke-width="0.8" /><polygon points="0,-3.5 2.5,0 0,3.5 -2.5,0" fill="#facc15" /></g>`;
           } else {
             // Lv.5 傳奇貓神獸 (👑): 璀璨黃金小皇冠 + 額頭星月呼吸金印！
-            headMorph.innerHTML = `
-              <!-- Royal Golden Crown with Ruby & Emeralds -->
-              <g id="${prefix}RoyalCrown" transform="translate(60, 18)" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))">
-                <path d="M -14,4 L -16,-6 L -7,-1 L 0,-10 L 7,-1 L 16,-6 L 14,4 Z" fill="#facc15" stroke="#b45309" stroke-width="1.2" />
-                <circle cx="-16" cy="-6" r="1.6" fill="#ef4444" />
-                <circle cx="0" cy="-10" r="2.2" fill="#ef4444" stroke="#ffffff" stroke-width="0.6" />
-                <circle cx="16" cy="-6" r="1.6" fill="#10b981" />
-                <rect x="-13" y="1" width="26" height="3" fill="#ca8a04" rx="1" />
-              </g>
-              <!-- Forehead Celestial Sigil -->
-              <g class="sigil-pulse">
-                <circle cx="60" cy="38" r="9" fill="#fef08a" opacity="0.35" />
-                <path d="M 53,35 C 53,43 67,43 67,35 C 65,39 55,39 53,35 Z" fill="#f59e0b" />
-                <polygon points="60,28 62.5,35 69.5,37 62.5,39 60,46 57.5,39 50.5,37 57.5,35" fill="#fbbf24" stroke="#d97706" stroke-width="0.8" />
-                <circle cx="60" cy="37" r="1.8" fill="#ffffff" />
-              </g>
-            `;
+            headMorph.innerHTML = `<!-- Royal Golden Crown with Ruby & Emeralds --><g id="${prefix}RoyalCrown" transform="translate(60, 18)" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))"><path d="M -14,4 L -16,-6 L -7,-1 L 0,-10 L 7,-1 L 16,-6 L 14,4 Z" fill="#facc15" stroke="#b45309" stroke-width="1.2" /><circle cx="-16" cy="-6" r="1.6" fill="#ef4444" /><circle cx="0" cy="-10" r="2.2" fill="#ef4444" stroke="#ffffff" stroke-width="0.6" /><circle cx="16" cy="-6" r="1.6" fill="#10b981" /><rect x="-13" y="1" width="26" height="3" fill="#ca8a04" rx="1" /></g><!-- Forehead Celestial Sigil --><g class="sigil-pulse"><circle cx="60" cy="38" r="9" fill="#fef08a" opacity="0.35" /><path d="M 53,35 C 53,43 67,43 67,35 C 65,39 55,39 53,35 Z" fill="#f59e0b" /><polygon points="60,28 62.5,35 69.5,37 62.5,39 60,46 57.5,39 50.5,37 57.5,35" fill="#fbbf24" stroke="#d97706" stroke-width="0.8" /><circle cx="60" cy="37" r="1.8" fill="#ffffff" /></g>`;
           }
         }
 
         // 6. Eyes Evolution
         if (eyes) {
           if (lvl === 1) {
-            eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="5.8" ry="7.2" fill="#1e293b" />
-              <circle cx="48" cy="49" r="2.3" fill="#ffffff" />
-              <circle cx="44" cy="55" r="1.2" fill="#ffffff" />
-              <ellipse cx="74" cy="52" rx="5.8" ry="7.2" fill="#1e293b" />
-              <circle cx="76" cy="49" r="2.3" fill="#ffffff" />
-              <circle cx="72" cy="55" r="1.2" fill="#ffffff" />
-            `;
+            eyes.innerHTML = `<ellipse cx="46" cy="52" rx="5.8" ry="7.2" fill="#1e293b" /><circle cx="48" cy="49" r="2.3" fill="#ffffff" /><circle cx="44" cy="55" r="1.2" fill="#ffffff" /><ellipse cx="74" cy="52" rx="5.8" ry="7.2" fill="#1e293b" /><circle cx="76" cy="49" r="2.3" fill="#ffffff" /><circle cx="72" cy="55" r="1.2" fill="#ffffff" />`;
           } else if (lvl === 2) {
-            eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" />
-              <circle cx="48" cy="50" r="1.5" fill="#ffffff" />
-              <ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" />
-              <circle cx="76" cy="50" r="1.5" fill="#ffffff" />
-            `;
+            eyes.innerHTML = `<ellipse cx="46" cy="52" rx="4.5" ry="6" fill="#1e293b" /><circle cx="48" cy="50" r="1.5" fill="#ffffff" /><ellipse cx="74" cy="52" rx="4.5" ry="6" fill="#1e293b" /><circle cx="76" cy="50" r="1.5" fill="#ffffff" />`;
           } else if (lvl === 3) {
             // Calm scholarly glint
-            eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="4.4" ry="5.8" fill="#0f172a" />
-              <circle cx="48" cy="50" r="1.4" fill="#ffffff" />
-              <circle cx="45" cy="53" r="0.8" fill="#93c5fd" />
-              <ellipse cx="74" cy="52" rx="4.4" ry="5.8" fill="#0f172a" />
-              <circle cx="76" cy="50" r="1.4" fill="#ffffff" />
-              <circle cx="73" cy="53" r="0.8" fill="#93c5fd" />
-            `;
+            eyes.innerHTML = `<ellipse cx="46" cy="52" rx="4.4" ry="5.8" fill="#0f172a" /><circle cx="48" cy="50" r="1.4" fill="#ffffff" /><circle cx="45" cy="53" r="0.8" fill="#93c5fd" /><ellipse cx="74" cy="52" rx="4.4" ry="5.8" fill="#0f172a" /><circle cx="76" cy="50" r="1.4" fill="#ffffff" /><circle cx="73" cy="53" r="0.8" fill="#93c5fd" />`;
           } else {
             // Golden adventurer / celestial starlight eyes
-            eyes.innerHTML = `
-              <ellipse cx="46" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
-              <circle cx="48" cy="49.5" r="1.8" fill="#ffffff" />
-              <circle cx="44.5" cy="53" r="1" fill="#fde047" />
-              <ellipse cx="74" cy="52" rx="4.8" ry="6.2" fill="#0f172a" />
-              <circle cx="76" cy="49.5" r="1.8" fill="#ffffff" />
-              <circle cx="72.5" cy="53" r="1" fill="#fde047" />
-            `;
+            eyes.innerHTML = `<ellipse cx="46" cy="52" rx="4.8" ry="6.2" fill="#0f172a" /><circle cx="48" cy="49.5" r="1.8" fill="#ffffff" /><circle cx="44.5" cy="53" r="1" fill="#fde047" /><ellipse cx="74" cy="52" rx="4.8" ry="6.2" fill="#0f172a" /><circle cx="76" cy="49.5" r="1.8" fill="#ffffff" /><circle cx="72.5" cy="53" r="1" fill="#fde047" />`;
           }
         }
       });
@@ -3609,7 +3069,6 @@ if (typeof window !== 'undefined') {
     }
 
 
-     
 
     // <<<<<<<<<< [MODULE END: 02_cat_morph_engine.js] <<<<<<<<<<
 
@@ -3622,254 +3081,48 @@ if (typeof window !== 'undefined') {
     const ACCESSORIES_SVG = {
       aura: {
         aura_none: "",
-        aura_sparkle: `
-          <g id="acc_aura_sparkle" class="animate-pulse">
-            <path d="M 16,25 Q 22,25 22,19 Q 22,25 28,25 Q 22,25 22,31 Q 22,25 16,25 Z" fill="#facc15" />
-            <path d="M 96,22 Q 102,22 102,16 Q 102,22 108,22 Q 102,22 102,28 Q 102,22 96,22 Z" fill="#facc15" />
-            <path d="M 8,82 Q 12,82 12,78 Q 12,82 16,82 Q 12,82 12,86 Q 12,82 8,82 Z" fill="#fde047" />
-            <path d="M 104,85 Q 108,85 108,81 Q 108,85 112,85 Q 108,85 108,89 Q 108,85 104,85 Z" fill="#fde047" />
-          </g>`,
-        aura_fish: `
-          <g id="acc_aura_fish" opacity="0.95">
-            <g transform="translate(14, 30) rotate(-15)">
-              <path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
-            </g>
-            <g transform="translate(94, 25) rotate(20)">
-              <path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" />
-            </g>
-            <g transform="translate(10, 85) rotate(12)">
-              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
-            </g>
-            <g transform="translate(96, 80) rotate(-10)">
-              <path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" />
-            </g>
-          </g>`,
-        aura_sakura: `
-          <g id="acc_aura_sakura" opacity="0.9">
-            <circle cx="18" cy="24" r="3.5" fill="#f472b6" />
-            <circle cx="26" cy="18" r="2.5" fill="#fda4af" />
-            <circle cx="98" cy="20" r="3.5" fill="#f472b6" />
-            <circle cx="106" cy="28" r="2.2" fill="#fda4af" />
-            <circle cx="12" cy="75" r="3" fill="#fbcfe8" />
-            <circle cx="106" cy="80" r="3.2" fill="#fbcfe8" />
-          </g>`,
-        aura_wings: `
-          <!-- Lv.4 Adventurer Wings -->
-          <g id="acc_aura_wings" opacity="0.92">
-            <path d="M 36,75 C 10,65 -5,40 10,32 C 16,30 22,35 24,42 C 18,48 24,62 38,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-            <path d="M 24,42 C 28,45 32,56 38,65" stroke="#cbd5e1" stroke-width="1" fill="none" />
-            <path d="M 84,75 C 110,65 125,40 110,32 C 104,30 98,35 96,42 C 102,48 96,62 82,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-            <path d="M 96,42 C 92,45 88,56 82,65" stroke="#cbd5e1" stroke-width="1" fill="none" />
-          </g>`,
-        aura_rainbow: `
-          <g id="acc_aura_rainbow">
-            <path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" />
-            <path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" />
-            <path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" />
-            <path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" />
-            <path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" />
-          </g>`
+        aura_sparkle: `<g id="acc_aura_sparkle" class="animate-pulse"><path d="M 16,25 Q 22,25 22,19 Q 22,25 28,25 Q 22,25 22,31 Q 22,25 16,25 Z" fill="#facc15" /><path d="M 96,22 Q 102,22 102,16 Q 102,22 108,22 Q 102,22 102,28 Q 102,22 96,22 Z" fill="#facc15" /><path d="M 8,82 Q 12,82 12,78 Q 12,82 16,82 Q 12,82 12,86 Q 12,82 8,82 Z" fill="#fde047" /><path d="M 104,85 Q 108,85 108,81 Q 108,85 112,85 Q 108,85 108,89 Q 108,85 104,85 Z" fill="#fde047" /></g>`,
+        aura_fish: `<g id="acc_aura_fish" opacity="0.95"><g transform="translate(14, 30) rotate(-15)"><path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" /></g><g transform="translate(94, 25) rotate(20)"><path d="M 0,0 Q 8,-5 16,0 Q 8,5 0,0 Z M -3,-3 L 0,0 L -3,3 Z" fill="#38bdf8" /></g><g transform="translate(10, 85) rotate(12)"><path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" /></g><g transform="translate(96, 80) rotate(-10)"><path d="M 0,0 Q 6,-4 12,0 Q 6,4 0,0 Z M -2,-2 L 0,0 L -2,2 Z" fill="#7dd3fc" /></g></g>`,
+        aura_sakura: `<g id="acc_aura_sakura" opacity="0.9"><circle cx="18" cy="24" r="3.5" fill="#f472b6" /><circle cx="26" cy="18" r="2.5" fill="#fda4af" /><circle cx="98" cy="20" r="3.5" fill="#f472b6" /><circle cx="106" cy="28" r="2.2" fill="#fda4af" /><circle cx="12" cy="75" r="3" fill="#fbcfe8" /><circle cx="106" cy="80" r="3.2" fill="#fbcfe8" /></g>`,
+        aura_wings: `<!-- Lv.4 Adventurer Wings --><g id="acc_aura_wings" opacity="0.92"><path d="M 36,75 C 10,65 -5,40 10,32 C 16,30 22,35 24,42 C 18,48 24,62 38,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" /><path d="M 24,42 C 28,45 32,56 38,65" stroke="#cbd5e1" stroke-width="1" fill="none" /><path d="M 84,75 C 110,65 125,40 110,32 C 104,30 98,35 96,42 C 102,48 96,62 82,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" /><path d="M 96,42 C 92,45 88,56 82,65" stroke="#cbd5e1" stroke-width="1" fill="none" /></g>`,
+        aura_rainbow: `<g id="acc_aura_rainbow"><path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" /></g>`
       },
       head: {
         head_none: "",
-        head_sakura: `
-          <!-- 🌸 櫻花小花飾: 夾於右耳基部與臉龐輪廓交界處 (比照附圖 x=83, y=33) -->
-          <g id="acc_head_sakura" transform="translate(83, 33) rotate(12)">
-            <circle cx="-5" cy="-2" r="4.2" fill="#f472b6" />
-            <circle cx="4" cy="-3" r="4.2" fill="#f472b6" />
-            <circle cx="-1" cy="-7" r="4.2" fill="#f472b6" />
-            <circle cx="-4" cy="4" r="4.2" fill="#f472b6" />
-            <circle cx="3.5" cy="3.5" r="4.2" fill="#f472b6" />
-            <circle cx="-4.5" cy="-1.5" r="3" fill="#fbcfe8" />
-            <circle cx="3.5" cy="-2.5" r="3" fill="#fbcfe8" />
-            <circle cx="-1" cy="-6" r="3" fill="#fbcfe8" />
-            <circle cx="-3.5" cy="3.5" r="3" fill="#fbcfe8" />
-            <circle cx="3" cy="3" r="3" fill="#fbcfe8" />
-            <circle cx="0" cy="-0.5" r="3.2" fill="#facc15" stroke="#eab308" stroke-width="0.6" />
-            <circle cx="0" cy="-0.5" r="1.5" fill="#ffffff" />
-            <path d="M 5,2 Q 10,6 7,9 Q 3,7 5,2 Z" fill="#4ade80" />
-          </g>`,
-head_ribbon: `
-          <!-- 🎀 萌萌蝴蝶結: 夾於右耳基部與臉龐交界處 (比照附圖 x=83, y=32) -->
-          <g id="acc_head_ribbon" transform="translate(83, 32) rotate(22)">
-            <polygon points="-1,-1 -13,-10 -9,4 -1,1" fill="#ec4899" stroke="#be185d" stroke-width="0.6" />
-            <polygon points="-2,-1 -11,-8 -8,3 -2,0" fill="#f472b6" />
-            <line x1="-1" y1="0" x2="-8" y2="-4" stroke="#db2777" stroke-width="0.8" />
-            <polygon points="1,-1 13,-10 9,4 1,1" fill="#ec4899" stroke="#be185d" stroke-width="0.6" />
-            <polygon points="2,-1 11,-8 8,3 2,0" fill="#f472b6" />
-            <line x1="1" y1="0" x2="8" y2="-4" stroke="#db2777" stroke-width="0.8" />
-            <path d="M -2,2 Q -6,8 -8,11 Q -4,9 -1,4 Z" fill="#db2777" />
-            <path d="M 2,2 Q 6,8 8,11 Q 4,9 1,4 Z" fill="#db2777" />
-            <ellipse cx="0" cy="0" rx="3.8" ry="3.4" fill="#db2777" stroke="#9d174d" stroke-width="0.6" />
-            <ellipse cx="-0.6" cy="-0.6" rx="2" ry="1.6" fill="#fbcfe8" />
-          </g>`,
-head_cap: `
-          <g id="acc_head_cap" transform="translate(60, 22)">
-            <ellipse cx="0" cy="2" rx="28" ry="11" fill="#ef4444" />
-            <path d="M -26,3 Q 0,-12 26,3 Q 0,-8 -26,3 Z" fill="#b91c1c" />
-            <path d="M 12,2 Q 30,-2 42,4 Q 28,10 14,5 Z" fill="#1e3a8a" />
-            <circle cx="0" cy="-6" r="2.5" fill="#ffffff" />
-          </g>`,
-        head_grad: `
-          <g id="acc_head_grad" transform="translate(60, 18)">
-            <polygon points="0,-12 -28,-3 0,6 28,-3" fill="#1e293b" />
-            <polygon points="-16,0 -16,8 16,8 16,0" fill="#334155" />
-            <path d="M 0,-3 L 24,2 L 26,14" stroke="#f59e0b" stroke-width="2" fill="none" />
-            <circle cx="26" cy="15" r="2" fill="#d97706" />
-          </g>`,
-        head_ranger: `
-          <!-- Lv.4 Adventurer Ranger Hat -->
-          <g id="acc_head_ranger" transform="translate(60, 20)">
-            <ellipse cx="0" cy="4" rx="30" ry="7" fill="#15803d" />
-            <path d="M -22,4 C -16,-10 16,-10 22,4 Z" fill="#16a34a" />
-            <rect x="-18" y="2" width="36" height="3" fill="#ca8a04" />
-            <path d="M 10,2 C 16,-12 28,-20 36,-18 C 30,-12 22,-4 16,2 Z" fill="#ef4444" />
-            <line x1="12" y1="2" x2="32" y2="-17" stroke="#b91c1c" stroke-width="0.8" />
-          </g>`,
-        head_wizard: `
-          <g id="acc_head_wizard" transform="translate(60, 18)">
-            <ellipse cx="0" cy="8" rx="30" ry="6" fill="#312e81" />
-            <path d="M -20,7 Q -8,-8 10,-24 Q 2,-6 20,7 Z" fill="#4338ca" />
-            <ellipse cx="0" cy="6" rx="20" ry="3" fill="#fbbf24" />
-            <polygon points="10,-24 13,-21 16,-24 14,-21 17,-19 13,-19 12,-16 11,-19 7,-19 10,-21" fill="#facc15" />
-          </g>`,
-        head_crown: `
-          <g id="acc_head_crown" transform="translate(60, 16)">
-            <path d="M -22,8 L -18,-7 L -9,2 L 0,-11 L 9,2 L 18,-7 L 22,8 Z" fill="#eab308" stroke="#ca8a04" stroke-width="1.5" />
-            <rect x="-21" y="6" width="42" height="4" rx="2" fill="#ca8a04" />
-            <circle cx="0" cy="-11" r="2.8" fill="#ef4444" />
-            <circle cx="-18" cy="-7" r="2" fill="#3b82f6" />
-            <circle cx="18" cy="-7" r="2" fill="#10b981" />
-            <circle cx="0" cy="8" r="1.5" fill="#ffffff" />
-          </g>`
+        head_sakura: `<!-- 🌸 櫻花小花飾: 夾於右耳基部與臉龐輪廓交界處 (比照附圖 x=83, y=33) --><g id="acc_head_sakura" transform="translate(83, 33) rotate(12)"><circle cx="-5" cy="-2" r="4.2" fill="#f472b6" /><circle cx="4" cy="-3" r="4.2" fill="#f472b6" /><circle cx="-1" cy="-7" r="4.2" fill="#f472b6" /><circle cx="-4" cy="4" r="4.2" fill="#f472b6" /><circle cx="3.5" cy="3.5" r="4.2" fill="#f472b6" /><circle cx="-4.5" cy="-1.5" r="3" fill="#fbcfe8" /><circle cx="3.5" cy="-2.5" r="3" fill="#fbcfe8" /><circle cx="-1" cy="-6" r="3" fill="#fbcfe8" /><circle cx="-3.5" cy="3.5" r="3" fill="#fbcfe8" /><circle cx="3" cy="3" r="3" fill="#fbcfe8" /><circle cx="0" cy="-0.5" r="3.2" fill="#facc15" stroke="#eab308" stroke-width="0.6" /><circle cx="0" cy="-0.5" r="1.5" fill="#ffffff" /><path d="M 5,2 Q 10,6 7,9 Q 3,7 5,2 Z" fill="#4ade80" /></g>`,
+head_ribbon: `<!-- 🎀 萌萌蝴蝶結: 夾於右耳基部與臉龐交界處 (比照附圖 x=83, y=32) --><g id="acc_head_ribbon" transform="translate(83, 32) rotate(22)"><polygon points="-1,-1 -13,-10 -9,4 -1,1" fill="#ec4899" stroke="#be185d" stroke-width="0.6" /><polygon points="-2,-1 -11,-8 -8,3 -2,0" fill="#f472b6" /><line x1="-1" y1="0" x2="-8" y2="-4" stroke="#db2777" stroke-width="0.8" /><polygon points="1,-1 13,-10 9,4 1,1" fill="#ec4899" stroke="#be185d" stroke-width="0.6" /><polygon points="2,-1 11,-8 8,3 2,0" fill="#f472b6" /><line x1="1" y1="0" x2="8" y2="-4" stroke="#db2777" stroke-width="0.8" /><path d="M -2,2 Q -6,8 -8,11 Q -4,9 -1,4 Z" fill="#db2777" /><path d="M 2,2 Q 6,8 8,11 Q 4,9 1,4 Z" fill="#db2777" /><ellipse cx="0" cy="0" rx="3.8" ry="3.4" fill="#db2777" stroke="#9d174d" stroke-width="0.6" /><ellipse cx="-0.6" cy="-0.6" rx="2" ry="1.6" fill="#fbcfe8" /></g>`,
+head_cap: `<g id="acc_head_cap" transform="translate(60, 22)"><ellipse cx="0" cy="2" rx="28" ry="11" fill="#ef4444" /><path d="M -26,3 Q 0,-12 26,3 Q 0,-8 -26,3 Z" fill="#b91c1c" /><path d="M 12,2 Q 30,-2 42,4 Q 28,10 14,5 Z" fill="#1e3a8a" /><circle cx="0" cy="-6" r="2.5" fill="#ffffff" /></g>`,
+        head_grad: `<g id="acc_head_grad" transform="translate(60, 18)"><polygon points="0,-12 -28,-3 0,6 28,-3" fill="#1e293b" /><polygon points="-16,0 -16,8 16,8 16,0" fill="#334155" /><path d="M 0,-3 L 24,2 L 26,14" stroke="#f59e0b" stroke-width="2" fill="none" /><circle cx="26" cy="15" r="2" fill="#d97706" /></g>`,
+        head_ranger: `<!-- Lv.4 Adventurer Ranger Hat --><g id="acc_head_ranger" transform="translate(60, 20)"><ellipse cx="0" cy="4" rx="30" ry="7" fill="#15803d" /><path d="M -22,4 C -16,-10 16,-10 22,4 Z" fill="#16a34a" /><rect x="-18" y="2" width="36" height="3" fill="#ca8a04" /><path d="M 10,2 C 16,-12 28,-20 36,-18 C 30,-12 22,-4 16,2 Z" fill="#ef4444" /><line x1="12" y1="2" x2="32" y2="-17" stroke="#b91c1c" stroke-width="0.8" /></g>`,
+        head_wizard: `<g id="acc_head_wizard" transform="translate(60, 18)"><ellipse cx="0" cy="8" rx="30" ry="6" fill="#312e81" /><path d="M -20,7 Q -8,-8 10,-24 Q 2,-6 20,7 Z" fill="#4338ca" /><ellipse cx="0" cy="6" rx="20" ry="3" fill="#fbbf24" /><polygon points="10,-24 13,-21 16,-24 14,-21 17,-19 13,-19 12,-16 11,-19 7,-19 10,-21" fill="#facc15" /></g>`,
+        head_crown: `<g id="acc_head_crown" transform="translate(60, 16)"><path d="M -22,8 L -18,-7 L -9,2 L 0,-11 L 9,2 L 18,-7 L 22,8 Z" fill="#eab308" stroke="#ca8a04" stroke-width="1.5" /><rect x="-21" y="6" width="42" height="4" rx="2" fill="#ca8a04" /><circle cx="0" cy="-11" r="2.8" fill="#ef4444" /><circle cx="-18" cy="-7" r="2" fill="#3b82f6" /><circle cx="18" cy="-7" r="2" fill="#10b981" /><circle cx="0" cy="8" r="1.5" fill="#ffffff" /></g>`
       },
       face: {
         face_none: "",
-        face_blush: `
-          <g id="acc_face_blush">
-            <g transform="translate(38, 61)">
-              <path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" />
-            </g>
-            <g transform="translate(82, 61)">
-              <path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" />
-            </g>
-          </g>`,
-        face_glasses: `
-          <g id="acc_face_glasses">
-            <circle cx="46" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
-            <circle cx="74" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" />
-            <path d="M 55.5,52 Q 60,48.5 64.5,52" stroke="#78350f" stroke-width="2.2" fill="none" />
-            <line x1="36.5" y1="51" x2="26" y2="48" stroke="#78350f" stroke-width="1.8" />
-            <line x1="83.5" y1="51" x2="94" y2="48" stroke="#78350f" stroke-width="1.8" />
-          </g>`,
-        face_sunglasses: `
-          <g id="acc_face_sunglasses">
-            <path d="M 34,46 L 56,46 L 54,58 Q 45,63 36,58 Z" fill="#0f172a" />
-            <path d="M 64,46 L 86,46 L 84,58 Q 75,63 66,58 Z" fill="#0f172a" />
-            <line x1="56" y1="48" x2="64" y2="48" stroke="#0f172a" stroke-width="3" />
-            <line x1="34" y1="48" x2="25" y2="46" stroke="#0f172a" stroke-width="2.2" />
-            <line x1="86" y1="48" x2="95" y2="46" stroke="#0f172a" stroke-width="2.2" />
-            <path d="M 37,48 L 46,48 L 40,55 Z" fill="#ffffff" opacity="0.35" />
-            <path d="M 67,48 L 76,48 L 70,55 Z" fill="#ffffff" opacity="0.35" />
-          </g>`
+        face_blush: `<g id="acc_face_blush"><g transform="translate(38, 61)"><path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" /></g><g transform="translate(82, 61)"><path d="M 0,-4 L 1,-1 L 4,0 L 1,1 L 0,4 L -1,1 L -4,0 L -1,-1 Z" fill="#f43f5e" /></g></g>`,
+        face_glasses: `<g id="acc_face_glasses"><circle cx="46" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" /><circle cx="74" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" /><path d="M 55.5,52 Q 60,48.5 64.5,52" stroke="#78350f" stroke-width="2.2" fill="none" /><line x1="36.5" y1="51" x2="26" y2="48" stroke="#78350f" stroke-width="1.8" /><line x1="83.5" y1="51" x2="94" y2="48" stroke="#78350f" stroke-width="1.8" /></g>`,
+        face_sunglasses: `<g id="acc_face_sunglasses"><path d="M 34,46 L 56,46 L 54,58 Q 45,63 36,58 Z" fill="#0f172a" /><path d="M 64,46 L 86,46 L 84,58 Q 75,63 66,58 Z" fill="#0f172a" /><line x1="56" y1="48" x2="64" y2="48" stroke="#0f172a" stroke-width="3" /><line x1="34" y1="48" x2="25" y2="46" stroke="#0f172a" stroke-width="2.2" /><line x1="86" y1="48" x2="95" y2="46" stroke="#0f172a" stroke-width="2.2" /><path d="M 37,48 L 46,48 L 40,55 Z" fill="#ffffff" opacity="0.35" /><path d="M 67,48 L 76,48 L 70,55 Z" fill="#ffffff" opacity="0.35" /></g>`
       },
       neck: {
         neck_none: "",
-        neck_bell: `
-          <g id="acc_neck_bell">
-            <path d="M 35,74 Q 60,86 85,74" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" fill="none" />
-            <circle cx="60" cy="82" r="5.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.2" />
-            <line x1="56" y1="81" x2="64" y2="81" stroke="#854d0e" stroke-width="1" />
-            <circle cx="60" cy="84" r="1.3" fill="#713f12" />
-          </g>`,
-        neck_scarf: `
-          <g id="acc_neck_scarf">
-            <path d="M 30,73 Q 60,88 90,73 Q 60,93 30,73 Z" fill="#dc2626" />
-            <rect x="63" y="78" width="10" height="18" rx="3" fill="#b91c1c" transform="rotate(-15 63 78)" />
-            <line x1="63" y1="94" x2="72" y2="92" stroke="#fecaca" stroke-width="1.5" />
-          </g>`,
-        neck_bowtie: `
-          <g id="acc_neck_bowtie">
-            <polygon points="60,78 48,71 48,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
-            <polygon points="60,78 72,71 72,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" />
-            <ellipse cx="60" cy="78" rx="3.5" ry="3.5" fill="#2563eb" />
-          </g>`,
-        neck_medal: `
-          <g id="acc_neck_medal">
-            <path d="M 52,74 L 60,82 L 68,74" stroke="#2563eb" stroke-width="3" fill="none" />
-            <circle cx="60" cy="86" r="6.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" />
-            <text x="60" y="89" text-anchor="middle" font-size="7" font-weight="900" fill="#78350f">1</text>
-          </g>`
+        neck_bell: `<g id="acc_neck_bell"><path d="M 35,74 Q 60,86 85,74" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" fill="none" /><circle cx="60" cy="82" r="5.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.2" /><line x1="56" y1="81" x2="64" y2="81" stroke="#854d0e" stroke-width="1" /><circle cx="60" cy="84" r="1.3" fill="#713f12" /></g>`,
+        neck_scarf: `<g id="acc_neck_scarf"><path d="M 30,73 Q 60,88 90,73 Q 60,93 30,73 Z" fill="#dc2626" /><rect x="63" y="78" width="10" height="18" rx="3" fill="#b91c1c" transform="rotate(-15 63 78)" /><line x1="63" y1="94" x2="72" y2="92" stroke="#fecaca" stroke-width="1.5" /></g>`,
+        neck_bowtie: `<g id="acc_neck_bowtie"><polygon points="60,78 48,71 48,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" /><polygon points="60,78 72,71 72,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" /><ellipse cx="60" cy="78" rx="3.5" ry="3.5" fill="#2563eb" /></g>`,
+        neck_medal: `<g id="acc_neck_medal"><path d="M 52,74 L 60,82 L 68,74" stroke="#2563eb" stroke-width="3" fill="none" /><circle cx="60" cy="86" r="6.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" /><text x="60" y="89" text-anchor="middle" font-size="7" font-weight="900" fill="#78350f">1</text></g>`
       },
       outfit: {
         outfit_none: "",
-        outfit_backpack: `
-          <!-- Lv.2 Explorer Backpack -->
-          <g id="acc_outfit_backpack">
-            <path d="M 42,75 L 44,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" />
-            <path d="M 78,75 L 76,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" />
-            <rect x="42" y="84" width="4" height="4" rx="1" fill="#facc15" />
-            <rect x="74" y="84" width="4" height="4" rx="1" fill="#facc15" />
-          </g>`,
-        outfit_cloak: `
-          <!-- Lv.4 Hero Adventurer Cloak -->
-          <g id="acc_outfit_cloak">
-            <path d="M 32,74 C 20,86 16,112 25,116 C 36,118 42,105 46,95 C 54,92 66,92 74,95 C 78,105 84,118 95,116 C 104,112 100,86 88,74 Z" fill="#b91c1c" />
-            <path d="M 25,116 C 36,118 42,105 46,95" stroke="#facc15" stroke-width="2" fill="none" />
-            <path d="M 74,95 C 78,105 84,118 95,116" stroke="#facc15" stroke-width="2" fill="none" />
-            <circle cx="60" cy="76" r="4.5" fill="#facc15" />
-            <circle cx="60" cy="76" r="2.5" fill="#ef4444" />
-          </g>`,
-        outfit_sailor: `
-          <!-- Japanese Sailor Uniform -->
-          <g id="acc_outfit_sailor">
-            <path d="M 36,80 C 32,95 44,106 60,106 C 76,106 88,95 84,80 Z" fill="#1e3a8a" />
-            <polygon points="60,95 48,78 72,78" fill="#ffffff" />
-            <polygon points="60,82 56,92 64,92" fill="#ef4444" />
-            <polygon points="60,92 54,102 66,102" fill="#dc2626" />
-            <path d="M 44,76 L 36,86 L 46,86" stroke="#ffffff" stroke-width="2" fill="none" />
-            <path d="M 76,76 L 84,86 L 74,86" stroke="#ffffff" stroke-width="2" fill="none" />
-          </g>`,
-        outfit_dress: `
-          <!-- Princess Frilly Dress -->
-          <g id="acc_outfit_dress">
-            <path d="M 40,78 C 30,94 28,108 34,112 C 45,115 75,115 86,112 C 92,108 90,94 80,78 Z" fill="#f472b6" />
-            <path d="M 34,112 Q 47,108 60,112 Q 73,108 86,112" stroke="#ffffff" stroke-width="3" fill="none" />
-            <rect x="42" y="86" width="36" height="4" rx="2" fill="#db2777" />
-            <circle cx="60" cy="88" r="3.5" fill="#fbcfe8" />
-          </g>`
+        outfit_backpack: `<!-- Lv.2 Explorer Backpack --><g id="acc_outfit_backpack"><path d="M 42,75 L 44,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" /><path d="M 78,75 L 76,96" stroke="#b45309" stroke-width="3.5" stroke-linecap="round" /><rect x="42" y="84" width="4" height="4" rx="1" fill="#facc15" /><rect x="74" y="84" width="4" height="4" rx="1" fill="#facc15" /></g>`,
+        outfit_cloak: `<!-- Lv.4 Hero Adventurer Cloak --><g id="acc_outfit_cloak"><path d="M 32,74 C 20,86 16,112 25,116 C 36,118 42,105 46,95 C 54,92 66,92 74,95 C 78,105 84,118 95,116 C 104,112 100,86 88,74 Z" fill="#b91c1c" /><path d="M 25,116 C 36,118 42,105 46,95" stroke="#facc15" stroke-width="2" fill="none" /><path d="M 74,95 C 78,105 84,118 95,116" stroke="#facc15" stroke-width="2" fill="none" /><circle cx="60" cy="76" r="4.5" fill="#facc15" /><circle cx="60" cy="76" r="2.5" fill="#ef4444" /></g>`,
+        outfit_sailor: `<!-- Japanese Sailor Uniform --><g id="acc_outfit_sailor"><path d="M 36,80 C 32,95 44,106 60,106 C 76,106 88,95 84,80 Z" fill="#1e3a8a" /><polygon points="60,95 48,78 72,78" fill="#ffffff" /><polygon points="60,82 56,92 64,92" fill="#ef4444" /><polygon points="60,92 54,102 66,102" fill="#dc2626" /><path d="M 44,76 L 36,86 L 46,86" stroke="#ffffff" stroke-width="2" fill="none" /><path d="M 76,76 L 84,86 L 74,86" stroke="#ffffff" stroke-width="2" fill="none" /></g>`,
+        outfit_dress: `<!-- Princess Frilly Dress --><g id="acc_outfit_dress"><path d="M 40,78 C 30,94 28,108 34,112 C 45,115 75,115 86,112 C 92,108 90,94 80,78 Z" fill="#f472b6" /><path d="M 34,112 Q 47,108 60,112 Q 73,108 86,112" stroke="#ffffff" stroke-width="3" fill="none" /><rect x="42" y="86" width="36" height="4" rx="2" fill="#db2777" /><circle cx="60" cy="88" r="3.5" fill="#fbcfe8" /></g>`
       },
       hand: {
         hand_none: "",
-        hand_fishbone: `
-          <g id="acc_hand_fishbone" transform="translate(82, 100) rotate(-20)">
-            <line x1="0" y1="0" x2="20" y2="0" stroke="#94a3b8" stroke-width="2" />
-            <line x1="5" y1="-5" x2="5" y2="5" stroke="#94a3b8" stroke-width="1.8" />
-            <line x1="10" y1="-6" x2="10" y2="6" stroke="#94a3b8" stroke-width="1.8" />
-            <line x1="15" y1="-5" x2="15" y2="5" stroke="#94a3b8" stroke-width="1.8" />
-            <polygon points="20,0 26,-6 26,6" fill="#94a3b8" />
-            <circle cx="0" cy="0" r="3.5" fill="#cbd5e1" />
-          </g>`,
-        hand_book: `
-          <!-- Lv.3 English Dictionary -->
-          <g id="acc_hand_book" transform="translate(75, 96) rotate(15)">
-            <rect x="0" y="0" width="18" height="22" rx="2" fill="#2563eb" stroke="#1d4ed8" stroke-width="1" />
-            <rect x="2" y="2" width="14" height="18" rx="1" fill="#ffffff" />
-            <text x="9" y="14" text-anchor="middle" font-size="8" font-weight="bold" fill="#1e3a8a">EN</text>
-          </g>`,
-        hand_icecream: `
-          <g id="acc_hand_icecream" transform="translate(80, 94)">
-            <polygon points="0,6 12,6 6,24" fill="#d97706" />
-            <circle cx="6" cy="4" r="6.5" fill="#f472b6" />
-            <circle cx="6" cy="4" r="2" fill="#ef4444" />
-          </g>`,
-        hand_wand: `
-          <!-- Lv.5 Magic Star Wand -->
-          <g id="acc_hand_wand" transform="translate(76, 92) rotate(25)">
-            <line x1="0" y1="0" x2="0" y2="28" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" />
-            <polygon points="0,-8 2.5,-2 8.5,-2 4,1.5 6,7.5 0,4 -6,7.5 -4,1.5 -8.5,-2 -2.5,-2" fill="#facc15" />
-            <circle cx="0" cy="0" r="2.5" fill="#ef4444" />
-          </g>`
+        hand_fishbone: `<g id="acc_hand_fishbone" transform="translate(82, 100) rotate(-20)"><line x1="0" y1="0" x2="20" y2="0" stroke="#94a3b8" stroke-width="2" /><line x1="5" y1="-5" x2="5" y2="5" stroke="#94a3b8" stroke-width="1.8" /><line x1="10" y1="-6" x2="10" y2="6" stroke="#94a3b8" stroke-width="1.8" /><line x1="15" y1="-5" x2="15" y2="5" stroke="#94a3b8" stroke-width="1.8" /><polygon points="20,0 26,-6 26,6" fill="#94a3b8" /><circle cx="0" cy="0" r="3.5" fill="#cbd5e1" /></g>`,
+        hand_book: `<!-- Lv.3 English Dictionary --><g id="acc_hand_book" transform="translate(75, 96) rotate(15)"><rect x="0" y="0" width="18" height="22" rx="2" fill="#2563eb" stroke="#1d4ed8" stroke-width="1" /><rect x="2" y="2" width="14" height="18" rx="1" fill="#ffffff" /><text x="9" y="14" text-anchor="middle" font-size="8" font-weight="bold" fill="#1e3a8a">EN</text></g>`,
+        hand_icecream: `<g id="acc_hand_icecream" transform="translate(80, 94)"><polygon points="0,6 12,6 6,24" fill="#d97706" /><circle cx="6" cy="4" r="6.5" fill="#f472b6" /><circle cx="6" cy="4" r="2" fill="#ef4444" /></g>`,
+        hand_wand: `<!-- Lv.5 Magic Star Wand --><g id="acc_hand_wand" transform="translate(76, 92) rotate(25)"><line x1="0" y1="0" x2="0" y2="28" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" /><polygon points="0,-8 2.5,-2 8.5,-2 4,1.5 6,7.5 0,4 -6,7.5 -4,1.5 -8.5,-2 -2.5,-2" fill="#facc15" /><circle cx="0" cy="0" r="2.5" fill="#ef4444" /></g>`
       }
     };
 
@@ -4364,7 +3617,7 @@ head_cap: `
         renderCatAccessories();
 
         sayCatSpeech(`🎁 哇！幸運盲盒大驚喜！成功開出【${prize.name}】並已自動換上！太美了喵～✨🐾`, "開箱大獎");
-        
+
         openGachaModal({
           status: 'SUCCESS',
           item: prize,
@@ -4377,7 +3630,7 @@ head_cap: `
         updateFeverBadge();
         gainAffection(50);
         sayCatSpeech(`🎁 妳已經解鎖了所有造型！盲盒獎勵轉化為「15 題狂熱雙倍小魚乾時段」與 +50% 親密度喵！🔥✨`, "全造型傳奇");
-        
+
         openGachaModal({
           status: 'ALL_UNLOCKED',
           remainingFish: fishCount
@@ -4569,6 +3822,7 @@ head_cap: `
       document.getElementById('wardrobeCatSpeech').innerText = "喵～所有衣服飾品都收好囉！素顏小貓也超可愛對不對？🐾";
     }
 
+
     // <<<<<<<<<< [MODULE END: 03_wardrobe_gacha.js] <<<<<<<<<<
 
 
@@ -4581,7 +3835,6 @@ head_cap: `
  * 支援 5 大主題世界、120 個冒險關卡、Boss 寶箱、三模式挑戰與雲端同步
  */
 
-
 (function (root, factory) {
   const instance = factory();
   if (typeof window !== 'undefined') window.WordCheckingAdventure = instance;
@@ -4590,7 +3843,6 @@ head_cap: `
   root.WordCheckingAdventure = instance;
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
-
 
   // ==================== 1. WORLD & STAGE DEFINITIONS ====================
   const ADVENTURE_WORLDS = [
@@ -4671,11 +3923,9 @@ head_cap: `
     }
   ];
 
-
   const STORAGE_KEY = 'wordchecking_adventure_v1';
   const TOTAL_STAGES = 120;
   const WORDS_PER_STAGE = 10;
-
 
   // ==================== 2. MODULE STATE ====================
   let state = {
@@ -4685,7 +3935,6 @@ head_cap: `
     currentWorldId: 1,
     rawVocabList: []
   };
-
 
   // Active Challenge Session State
   let activeChallenge = {
@@ -4699,7 +3948,6 @@ head_cap: `
     userAnswers: []
   };
 
-
   // External hooks (provided by main app or fallbacks)
   let appHooks = {
     getFishCount: () => 0,
@@ -4712,14 +3960,11 @@ head_cap: `
     triggerSaveToPi: () => {}
   };
 
-
   // ==================== 3. DATA LOGIC & CALCULATIONS ====================
-
 
   function getStageInfo(stageId) {
     stageId = parseInt(stageId, 10);
     if (isNaN(stageId) || stageId < 1 || stageId > TOTAL_STAGES) return null;
-
 
     const world = ADVENTURE_WORLDS.find(
       w => stageId >= w.stageRange[0] && stageId <= w.stageRange[1]
@@ -4728,7 +3973,6 @@ head_cap: `
     const endWord = stageId * WORDS_PER_STAGE;
     const isBoss = world ? stageId === world.bossStage : false;
 
-
     return {
       stageId,
       world,
@@ -4736,7 +3980,6 @@ head_cap: `
       isBoss
     };
   }
-
 
     function getStageWords(stageId, vocabList) {
     stageId = parseInt(stageId || activeChallenge.stageId || 1, 10);
@@ -4773,7 +4016,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     return words;
   }
 
-
   function calculateStars(score, total) {
     if (!total || total <= 0) return 0;
     const pct = score / total;
@@ -4782,7 +4024,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     if (pct >= 0.60) return 1; // 60% ~ 69%
     return 0; // < 60% Challenge failed
   }
-
 
   function loadAdventureProgress() {
     try {
@@ -4807,7 +4048,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     return state;
   }
 
-
   function saveAdventureProgress() {
     try {
       recalculateTotalStars();
@@ -4825,7 +4065,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
   }
 
-
   function recalculateTotalStars() {
     let total = 0;
     Object.keys(state.stageStars).forEach(s => {
@@ -4834,12 +4073,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     state.totalStars = total;
   }
 
-
   function determineWorldByStage(stageId) {
     const info = getStageInfo(stageId);
     return info ? info.world.id : 1;
   }
-
 
   function getAdventureSaveData() {
     recalculateTotalStars();
@@ -4850,7 +4087,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       currentWorldId: state.currentWorldId
     };
   }
-
 
   function loadAdventureSaveData(data) {
     if (!data) return;
@@ -4874,9 +4110,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     renderAdventureMap();
   }
 
-
   // ==================== 4. UI TEMPLATES & INJECTION ====================
-
 
   function getAdventureStyles() {
     return `
@@ -4904,253 +4138,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     `;
   }
 
-
-  function renderMapSectionHtml() {
-    return `
-    <!-- ==================== MODE MAP: ADVENTURE MODE (Phase 3) ==================== -->
-    <section id="modeMap" class="hidden space-y-5">
-      <!-- 1. Map Header: Stats & Progress Bar -->
-      <div class="bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 rounded-3xl p-5 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="space-y-1">
-          <div class="flex items-center gap-2">
-            <span class="text-2xl">🗺️</span>
-            <h2 class="text-lg sm:text-xl font-black tracking-wide">國中 1200 單字冒險闖關地圖</h2>
-            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-xs">Phase 3</span>
-          </div>
-          <p class="text-xs text-white/80">沿著石板古道漫遊 5 大主題世界，120 道關卡等妳來征服喵！🐾</p>
-        </div>
-        <!-- Stats Badges -->
-        <div class="flex items-center gap-2.5">
-          <div class="bg-black/20 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex items-center gap-2">
-            <span class="text-xl">⭐</span>
-            <div>
-              <div class="text-[10px] text-white/70 font-semibold">冒險總星數</div>
-              <div class="text-sm font-black text-amber-300" id="advTotalStarsDisplay">0 / 360</div>
-            </div>
-          </div>
-          <div class="bg-black/20 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex items-center gap-2">
-            <span class="text-xl">🚩</span>
-            <div>
-              <div class="text-[10px] text-white/70 font-semibold">解鎖進度</div>
-              <div class="text-sm font-black text-white" id="advCurrentStageDisplay">第 1 關</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <!-- 2. World Tabs Navigation (5 Worlds) -->
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="advWorldTabsContainer">
-        <!-- Rendered by renderAdventureMap -->
-      </div>
-
-
-      <!-- 3. Current World Banner -->
-      <div id="advWorldBanner" class="p-4 rounded-2xl border transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-800 border-amber-200 dark:border-slate-700">
-        <!-- Rendered by renderAdventureMap -->
-      </div>
-
-
-      <!-- 4. Winding Map Container -->
-      <div class="relative bg-gradient-to-b from-amber-50/50 via-rose-50/30 to-amber-50/60 dark:from-slate-800/80 dark:via-slate-800/60 dark:to-slate-900/90 rounded-3xl p-4 sm:p-8 border border-amber-200/80 dark:border-slate-700 overflow-hidden shadow-inner min-h-[580px]">
-        
-        <!-- Ambient Decor in Background -->
-        <div class="absolute -top-10 -right-10 w-48 h-48 bg-amber-400/10 dark:bg-amber-400/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-rose-400/10 dark:bg-rose-400/5 rounded-full blur-3xl pointer-events-none"></div>
-
-
-        <!-- Serpentine Stage Nodes Container -->
-        <div id="advStageNodesContainer" class="relative max-w-sm mx-auto py-6 space-y-12">
-          <!-- Dynamic Nodes -->
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ==================== ADVENTURE STAGE MODAL (PREVIEW & MODE SELECT) ==================== -->
-    <div id="advStageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="WordCheckingAdventure.closeStageModal()">
-      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
-        
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between border-b border-amber-100 dark:border-slate-700 pb-3">
-          <div class="flex items-center gap-2.5">
-            <div id="advStageModalIcon" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-400 flex items-center justify-center text-white text-xl shadow-md">
-              🚩
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 id="advStageModalTitle" class="text-base font-black text-slate-900 dark:text-white">第 1 關</h3>
-                <span id="advStageModalWorldBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">新手村</span>
-              </div>
-              <p id="advStageModalSubtitle" class="text-xs text-slate-500 dark:text-slate-400">涵蓋單字 1 ～ 10 號</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <div id="advStageModalStarRecord" class="flex text-amber-400 text-sm">
-              ⭐⭐⭐
-            </div>
-            <button onclick="WordCheckingAdventure.closeStageModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 flex items-center justify-center font-bold transition cursor-pointer">
-              ✕
-            </button>
-          </div>
-        </div>
-
-
-        <!-- Word Preview List (10 Words) -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold px-1">
-            <span>📝 本關 10 個核心單字</span>
-            <span class="text-[10px] text-amber-600 dark:text-amber-400 font-mono">點擊 🔊 聽發音</span>
-          </div>
-          <div id="advStageWordList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-
-        <!-- Mode Select Action Cards -->
-        <div class="space-y-2 pt-2 border-t border-amber-100 dark:border-slate-700">
-          <div class="text-xs font-bold text-slate-700 dark:text-slate-300 px-1">
-            🎯 選擇闖關模式：
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <!-- Mode 1: Flashcard Preview -->
-            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'flashcard')" class="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100/80 dark:bg-slate-700/60 dark:hover:bg-slate-700 border border-amber-200 dark:border-slate-600 transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-2xs group">
-              <span class="text-2xl group-hover:scale-110 transition">🚀</span>
-              <div class="font-bold text-xs text-slate-800 dark:text-white">單字速記</div>
-              <div class="text-[10px] text-slate-500 dark:text-slate-400">快速翻閱 10 單字</div>
-            </button>
-
-
-            <!-- Mode 2: Multiple Choice Challenge -->
-            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'quiz')" class="p-3 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-md shadow-rose-500/20 group">
-              <span class="text-2xl group-hover:scale-110 transition">🎯</span>
-              <div class="font-black text-xs">四選一挑戰</div>
-              <div class="text-[10px] text-white/80">10題選擇 奪三星⭐</div>
-            </button>
-
-
-            <!-- Mode 3: Spelling Challenge -->
-            <button onclick="WordCheckingAdventure.startStageChallenge(null, 'spelling')" class="p-3 rounded-2xl bg-indigo-50 hover:bg-indigo-100/80 dark:bg-slate-700/60 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-600 transition flex flex-col items-center text-center gap-1.5 cursor-pointer shadow-2xs group">
-              <span class="text-2xl group-hover:scale-110 transition">✍️</span>
-              <div class="font-bold text-xs text-slate-800 dark:text-white">拼字大考驗</div>
-              <div class="text-[10px] text-slate-500 dark:text-slate-400">進階精準拼寫挑戰</div>
-            </button>
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-
-
-    <!-- ==================== ADVENTURE ACTIVE CHALLENGE MODAL (INTERACTIVE) ==================== -->
-    <div id="advChallengeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200">
-      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-rose-200 dark:border-slate-700 space-y-4" onclick="event.stopPropagation()">
-        
-        <!-- Challenge Header -->
-        <div class="flex items-center justify-between border-b border-rose-100 dark:border-slate-700 pb-3">
-          <div class="flex items-center gap-2">
-            <span id="advChallengeModeIcon" class="text-2xl">🎯</span>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 id="advChallengeTitle" class="font-black text-base text-slate-900 dark:text-white">第 1 關四選一挑戰</h3>
-                <span id="advChallengeStreakBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 hidden">🔥 連擊 x2</span>
-              </div>
-              <p id="advChallengeProgressText" class="text-xs text-slate-500 dark:text-slate-400">第 1 / 10 題</p>
-            </div>
-          </div>
-          <button onclick="WordCheckingAdventure.abortChallenge()" class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-600 dark:text-slate-300 font-bold transition cursor-pointer">
-            放棄退出
-          </button>
-        </div>
-
-
-        <!-- Progress Bar -->
-        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-          <div id="advChallengeProgressBar" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-300" style="width: 10%;"></div>
-        </div>
-
-
-        <!-- Challenge Interactive Body Container -->
-        <div id="advChallengeBody" class="py-2 space-y-4">
-          <!-- Dynamic Content based on mode -->
-        </div>
-
-
-      </div>
-    </div>
-
-
-    <!-- ==================== ADVENTURE VICTORY / RESULTS MODAL ==================== -->
-    <div id="advVictoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50 transition-opacity duration-200" onclick="WordCheckingAdventure.closeVictoryModal()">
-      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 dark:border-slate-700 space-y-4 text-center animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
-        
-        <!-- Victory Animated Header -->
-        <div class="space-y-1">
-          <div id="advVictoryIcon" class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-400/20 current-node-pulse">
-            🎉
-          </div>
-          <h3 id="advVictoryTitle" class="font-black text-xl text-slate-900 dark:text-white pt-2">關卡大捷！</h3>
-          <p id="advVictorySubtitle" class="text-xs text-slate-500 dark:text-slate-400">第 1 關完成通關！</p>
-        </div>
-
-
-        <!-- Star Rating Display -->
-        <div class="py-2 flex items-center justify-center gap-3 text-4xl" id="advVictoryStarsContainer">
-          <span class="star-pop-1">⭐</span>
-          <span class="star-pop-2">⭐</span>
-          <span class="star-pop-3">⭐</span>
-        </div>
-
-
-        <!-- Stats & Rewards Box -->
-        <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-slate-700/50 border border-amber-200 dark:border-slate-600/60 space-y-2 text-left text-xs">
-          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
-            <span class="text-slate-500 dark:text-slate-400">🎯 本關答對率：</span>
-            <span class="font-black text-slate-800 dark:text-white" id="advVictoryScoreText">10 / 10 (100%)</span>
-          </div>
-          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
-            <span class="text-slate-500 dark:text-slate-400">🐟 獲得小魚乾獎勵：</span>
-            <span class="font-black text-amber-600 dark:text-amber-400" id="advVictoryFishText">+5 條小魚乾</span>
-          </div>
-          <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-amber-100 dark:border-slate-600">
-            <span class="text-slate-500 dark:text-slate-400">💖 咪咪親密度提升：</span>
-            <span class="font-black text-rose-500">+10% 親密度</span>
-          </div>
-          <div id="advVictoryBossBonusBox" class="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200 font-bold text-center hidden">
-            🎁 擊敗區域 Boss！獲得額外 +20 魚乾寶箱大獎！
-          </div>
-        </div>
-
-
-        <!-- Action Buttons -->
-        <div class="flex gap-2 justify-center pt-2">
-          <button onclick="WordCheckingAdventure.playAgain()" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer">
-            🔄 再玩一次
-          </button>
-          <button onclick="WordCheckingAdventure.nextStageOrMap()" id="advVictoryNextBtn" class="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
-            🐾 下一關
-          </button>
-        </div>
-
-
-      </div>
-    </div>
-    `;
-  }
-
-
-  // ==================== 5. MAP RENDERING (WINDING STONE PATH) ====================
-
-
   function renderAdventureMap() {
     // 1. Update Global Header Stats
     const totalStarsEl = document.getElementById('advTotalStarsDisplay');
     const currStageEl = document.getElementById('advCurrentStageDisplay');
     if (totalStarsEl) totalStarsEl.innerText = `${state.totalStars} / 360`;
     if (currStageEl) currStageEl.innerText = `第 ${state.unlockedStage} 關`;
-
 
     // 2. Render World Tabs
     const tabsContainer = document.getElementById('advWorldTabsContainer');
@@ -5162,7 +4155,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           ? 'bg-gradient-to-r ' + w.themeColor + ' text-white font-black shadow-md'
           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700';
 
-
         return `
           <button onclick="WordCheckingAdventure.switchAdventureWorld(${w.id})" class="p-2.5 rounded-2xl text-xs flex flex-col items-center text-center transition cursor-pointer ${activeClass}">
             <span class="text-xl mb-0.5">${w.icon}</span>
@@ -5172,7 +4164,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         `;
       }).join('');
     }
-
 
     // 3. Render Current World Banner
     const bannerEl = document.getElementById('advWorldBanner');
@@ -5189,7 +4180,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         }
       }
       const worldPct = Math.round((worldCompletedStages / totalInWorld) * 100);
-
 
       bannerEl.innerHTML = `
         <div class="flex items-center gap-3">
@@ -5215,16 +4205,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       `;
     }
 
-
     // 4. Render Serpentine Map Nodes
     const nodesContainer = document.getElementById('advStageNodesContainer');
     if (!nodesContainer) return;
 
-
     let nodesHtml = '';
     const startStage = activeWorld.stageRange[0];
     const endStage = activeWorld.stageRange[1];
-
 
     for (let s = startStage; s <= endStage; s++) {
       const isUnlocked = s <= state.unlockedStage;
@@ -5232,11 +4219,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const isBoss = s === activeWorld.bossStage;
       const stars = state.stageStars[s] || 0;
 
-
       // Serpentine offset: sine wave between -80px and +80px
       const stageIndexInWorld = s - startStage;
       const offset = Math.round(Math.sin(stageIndexInWorld * 0.9) * 80);
-
 
       // Node styling
       let nodeCircleHtml = '';
@@ -5265,7 +4250,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         else if (stars === 2) starIcons = '⭐⭐☆';
         else if (stars === 1) starIcons = '⭐☆☆';
 
-
         nodeCircleHtml = `
           <div class="relative group cursor-pointer" onclick="WordCheckingAdventure.openStageModal(${s})">
             <div class="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 font-black text-lg flex flex-col items-center justify-center border-2 border-amber-300 dark:border-amber-600 shadow-md hover:scale-105 transition">
@@ -5284,7 +4268,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         `;
       }
 
-
       // Boss special wrapper
       if (isBoss) {
         nodeCircleHtml = `
@@ -5297,7 +4280,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         `;
       }
 
-
       // Wrap in horizontal serpentine container with connecting stepping stones
       nodesHtml += `
         <div class="relative flex justify-center items-center w-full" style="transform: translateX(${offset}px);">
@@ -5306,25 +4288,20 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       `;
     }
 
-
     nodesContainer.innerHTML = nodesHtml;
   }
-
 
   function switchAdventureWorld(worldId) {
     state.currentWorldId = worldId;
     renderAdventureMap();
   }
 
-
   function notifyLockedStage(stageId) {
     appHooks.saySpeech(`尚未解鎖第 ${stageId} 關喵！請先按照順序通過第 ${state.unlockedStage} 關吧🐾`, '關卡未解鎖');
     appHooks.playMeowSound();
   }
 
-
   // ==================== 6. STAGE MODAL (PREVIEW 10 WORDS) ====================
-
 
   function openStageModal(stageId) {
     stageId = stageId || state.unlockedStage;
@@ -5333,24 +4310,19 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       return;
     }
 
-
     const info = getStageInfo(stageId);
     if (!info) return;
-
 
     activeChallenge.stageId = stageId;
     activeChallenge.words = getStageWords(stageId, state.rawVocabList);
 
-
     const modal = document.getElementById('advStageModal');
     if (!modal) return;
-
 
     // Header updates
     document.getElementById('advStageModalTitle').innerText = `第 ${stageId} 關 ${info.isBoss ? '🎁 BOSS 關' : ''}`;
     document.getElementById('advStageModalWorldBadge').innerText = `${info.world.icon} ${info.world.name}`;
     document.getElementById('advStageModalSubtitle').innerText = `涵蓋教育部 1200 單字第 ${info.wordRange[0]} ～ ${info.wordRange[1]} 號`;
-
 
     // Star record
     const stars = state.stageStars[stageId] || 0;
@@ -5361,7 +4333,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       else if (stars === 1) recordEl.innerText = '⭐ 一星紀錄';
       else recordEl.innerText = '尚未挑戰';
     }
-
 
     // Word List
     const listEl = document.getElementById('advStageWordList');
@@ -5383,16 +4354,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       `).join('');
     }
 
-
     modal.classList.remove('hidden');
   }
-
 
   function closeStageModal() {
     const modal = document.getElementById('advStageModal');
     if (modal) modal.classList.add('hidden');
   }
-
 
   function playWordAudio(word) {
     if (!word) return;
@@ -5404,9 +4372,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
   }
 
-
   // ==================== 7. INTERACTIVE CHALLENGE ENGINE ====================
-
 
   function startStageChallenge(stageId, type) {
     if (stageId) {
@@ -5421,9 +4387,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     activeChallenge.streak = 0;
     activeChallenge.userAnswers = [];
 
-
     closeStageModal();
-
 
     if (activeChallenge.type === 'flashcard') {
       renderFlashcardMode();
@@ -5435,18 +4399,15 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       renderSpellingQuestion();
     }
 
-
     const challengeModal = document.getElementById('advChallengeModal');
     if (challengeModal) challengeModal.classList.remove('hidden');
   }
-
 
   function abortChallenge() {
     const challengeModal = document.getElementById('advChallengeModal');
     if (challengeModal) challengeModal.classList.add('hidden');
     appHooks.saySpeech('隨時可以再回來挑戰喔喵～🐾', '暫停冒險');
   }
-
 
   // --- Sub-mode A: Flashcard Quick Preview ---
   function renderFlashcardMode() {
@@ -5456,15 +4417,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     const progressEl = document.getElementById('advChallengeProgressText');
     const pBar = document.getElementById('advChallengeProgressBar');
 
-
     iconEl.innerText = '🚀';
     titleEl.innerText = `第 ${activeChallenge.stageId} 關・單字速記過目`;
     progressEl.innerText = `單字 ${activeChallenge.currentIndex + 1} / ${activeChallenge.words.length}`;
     if (pBar) pBar.style.width = `${((activeChallenge.currentIndex + 1) / activeChallenge.words.length) * 100}%`;
 
-
     const w = activeChallenge.words[activeChallenge.currentIndex];
-
 
     bodyEl.innerHTML = `
       <div class="p-6 rounded-3xl bg-amber-50 dark:bg-slate-700/60 border-2 border-amber-200 dark:border-slate-600 text-center space-y-3 min-h-[220px] flex flex-col justify-center items-center shadow-inner">
@@ -5493,7 +4451,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         </p>
       </div>
 
-
       <div class="flex items-center justify-between pt-2">
         <button onclick="WordCheckingAdventure.prevFlashcard()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold transition cursor-pointer" ${activeChallenge.currentIndex === 0 ? 'disabled opacity-50' : ''}>
           ⬅ 上一個
@@ -5510,10 +4467,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       </div>
     `;
 
-
     playWordAudio(w.word);
   }
-
 
   function prevFlashcard() {
     if (activeChallenge.currentIndex > 0) {
@@ -5522,14 +4477,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
   }
 
-
   function nextFlashcard() {
     if (activeChallenge.currentIndex < activeChallenge.words.length - 1) {
       activeChallenge.currentIndex++;
       renderFlashcardMode();
     }
   }
-
 
   // --- Sub-mode B: 4-Choice Quiz ---
   function setupQuizQuestions() {
@@ -5540,11 +4493,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const shuffledOthers = [...otherWords].sort(() => Math.random() - 0.5);
       const distractors = shuffledOthers.slice(0, 3).map(o => (o.chinese || o.zh || o.word));
 
-
       const correctZh = w.chinese || w.zh || w.word;
       const options = [correctZh, ...distractors].sort(() => Math.random() - 0.5);
       const correctIndex = options.indexOf(correctZh);
-
 
       return {
         word: w.word,
@@ -5557,7 +4508,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     });
   }
 
-
   function renderQuizQuestion() {
     const q = activeChallenge.questions[activeChallenge.currentIndex];
     const bodyEl = document.getElementById('advChallengeBody');
@@ -5567,12 +4517,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     const streakEl = document.getElementById('advChallengeStreakBadge');
     const pBar = document.getElementById('advChallengeProgressBar');
 
-
     iconEl.innerText = '🎯';
     titleEl.innerText = `第 ${activeChallenge.stageId} 關・四選一挑戰`;
     progressEl.innerText = `第 ${activeChallenge.currentIndex + 1} / ${activeChallenge.questions.length} 題 ｜ 得分：${activeChallenge.score * 10}`;
     if (pBar) pBar.style.width = `${((activeChallenge.currentIndex + 1) / activeChallenge.questions.length) * 100}%`;
-
 
     if (activeChallenge.streak >= 2 && streakEl) {
       streakEl.innerText = `🔥 連擊 x${activeChallenge.streak}`;
@@ -5580,7 +4528,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     } else if (streakEl) {
       streakEl.classList.add('hidden');
     }
-
 
     bodyEl.innerHTML = `
       <div class="p-6 rounded-3xl bg-white dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 text-center space-y-2 shadow-xs">
@@ -5592,7 +4539,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           ${q.pos || ''}
         </div>
       </div>
-
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1" id="advQuizOptionsContainer">
         ${q.options.map((opt, oIdx) => `
@@ -5606,15 +4552,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       </div>
     `;
 
-
     playWordAudio(q.word);
   }
-
 
   function selectQuizAnswer(selectedIdx) {
     const q = activeChallenge.questions[activeChallenge.currentIndex];
     const isCorrect = (selectedIdx === q.correctIndex);
-
 
     // Disable all option buttons
     for (let i = 0; i < q.options.length; i++) {
@@ -5629,7 +4572,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
     if (isCorrect) {
       activeChallenge.score++;
       activeChallenge.streak++;
@@ -5637,7 +4579,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     } else {
       activeChallenge.streak = 0;
     }
-
 
     setTimeout(() => {
       activeChallenge.currentIndex++;
@@ -5648,7 +4589,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }, 1100);
   }
-
 
   // --- Sub-mode C: Spelling Challenge ---
   function setupSpellingQuestions() {
@@ -5661,7 +4601,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckingAdventure) ? window.WordCheckingAdventure : (typeof WordCheckingAdventure !== 'undefined' ? WordCheckingAdventure : null);
   }
 
-
   function renderSpellingQuestion() {
     const q = activeChallenge.questions[activeChallenge.currentIndex];
     const bodyEl = document.getElementById('advChallengeBody');
@@ -5670,17 +4609,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     const progressEl = document.getElementById('advChallengeProgressText');
     const pBar = document.getElementById('advChallengeProgressBar');
 
-
     iconEl.innerText = '✍️';
     titleEl.innerText = `第 ${activeChallenge.stageId} 關・拼字考驗`;
     progressEl.innerText = `第 ${activeChallenge.currentIndex + 1} / ${activeChallenge.questions.length} 題 ｜ 得分：${activeChallenge.score * 10}`;
     if (pBar) pBar.style.width = `${((activeChallenge.currentIndex + 1) / activeChallenge.questions.length) * 100}%`;
 
-
     // Masked hint: first letter + underscores
     const wordLen = q.word.length;
     const hint = q.word[0] + ' _'.repeat(wordLen - 1);
-
 
     bodyEl.innerHTML = `
       <div class="p-6 rounded-3xl bg-white dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 text-center space-y-2 shadow-xs">
@@ -5704,16 +4640,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         </div>
       </div>
 
-
       <div class="space-y-3 pt-1">
         <input type="text" id="advSpellingInput" placeholder="請在此輸入英文拼寫..." class="w-full px-4 py-3 rounded-2xl border-2 border-indigo-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-center text-lg tracking-wider focus:outline-none focus:border-indigo-500" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter') WordCheckingAdventure.submitSpellingAnswer()">
-        
+
         <button onclick="WordCheckingAdventure.submitSpellingAnswer()" class="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm transition shadow-md cursor-pointer">
           確認送出 🐾
         </button>
       </div>
     `;
-
 
     playWordAudio(q.word);
     setTimeout(() => {
@@ -5722,14 +4656,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }, 200);
   }
 
-
   function submitSpellingAnswer() {
     const input = document.getElementById('advSpellingInput');
     if (!input) return;
     const val = input.value.trim().toLowerCase();
     const q = activeChallenge.questions[activeChallenge.currentIndex];
     const isCorrect = (val === q.word.trim().toLowerCase());
-
 
     if (isCorrect) {
       input.className = 'w-full px-4 py-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 font-black text-center text-lg tracking-wider';
@@ -5739,7 +4671,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       input.className = 'w-full px-4 py-3 rounded-2xl border-2 border-rose-500 bg-rose-50 dark:bg-rose-950 text-rose-800 dark:text-rose-200 font-black text-center text-lg tracking-wider';
       input.value = `${val} ❌ (正確：${q.word})`;
     }
-
 
     setTimeout(() => {
       activeChallenge.currentIndex++;
@@ -5751,28 +4682,23 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }, 1300);
   }
 
-
   // ==================== 8. VICTORY & RESULTS SETTLEMENT ====================
-
 
   function finishStageChallenge(score, total, stageId) {
     stageId = stageId || activeChallenge.stageId;
     const challengeModal = document.getElementById('advChallengeModal');
     if (challengeModal) challengeModal.classList.add('hidden');
 
-
     const info = getStageInfo(stageId);
     const stars = calculateStars(score, total);
     const isPassed = stars > 0;
     const pct = Math.round((score / total) * 100);
-
 
     // Save stars if better
     const prevStars = state.stageStars[stageId] || 0;
     if (stars > prevStars) {
       state.stageStars[stageId] = stars;
     }
-
 
     // Advance unlocked stage if current stage cleared
     let isNewUnlock = false;
@@ -5781,13 +4707,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       isNewUnlock = true;
     }
 
-
     // Fish treat reward calculation
     let fishReward = 0;
     if (stars === 3) fishReward = 5;
     else if (stars === 2) fishReward = 3;
     else if (stars === 1) fishReward = 2;
-
 
     // Boss stage bonus
     let isBossBonus = false;
@@ -5795,7 +4719,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       fishReward += 20;
       isBossBonus = true;
     }
-
 
     // Apply rewards via hooks
     if (fishReward > 0) {
@@ -5806,15 +4729,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       appHooks.playCheerSound();
     }
 
-
     saveAdventureProgress();
     renderAdventureMap();
-
 
     // Populate Victory Modal
     const victoryModal = document.getElementById('advVictoryModal');
     if (!victoryModal) return;
-
 
     const vTitle = document.getElementById('advVictoryTitle');
     const vSub = document.getElementById('advVictorySubtitle');
@@ -5825,13 +4745,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     const bossBonusBox = document.getElementById('advVictoryBossBonusBox');
     const nextBtn = document.getElementById('advVictoryNextBtn');
 
-
     if (isPassed) {
       vTitle.innerText = stars === 3 ? '🎉 滿星大捷！完美通關！' : '🎉 恭喜通關！';
       vTitle.className = 'font-black text-xl text-amber-600 dark:text-amber-400 pt-2';
       vSub.innerText = `第 ${stageId} 關挑戰成功！`;
       vIcon.innerText = info.isBoss ? '👑' : '🏆';
-
 
       let starIconsHtml = '';
       for (let i = 1; i <= 3; i++) {
@@ -5843,17 +4761,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
       starsBox.innerHTML = starIconsHtml;
 
-
       scoreText.innerText = `${score} / ${total} 題 (${pct}%)`;
       fishText.innerText = `+${fishReward} 條小魚乾 🐟`;
-
 
       if (isBossBonus && bossBonusBox) {
         bossBonusBox.classList.remove('hidden');
       } else if (bossBonusBox) {
         bossBonusBox.classList.add('hidden');
       }
-
 
       if (nextBtn) {
         if (stageId < TOTAL_STAGES) {
@@ -5867,7 +4782,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           nextBtn.onclick = closeVictoryModal;
         }
       }
-
 
       appHooks.saySpeech(`太厲害了！第 ${stageId} 關奪得 ${stars} 顆星！獲得 +${fishReward} 條小魚乾獎勵喵！🐾`, '關卡大捷');
     } else {
@@ -5886,30 +4800,24 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       appHooks.saySpeech('別灰心喵～先看看單字速記過目，咪咪相信妳一定可以通關的！🐾', '加油打氣');
     }
 
-
     victoryModal.classList.remove('hidden');
   }
-
 
   function closeVictoryModal() {
     const victoryModal = document.getElementById('advVictoryModal');
     if (victoryModal) victoryModal.classList.add('hidden');
   }
 
-
   function playAgain() {
     closeVictoryModal();
     startStageChallenge(activeChallenge.stageId, activeChallenge.type);
   }
 
-
   function nextStageOrMap() {
     closeVictoryModal();
   }
 
-
   // ==================== 9. INITIALIZATION & EXPORTS ====================
-
 
   function initAdventureMap(options) {
     options = options || {};
@@ -5917,7 +4825,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     if (options.hooks) {
       appHooks = { ...appHooks, ...options.hooks };
     }
-
 
     // Inject CSS styles into DOM if document is available
     if (typeof document !== 'undefined') {
@@ -5930,11 +4837,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
     loadAdventureProgress();
     renderAdventureMap();
   }
-
 
   return {
     ADVENTURE_WORLDS,
@@ -5965,11 +4870,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     playAgain,
     nextStageOrMap,
     notifyLockedStage,
-    renderMapSectionHtml,
     getAdventureStyles
   };
 }));
 var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckingAdventure) ? window.WordCheckingAdventure : (typeof WordCheckingAdventure !== 'undefined' ? WordCheckingAdventure : null);
+
 
     // <<<<<<<<<< [MODULE END: 04_adventure_map.js] <<<<<<<<<<
 
@@ -6013,13 +4918,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       document.getElementById('quizFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
 
-
-
-
       sayCatSpeech("四選一測驗！找出最正確的英文單字，別掉進易錯陷阱喵～🐾");
-
-
-
 
       const priorityPick = pickNextStudyItem(filteredList);
       if (priorityPick) {
@@ -6033,36 +4932,21 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         }
       }
 
-
-
-
       const qEl = document.getElementById('quizQuestionDigit');
       qEl.innerText = currentQuizItem.chinese;
       qEl.className = currentQuizItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white" : "text-6xl font-black text-slate-900 dark:text-white font-mono";
       document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
 
-
-
-
       let options = [currentQuizItem];
       let distractors = RAW_VOCAB.filter(x => x.word !== currentQuizItem.word);
       distractors.sort(() => Math.random() - 0.5);
-
-
-
 
       for (let d of distractors) {
         if (options.length >= 4) break;
         if (!options.some(o => o.word === d.word)) options.push(d);
       }
 
-
-
-
       options.sort(() => Math.random() - 0.5);
-
-
-
 
       const container = document.getElementById('quizOptionsContainer');
       container.innerHTML = '';
@@ -6075,16 +4959,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       });
     }
 
-
-
-
     function checkQuizAnswer(selectedOpt, btnElement) {
       const isCorrect = selectedOpt.word === currentQuizItem.word;
       quizStats.total++;
       if (isCorrect) quizStats.correct++;
-
-
-
 
       const key = currentQuizItem.word || currentQuizItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
@@ -6100,9 +4978,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       triggerAutoSaveToPi();
       triggerAutoSaveToPi();
 
-
-
-
       if (document.activeElement && typeof document.activeElement.blur === 'function') {
         document.activeElement.blur();
       }
@@ -6115,9 +4990,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           b.className = "p-4 text-center rounded-2xl border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 font-bold";
         }
       });
-
-
-
 
       const feedback = document.getElementById('quizFeedback');
       feedback.classList.remove('hidden');
@@ -6139,15 +5011,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function nextQuizQuestion() {
       startNewQuiz();
     }
-
-
-
 
     // ==================== SPELLING LOGIC ====================
     function startNewSpelling() {
@@ -6157,25 +5023,16 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       document.getElementById('spellInput').disabled = false;
       document.getElementById('spellInput').focus();
 
-
-
-
       sayCatSpeech("拼字挑戰：輸入完整的英文單字，字母要拼精準喔！🐾");
-
-
-
 
       if (!filteredList || filteredList.length === 0) return;
       const prioritySpellPick = pickNextStudyItem(filteredList);
       currentSpellItem = prioritySpellPick ? prioritySpellPick : filteredList[Math.floor(Math.random() * filteredList.length)];
-      
+
       const sEl = document.getElementById('spellDigit');
       sEl.innerText = currentSpellItem.chinese;
       sEl.className = currentSpellItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white my-3" : "text-6xl font-black text-slate-900 dark:text-white font-mono my-3";
     }
-
-
-
 
     function toggleSpellHint() {
       const hintBox = document.getElementById('spellHintBox');
@@ -6187,22 +5044,16 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function checkSpelling(e) {
       e.preventDefault();
       const inputVal = document.getElementById('spellInput').value.trim().toLowerCase();
       const target = currentSpellItem.word.toLowerCase();
-      
+
       const isCorrect = (inputVal === target);
       document.getElementById('spellInput').disabled = true;
       if (document.activeElement && typeof document.activeElement.blur === 'function') {
         document.activeElement.blur();
       }
-
-
-
 
       const key = currentSpellItem.word || currentSpellItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
@@ -6210,14 +5061,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
 
-
-
-
       const feedback = document.getElementById('spellFeedback');
       feedback.classList.remove('hidden');
-
-
-
 
       if (isCorrect) {
         addFish();
@@ -6237,15 +5082,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function nextSpellQuestion() {
       startNewSpelling();
     }
-
-
-
 
     // ==================== SPEAKING LOGIC ====================
     function initSpeechRecognition() {
@@ -6256,9 +5095,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         recognition.interimResults = false;
         recognition.maxAlternatives = 3;
 
-
-
-
         recognition.onstart = () => {
           isRecording = true;
           document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/40 transition animate-pulse";
@@ -6266,24 +5102,15 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           sayCatSpeech("我在聽喔！請大聲清晰唸出來喵～👂");
         };
 
-
-
-
         recognition.onresult = (event) => {
           const transcript = event.results[0][0].transcript.trim().toLowerCase();
           handleSpeechResult(transcript);
         };
 
-
-
-
         recognition.onerror = (event) => {
           stopRecordingUI();
           document.getElementById('micStatus').innerText = "咪咪沒聽清楚，再點一次麥克風試試看喵～";
         };
-
-
-
 
         recognition.onend = () => {
           stopRecordingUI();
@@ -6293,16 +5120,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function stopRecordingUI() {
       isRecording = false;
       document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95";
     }
-
-
-
 
     function toggleSpeechRecognition() {
       if (!recognition) {
@@ -6316,17 +5137,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function startNewSpeaking() {
       document.getElementById('speakFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
       const prioritySpeakPick = pickNextStudyItem(filteredList);
       currentSpeakItem = prioritySpeakPick ? prioritySpeakPick : filteredList[Math.floor(Math.random() * filteredList.length)];
-
-
-
 
       document.getElementById('speakEnglish').innerText = currentSpeakItem.word;
       document.getElementById('speakPhonetic').innerText = currentSpeakItem.kk || '';
@@ -6335,17 +5150,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       sayCatSpeech(`來跟著我練習唸 "${currentSpeakItem.word}"，按下麥克風開口吧！🐾`);
     }
 
-
-
-
     function handleSpeechResult(spokenText) {
       const target = currentSpeakItem.word.toLowerCase().replace(/-/g, ' ');
       const cleanSpoken = spokenText.toLowerCase().replace(/-/g, ' ');
-      
+
       const isMatch = (cleanSpoken === target || cleanSpoken === String(currentSpeakItem.num));
-
-
-
 
       const feedback = document.getElementById('speakFeedback');
       feedback.classList.remove('hidden');
@@ -6359,14 +5168,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         micBtnEl.blur();
       }
 
-
-
-
       const key = currentSpeakItem.word || currentSpeakItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
-
-
-
 
       if (isMatch) {
         if (userProgress[key] !== 'mastered') userProgress[key] = 'familiar';
@@ -6386,22 +5189,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         sayCatSpeech(`放慢速度再唸一次看看，咪咪相信妳可以唸得很好的喵～🐾`);
       }
 
-
-
-
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
     }
 
-
-
-
     function nextSpeakQuestion() {
       startNewSpeaking();
     }
-
-
-
 
     // ==================== MOCK EXAM LOGIC ====================
     function initExamSetup() {
@@ -6411,9 +5205,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const theme = THEME_REGISTRY[currentThemeKey];
       sayCatSpeech(`歡迎來到【${theme.name}】聽寫模擬考！選擇 10 題或 20 題，來看看能拿幾分喵～🐾`, "認真監考");
     }
-
-
-
 
     function setExamQuestionCount(cnt) {
       examConfig.count = cnt;
@@ -6431,9 +5222,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function setExamPromptMode(mode) {
       examConfig.promptMode = mode;
       const bBoth = document.getElementById('btnPromptBoth');
@@ -6450,55 +5238,31 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function startExamSession(customList = null) {
       let pool = customList ? [...customList] : [...filteredList];
       if (pool.length === 0) pool = [...RAW_VOCAB];
 
-
-
-
       pool.sort(() => Math.random() - 0.5);
-
-
-
 
       const targetCount = Math.min(examConfig.count, pool.length);
       examQuestions = pool.slice(0, targetCount);
       examIndex = 0;
       examResults = [];
 
-
-
-
       document.getElementById('examSetupBox').classList.add('hidden');
       document.getElementById('examResultBox').classList.add('hidden');
       document.getElementById('examRunningBox').classList.remove('hidden');
 
-
-
-
       loadExamQuestion();
     }
-
-
-
 
     function loadExamQuestion() {
       const current = examQuestions[examIndex];
       const total = examQuestions.length;
 
-
-
-
       document.getElementById('examProgressBadge').innerText = `第 ${examIndex + 1} / ${total} 題`;
       document.getElementById('examRemainText').innerText = `剩餘 ${total - (examIndex + 1)} 題`;
       document.getElementById('examRunningProgressBar').style.width = `${((examIndex + 1) / total) * 100}%`;
-
-
-
 
       const digitEl = document.getElementById('examDigitDisplay');
       if (examConfig.promptMode === 'audio_only') {
@@ -6508,47 +5272,29 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         digitEl.className = current.chinese.length > 4 ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white" : "text-6xl sm:text-7xl font-black font-mono text-slate-900 dark:text-white";
       }
 
-
-
-
       document.getElementById('examInput').value = '';
       document.getElementById('examInput').focus();
-
-
-
 
       setTimeout(() => {
         playExamAudio(1.0);
       }, 300);
 
-
-
-
       sayCatSpeech(`第 ${examIndex + 1} 題聽寫！仔細聽發音拼寫出來喵～🐾`, "監考計時");
     }
-
-
-
 
     function playExamAudio(rate = 1.0) {
       const current = examQuestions[examIndex];
       if (current) playVoiceText(current.word, rate);
     }
 
-
-
-
     function submitExamAnswer(e) {
       if (e) e.preventDefault();
       const current = examQuestions[examIndex];
       const inputVal = document.getElementById('examInput').value.trim();
-      
+
       const cleanInput = inputVal.toLowerCase().replace(/\\s+/g, '-');
       const cleanTarget = current.word.toLowerCase();
       const isCorrect = (cleanInput === cleanTarget);
-
-
-
 
       examResults.push({
         num: current.num,
@@ -6559,16 +5305,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         note: current.note
       });
 
-
-
-
       const key = current.word || current.num;
       const theme = THEME_REGISTRY[currentThemeKey];
       userProgress[key] = isCorrect ? 'mastered' : 'weak';
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
-
-
-
 
       examIndex++;
       if (examIndex < examQuestions.length) {
@@ -6577,9 +5317,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         finishExam();
       }
     }
-
-
-
 
     function skipExamQuestion() {
       const current = examQuestions[examIndex];
@@ -6597,9 +5334,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       triggerAutoSaveToPi();
 
-
-
-
       examIndex++;
       if (examIndex < examQuestions.length) {
         loadExamQuestion();
@@ -6608,40 +5342,22 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function finishExam() {
       document.getElementById('examRunningBox').classList.add('hidden');
       document.getElementById('examResultBox').classList.remove('hidden');
 
-
-
-
       renderStats();
-
-
-
 
       const total = examResults.length;
       const correctCount = examResults.filter(x => x.isCorrect).length;
       const score = Math.round((correctCount / total) * 100);
 
-
-
-
       document.getElementById('examScoreNumber').innerText = score;
       document.getElementById('examCorrectText').innerText = `${correctCount} / ${total}`;
       document.getElementById('examAccText').innerText = `${score}%`;
 
-
-
-
       addFish(correctCount);
       document.getElementById('examFishEarned').innerText = `+${correctCount} 🐟`;
-
-
-
 
       lastExamWeakItems = examResults.filter(x => !x.isCorrect).map(x => RAW_VOCAB.find(v => (v.word || v.num) === (x.targetWord || x.num)));
       const btnRetryWeak = document.getElementById('btnExamRetryWeak');
@@ -6652,15 +5368,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         btnRetryWeak.innerText = `🔥 專攻本次錯題 (${lastExamWeakItems.length} 題)`;
       }
 
-
-
-
       const feedbackEl = document.getElementById('examCatFeedback');
       const titleEl = document.getElementById('examResultTitle');
       const emojiEl = document.getElementById('examCatEmoji');
-
-
-
 
       if (score === 100) {
         emojiEl.innerText = "👑";
@@ -6681,9 +5391,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         titleEl.innerText = "得分：" + score + " 分，別氣餒！";
         feedbackEl.innerText = "單字聽寫本來就需要多練幾次耳朵才會習慣，不要灰心！咪咪陪妳看錯題解析，多聽幾次一定會變強喵～🐾";
       }
-
-
-
 
       const tbody = document.getElementById('examResultTableBody');
       tbody.innerHTML = '';
@@ -6706,15 +5413,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       });
     }
 
-
-
-
     function retryExamSameScope() {
       startExamSession();
     }
-
-
-
 
     function retryExamWeakOnly() {
       if (lastExamWeakItems.length > 0) {
@@ -6722,34 +5423,22 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     // ==================== WORD TABLE LOGIC ====================
     function renderWordTable() {
       const tbody = document.getElementById('wordTableBody');
       tbody.innerHTML = '';
 
-
-
-
       const theme = THEME_REGISTRY[currentThemeKey];
       sayCatSpeech(`這是【${theme.name}】的完整單字簿，隨時點擊發音或手動標記熟練度喔！🐾`);
 
-
-
-
       if (!filteredList || filteredList.length === 0) return;
-
-
-
 
       filteredList.forEach(item => {
         const key = item.word || item.num;
         const status = userProgress[key] || 'none';
         const tr = document.createElement('tr');
         tr.className = "hover:bg-amber-50/60 dark:hover:bg-slate-800/50 transition";
-        
+
         tr.innerHTML = `
           <td class="py-2.5 px-3 font-mono font-bold text-slate-900 dark:text-white">${item.num}</td>
           <td class="py-2.5 px-3 font-bold text-rose-600 dark:text-rose-400 font-mono">
@@ -6781,6 +5470,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       });
     }
 
+
     // <<<<<<<<<< [MODULE END: 05_study_modes.js] <<<<<<<<<<
 
 
@@ -6793,12 +5483,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     let autoSaveTimer = null;
     let isAutoSyncing = false;
 
-
     function updatePiSyncBadge(statusText, badgeClass, icon = null) {
       const badgeText = document.getElementById('piSyncText');
       const badgeIcon = document.getElementById('piSyncIcon');
       const badge = document.getElementById('piSyncBadge');
-
 
       if (badgeText) {
         const accPrefix = piAccount ? `[${piAccount}] ` : '';
@@ -6812,12 +5500,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
     function initPiSyncUI() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-
 
       if (!piServerUrl || !piApiKey) {
         updatePiSyncBadge('未設定同步', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-200', '⚪');
@@ -6826,7 +5512,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
     function openPiSettingsModal() {
       document.getElementById('piServerUrlInput').value = localStorage.getItem('pi_server_url') || '';
       document.getElementById('piAccountInput').value = localStorage.getItem('pi_account') || '';
@@ -6834,16 +5519,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       document.getElementById('piSettingsModal').classList.remove('hidden');
     }
 
-
     function closePiSettingsModal() {
       document.getElementById('piSettingsModal').classList.add('hidden');
     }
 
-
     function handleModalBackdropClick(e) {
       closePiSettingsModal();
     }
-
 
     function savePiSettings() {
       const url = document.getElementById('piServerUrlInput').value.trim();
@@ -6851,20 +5533,16 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const key = document.getElementById('piApiKeyInput').value.trim();
       const oldAcc = (localStorage.getItem('pi_account') || '').trim();
 
-
       localStorage.setItem('pi_server_url', url);
       localStorage.setItem('pi_account', acc);
       localStorage.setItem('pi_api_key', key);
-
 
       piServerUrl = url;
       piAccount = acc;
       piApiKey = key;
 
-
       initPiSyncUI();
       closePiSettingsModal();
-
 
       // 切換帳號防污染機制 (比照 LifeSchedule)
       if (oldAcc !== acc) {
@@ -6874,11 +5552,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         return;
       }
 
-
       alert(`已儲存連線設定！\n帳號：${acc || '未指定'}\n伺服器：${url || '未設定'}`);
       checkAndAutoSyncFromPi(false);
     }
-
 
     // 處理更換帳號邏輯：查得新帳號備份則自動載入；若為全新帳號則自動清空本機暫存並初始化為 0 進度
     // 本機帳號獨立快照保存與載入 (Local Multi-Account Snapshot Isolation)
@@ -6978,7 +5654,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       localStorage.setItem(FISH_STORAGE_KEY, '0');
       document.getElementById('fishCount').innerText = '0';
 
-
       // 清除所有單元主題之本機進度
       Object.keys(THEME_REGISTRY).forEach(tKey => {
         const t = THEME_REGISTRY[tKey];
@@ -6986,7 +5661,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           localStorage.removeItem(t.storageKey);
         }
       });
-
 
       catAffection = 20;
       feverRemainingQuestions = 0;
@@ -7003,7 +5677,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       localStorage.setItem(WARDROBE_STORAGE_KEY, JSON.stringify(catWardrobe));
       renderCatAccessories();
 
-
       // Reset Adventure Map
       localStorage.removeItem('wordchecking_adventure_v1');
       if (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.resetAdventureProgress === 'function') {
@@ -7019,7 +5692,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       if (getActiveMode() === 'list') renderWordTable();
     }
 
-
     function generateBackupFileName() {
       const now = new Date();
       const y = now.getFullYear();
@@ -7031,7 +5703,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const accTag = piAccount ? `[${piAccount}]` : '[default]';
       return `WC-${y}${m}${d}-${hh}${mm}${ss}-${accTag}.json`;
     }
-
 
     function getExportPayload() {
       return {
@@ -7052,12 +5723,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           numbers: JSON.parse(localStorage.getItem('wordchecking_progress_numbers_v1') || '{}'),
           family: JSON.parse(localStorage.getItem('wordchecking_progress_family_v1') || '{}')
         },
-        adventure: (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.getAdventureSaveData === 'function') 
-          ? window.WordCheckingAdventure.getAdventureSaveData() 
+        adventure: (window.WordCheckingAdventure && typeof window.WordCheckingAdventure.getAdventureSaveData === 'function')
+          ? window.WordCheckingAdventure.getAdventureSaveData()
           : JSON.parse(localStorage.getItem('wordchecking_adventure_v1') || 'null')
       };
     }
-
 
     // 防抖動背景靜默自動儲存 (Debounced Silent Auto Save)
     function triggerAutoSaveToPi() {
@@ -7065,33 +5735,26 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
-
       if (!piServerUrl || !piApiKey) {
         return;
       }
-
 
       updatePiSyncBadge('待儲存...', 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700', '⏳');
       clearTimeout(autoSaveTimer);
       autoSaveTimer = setTimeout(performSilentAutoSave, 2000);
     }
 
-
     async function performSilentAutoSave() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
-
       if (!piServerUrl || !piApiKey) return;
-
 
       updatePiSyncBadge('儲存中...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '⏳');
 
-
       const fileName = generateBackupFileName();
       const payload = getExportPayload();
-
 
       try {
         const response = await uploadPayloadToPi(fileName, payload);
@@ -7109,13 +5772,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
     // 自動開頁與焦點喚醒同步 (Auto Sync from Pi on load & focus)
     async function checkAndAutoSyncFromPi(silent = true) {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-
 
       if (!piServerUrl || !piApiKey) {
         initPiSyncUI();
@@ -7124,14 +5785,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       if (isAutoSyncing) return;
       isAutoSyncing = true;
 
-
       updatePiSyncBadge('檢查同步中...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '🔍');
-
 
       try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
         const lastSyncedFileName = localStorage.getItem('pi_last_synced_file') || '';
-
 
         if (backupData && fileName) {
           // If cloud backup is newer than local last synced file, automatically load it
@@ -7157,7 +5815,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
     async function uploadPayloadToPi(fileName, payload) {
       // 1. Dedicated endpoint
       let response = await fetch(`${piServerUrl}/api/wordchecking/backup`, {
@@ -7169,7 +5826,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         },
         body: JSON.stringify({ fileName, account: piAccount, data: payload })
       }).catch(() => null);
-
 
       // 2. Fallback to generic upload endpoint matching LifeSchedule
       if (!response || !response.ok) {
@@ -7189,7 +5845,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       return response;
     }
 
-
     function isFileMatchingAccount(fileName, targetAccount) {
       if (!fileName || !fileName.endsWith('.json')) return false;
       const acc = (targetAccount || '').trim();
@@ -7198,7 +5853,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const expectedOldTag = `-${acc}.json`;
       return fileName.includes(expectedTag) || fileName.includes(expectedOldTag);
     }
-
 
     async function fetchLatestBackupForAccount(targetAccount) {
       const acc = (targetAccount || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -7215,7 +5869,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           }
         }
       } catch (e) {}
-
 
       // Generic files endpoint matching LifeSchedule
       try {
@@ -7239,16 +5892,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         }
       } catch (e) {}
 
-
       return { backupData: null, fileName: null };
     }
-
 
     async function exportToPi() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-
 
       if (!piServerUrl || !piApiKey) {
         alert("請先填寫樹莓派伺服器網址 (URL) 與 API 金鑰！");
@@ -7256,13 +5906,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         return;
       }
 
-
       const fileName = generateBackupFileName();
       const payload = getExportPayload();
 
-
       sayCatSpeech(`喵～正在上傳備份至樹莓派【${piAccount || '預設'}】...🐾`, "連線中");
-
 
       try {
         const response = await uploadPayloadToPi(fileName, payload);
@@ -7281,12 +5928,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
     async function importFromPi() {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-
 
       if (!piServerUrl || !piApiKey) {
         alert("請先設定樹莓派伺服器網址與 API 金鑰！");
@@ -7294,9 +5939,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         return;
       }
 
-
       sayCatSpeech(`喵～正在查詢樹莓派上【${piAccount || '預設'}】的最新進度...🐾`, "連線中");
-
 
       try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
@@ -7318,20 +5961,17 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
     function applyImportedData(payload, fileName, silent = false) {
       if (!payload || !payload.progress) {
         if (!silent) alert("資料格式不符合規範！");
         return false;
       }
 
-
       if (payload.fishCount !== undefined) {
         fishCount = parseInt(payload.fishCount, 10) || 0;
         localStorage.setItem(FISH_STORAGE_KEY, fishCount);
         document.getElementById('fishCount').innerText = fishCount;
       }
-
 
       if (payload.catGamification) {
         catAffection = parseInt(payload.catGamification.affection, 10) || 20;
@@ -7352,7 +5992,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         checkMimiHungerState();
       }
 
-
       if (payload.progress.all1200) {
         localStorage.setItem('wordchecking_progress_all1200_v1', JSON.stringify(payload.progress.all1200));
       }
@@ -7362,7 +6001,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       if (payload.progress.family) {
         localStorage.setItem('wordchecking_progress_family_v1', JSON.stringify(payload.progress.family));
       }
-
 
       // Restore Adventure Map Progress
       if (payload.adventure) {
@@ -7391,7 +6029,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       return true;
     }
 
-
     function exportLocalJson() {
       const payload = getExportPayload();
       const fileName = generateBackupFileName();
@@ -7401,9 +6038,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       a.download = fileName;
       a.click();
     }
-
-
-
 
     function importLocalJson(e) {
       const file = e.target.files[0];
@@ -7423,9 +6057,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       reader.readAsText(file);
     }
 
-
-
-
     function resetAllProgress() {
       const theme = THEME_REGISTRY[currentThemeKey];
       if (confirm(`確定要清空【${theme.name}】的掌握進度嗎？`)) {
@@ -7437,6 +6068,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         alert(`喵！已重置【${theme.name}】的所有紀錄！`);
       }
     }
+
 
     // <<<<<<<<<< [MODULE END: 06_pi_sync.js] <<<<<<<<<<
 
@@ -7495,7 +6127,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         const hungrySpeech = HUNGRY_CAT_SPEECHES[Math.floor(Math.random() * HUNGRY_CAT_SPEECHES.length)];
         sayCatSpeech(hungrySpeech, "肚子扁扁想妳中 🐾");
       }
-
 
       // Keyboard shortcuts for Flashcard and Quiz / Spelling / Speaking Answered Navigation
       document.addEventListener('keydown', (e) => {
@@ -7559,9 +6190,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       });
     });
 
-
-
-
     function getActiveMode() {
       const modeMap = document.getElementById('modeMap');
       if (modeMap && !modeMap.classList.contains('hidden')) return 'map';
@@ -7573,11 +6201,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       return 'list';
     }
 
-
-
-
     function initTheme() {
-      const isDark = localStorage.getItem('theme') === 'dark' || 
+      const isDark = localStorage.getItem('theme') === 'dark' ||
                      (!('theme' in localStorage) && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
       if (isDark) {
         document.documentElement.classList.add('dark');
@@ -7595,9 +6220,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function onScopeChange() {
       currentScope = document.getElementById('scopeFilter').value;
       updateFilteredList();
@@ -7609,9 +6231,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       if (getActiveMode() === 'speaking') startNewSpeaking();
       if (getActiveMode() === 'list') renderWordTable();
     }
-
-
-
 
     function syncStudyOrderUI(val) {
       currentCardOrder = val || 'default';
@@ -7705,9 +6324,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         return;
       }
 
-
-
-
       if (currentScope === 'all') {
         filteredList = [...RAW_VOCAB];
       } else if (currentScope === 'weak') {
@@ -7772,9 +6388,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       filteredList = applyCardOrder(filteredList);
     }
 
-
-
-
     function renderStats() {
       let mastered = 0;
       let familiar = 0;
@@ -7809,17 +6422,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
       }
 
-
-
-
       const catFavor = document.getElementById('catFavorText');
       if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
       else if (pct < 50) catFavor.innerText = "（友善踏踏貓 🐱）";
       else if (pct < 80) catFavor.innerText = "（默契好學伴 ✨）";
       else catFavor.innerText = "（滿分神喵喵 👑）";
-
-
-
 
       if (quizStats.total > 0) {
         const acc = Math.round((quizStats.correct / quizStats.total) * 100);
@@ -7830,19 +6437,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       updateCatGrowthUI();
     }
 
-
-
-
     // Flashcard Rendering
     function renderCurrentCard() {
       if (!filteredList || filteredList.length === 0) return;
       const item = filteredList[currentIndex];
-      
+
       cardFlipped = false;
       document.getElementById('flashcardInner').classList.remove('rotate-y-180');
-
-
-
 
       document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
       document.getElementById('cardCategory').innerText = item.category || '核心單字';
@@ -7867,23 +6468,17 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           badgeEl.innerText = '✨ 完全掌握';
         }
       }
-      
+
       const digitEl = document.getElementById('cardDigit');
       digitEl.innerText = item.chinese;
-      digitEl.className = item.chinese.length > 4 
-        ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight" 
+      digitEl.className = item.chinese.length > 4
+        ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight"
         : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
-
-
-
 
       document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${item.category || '核心單字'}</span>`;
       document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
       document.getElementById('cardEnglish').innerText = item.word;
       document.getElementById('cardPhonetic').innerText = item.kk || '';
-
-
-
 
       const noteBox = document.getElementById('cardNoteBox');
       if (item.note) {
@@ -7892,9 +6487,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       } else {
         noteBox.classList.add('hidden');
       }
-
-
-
 
       const exampleBox = document.getElementById('cardExampleBox');
       if (item.example) {
@@ -7909,9 +6501,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function flipCard() {
       cardFlipped = !cardFlipped;
       const inner = document.getElementById('flashcardInner');
@@ -7924,9 +6513,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
 
-
-
-
     function nextCard() {
       if (currentIndex < filteredList.length - 1) {
         currentIndex++;
@@ -7936,9 +6522,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       renderCurrentCard();
     }
 
-
-
-
     function prevCard() {
       if (currentIndex > 0) {
         currentIndex--;
@@ -7947,9 +6530,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
       renderCurrentCard();
     }
-
-
-
 
     function markCurrent(isMastered) {
       if (!filteredList || filteredList.length === 0) return;
@@ -7965,7 +6545,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         userProgress[key] = 'weak';
       }
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
-      
+
       if (isMastered) {
         addFish();
         playCatMeowSound();
@@ -7985,13 +6565,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       nextCard();
     }
 
-
-
-
     // Note: playVoiceText and playVoiceCurrent are provided globally by 00_audio_engine.js with MP3 priority & fallback
-
-
-
 
     // Mode Switching
     function switchMode(mode) {
@@ -8021,9 +6595,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         sayCatSpeech("冒險闖關地圖模式：沿著石板古道漫遊 5 大世界，挑戰 120 關贏取三星與寶箱吧喵！🐾");
       }
 
-
-
-
       if (mode === 'card') sayCatSpeech("翻翻卡片模式：看中文想英文，翻面看拼寫與例句喔！🐾");
       if (mode === 'quiz') startNewQuiz();
       if (mode === 'spelling') startNewSpelling();
@@ -8031,9 +6602,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       if (mode === 'exam') initExamSetup();
       if (mode === 'list') renderWordTable();
     }
-
-
-
 
     function capitalize(s) {
       return s.charAt(0).toUpperCase() + s.slice(1);
@@ -8048,6 +6616,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     window.addEventListener('focus', () => {
       checkAndAutoSyncFromPi(true);
     });
+
 
     // <<<<<<<<<< [MODULE END: 07_main_init.js] <<<<<<<<<<
 
