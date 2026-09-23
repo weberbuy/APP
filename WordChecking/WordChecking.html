@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 掌握度雙重門檻與真功夫升級版 (v2.8.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 學習順序優化與答題空白鍵快控版 (v2.9.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -186,7 +186,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.8.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.9.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -826,6 +826,18 @@
     
 
     <section id="modeCard" class="hidden space-y-4">
+      <!-- Card Mode Header: Study Order Selector & Helper Notice -->
+      <div class="flex flex-wrap items-center justify-between max-w-lg mx-auto px-3 py-2 bg-white/90 dark:bg-slate-800/90 rounded-2xl border border-amber-200/80 dark:border-slate-700 shadow-2xs gap-2">
+        <div class="flex items-center space-x-1.5 text-xs text-slate-600 dark:text-slate-300 font-bold">
+          <span>🗂️</span>
+          <span>卡片學習順序：</span>
+        </div>
+        <select id="cardOrderSelect" onchange="onCardOrderChange()" class="bg-amber-50 dark:bg-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-xl border border-amber-200 dark:border-slate-600 focus:outline-none cursor-pointer shadow-2xs">
+          <option value="default">預設順序（依單字編號）</option>
+          <option value="newFirst">✨ 優先練習新單字</option>
+          <option value="newAndWeakFirst">🔥 優先練習新單字和待加強單字</option>
+        </select>
+      </div>
       <div class="relative w-full max-w-lg mx-auto h-84 perspective-1000 cursor-pointer" onclick="flipCard()">
         <div id="flashcardInner" class="relative w-full h-full min-h-[340px] transition-transform duration-500 transform-style-3d shadow-xl rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-200/80 dark:border-slate-700 p-6 flex flex-col justify-between">
           
@@ -833,6 +845,7 @@
           <div id="cardFront" class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white dark:bg-slate-800 rounded-3xl">
             <div class="flex justify-between items-center text-xs text-slate-400">
               <span id="cardCategory" class="px-2.5 py-1 bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-300 rounded-lg font-medium">1-12 基礎數字</span>
+                <span id="cardStatusBadge" class="hidden"></span>
               <span id="cardIndex" class="font-mono text-xs">1 / 100</span>
             </div>
             
@@ -989,7 +1002,7 @@
               <div id="quizFeedbackDetail" class="text-xs mt-1 leading-relaxed"></div>
             </div>
           </div>
-          <button onclick="nextQuizQuestion()" class="w-full mt-3 py-2.5 bg-rose-500 text-white rounded-xl font-bold text-xs hover:bg-rose-600 transition shadow">
+          <button onclick="nextQuizQuestion()" class="w-full mt-3 py-2.5 bg-rose-500 text-white rounded-xl font-bold text-xs hover:bg-rose-600 transition shadow flex items-center justify-center gap-1.5 cursor-pointer"><span>下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按空白鍵）</span>
             下一題 🐾
           </button>
         </div>
@@ -1056,7 +1069,7 @@
               <div id="spellFeedbackDetail" class="text-xs mt-1 leading-relaxed"></div>
             </div>
           </div>
-          <button onclick="nextSpellQuestion()" class="w-full mt-3 py-2 bg-rose-500 text-white rounded-xl font-bold text-xs hover:bg-rose-600 transition shadow">
+          <button onclick="nextSpellQuestion()" class="w-full mt-3 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs hover:bg-indigo-700 transition shadow flex items-center justify-center gap-1.5 cursor-pointer"><span>下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按空白鍵）</span>
             下一題 🐾
           </button>
         </div>
@@ -1105,7 +1118,7 @@
 
 
         <div class="flex flex-col items-center justify-center my-6">
-          <button id="micBtn" onclick="toggleSpeechRecognition()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95">
+          <button id="micBtn" onclick="toggleSpeechRecognition()" onmouseup="this.blur()" tabindex="-1" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95">
             <i class="fa-solid fa-microphone text-2xl" id="micIcon"></i>
           </button>
           <div class="text-xs text-slate-500 dark:text-slate-400 mt-3" id="micStatus">點擊麥克風後說出英文單字給咪咪聽 🐾</div>
@@ -1122,7 +1135,7 @@
               <div id="speakFeedbackDetail" class="text-xs mt-1 leading-relaxed"></div>
             </div>
           </div>
-          <button onclick="nextSpeakQuestion()" class="w-full mt-3 py-2 bg-rose-500 text-white rounded-xl font-bold text-xs hover:bg-rose-600 transition shadow">
+          <button onclick="nextSpeakQuestion()" class="w-full mt-3 py-2.5 bg-rose-500 text-white rounded-xl font-bold text-xs hover:bg-rose-600 transition shadow flex items-center justify-center gap-1.5 cursor-pointer"><span>挑戰下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按空白鍵）</span>
             挑戰下一題 🐾
           </button>
         </div>
@@ -2239,6 +2252,7 @@ if (typeof window !== 'undefined') {
     let currentThemeKey = localStorage.getItem('wordchecking_current_theme') || 'all1200';
     let RAW_VOCAB = [];
     let currentScope = 'all';
+    let currentCardOrder = localStorage.getItem('wordchecking_card_order') || 'default';
     let filteredList = [];
     let currentIndex = 0;
     let cardFlipped = false;
@@ -6039,6 +6053,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
 
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
       const container = document.getElementById('quizOptionsContainer');
       Array.from(container.children).forEach(b => {
         b.disabled = true;
@@ -6129,6 +6146,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       
       const isCorrect = (inputVal === target);
       document.getElementById('spellInput').disabled = true;
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
 
 
 
@@ -6277,6 +6297,15 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
       const feedback = document.getElementById('speakFeedback');
       feedback.classList.remove('hidden');
+
+      // Blur microphone button and active element so Space key doesn't re-trigger mic
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
+      const micBtnEl = document.getElementById('micBtn');
+      if (micBtnEl && typeof micBtnEl.blur === 'function') {
+        micBtnEl.blur();
+      }
 
 
 
@@ -7365,6 +7394,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     document.addEventListener('DOMContentLoaded', () => {
       try { initTheme(); } catch (e) { console.warn('initTheme error:', e); }
       try {
+        const cos = document.getElementById('cardOrderSelect');
+        if (cos) cos.value = currentCardOrder;
+      } catch (e) {}
+      try {
         const fc = document.getElementById('fishCount');
         if (fc) fc.innerText = fishCount;
       } catch (e) {}
@@ -7413,7 +7446,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
 
 
-      // Keyboard shortcuts for Flashcard
+      // Keyboard shortcuts for Flashcard and Quiz / Spelling / Speaking Answered Navigation
       document.addEventListener('keydown', (e) => {
         const activeMode = getActiveMode();
         if (activeMode === 'card') {
@@ -7424,6 +7457,52 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
             nextCard();
           } else if (e.code === 'ArrowLeft') {
             prevCard();
+          }
+        } else if (e.code === 'Space') {
+          // If in Quiz mode and feedback is displayed -> jump to next question
+          if (activeMode === 'quiz') {
+            const fb = document.getElementById('quizFeedback');
+            if (fb && !fb.classList.contains('hidden')) {
+              e.preventDefault();
+              if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+              }
+              nextQuizQuestion();
+            }
+          }
+          // If in Spelling mode and feedback is displayed -> jump to next question
+          else if (activeMode === 'spelling') {
+            const fb = document.getElementById('spellFeedback');
+            if (fb && !fb.classList.contains('hidden')) {
+              e.preventDefault();
+              if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+              }
+              nextSpellQuestion();
+            }
+          }
+          // If in Speaking mode and feedback is displayed -> jump to next question (safely blur micBtn!)
+          else if (activeMode === 'speaking') {
+            const fb = document.getElementById('speakFeedback');
+            if (fb && !fb.classList.contains('hidden')) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+              }
+              const micBtn = document.getElementById('micBtn');
+              if (micBtn && typeof micBtn.blur === 'function') {
+                micBtn.blur();
+              }
+              nextSpeakQuestion();
+            } else {
+              // Safety: If speaking is active but not answered yet, never let Space trigger focused micBtn!
+              const micBtn = document.getElementById('micBtn');
+              if (document.activeElement === micBtn) {
+                e.preventDefault();
+                micBtn.blur();
+              }
+            }
           }
         }
       });
@@ -7471,6 +7550,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function onScopeChange() {
       currentScope = document.getElementById('scopeFilter').value;
       updateFilteredList();
+      filteredList = applyCardOrder(filteredList);
       currentIndex = 0;
       renderCurrentCard();
       if (getActiveMode() === 'quiz') startNewQuiz();
@@ -7481,6 +7561,64 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
 
+
+    function onCardOrderChange() {
+      const sel = document.getElementById('cardOrderSelect');
+      if (sel) {
+        currentCardOrder = sel.value;
+        localStorage.setItem('wordchecking_card_order', currentCardOrder);
+      }
+      updateFilteredList();
+      if (currentCardOrder === 'newFirst') {
+        sayCatSpeech("已切換為【✨ 優先練習新單字】！咪咪先把沒背過的新單字排到最前面囉～🐾", "學習順序");
+      } else if (currentCardOrder === 'newAndWeakFirst') {
+        sayCatSpeech("已切換為【🔥 優先練習新單字和待加強單字】！新單字與易錯單字排在最前線全力特訓～🐾", "學習順序");
+      } else {
+        sayCatSpeech("已恢復【預設順序】！依單字編號循序練習喵～🐾", "學習順序");
+      }
+    }
+
+    function applyCardOrder(list) {
+      if (!list || list.length <= 1) return list;
+      const order = currentCardOrder || 'default';
+      if (order === 'default') {
+        return [...list].sort((a, b) => (a.num || 0) - (b.num || 0));
+      }
+      if (order === 'newFirst') {
+        // 優先練習新單字：!userProgress[key] 排前面，其餘排後面；同等級內維持編號順序
+        return [...list].sort((a, b) => {
+          const aKey = a.word || a.num;
+          const bKey = b.word || b.num;
+          const aNew = !userProgress[aKey];
+          const bNew = !userProgress[bKey];
+          if (aNew && !bNew) return -1;
+          if (!aNew && bNew) return 1;
+          return (a.num || 0) - (b.num || 0);
+        });
+      }
+      if (order === 'newAndWeakFirst') {
+        // 優先練習新單字和待加強單字：
+        // 第一梯隊：新單字 (!st) 與 待加強 ('weak')
+        // 第二梯隊：初步熟悉 ('familiar')
+        // 第三梯隊：完全掌握 ('mastered')
+        const getPriority = (item) => {
+          const key = item.word || item.num;
+          const st = userProgress[key];
+          if (!st) return 1; // 新單字
+          if (st === 'weak') return 1; // 待加強
+          if (st === 'familiar') return 2; // 初步熟悉
+          if (st === 'mastered') return 3; // 完全掌握
+          return 1;
+        };
+        return [...list].sort((a, b) => {
+          const pA = getPriority(a);
+          const pB = getPriority(b);
+          if (pA !== pB) return pA - pB;
+          return (a.num || 0) - (b.num || 0);
+        });
+      }
+      return list;
+    }
 
     function updateFilteredList() {
       if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
@@ -7626,6 +7764,27 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
       document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
       document.getElementById('cardCategory').innerText = item.category || '核心單字';
+
+      // Render mastery status badge on card
+      const itemKey = item.word || item.num;
+      const itemStatus = userProgress[itemKey];
+      const badgeEl = document.getElementById('cardStatusBadge');
+      if (badgeEl) {
+        badgeEl.classList.remove('hidden');
+        if (!itemStatus) {
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold text-[10px] border border-indigo-200 dark:border-indigo-800';
+          badgeEl.innerText = '✨ 新單字';
+        } else if (itemStatus === 'weak') {
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold text-[10px] border border-amber-200 dark:border-amber-800';
+          badgeEl.innerText = '🐾 待加強';
+        } else if (itemStatus === 'familiar') {
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold text-[10px] border border-blue-200 dark:border-blue-800';
+          badgeEl.innerText = '🌱 初步熟悉';
+        } else if (itemStatus === 'mastered') {
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-200 dark:border-emerald-800';
+          badgeEl.innerText = '✨ 完全掌握';
+        }
+      }
       
       const digitEl = document.getElementById('cardDigit');
       digitEl.innerText = item.chinese;
