@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 全身萌貓換裝與扭蛋平衡版 (v2.7.2-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 掌握度雙重門檻與真功夫升級版 (v2.8.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -186,7 +186,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.7.2-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.8.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -391,7 +391,7 @@
                     <span id="catLevelNameText">Lv.1 幼幼小奶貓</span>
                   </span>
                   <span class="text-[10px] text-amber-700 dark:text-amber-400">
-                    已掌握 <b id="catMasteredTotal" class="font-black text-xs">0</b> / 1200 字
+                    完全掌握 <b id="catMasteredTotal" class="font-black text-xs">0</b> / 1200 字
                   </span>
                 </div>
                 <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
@@ -457,36 +457,7 @@
 
     <!-- Progress & Overview Banner -->
     <section class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center">
-        <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-700">
-          <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center space-x-1">
-            <span>🐾</span>
-            <span>數字總量</span>
-          </div>
-          <div class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1" id="statTotal">100</div>
-        </div>
-        <div class="bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-2xl border border-emerald-100 dark:border-emerald-800/40">
-          <div class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center justify-center space-x-1">
-            <span>✨</span>
-            <span>已完全掌握</span>
-          </div>
-          <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1" id="statMastered">0</div>
-        </div>
-        <div class="bg-amber-50 dark:bg-amber-950/30 p-3 rounded-2xl border border-amber-100 dark:border-amber-800/40">
-          <div class="text-xs text-amber-600 dark:text-amber-400 flex items-center justify-center space-x-1">
-            <span>🐾</span>
-            <span>貓貓標記加強</span>
-          </div>
-          <div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1" id="statWeak">0</div>
-        </div>
-        <div class="bg-rose-50 dark:bg-rose-950/30 p-3 rounded-2xl border border-rose-100 dark:border-rose-800/40">
-          <div class="text-xs text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1">
-            <span>🎯</span>
-            <span>練習正確率</span>
-          </div>
-          <div class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1" id="statAccuracy">--%</div>
-        </div>
-      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-4 text-center"><div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-700"><div class="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center space-x-1"><span>🐾</span><span id="statTotalLabel">單字總量</span></div><div class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1" id="statTotal">100</div></div><div class="bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-2xl border border-emerald-100 dark:border-emerald-800/40"><div class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center justify-center space-x-1"><span>✨</span><span>完全掌握</span></div><div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1" id="statMastered">0</div></div><div class="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-2xl border border-blue-100 dark:border-blue-800/40"><div class="text-xs text-blue-600 dark:text-blue-400 flex items-center justify-center space-x-1"><span>🌱</span><span>初步熟悉</span></div><div class="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1" id="statFamiliar">0</div></div><div class="bg-amber-50 dark:bg-amber-950/30 p-3 rounded-2xl border border-amber-100 dark:border-amber-800/40"><div class="text-xs text-amber-600 dark:text-amber-400 flex items-center justify-center space-x-1"><span>🐾</span><span>待加強</span></div><div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1" id="statWeak">0</div></div><div class="bg-rose-50 dark:bg-rose-950/30 p-3 rounded-2xl border border-rose-100 dark:border-rose-800/40 col-span-2 sm:col-span-1 md:col-span-1"><div class="text-xs text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1"><span>🎯</span><span>練習正確率</span></div><div class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1" id="statAccuracy">--%</div></div></div>
 
 
 
@@ -500,9 +471,7 @@
           </span>
           <span id="progressText" class="font-bold">0%</span>
         </div>
-        <div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden flex shadow-inner">
-          <div id="progressBarMastered" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full transition-all duration-300" style="width: 0%"></div>
-          <div id="progressBarWeak" class="bg-gradient-to-r from-amber-400 to-rose-400 h-full transition-all duration-300" style="width: 0%"></div>
+        <div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden flex shadow-inner"><div id="progressBarMastered" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full transition-all duration-300" style="width: 0%" title="完全掌握 (拼寫通關)"></div><div id="progressBarFamiliar" class="bg-gradient-to-r from-blue-400 to-cyan-400 h-full transition-all duration-300" style="width: 0%" title="初步熟悉 (翻卡/四選一)"></div><div id="progressBarWeak" class="bg-gradient-to-r from-amber-400 to-rose-400 h-full transition-all duration-300" style="width: 0%" title="待加強"></div></div>
         </div>
       </div>
     </section>
@@ -967,8 +936,13 @@
 
 
 
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" id="quizOptionsContainer"></div>
+      const key = currentQuizItem.word || currentQuizItem.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+      if (isCorrect) {
+        if (userProgress[key] !== 'mastered') userProgress[key] = 'familiar';
+      } else {
+        userProgress[key] = 'weak';
+      }
 
 
 
@@ -1394,14 +1368,13 @@
                 <th class="py-3 px-3 text-center">發音</th>
                 <th class="py-3 px-3 text-center">貓貓掌握狀態</th>
               </tr>
-            </thead>
-            <tbody id="wordTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-              <!-- Rendered by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+            <tbody id="wordTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs"><!-- Rendered by JS --></tbody></table></div></div></section><script>
+    // ... within renderWordTable mapping logic:
+              status === 'mastered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
+              (status === 'familiar' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' :
+              (status === 'weak' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'))
+            }">
+              ${status === 'mastered' ? '完全掌握 ✨' : (status === 'familiar' ? '熟悉中 🌱' : (status === 'weak' ? '需加強 🐾' : '未學習'))}
 
 
 
@@ -1745,7 +1718,7 @@
         <!-- Rules & Affection Info -->
         <div class="p-4 rounded-2xl bg-pink-50/80 dark:bg-slate-700/40 border border-pink-200 dark:border-slate-600 space-y-2 text-xs text-slate-700 dark:text-slate-200 leading-relaxed">
           <div class="font-bold text-pink-600 dark:text-pink-400 flex items-center gap-1">
-            <span>💖 咪咪親密度與狂熱雙倍機制：</span>
+            <span>🌟 掌握度雙重門檻與升級規則：</span></div><p>• <b>完全掌握（真功夫經驗值）✨</b>：必須在<b>【拼字練習】</b>或<b>【聽寫模擬考】</b>中一字不差拼出單字，才能真正晉升為「完全掌握」並推進咪咪等級成長！</p><p>• <b>初步熟悉 🌱</b>：在【翻轉卡片】按「已記住」或【四選一】答對，單字列為「初步熟悉」，正常獎勵小魚乾 🐟 與親密度 💖，但不計入貓咪等級 EXP。</p><div class="font-bold text-pink-600 dark:text-pink-400 flex items-center gap-1 pt-1 border-t border-pink-200/60 dark:border-slate-600"><span>💖 咪咪親密度與狂熱雙倍機制：</span>
           </div>
           <p>• <b>摸摸頭</b>：每次好感度 +5% ❤️</p>
           <p>• <b>餵食小魚乾 🐟</b>：每次消耗 1 條魚乾，好感度 +15% 💖</p>
@@ -2181,6 +2154,7 @@ if (typeof window !== 'undefined') {
           { value: "cat:常用動詞", label: "🏃 專題：常用核心動詞" },
           { value: "cat:形容詞與副詞", label: "✨ 專題：常用形容詞與副詞" },
           { value: "cat:代名詞與文法詞", label: "🔤 專題：代名詞與文法虛詞" },
+          { value: "familiar", label: "🌱 貓貓熟悉待掌握清單" },
           { value: "weak", label: "★ 貓貓待加強清單" }
         ]
       },
@@ -2198,6 +2172,7 @@ if (typeof window !== 'undefined') {
           { value: "20-99", label: "20-99 複合數字 (80字)" },
           { value: "tens", label: "整十位數 (20, 30, 40...90)" },
           { value: "weak", label: "★ 貓貓待加強清單" }
+          { value: "familiar", label: "🌱 貓貓熟悉待掌握清單" },
         ]
       },
       family: {
@@ -2212,6 +2187,7 @@ if (typeof window !== 'undefined') {
           { value: "人物與人際", label: "人物與人際關係 (12字)" },
           { value: "家庭親屬", label: "家庭與親屬稱謂 (13字)" },
           { value: "weak", label: "★ 貓貓待加強清單" }
+          { value: "familiar", label: "🌱 貓貓熟悉待掌握清單" },
         ]
       }
     };
@@ -6133,7 +6109,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         playCatMeowSound();
         feedback.className = "mt-4 p-4 rounded-2xl text-sm bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200";
         document.getElementById('spellFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
-        document.getElementById('spellFeedbackTitle').innerText = '完全正確！一個字母都沒有漏！ (+1 🐟)';
+        document.getElementById('spellFeedbackTitle').innerText = '完全掌握！一個字母都沒有漏！ (+1 🐟✨ 貓咪經驗值 UP!)';
         document.getElementById('spellFeedbackDetail').innerText = `${currentSpellItem.word} ${currentSpellItem.kk || ''} ${currentSpellItem.note ? '・' + currentSpellItem.note : ''}`;
         playVoiceText(currentSpellItem.word);
         sayCatSpeech("好厲害的拼字實力！字母全對，貓貓好崇拜妳！🐟✨");
@@ -6268,6 +6244,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
       if (isMatch) {
+        if (userProgress[key] !== 'mastered') userProgress[key] = 'familiar';
         userProgress[key] = 'mastered';
         addFish();
         playCatMeowSound();
@@ -7470,6 +7447,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
 
+      } else if (currentScope === 'familiar') {
+        filteredList = RAW_VOCAB.filter(x => userProgress[x.word || x.num] === 'familiar');
+        if (filteredList.length === 0) {
+          alert('喵～目前沒有標記為「熟悉中」的單字！咪咪為您自動切換回全部單字。');
+          document.getElementById('scopeFilter').value = 'all';
+          currentScope = 'all';
+          filteredList = [...RAW_VOCAB];
+        }
       if (currentScope === 'all') {
         filteredList = [...RAW_VOCAB];
       } else if (currentScope === 'weak') {
@@ -7528,32 +7513,37 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
     function renderStats() {
       let mastered = 0;
+      let familiar = 0;
       let weak = 0;
       const total = RAW_VOCAB.length;
 
-
-
-
       RAW_VOCAB.forEach(item => {
         const key = item.word || item.num;
-        if (userProgress[key] === 'mastered') mastered++;
-        else if (userProgress[key] === 'weak') weak++;
+        const s = userProgress[key];
+        if (s === 'mastered') mastered++;
+        else if (s === 'familiar') familiar++;
+        else if (s === 'weak') weak++;
       });
 
-
-
-
-      document.getElementById('statTotal').innerText = total;
-      document.getElementById('statMastered').innerText = mastered;
-      document.getElementById('statWeak').innerText = weak;
-
-
-
+      if (document.getElementById('statTotal')) document.getElementById('statTotal').innerText = total;
+      if (document.getElementById('statMastered')) document.getElementById('statMastered').innerText = mastered;
+      if (document.getElementById('statFamiliar')) document.getElementById('statFamiliar').innerText = familiar;
+      if (document.getElementById('statWeak')) document.getElementById('statWeak').innerText = weak;
 
       const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
-      document.getElementById('progressText').innerText = `${pct}% (${mastered}/${total})`;
-      document.getElementById('progressBarMastered').style.width = total > 0 ? `${(mastered / total) * 100}%` : '0%';
-      document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
+      const pTextEl = document.getElementById('progressText');
+      if (pTextEl) {
+        pTextEl.innerText = `${pct}% (✨${mastered} | 🌱${familiar} / ${total})`;
+      }
+      if (document.getElementById('progressBarMastered')) {
+        document.getElementById('progressBarMastered').style.width = total > 0 ? `${(mastered / total) * 100}%` : '0%';
+      }
+      if (document.getElementById('progressBarFamiliar')) {
+        document.getElementById('progressBarFamiliar').style.width = total > 0 ? `${(familiar / total) * 100}%` : '0%';
+      }
+      if (document.getElementById('progressBarWeak')) {
+        document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
+      }
 
 
 
@@ -7685,13 +7675,23 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
 
-      userProgress[key] = isMastered ? 'mastered' : 'weak';
+      if (isMastered) {
+        if (userProgress[key] !== 'mastered') {
+          userProgress[key] = 'familiar';
+        }
+      } else {
+        userProgress[key] = 'weak';
+      }
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       
       if (isMastered) {
         addFish();
         playCatMeowSound();
-        sayCatSpeech(`太棒了！"${item.word}" 已記住！送妳 1 條小魚乾 🐟～`, "開心歡呼");
+        if (userProgress[key] === 'mastered') {
+          sayCatSpeech(`太棒了！"${item.word}" 已經完全掌握！送妳 1 條小魚乾 🐟✨`, "開心歡呼");
+        } else {
+          sayCatSpeech(`太棒了！"${item.word}" 已初步熟悉！可到拼字練習挑戰完全掌握喵～🐟`, "開心歡呼");
+        }
       } else {
         sayCatSpeech(`沒關係！貓貓幫妳把 "${item.word}" 記在待加強名單，等等多看兩眼喵～🐾`, "貼心鼓勵");
       }
