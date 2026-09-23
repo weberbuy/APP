@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 學習順序優化與答題空白鍵快控版 (v2.9.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全模式學習順序優化與新字錯題優先版 (v2.9.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -186,7 +186,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.9.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.9.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -579,6 +579,19 @@
             <select id="scopeFilter" onchange="onScopeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-900 dark:text-rose-100 focus:outline-none cursor-pointer">
               <option value="all" class="dark:bg-slate-800 dark:text-slate-100">全部單字</option>
               <option value="weak" class="dark:bg-slate-800 dark:text-slate-100">★ 貓貓待加強清單</option>
+            </select>
+          </div>
+
+          <!-- Global Study Order Selector (Applies to Card, Quiz, Spelling, Speaking) -->
+          <div class="flex items-center space-x-2 bg-rose-50/80 dark:bg-slate-700/60 px-3 py-1.5 rounded-xl border border-rose-200/80 dark:border-slate-600 transition-colors">
+            <label for="topStudyOrderSelect" class="text-xs font-bold text-rose-700 dark:text-rose-300 whitespace-nowrap flex items-center gap-1">
+              <span>🗂️</span>
+              <span>出題/學習順序：</span>
+            </label>
+            <select id="topStudyOrderSelect" onchange="onGlobalStudyOrderChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-900 dark:text-rose-100 focus:outline-none cursor-pointer">
+              <option value="default" class="dark:bg-slate-800 dark:text-slate-100">預設（依編號/隨機）</option>
+              <option value="newFirst" class="dark:bg-slate-800 dark:text-slate-100">✨ 優先練習新單字</option>
+              <option value="newAndWeakFirst" class="dark:bg-slate-800 dark:text-slate-100">🔥 優先新單字 + 待加強</option>
             </select>
           </div>
         </div>
@@ -5963,7 +5976,39 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
     // >>>>>>>>>> [MODULE START: 05_study_modes.js] >>>>>>>>>>
 
-// ==================== QUIZ LOGIC ====================
+    // Helper: Pick next word based on user priority (newFirst or newAndWeakFirst)
+    function pickNextStudyItem(pool) {
+      if (!pool || pool.length === 0) return null;
+      const order = currentCardOrder || 'default';
+
+      if (order === 'newFirst') {
+        const newItems = pool.filter(x => !userProgress[x.word || x.num]);
+        if (newItems.length > 0) {
+          // 85% 機率出新單字，15% 溫故知新
+          if (Math.random() < 0.85) {
+            return newItems[Math.floor(Math.random() * newItems.length)];
+          }
+        }
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      if (order === 'newAndWeakFirst') {
+        const priorityItems = pool.filter(x => {
+          const st = userProgress[x.word || x.num];
+          return !st || st === 'weak';
+        });
+        if (priorityItems.length > 0) {
+          if (Math.random() < 0.85) {
+            return priorityItems[Math.floor(Math.random() * priorityItems.length)];
+          }
+        }
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      return null;
+    }
+
+    // ==================== QUIZ LOGIC ====================
     function startNewQuiz() {
       document.getElementById('quizFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
@@ -5976,11 +6021,16 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
 
-      const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
-      if (weakItems.length > 0 && Math.random() < 0.6) {
-        currentQuizItem = weakItems[Math.floor(Math.random() * weakItems.length)];
+      const priorityPick = pickNextStudyItem(filteredList);
+      if (priorityPick) {
+        currentQuizItem = priorityPick;
       } else {
-        currentQuizItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+        const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
+        if (weakItems.length > 0 && Math.random() < 0.6) {
+          currentQuizItem = weakItems[Math.floor(Math.random() * weakItems.length)];
+        } else {
+          currentQuizItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+        }
       }
 
 
@@ -6116,7 +6166,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
       if (!filteredList || filteredList.length === 0) return;
-      currentSpellItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+      const prioritySpellPick = pickNextStudyItem(filteredList);
+      currentSpellItem = prioritySpellPick ? prioritySpellPick : filteredList[Math.floor(Math.random() * filteredList.length)];
       
       const sEl = document.getElementById('spellDigit');
       sEl.innerText = currentSpellItem.chinese;
@@ -6271,7 +6322,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function startNewSpeaking() {
       document.getElementById('speakFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
-      currentSpeakItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+      const prioritySpeakPick = pickNextStudyItem(filteredList);
+      currentSpeakItem = prioritySpeakPick ? prioritySpeakPick : filteredList[Math.floor(Math.random() * filteredList.length)];
 
 
 
@@ -7394,8 +7446,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     document.addEventListener('DOMContentLoaded', () => {
       try { initTheme(); } catch (e) { console.warn('initTheme error:', e); }
       try {
-        const cos = document.getElementById('cardOrderSelect');
-        if (cos) cos.value = currentCardOrder;
+        syncStudyOrderUI(currentCardOrder);
       } catch (e) {}
       try {
         const fc = document.getElementById('fishCount');
@@ -7562,15 +7613,43 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
 
+    function syncStudyOrderUI(val) {
+      currentCardOrder = val || 'default';
+      localStorage.setItem('wordchecking_card_order', currentCardOrder);
+      const sel = document.getElementById('cardOrderSelect');
+      const topSel = document.getElementById('topStudyOrderSelect');
+      if (sel && sel.value !== currentCardOrder) sel.value = currentCardOrder;
+      if (topSel && topSel.value !== currentCardOrder) topSel.value = currentCardOrder;
+    }
+
     function onCardOrderChange() {
       const sel = document.getElementById('cardOrderSelect');
-      if (sel) {
-        currentCardOrder = sel.value;
-        localStorage.setItem('wordchecking_card_order', currentCardOrder);
-      }
+      if (sel) syncStudyOrderUI(sel.value);
+      applyOrderAndRefreshActiveMode();
+    }
+
+    function onGlobalStudyOrderChange() {
+      const topSel = document.getElementById('topStudyOrderSelect');
+      if (topSel) syncStudyOrderUI(topSel.value);
+      applyOrderAndRefreshActiveMode();
+    }
+
+    function applyOrderAndRefreshActiveMode() {
+      // 1. Re-filter and sort list
       updateFilteredList();
+
+      // 2. Card mode: immediately jump to the first matching card & render!
+      currentIndex = 0;
+      renderCurrentCard();
+
+      // 3. If in other modes, immediately refresh the current question!
+      const activeMode = getActiveMode();
+      if (activeMode === 'quiz') startNewQuiz();
+      else if (activeMode === 'spelling') startNewSpelling();
+      else if (activeMode === 'speaking') startNewSpeaking();
+
       if (currentCardOrder === 'newFirst') {
-        sayCatSpeech("已切換為【✨ 優先練習新單字】！咪咪先把沒背過的新單字排到最前面囉～🐾", "學習順序");
+        sayCatSpeech("已切換為【✨ 優先練習新單字】！咪咪先把未背過的新單字排到第一順位～🐾", "學習順序");
       } else if (currentCardOrder === 'newAndWeakFirst') {
         sayCatSpeech("已切換為【🔥 優先練習新單字和待加強單字】！新單字與易錯單字排在最前線全力特訓～🐾", "學習順序");
       } else {
@@ -7688,6 +7767,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
         if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
       }
+
+      // CRITICAL: Always apply user-selected study order to filteredList!
+      filteredList = applyCardOrder(filteredList);
     }
 
 
