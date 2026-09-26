@@ -1223,7 +1223,10 @@
             </span>
             <span id="rainCombo" class="hidden px-2 py-0.5 rounded-lg bg-amber-500 text-slate-950 font-black text-xs animate-bounce shadow">🔥 連擊 x2</span>
           </div>
-          <div class="flex items-center gap-3 text-xs">
+          <div class="flex items-center gap-2 sm:gap-3 text-xs">
+            <button id="rainBgmToggle" onclick="WordCheckingRain.toggleBgm()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700 flex items-center gap-1 cursor-pointer" title="開關方塊雨背景音樂">
+              <span>🎵</span> <span id="rainBgmText">音樂: 開</span>
+            </button>
             <span class="text-slate-400">得分：<b id="rainScore" class="text-amber-400 font-mono text-base">0</b></span>
             <span class="text-slate-400">堆疊：<b id="rainStackCount" class="text-rose-400 font-mono text-sm">0 / 5</b></span>
           </div>
@@ -1258,11 +1261,38 @@
           <div id="rainStackedContainer" class="absolute bottom-2 left-3 right-3 sm:left-6 sm:right-6 space-y-1.5 flex flex-col justify-end z-10">
             <!-- Rendered by JS -->
           </div>
+
+          <!-- Start / Ready Screen Overlay (Prevents auto-starting prematurely) -->
+          <div id="rainStartScreen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center p-6 text-center z-40 animate-fade-in">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-3xl shadow-lg shadow-indigo-500/30 mb-3 animate-pulse">
+              🧱
+            </div>
+            <h3 class="text-xl font-black text-white flex items-center gap-1.5 justify-center">
+              <span>單字方塊雨</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-900/80 text-indigo-300 border border-indigo-700/60 font-mono">Word Rain</span>
+            </h3>
+            <p class="text-xs text-slate-300 mt-2 max-w-sm leading-relaxed">
+              看準下落磚塊的中文釋義，敲鍵盤字母即可擊破！<br>
+              若單字有空格（如 <b class="text-amber-300">post office</b>），敲空白鍵或連續輸入皆能過關！<br>
+              未及時消除之單字將石化堆疊，危險時按 <b class="text-amber-400 font-mono">[Enter]</b> 發動咪咪貓爪救援！🐾
+            </p>
+            
+            <div class="flex items-center gap-4 my-4 text-xs text-slate-400">
+              <span class="flex items-center gap-1"><span>🐢</span> 悠閒放緩步調</span>
+              <span class="flex items-center gap-1"><span>⌨️</span> 鍵盤英打 / 選項</span>
+              <span class="flex items-center gap-1"><span>🎵</span> 8-bit 復古音樂</span>
+            </div>
+
+            <button onclick="WordCheckingRain.startWordRain()" class="px-8 py-3 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-black rounded-2xl text-sm sm:text-base transition transform hover:scale-105 shadow-xl shadow-indigo-500/30 flex items-center gap-2 cursor-pointer">
+              <span>🎮</span>
+              <span>開始遊戲（準備好了！）</span>
+            </button>
+          </div>
         </div>
 
         <!-- Bottom Guidance & Controls -->
         <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
-          <span class="text-[11px]">⌨️ 操作方式：直接敲鍵盤輸入英文拼寫（或按選項按鈕）</span>
+          <span class="text-[11px]">⌨️ 操作方式：敲英文字母（支援空白鍵或連續輸入跳過空格，按 [Backspace] 退格，滿能量按 [Enter] 或空白鍵發動大招）</span>
           <button onclick="WordCheckingRain.startWordRain()" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition cursor-pointer">
             🔄 重新開始
           </button>
@@ -3467,10 +3497,35 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
     function loadCatWardrobe() {
       try {
         const saved = JSON.parse(localStorage.getItem(WARDROBE_STORAGE_KEY) || 'null');
-        if (saved && saved.equipped && saved.unlocked) {
+        if (saved && saved.equipped && Array.isArray(saved.unlocked)) {
           catWardrobe = saved;
           if (!catWardrobe.equipped.outfit) catWardrobe.equipped.outfit = 'outfit_none';
           if (!catWardrobe.equipped.hand) catWardrobe.equipped.hand = 'hand_none';
+        }
+
+        // 自動掃描快照與歷史紀錄，自動復原曾經解鎖/購買過的造型（如：璀璨星光微芒等）
+        if (!catWardrobe.unlocked) catWardrobe.unlocked = [];
+        let hasRecovered = false;
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('wordchecking_account_snapshot_')) {
+            try {
+              const snap = JSON.parse(localStorage.getItem(k) || '{}');
+              const snapUnlocked = snap?.catGamification?.wardrobe?.unlocked;
+              if (Array.isArray(snapUnlocked)) {
+                snapUnlocked.forEach(id => {
+                  if (!catWardrobe.unlocked.includes(id)) {
+                    catWardrobe.unlocked.push(id);
+                    hasRecovered = true;
+                    console.log(`[WardrobeRecovery] 已自快照 ${k} 自動復原裝備:`, id);
+                  }
+                });
+              }
+            } catch (err) {}
+          }
+        }
+        if (hasRecovered) {
+          localStorage.setItem(WARDROBE_STORAGE_KEY, JSON.stringify(catWardrobe));
         }
       } catch (e) {
         console.warn("Wardrobe load error:", e);
@@ -3479,6 +3534,21 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
     }
 
     function saveCatWardrobe() {
+      try {
+        // 安全合併守衛：儲存前與 localStorage 既有清單取聯集，確保已購買或抽中的裝備永不因任何原因遺失
+        const existingRaw = localStorage.getItem(WARDROBE_STORAGE_KEY);
+        if (existingRaw) {
+          const existing = JSON.parse(existingRaw);
+          if (existing && Array.isArray(existing.unlocked)) {
+            existing.unlocked.forEach(id => {
+              if (!catWardrobe.unlocked.includes(id)) {
+                catWardrobe.unlocked.push(id);
+              }
+            });
+          }
+        }
+      } catch (e) {}
+
       localStorage.setItem(WARDROBE_STORAGE_KEY, JSON.stringify(catWardrobe));
       triggerAutoSaveToPi();
     }
@@ -4062,6 +4132,10 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       sayCatSpeech("喵～所有衣服飾品都收進衣櫥囉！素顏小貓最純真可愛了對不對？🐾", "素顏小貓");
       document.getElementById('wardrobeCatSpeech').innerText = "喵～所有衣服飾品都收好囉！素顏小貓也超可愛對不對？🐾";
     }
+
+    // 開頁立即執行衣櫥載入與造型渲染，徹底杜絕預設物件覆蓋問題
+    loadCatWardrobe();
+    renderCatAccessories();
 
 
     // <<<<<<<<<< [MODULE END: 03_wardrobe_gacha.js] <<<<<<<<<<
@@ -6361,6 +6435,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       try { initPiSyncUI(); } catch (e) {}
       try { updateCatGrowthUI(); } catch (e) {}
       try { updateCatGrowthMorph(currentCatLevel); } catch (e) {}
+      try { if (typeof loadCatWardrobe === 'function') loadCatWardrobe(); if (typeof renderCatAccessories === 'function') renderCatAccessories(); } catch (e) {}
       try { if (typeof ScreenPet !== 'undefined') ScreenPet.init(); } catch (e) {}
 
       // Initialize Adventure Map Mode with hooks
@@ -6877,6 +6952,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       if (mode === 'exam') initExamSetup();
       if (mode === 'list') renderWordTable();
       if (mode === 'rain') {
+        // 點擊方塊雨後平滑捲動至遊戲視窗
+        const rainSec = document.getElementById('modeRain');
+        if (rainSec) {
+          rainSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         if (window.WordCheckingRain) window.WordCheckingRain.initWordRain();
       } else {
         if (window.WordCheckingRain) window.WordCheckingRain.stopWordRain();
@@ -6903,25 +6983,26 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
     // >>>>>>>>>> [MODULE START: 08_word_rain.js] >>>>>>>>>>
 
-// Safe request/cancel animation frame for cross-environment compatibility
-const safeCancelAnim = (id) => {
-  if (!id) return;
-  try {
-    if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(id);
-    else if (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') window.cancelAnimationFrame(id);
-    else clearTimeout(id);
-  } catch(e) {}
-};
-const safeRequestAnim = (fn) => {
-  try {
-    if (typeof requestAnimationFrame === 'function') return requestAnimationFrame(fn);
-    if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') return window.requestAnimationFrame(fn);
-  } catch(e) {}
-  return setTimeout(fn, 16);
-};
-// ==================== 08_WORD_RAIN.JS (TETRIS WORD RAIN ENGINE) ====================
-(function(window) {
+// ==================== MODE 8: WORD RAIN (TETRIS ARCADE ENGINE) ====================
+(function (global) {
   'use strict';
+
+  // Cross-environment animation frame helpers
+  const safeCancelAnim = (id) => {
+    if (!id) return;
+    try {
+      if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(id);
+      else if (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') window.cancelAnimationFrame(id);
+      else clearTimeout(id);
+    } catch(e) {}
+  };
+  const safeRequestAnim = (fn) => {
+    try {
+      if (typeof requestAnimationFrame === 'function') return requestAnimationFrame(fn);
+      if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') return window.requestAnimationFrame(fn);
+    } catch(e) {}
+    return setTimeout(fn, 16);
+  };
 
   // Game Configuration & State
   const MAX_STACK_LAYERS = 5;
@@ -6943,6 +7024,123 @@ const safeRequestAnim = (fn) => {
     lastFrameTime: 0,
     animFrameId: null
   };
+
+  // ==================== RETRO 8-BIT BGM SYNTHESIZER ====================
+  let bgmAudioCtx = null;
+  let bgmTimer = null;
+  let bgmStep = 0;
+  let isBgmEnabled = (localStorage.getItem('wordchecking_rain_bgm') !== 'false');
+
+  // Classic Korobeiniki (Tetris Theme A) 8-bit melody steps
+  const BGM_MELODY = [
+    { freq: 659.25, dur: 0.22 }, // E5
+    { freq: 493.88, dur: 0.11 }, // B4
+    { freq: 523.25, dur: 0.11 }, // C5
+    { freq: 587.33, dur: 0.22 }, // D5
+    { freq: 523.25, dur: 0.11 }, // C5
+    { freq: 493.88, dur: 0.11 }, // B4
+    { freq: 440.00, dur: 0.22 }, // A4
+    { freq: 440.00, dur: 0.11 }, // A4
+    { freq: 523.25, dur: 0.11 }, // C5
+    { freq: 659.25, dur: 0.22 }, // E5
+    { freq: 587.33, dur: 0.11 }, // D5
+    { freq: 523.25, dur: 0.11 }, // C5
+    { freq: 493.88, dur: 0.33 }, // B4
+    { freq: 523.25, dur: 0.11 }, // C5
+    { freq: 587.33, dur: 0.22 }, // D5
+    { freq: 659.25, dur: 0.22 }, // E5
+    { freq: 523.25, dur: 0.22 }, // C5
+    { freq: 440.00, dur: 0.22 }, // A4
+    { freq: 440.00, dur: 0.22 }, // A4
+    { freq: 0, dur: 0.11 },      // Rest
+    { freq: 587.33, dur: 0.22 }, // D5
+    { freq: 698.46, dur: 0.11 }, // F5
+    { freq: 880.00, dur: 0.22 }, // A5
+    { freq: 783.99, dur: 0.11 }, // G5
+    { freq: 698.46, dur: 0.11 }, // F5
+    { freq: 659.25, dur: 0.33 }, // E5
+    { freq: 523.25, dur: 0.11 }, // C5
+    { freq: 659.25, dur: 0.22 }, // E5
+    { freq: 587.33, dur: 0.11 }, // D5
+    { freq: 523.25, dur: 0.11 }, // C5
+    { freq: 493.88, dur: 0.22 }, // B4
+    { freq: 493.88, dur: 0.11 }, // B4
+    { freq: 523.25, dur: 0.11 }, // C5
+    { freq: 587.33, dur: 0.22 }, // D5
+    { freq: 659.25, dur: 0.22 }, // E5
+    { freq: 523.25, dur: 0.22 }, // C5
+    { freq: 440.00, dur: 0.22 }, // A4
+    { freq: 440.00, dur: 0.22 }  // A4
+  ];
+
+  function playBgmNote(freq, duration) {
+    if (!freq || freq <= 0) return;
+    try {
+      if (!bgmAudioCtx) {
+        bgmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (bgmAudioCtx.state === 'suspended') {
+        bgmAudioCtx.resume();
+      }
+      const now = bgmAudioCtx.currentTime;
+      const osc = bgmAudioCtx.createOscillator();
+      const gain = bgmAudioCtx.createGain();
+
+      osc.type = 'triangle'; // 8-bit soft retro tone
+      osc.frequency.setValueAtTime(freq, now);
+
+      // Low pleasant volume that doesn't mask pronunciation
+      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      osc.connect(gain);
+      gain.connect(bgmAudioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + duration + 0.02);
+    } catch(e) {}
+  }
+
+  function tickBgm() {
+    if (!rainState.isRunning || !isBgmEnabled) return;
+    const item = BGM_MELODY[bgmStep];
+    bgmStep = (bgmStep + 1) % BGM_MELODY.length;
+    playBgmNote(item.freq, item.dur);
+    bgmTimer = setTimeout(tickBgm, item.dur * 1000);
+  }
+
+  function startBgm() {
+    stopBgm();
+    if (!isBgmEnabled) return;
+    bgmStep = 0;
+    tickBgm();
+    updateBgmUI();
+  }
+
+  function stopBgm() {
+    if (bgmTimer) {
+      clearTimeout(bgmTimer);
+      bgmTimer = null;
+    }
+  }
+
+  function toggleBgm() {
+    isBgmEnabled = !isBgmEnabled;
+    localStorage.setItem('wordchecking_rain_bgm', isBgmEnabled);
+    updateBgmUI();
+    if (isBgmEnabled && rainState.isRunning) {
+      startBgm();
+    } else {
+      stopBgm();
+    }
+  }
+
+  function updateBgmUI() {
+    const textEl = document.getElementById('rainBgmText');
+    if (textEl) {
+      textEl.innerText = isBgmEnabled ? '音樂: 開' : '音樂: 關';
+    }
+  }
 
   // Sound & Speech integration with main app
   function playSound(type) {
@@ -7050,15 +7248,26 @@ const safeRequestAnim = (fn) => {
     activeEl.classList.remove('hidden');
     activeEl.style.top = Math.round(b.topPx || 0) + 'px';
 
-    // Build letter progress display: e.g. "a p _ _ _"
+    // Build letter progress display: e.g. "p o s t ␣ o f f i c e"
     const target = b.wordClean;
     const typed = b.typed;
     let lettersHtml = '';
     for (let i = 0; i < target.length; i++) {
+      const targetChar = target[i];
+      const isSpace = (targetChar === ' ');
+      
       if (i < typed.length) {
-        lettersHtml += `<span class="px-1 font-black text-emerald-400 border-b-2 border-emerald-400">${target[i]}</span>`;
+        if (isSpace) {
+          lettersHtml += `<span class="inline-block w-3 sm:w-4 border-b-2 border-emerald-400 mx-0.5 text-center text-xs text-emerald-300">␣</span>`;
+        } else {
+          lettersHtml += `<span class="px-1 font-black text-emerald-400 border-b-2 border-emerald-400">${targetChar}</span>`;
+        }
       } else {
-        lettersHtml += `<span class="px-1 text-slate-500 border-b-2 border-slate-600">_</span>`;
+        if (isSpace) {
+          lettersHtml += `<span class="inline-block w-3 sm:w-4 border-b-2 border-dashed border-slate-600 mx-0.5 text-center text-xs text-slate-500">␣</span>`;
+        } else {
+          lettersHtml += `<span class="px-1 text-slate-500 border-b-2 border-slate-600">_</span>`;
+        }
       }
     }
 
@@ -7082,9 +7291,9 @@ const safeRequestAnim = (fn) => {
           <span class="font-bold">🐾 ${b.target.pos ? '(' + b.target.pos + ')' : '核心單字'}</span>
           <span class="font-mono text-[10px] text-amber-400">⚡ ${b.fallDuration.toFixed(1)}s</span>
         </div>
-        <div class="text-xl sm:text-2xl font-black text-white tracking-wide py-0.5">${b.target.chinese || b.target.zh || ''}</div>
-        <div class="text-lg font-mono tracking-widest my-1.5 py-1 px-3 bg-slate-950/60 rounded-xl inline-block border border-slate-800">${lettersHtml}</div>
-        <div class="grid grid-cols-2 gap-1.5 pt-1.5">${optionsHtml}</div>
+        <div class="text-lg sm:text-xl font-black text-amber-300 tracking-wide py-0.5">${b.target.chinese || b.target.zh || ''}</div>
+        <div class="text-base sm:text-lg font-mono tracking-widest my-1 py-1 px-3 bg-slate-950/60 rounded-xl inline-block border border-slate-800">${lettersHtml}</div>
+        <div class="grid grid-cols-2 gap-1.5 pt-1">${optionsHtml}</div>
       </div>
     `;
   }
@@ -7094,7 +7303,7 @@ const safeRequestAnim = (fn) => {
     if (!stackContainer) return;
 
     stackContainer.innerHTML = rainState.stackedBlocks.map((blk, idx) => `
-      <div class="h-8 bg-slate-800/90 border border-slate-700 rounded-xl px-3 flex items-center justify-between text-xs text-slate-400 animate-fade-in">
+      <div class="h-8 bg-slate-800/90 border border-slate-700 rounded-xl px-3 flex items-center justify-between text-xs text-slate-400 animate-fade-in shadow">
         <span class="font-bold text-slate-300">${blk.chinese || blk.word}</span>
         <span class="font-mono font-semibold text-rose-400">${blk.word}</span>
         <span class="text-[10px] text-slate-500">🧱 第 ${idx + 1} 層</span>
@@ -7120,14 +7329,15 @@ const safeRequestAnim = (fn) => {
     }
     if (stackEl) stackEl.innerText = `${rainState.stackedBlocks.length} / ${MAX_STACK_LAYERS}`;
     if (mimiBar) mimiBar.style.width = `${rainState.mimiEnergy}%`;
+
     if (mimiBtn) {
       if (rainState.mimiEnergy >= 100) {
         mimiBtn.disabled = false;
-        mimiBtn.className = "px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 text-white font-black text-xs shadow-md animate-bounce cursor-pointer";
-        mimiBtn.innerText = "🐾 貓爪清行 (滿能量！按空白鍵)";
+        mimiBtn.className = "px-3 py-1 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 text-white font-black text-[10px] shadow-md animate-bounce cursor-pointer";
+        mimiBtn.innerText = "🐾 貓爪清行 (按 Enter / 空白鍵)";
       } else {
         mimiBtn.disabled = true;
-        mimiBtn.className = "px-3 py-1.5 rounded-xl bg-slate-700 text-slate-400 font-bold text-xs opacity-60 cursor-not-allowed";
+        mimiBtn.className = "px-3 py-1 rounded-xl bg-slate-800 text-slate-500 font-bold text-[10px] transition cursor-not-allowed";
         mimiBtn.innerText = `🐾 咪咪大招 (${rainState.mimiEnergy}%)`;
       }
     }
@@ -7182,6 +7392,7 @@ const safeRequestAnim = (fn) => {
 
     // Reset combo
     rainState.combo = 0;
+
     // Petrify block into bottom stack
     rainState.stackedBlocks.unshift({
       word: b.wordClean,
@@ -7213,6 +7424,7 @@ const safeRequestAnim = (fn) => {
   function triggerGameOver() {
     rainState.isRunning = false;
     safeCancelAnim(rainState.animFrameId);
+    stopBgm();
 
     const modal = document.getElementById('rainGameOverModal');
     if (modal) {
@@ -7246,8 +7458,8 @@ const safeRequestAnim = (fn) => {
   function handleRainKeydown(e) {
     if (!rainState.isRunning || rainState.isPaused) return;
 
-    // Space: Trigger Mimi Skill
-    if (e.code === 'Space') {
+    // 1. Enter: Trigger Mimi Skill
+    if (e.code === 'Enter') {
       e.preventDefault();
       if (rainState.mimiEnergy >= 100) {
         useMimiClawSkill();
@@ -7255,7 +7467,7 @@ const safeRequestAnim = (fn) => {
       return;
     }
 
-    // Backspace: 刪除最後一個鍵入的字母，打錯可退回修正
+    // 2. Backspace: 刪除最後一個鍵入的字母，打錯可退回修正
     if (e.key === 'Backspace') {
       e.preventDefault();
       const b = rainState.activeBlock;
@@ -7266,13 +7478,41 @@ const safeRequestAnim = (fn) => {
       return;
     }
 
-    // Alpha key a-z
-    if (e.key && e.key.length === 1 && /[a-zA-Z\-]/.test(e.key)) {
-      const b = rainState.activeBlock;
-      if (!b) return;
+    const b = rainState.activeBlock;
+    if (!b) return;
 
+    const expectedChar = b.wordClean[b.typed.length];
+
+    // 3. Space: 支援單字內包含空格（如 "post office"），同時若當前不需要空格且大招已滿，可發動大招
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (expectedChar === ' ') {
+        // 單字需要空格，輸入空格推進！
+        b.typed += ' ';
+        renderActiveRainBlock();
+        if (b.typed.length === b.wordClean.length) {
+          handleWordEliminated();
+        }
+      } else if (rainState.mimiEnergy >= 100) {
+        // 當前單字不需空格，若大招已滿則釋放大招
+        useMimiClawSkill();
+      }
+      return;
+    }
+
+    // 4. Alpha key a-z 或連字符號
+    if (e.key && e.key.length === 1 && /[a-zA-Z\-]/.test(e.key)) {
       const keyLower = e.key.toLowerCase();
-      const expectedChar = b.wordClean[b.typed.length];
+
+      // 若目前期待的是空格，但使用者直接鍵入下一個單字的英文字母（連打跳過空格支援）
+      if (expectedChar === ' ' && b.wordClean[b.typed.length + 1] === keyLower) {
+        b.typed += ' ' + keyLower;
+        renderActiveRainBlock();
+        if (b.typed.length === b.wordClean.length) {
+          handleWordEliminated();
+        }
+        return;
+      }
 
       if (keyLower === expectedChar) {
         b.typed += keyLower;
@@ -7361,6 +7601,9 @@ const safeRequestAnim = (fn) => {
     rainState.stackedBlocks = [];
     rainState.lastFrameTime = 0;
 
+    const startScreen = document.getElementById('rainStartScreen');
+    if (startScreen) startScreen.classList.add('hidden');
+
     const modal = document.getElementById('rainGameOverModal');
     if (modal) modal.classList.add('hidden');
 
@@ -7371,6 +7614,8 @@ const safeRequestAnim = (fn) => {
     safeCancelAnim(rainState.animFrameId);
     rainState.animFrameId = safeRequestAnim(rainLoop);
 
+    startBgm();
+
     if (typeof sayCatSpeech === 'function') {
       sayCatSpeech("🧱 俄羅斯單字雨啟動！看中文敲鍵盤拼出英文，手速越快消除越爽快喵！🐾", "熱血闖關");
     }
@@ -7380,12 +7625,33 @@ const safeRequestAnim = (fn) => {
     rainState.isRunning = false;
     rainState.isPaused = false;
     safeCancelAnim(rainState.animFrameId);
+    stopBgm();
     const activeEl = document.getElementById('rainActiveBlock');
     if (activeEl) activeEl.classList.add('hidden');
   }
 
   function initWordRain() {
-    startWordRain();
+    // 進入模式時不立即掉落，先呈現「準備好了/開始遊戲」歡迎畫面
+    rainState.isRunning = false;
+    safeCancelAnim(rainState.animFrameId);
+    stopBgm();
+    updateBgmUI();
+
+    const startScreen = document.getElementById('rainStartScreen');
+    if (startScreen) startScreen.classList.remove('hidden');
+
+    const modal = document.getElementById('rainGameOverModal');
+    if (modal) modal.classList.add('hidden');
+
+    const activeEl = document.getElementById('rainActiveBlock');
+    if (activeEl) activeEl.classList.add('hidden');
+
+    renderStackedBlocks();
+    updateRainDashboardUI();
+
+    if (typeof sayCatSpeech === 'function') {
+      sayCatSpeech("🧱 單字方塊雨擂台！準備好後點擊【開始遊戲】迎接挑戰喵～🐾", "準備闖關");
+    }
   }
 
   // Register on window and globalThis
@@ -7393,6 +7659,7 @@ const safeRequestAnim = (fn) => {
     initWordRain,
     startWordRain,
     stopWordRain,
+    toggleBgm,
     useMimiClawSkill,
     handleOptionClick,
     handleRainKeydown,
