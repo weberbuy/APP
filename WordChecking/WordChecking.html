@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 飾品外觀高擬真升級版 (v2.10.2-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 測驗體驗優化與智慧出題版 (v2.10.3-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.10.2-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.10.3-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -904,7 +904,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" id="quizOptionsContainer"></div>
 
-        <div id="quizFeedback" class="hidden mt-5 p-4 rounded-2xl text-sm transition">
+        <div id="quizFeedback" class="hidden mt-5 p-4 rounded-2xl text-sm transition scroll-mt-6">
           <div class="flex items-start space-x-3">
             <div id="quizFeedbackIcon" class="text-2xl mt-0.5"></div>
             <div>
@@ -912,8 +912,8 @@
               <div id="quizFeedbackDetail" class="text-xs mt-1 leading-relaxed"></div>
             </div>
           </div>
-          <button onclick="nextQuizQuestion()" class="w-full mt-3 py-2.5 bg-rose-500 text-white rounded-xl font-bold text-xs hover:bg-rose-600 transition shadow flex items-center justify-center gap-1.5 cursor-pointer"><span>下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按空白鍵）</span>
-            下一題 🐾
+          <button onclick="nextQuizQuestion()" class="w-full mt-3 py-2.5 bg-rose-500 text-white rounded-xl font-bold text-xs hover:bg-rose-600 transition shadow flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按空白鍵）</span>
           </button>
         </div>
 
@@ -956,7 +956,7 @@
           </button>
         </form>
 
-        <div id="spellFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm">
+        <div id="spellFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm scroll-mt-6">
           <div class="flex items-start space-x-3">
             <div id="spellFeedbackIcon" class="text-2xl mt-0.5"></div>
             <div>
@@ -964,8 +964,8 @@
               <div id="spellFeedbackDetail" class="text-xs mt-1 leading-relaxed"></div>
             </div>
           </div>
-          <button onclick="nextSpellQuestion()" class="w-full mt-3 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs hover:bg-indigo-700 transition shadow flex items-center justify-center gap-1.5 cursor-pointer"><span>下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按空白鍵）</span>
-            下一題 🐾
+          <button onclick="nextSpellQuestion()" class="w-full mt-3 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs hover:bg-indigo-700 transition shadow flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按空白鍵）</span>
           </button>
         </div>
 
@@ -1004,7 +1004,7 @@
           <div class="text-xs text-slate-500 dark:text-slate-400 mt-3" id="micStatus">點擊麥克風後說出英文單字給咪咪聽 🐾</div>
         </div>
 
-        <div id="speakFeedback" class="hidden p-4 rounded-2xl text-sm border">
+        <div id="speakFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm border scroll-mt-6">
           <div class="flex items-start space-x-3">
             <div id="speakFeedbackIcon" class="text-2xl mt-0.5"></div>
             <div>
@@ -5082,12 +5082,28 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
 
       let options = [currentQuizItem];
-      let distractors = RAW_VOCAB.filter(x => x.word !== currentQuizItem.word);
-      distractors.sort(() => Math.random() - 0.5);
 
-      for (let d of distractors) {
+      // 智慧干擾項生成：優先挑選使用者「已掌握 (mastered)」或「已熟悉 (familiar)」的單字作為干擾選項（溫故知新）
+      const pool = RAW_VOCAB.filter(x => x.word !== currentQuizItem.word);
+      const learnedDistractors = pool.filter(x => {
+        const st = userProgress[x.word || x.num];
+        return st === 'mastered' || st === 'familiar';
+      });
+      learnedDistractors.sort(() => Math.random() - 0.5);
+
+      for (let d of learnedDistractors) {
         if (options.length >= 4) break;
         if (!options.some(o => o.word === d.word)) options.push(d);
+      }
+
+      // 若已學過的單字不足 3 個，從剩餘單字池隨機補足至 4 選項
+      if (options.length < 4) {
+        const remainingPool = pool.filter(x => !options.some(o => o.word === x.word));
+        remainingPool.sort(() => Math.random() - 0.5);
+        for (let d of remainingPool) {
+          if (options.length >= 4) break;
+          options.push(d);
+        }
       }
 
       options.sort(() => Math.random() - 0.5);
@@ -5137,6 +5153,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
       const feedback = document.getElementById('quizFeedback');
       feedback.classList.remove('hidden');
+      setTimeout(() => {
+        if (feedback && typeof feedback.scrollIntoView === 'function') {
+          feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 50);
       if (isCorrect) {
         addFish();
         playCatMeowSound();
@@ -5207,6 +5228,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
       const feedback = document.getElementById('spellFeedback');
       feedback.classList.remove('hidden');
+      setTimeout(() => {
+        if (feedback && typeof feedback.scrollIntoView === 'function') {
+          feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 50);
 
       if (isCorrect) {
         addFish();
@@ -5302,6 +5328,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
       const feedback = document.getElementById('speakFeedback');
       feedback.classList.remove('hidden');
+      setTimeout(() => {
+        if (feedback && typeof feedback.scrollIntoView === 'function') {
+          feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 50);
 
       // Blur microphone button and active element so Space key doesn't re-trigger mic
       if (document.activeElement && typeof document.activeElement.blur === 'function') {
