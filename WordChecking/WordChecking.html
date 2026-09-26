@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 俄羅斯單字方塊雨與打字消除版 (v2.11.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1243,19 +1243,19 @@
         </div>
 
         <!-- The Falling Playfield Canvas / Stage -->
-        <div id="rainPlayfield" class="w-full h-[400px] bg-slate-950/90 rounded-2xl relative overflow-hidden border border-slate-800 shadow-inner">
+        <div id="rainPlayfield" class="w-full h-[520px] sm:h-[560px] bg-slate-950/90 rounded-2xl relative overflow-hidden border border-slate-800 shadow-inner">
           <!-- Top Danger Line -->
-          <div class="absolute top-12 left-0 right-0 border-b-2 border-dashed border-rose-500/40 flex items-center justify-end px-3">
+          <div class="absolute top-12 left-0 right-0 border-b-2 border-dashed border-rose-500/40 flex items-center justify-end px-3 z-10 pointer-events-none">
             <span class="text-[9px] text-rose-400/80 font-mono font-bold uppercase tracking-wider">▲ 堆疊危險警示線 ▲</span>
           </div>
 
-          <!-- Active Falling Block -->
-          <div id="rainActiveBlock" class="absolute left-4 right-4 transition-all duration-75" style="top: 0%;">
+          <!-- Active Falling Block (Layered above and lands accurately on top of stacked bricks) -->
+          <div id="rainActiveBlock" class="absolute left-3 right-3 sm:left-6 sm:right-6 z-20" style="top: 0px;">
             <!-- Rendered by JS -->
           </div>
 
           <!-- Bottom Stacked Stone Blocks -->
-          <div id="rainStackedContainer" class="absolute bottom-1 left-3 right-3 space-y-1 flex flex-col justify-end">
+          <div id="rainStackedContainer" class="absolute bottom-2 left-3 right-3 sm:left-6 sm:right-6 space-y-1.5 flex flex-col justify-end z-10">
             <!-- Rendered by JS -->
           </div>
         </div>
@@ -6925,8 +6925,9 @@ const safeRequestAnim = (fn) => {
 
   // Game Configuration & State
   const MAX_STACK_LAYERS = 5;
-  const MIN_FALL_SECONDS = 3.5;  // Hard speed ceiling (fastest)
-  const MAX_FALL_SECONDS = 9.5;  // Floor speed (slowest / beginner)
+  const BASE_FALL_SECONDS = 18.0; // 悠閒放鬆的初始下落時間（給予充足時間看題與英打）
+  const MAX_FALL_SECONDS = 25.0;  // 手速慢或長單字最慢可放緩至 25 秒
+  const MIN_FALL_SECONDS = 8.0;   // 連擊高手最快仍保底 8 秒，絕不手忙腳亂
   
   let rainState = {
     isRunning: false,
@@ -6950,27 +6951,31 @@ const safeRequestAnim = (fn) => {
     }
   }
 
-  function getDynamicDuration() {
-    // 1. Base duration (slow and relaxing for beginners)
-    let dur = MAX_FALL_SECONDS;
+  function getDynamicDuration(targetWord) {
+    // 1. 基礎下落時間（預設 18 秒，悠閒從容）
+    let dur = BASE_FALL_SECONDS;
 
-    // 2. Typing speed adaptation based on last 2 words
-    if (rainState.recentSpeeds.length > 0) {
+    // 2. 單字長度補償（字母越多，下落時間自動增加，每超過 4 個字母 +0.8 秒）
+    const wordLen = (targetWord || '').length;
+    if (wordLen > 4) {
+      dur += (wordLen - 4) * 0.8;
+    }
+
+    // 3. 近期打字速度自適應（近 3 題平均耗時）
+    if (rainState.recentSpeeds && rainState.recentSpeeds.length > 0) {
       const avgMs = rainState.recentSpeeds.reduce((a, b) => a + b, 0) / rainState.recentSpeeds.length;
-      if (avgMs < 2000) {
-        dur -= 2.2; // fast typist
-      } else if (avgMs < 3500) {
-        dur -= 1.2; // medium typist
+      if (avgMs < 2500) {
+        dur -= 2.0; // 連續秒殺，適度提速增加成就感
       } else if (avgMs > 6000) {
-        dur += 1.0; // hesitant typist -> gentle slowdown
+        dur += 3.0; // 猶豫思考較久，主動放緩節奏
       }
     }
 
-    // 3. Streak & score escalation
-    const streakBonus = Math.min(2.5, (rainState.combo || 0) * 0.25);
+    // 4. 連擊平緩微幅提速（最高縮減 3.0 秒）
+    const streakBonus = Math.min(3.0, (rainState.combo || 0) * 0.3);
     dur -= streakBonus;
 
-    // 4. Clamped within [MIN_FALL_SECONDS, MAX_FALL_SECONDS]
+    // 5. 嚴格限縮在 [MIN_FALL_SECONDS, MAX_FALL_SECONDS] 區間
     return Math.max(MIN_FALL_SECONDS, Math.min(MAX_FALL_SECONDS, dur));
   }
 
@@ -7015,7 +7020,7 @@ const safeRequestAnim = (fn) => {
     }
     options.sort(() => Math.random() - 0.5);
 
-    const fallDuration = getDynamicDuration();
+    const fallDuration = getDynamicDuration(wordClean);
 
     rainState.activeBlock = {
       target,
@@ -7023,7 +7028,7 @@ const safeRequestAnim = (fn) => {
       wordClean,
       options,
       typed: '',
-      y: 0, // 0 to 100%
+      topPx: 0, // exact top pixel position
       fallDuration,
       spawnTime: Date.now()
     };
@@ -7043,7 +7048,7 @@ const safeRequestAnim = (fn) => {
 
     const b = rainState.activeBlock;
     activeEl.classList.remove('hidden');
-    activeEl.style.top = b.y + '%';
+    activeEl.style.top = Math.round(b.topPx || 0) + 'px';
 
     // Build letter progress display: e.g. "a p _ _ _"
     const target = b.wordClean;
@@ -7250,6 +7255,17 @@ const safeRequestAnim = (fn) => {
       return;
     }
 
+    // Backspace: 刪除最後一個鍵入的字母，打錯可退回修正
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      const b = rainState.activeBlock;
+      if (b && b.typed && b.typed.length > 0) {
+        b.typed = b.typed.slice(0, -1);
+        renderActiveRainBlock();
+      }
+      return;
+    }
+
     // Alpha key a-z
     if (e.key && e.key.length === 1 && /[a-zA-Z\-]/.test(e.key)) {
       const b = rainState.activeBlock;
@@ -7294,7 +7310,7 @@ const safeRequestAnim = (fn) => {
     }
   }
 
-  // Main animation frame loop
+  // Main animation frame loop (Pixel-accurate collision above stacked stone blocks)
   function rainLoop(timestamp) {
     if (!rainState.isRunning || rainState.isPaused) return;
 
@@ -7303,19 +7319,28 @@ const safeRequestAnim = (fn) => {
     rainState.lastFrameTime = timestamp;
 
     if (rainState.activeBlock) {
-      const fallSpeedPerMs = 100 / (rainState.activeBlock.fallDuration * 1000);
-      rainState.activeBlock.y += fallSpeedPerMs * deltaMs;
+      const playfield = document.getElementById('rainPlayfield');
+      const activeEl = document.getElementById('rainActiveBlock');
+      const stackContainer = document.getElementById('rainStackedContainer');
 
-      // Check landing: bottom stack offset (each block takes ~12% from bottom)
-      const stackHeightPct = rainState.stackedBlocks.length * 12;
-      const groundPct = 86 - stackHeightPct;
+      const playfieldH = playfield ? playfield.clientHeight : 520;
+      const activeH = (activeEl && activeEl.offsetHeight > 0) ? activeEl.offsetHeight : 140;
+      const stackH = (stackContainer && stackContainer.offsetHeight > 0) ? stackContainer.offsetHeight : (rainState.stackedBlocks.length * 38);
 
-      if (rainState.activeBlock.y >= groundPct) {
+      // 精準著陸界線：下落磚塊的底部，恰好觸碰到最上方石化磚塊的頂部（預留 6px 間距）
+      // 如此一來，題目、打字框與選項 100% 永遠停在石化磚塊上方，絕不會被石化磚塊遮擋！
+      const maxTopPx = Math.max(0, playfieldH - 12 - stackH - activeH - 6);
+
+      const fallSpeedPxPerMs = maxTopPx / (rainState.activeBlock.fallDuration * 1000);
+      rainState.activeBlock.topPx = (rainState.activeBlock.topPx || 0) + (fallSpeedPxPerMs * deltaMs);
+
+      if (rainState.activeBlock.topPx >= maxTopPx) {
+        rainState.activeBlock.topPx = maxTopPx;
+        if (activeEl) activeEl.style.top = maxTopPx + 'px';
         handleBlockLanded();
       } else {
-        const activeEl = document.getElementById('rainActiveBlock');
         if (activeEl) {
-          activeEl.style.top = rainState.activeBlock.y + '%';
+          activeEl.style.top = Math.round(rainState.activeBlock.topPx) + 'px';
         }
       }
     }
