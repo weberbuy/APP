@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.3-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.4-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.3-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.4-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -535,20 +535,6 @@
               <option value="all" class="dark:bg-slate-800 dark:text-slate-100">全部單字</option>
               <option value="weak" class="dark:bg-slate-800 dark:text-slate-100">★ 貓貓待加強清單</option>
             </select>
-          </div>
-
-          <!-- Scope Mastery Ratio Chip -->
-          <div id="scopeMasteryChip" class="flex items-center gap-2 bg-white/90 dark:bg-slate-800 px-3 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs shadow-2xs transition-all" title="當前選定範圍之單字掌握度分佈比例">
-            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
-              <span>📊</span><span class="hidden sm:inline">範圍比例:</span>
-            </span>
-            <span class="flex items-center gap-1.5 font-mono text-[11px]">
-              <span id="scopeRatioMastered" class="text-emerald-600 dark:text-emerald-400 font-bold" title="完全掌握">✨ 0%</span>
-              <span class="text-slate-300 dark:text-slate-600">|</span>
-              <span id="scopeRatioFamiliar" class="text-blue-600 dark:text-blue-400 font-bold" title="初步熟悉">🌱 0%</span>
-              <span class="text-slate-300 dark:text-slate-600">|</span>
-              <span id="scopeRatioWeak" class="text-amber-600 dark:text-amber-400 font-bold" title="待加強">🐾 0%</span>
-            </span>
           </div>
 
           <!-- Global Study Order Selector (Applies to Card, Quiz, Spelling, Speaking) -->
@@ -6707,6 +6693,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       filteredList = applyCardOrder(filteredList);
       currentIndex = 0;
       renderCurrentCard();
+      renderStats();
       if (getActiveMode() === 'quiz') startNewQuiz();
       if (getActiveMode() === 'spelling') startNewSpelling();
       if (getActiveMode() === 'speaking') startNewSpeaking();
@@ -6940,24 +6927,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const sWeakPct = scopeTotal > 0 ? Math.round((scopeWeak / scopeTotal) * 100) : 0;
       const sNewPct = Math.max(0, 100 - sMasteredPct - sFamiliarPct - sWeakPct);
 
-      // 1. Update Scope Mastery Ratio Chip (Next to Scope dropdown)
-      const ratioM = document.getElementById('scopeRatioMastered');
-      const ratioF = document.getElementById('scopeRatioFamiliar');
-      const ratioW = document.getElementById('scopeRatioWeak');
-      if (ratioM) {
-        ratioM.innerText = `✨ ${sMasteredPct}%`;
-        ratioM.title = `完全掌握：${scopeMastered} / ${scopeTotal} 字 (${sMasteredPct}%)`;
-      }
-      if (ratioF) {
-        ratioF.innerText = `🌱 ${sFamiliarPct}%`;
-        ratioF.title = `初步熟悉：${scopeFamiliar} / ${scopeTotal} 字 (${sFamiliarPct}%)`;
-      }
-      if (ratioW) {
-        ratioW.innerText = `🐾 ${sWeakPct}%`;
-        ratioW.title = `待加強：${scopeWeak} / ${scopeTotal} 字 (${sWeakPct}%)`;
-      }
-
-      // 2. Update Word Table Breakdown Card (Top of modeList)
+      // Update Word Table Breakdown Card (Top of modeList)
       const tTotal = document.getElementById('tableStatTotal');
       const tM = document.getElementById('tableStatMastered');
       const tMPct = document.getElementById('tableStatMasteredPct');
