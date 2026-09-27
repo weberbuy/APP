@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.2-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.3-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.2-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.3-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -535,6 +535,20 @@
               <option value="all" class="dark:bg-slate-800 dark:text-slate-100">全部單字</option>
               <option value="weak" class="dark:bg-slate-800 dark:text-slate-100">★ 貓貓待加強清單</option>
             </select>
+          </div>
+
+          <!-- Scope Mastery Ratio Chip -->
+          <div id="scopeMasteryChip" class="flex items-center gap-2 bg-white/90 dark:bg-slate-800 px-3 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs shadow-2xs transition-all" title="當前選定範圍之單字掌握度分佈比例">
+            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <span>📊</span><span class="hidden sm:inline">範圍比例:</span>
+            </span>
+            <span class="flex items-center gap-1.5 font-mono text-[11px]">
+              <span id="scopeRatioMastered" class="text-emerald-600 dark:text-emerald-400 font-bold" title="完全掌握">✨ 0%</span>
+              <span class="text-slate-300 dark:text-slate-600">|</span>
+              <span id="scopeRatioFamiliar" class="text-blue-600 dark:text-blue-400 font-bold" title="初步熟悉">🌱 0%</span>
+              <span class="text-slate-300 dark:text-slate-600">|</span>
+              <span id="scopeRatioWeak" class="text-amber-600 dark:text-amber-400 font-bold" title="待加強">🐾 0%</span>
+            </span>
           </div>
 
           <!-- Global Study Order Selector (Applies to Card, Quiz, Spelling, Speaking) -->
@@ -1357,15 +1371,76 @@
       <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
           <div>
-            <h2 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-1.5">
-              <span>🐾 1-100 數字單字庫清單</span>
+            <h2 id="wordListTitle" class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-1.5">
+              <span>🐾 國中會考 1200 單字庫清單</span>
             </h2>
-            <p class="text-xs text-slate-400">已自動同步貓貓好感度與掌握進度，隨時點擊發音或手動調整</p>
+            <p id="wordListSubtitle" class="text-xs text-slate-400">已自動同步貓貓好感度與掌握進度，隨時點擊發音或手動調整</p>
           </div>
           <div class="flex space-x-2">
-            <button onclick="resetAllProgress()" class="px-3 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-xl transition">
+            <button onclick="resetAllProgress()" class="px-3 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-xl transition cursor-pointer">
               <i class="fa-solid fa-rotate-left mr-1"></i>重置學習進度
             </button>
+          </div>
+        </div>
+
+        <!-- NEW: Comprehensive Scope Mastery Breakdown Dashboard Card -->
+        <div id="wordListStatsCard" class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-slate-50 via-indigo-50/30 to-purple-50/30 dark:from-slate-900/60 dark:via-slate-800/60 dark:to-slate-900/60 border border-slate-200 dark:border-slate-700 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+            <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200">
+              <span class="text-base">📊</span>
+              <span>當前範圍單字熟練度分佈</span>
+              <span id="tableScopeName" class="text-[11px] font-normal px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">全部單字</span>
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+              範圍字數：<b id="tableStatTotal" class="text-slate-800 dark:text-slate-100 font-bold">0</b> 字
+            </div>
+          </div>
+
+          <!-- Multi-segmented Progress Bar -->
+          <div class="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex shadow-inner">
+            <div id="tableBarMastered" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%" title="完全掌握"></div>
+            <div id="tableBarFamiliar" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%" title="初步熟悉"></div>
+            <div id="tableBarWeak" class="bg-amber-400 h-full transition-all duration-300" style="width: 0%" title="待加強"></div>
+            <div id="tableBarNew" class="bg-slate-300 dark:bg-slate-600 h-full transition-all duration-300" style="width: 0%" title="新單字/未測"></div>
+          </div>
+
+          <!-- 4 Grid Stat Counters -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+            <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-emerald-200 dark:border-emerald-900/50 shadow-2xs">
+              <div class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold flex items-center justify-center gap-1">
+                <span>✨ 完全掌握</span>
+              </div>
+              <div class="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">
+                <span id="tableStatMastered">0</span> <span class="text-[10px] font-normal text-slate-400">(<span id="tableStatMasteredPct">0%</span>)</span>
+              </div>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-blue-200 dark:border-blue-900/50 shadow-2xs">
+              <div class="text-[10px] text-blue-700 dark:text-blue-400 font-bold flex items-center justify-center gap-1">
+                <span>🌱 初步熟悉</span>
+              </div>
+              <div class="text-sm font-black text-blue-600 dark:text-blue-400 font-mono mt-0.5">
+                <span id="tableStatFamiliar">0</span> <span class="text-[10px] font-normal text-slate-400">(<span id="tableStatFamiliarPct">0%</span>)</span>
+              </div>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-amber-200 dark:border-amber-900/50 shadow-2xs">
+              <div class="text-[10px] text-amber-700 dark:text-amber-400 font-bold flex items-center justify-center gap-1">
+                <span>🐾 待加強</span>
+              </div>
+              <div class="text-sm font-black text-amber-600 dark:text-amber-400 font-mono mt-0.5">
+                <span id="tableStatWeak">0</span> <span class="text-[10px] font-normal text-slate-400">(<span id="tableStatWeakPct">0%</span>)</span>
+              </div>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-2xs">
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold flex items-center justify-center gap-1">
+                <span>⚪ 新詞/未測</span>
+              </div>
+              <div class="text-sm font-black text-slate-600 dark:text-slate-300 font-mono mt-0.5">
+                <span id="tableStatNew">0</span> <span class="text-[10px] font-normal text-slate-400">(<span id="tableStatNewPct">0%</span>)</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -5824,6 +5899,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       tbody.innerHTML = '';
 
       const theme = THEME_REGISTRY[currentThemeKey];
+      const titleEl = document.getElementById('wordListTitle');
+      if (titleEl) {
+        titleEl.innerHTML = `<span>🐾</span> <span>${escapeHtml(theme.name)} 單字庫清單</span>`;
+      }
+      if (typeof renderStats === 'function') {
+        renderStats();
+      }
       sayCatSpeech(`這是【${theme.name}】的完整單字簿，隨時點擊發音或手動標記熟練度喔！🐾`);
 
       if (!filteredList || filteredList.length === 0) return;
@@ -6833,6 +6915,86 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       } else {
         document.getElementById('statAccuracy').innerText = '--%';
       }
+
+      // ==================== SCOPE & WORD TABLE BREAKDOWN ====================
+      const targetList = (filteredList && filteredList.length > 0) ? filteredList : RAW_VOCAB;
+      const scopeTotal = targetList ? targetList.length : 0;
+      let scopeMastered = 0;
+      let scopeFamiliar = 0;
+      let scopeWeak = 0;
+      let scopeNew = 0;
+
+      if (targetList && targetList.length > 0) {
+        targetList.forEach(item => {
+          const key = item.word || item.num;
+          const s = userProgress[key];
+          if (s === 'mastered') scopeMastered++;
+          else if (s === 'familiar') scopeFamiliar++;
+          else if (s === 'weak') scopeWeak++;
+          else scopeNew++;
+        });
+      }
+
+      const sMasteredPct = scopeTotal > 0 ? Math.round((scopeMastered / scopeTotal) * 100) : 0;
+      const sFamiliarPct = scopeTotal > 0 ? Math.round((scopeFamiliar / scopeTotal) * 100) : 0;
+      const sWeakPct = scopeTotal > 0 ? Math.round((scopeWeak / scopeTotal) * 100) : 0;
+      const sNewPct = Math.max(0, 100 - sMasteredPct - sFamiliarPct - sWeakPct);
+
+      // 1. Update Scope Mastery Ratio Chip (Next to Scope dropdown)
+      const ratioM = document.getElementById('scopeRatioMastered');
+      const ratioF = document.getElementById('scopeRatioFamiliar');
+      const ratioW = document.getElementById('scopeRatioWeak');
+      if (ratioM) {
+        ratioM.innerText = `✨ ${sMasteredPct}%`;
+        ratioM.title = `完全掌握：${scopeMastered} / ${scopeTotal} 字 (${sMasteredPct}%)`;
+      }
+      if (ratioF) {
+        ratioF.innerText = `🌱 ${sFamiliarPct}%`;
+        ratioF.title = `初步熟悉：${scopeFamiliar} / ${scopeTotal} 字 (${sFamiliarPct}%)`;
+      }
+      if (ratioW) {
+        ratioW.innerText = `🐾 ${sWeakPct}%`;
+        ratioW.title = `待加強：${scopeWeak} / ${scopeTotal} 字 (${sWeakPct}%)`;
+      }
+
+      // 2. Update Word Table Breakdown Card (Top of modeList)
+      const tTotal = document.getElementById('tableStatTotal');
+      const tM = document.getElementById('tableStatMastered');
+      const tMPct = document.getElementById('tableStatMasteredPct');
+      const tF = document.getElementById('tableStatFamiliar');
+      const tFPct = document.getElementById('tableStatFamiliarPct');
+      const tW = document.getElementById('tableStatWeak');
+      const tWPct = document.getElementById('tableStatWeakPct');
+      const tN = document.getElementById('tableStatNew');
+      const tNPct = document.getElementById('tableStatNewPct');
+
+      if (tTotal) tTotal.innerText = scopeTotal;
+      if (tM) tM.innerText = scopeMastered;
+      if (tMPct) tMPct.innerText = `${sMasteredPct}%`;
+      if (tF) tF.innerText = scopeFamiliar;
+      if (tFPct) tFPct.innerText = `${sFamiliarPct}%`;
+      if (tW) tW.innerText = scopeWeak;
+      if (tWPct) tWPct.innerText = `${sWeakPct}%`;
+      if (tN) tN.innerText = scopeNew;
+      if (tNPct) tNPct.innerText = `${sNewPct}%`;
+
+      const tBarM = document.getElementById('tableBarMastered');
+      const tBarF = document.getElementById('tableBarFamiliar');
+      const tBarW = document.getElementById('tableBarWeak');
+      const tBarN = document.getElementById('tableBarNew');
+
+      if (tBarM) tBarM.style.width = `${sMasteredPct}%`;
+      if (tBarF) tBarF.style.width = `${sFamiliarPct}%`;
+      if (tBarW) tBarW.style.width = `${sWeakPct}%`;
+      if (tBarN) tBarN.style.width = `${sNewPct}%`;
+
+      const scopeNameEl = document.getElementById('tableScopeName');
+      if (scopeNameEl) {
+        const scopeSelect = document.getElementById('scopeFilter');
+        const selectedOpt = scopeSelect && scopeSelect.selectedIndex >= 0 ? scopeSelect.options[scopeSelect.selectedIndex] : null;
+        scopeNameEl.innerText = selectedOpt ? selectedOpt.innerText : '全部單字';
+      }
+
       updateCatGrowthUI();
     }
 
@@ -7343,6 +7505,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
     renderActiveRainBlock();
     updateRainDashboardUI();
+
+    // 答題前（掉落時）立即發音：建立聲音、文字與拼寫之多感官連結
+    if (typeof playVoiceText === 'function') {
+      playVoiceText(target.word);
+    }
   }
 
   function renderActiveRainBlock() {
@@ -7398,7 +7565,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     activeEl.innerHTML = `
       <div class="bg-gradient-to-r from-slate-900/95 via-indigo-950/95 to-slate-900/95 border-2 border-indigo-400/80 rounded-2xl p-3 shadow-xl backdrop-blur max-w-sm mx-auto text-center transform transition-transform">
         <div class="flex items-center justify-between text-[11px] text-indigo-300 mb-1">
-          <span class="font-bold">🐾 ${b.target.pos ? '(' + b.target.pos + ')' : '核心單字'}</span>
+          <div class="flex items-center gap-1.5">
+            <span class="font-bold">🐾 ${b.target.pos ? '(' + b.target.pos + ')' : '核心單字'}</span>
+            <button onclick="WordCheckingRain.replayCurrentAudio(event)" class="px-2 py-0.5 rounded-lg bg-indigo-900/90 hover:bg-indigo-800 text-amber-300 text-[10px] font-bold transition flex items-center gap-1 border border-indigo-700/60 cursor-pointer shadow-2xs" title="重聽單字發音 (快速鍵: Tab)">
+              <span>🔊</span><span>重聽</span>
+            </button>
+          </div>
           <span class="font-mono text-[10px] text-amber-400">⚡ ${b.fallDuration.toFixed(1)}s</span>
         </div>
         <div class="text-lg sm:text-xl font-black text-amber-300 tracking-wide py-0.5">${b.target.chinese || b.target.zh || ''}</div>
@@ -7472,7 +7644,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     // Audio & Progress
     if (typeof addFish === 'function') addFish();
     playSound('clear');
-    if (typeof playVoiceText === 'function') playVoiceText(b.target.word);
 
     // Visual explosion animation on block
     const activeEl = document.getElementById('rainActiveBlock');
@@ -7572,7 +7743,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   function handleRainKeydown(e) {
     if (!rainState.isRunning) return;
 
-    // 1. Pause Hotkeys: P / p or Escape
     // 1. Pause Hotkey: Escape (避免一般英文字母 p 造成誤觸發)
     if (e.code === 'Escape' || e.key === 'Escape') {
       e.preventDefault();
@@ -7583,7 +7753,19 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     // 若處於暫停狀態，禁止任何輸入操作
     if (rainState.isPaused) return;
 
-    // 2. Enter: Trigger Mimi Skill
+    const b = rainState.activeBlock;
+    if (!b) return;
+
+    // 2. Tab: 重聽當前掉落單字發音
+    if (e.code === 'Tab') {
+      e.preventDefault();
+      if (typeof playVoiceText === 'function') {
+        playVoiceText(b.target.word);
+      }
+      return;
+    }
+
+    // 3. Enter: Trigger Mimi Skill
     if (e.code === 'Enter') {
       e.preventDefault();
       if (rainState.mimiEnergy >= 100) {
@@ -7592,19 +7774,15 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       return;
     }
 
-    // 3. Backspace: 刪除最後一個鍵入的字母，打錯可退回修正
+    // 4. Backspace: 刪除最後一個鍵入的字母，打錯可退回修正
     if (e.key === 'Backspace') {
       e.preventDefault();
-      const b = rainState.activeBlock;
-      if (b && b.typed && b.typed.length > 0) {
+      if (b.typed && b.typed.length > 0) {
         b.typed = b.typed.slice(0, -1);
         renderActiveRainBlock();
       }
       return;
     }
-
-    const b = rainState.activeBlock;
-    if (!b) return;
 
     const expectedChar = b.wordClean[b.typed.length];
 
@@ -7808,6 +7986,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     togglePause,
     toggleBgm,
     useMimiClawSkill,
+    replayCurrentAudio: (e) => {
+      if (e && e.stopPropagation) e.stopPropagation();
+      if (rainState.activeBlock && typeof playVoiceText === 'function') {
+        playVoiceText(rainState.activeBlock.target.word);
+      }
+    },
     handleOptionClick,
     handleRainKeydown,
     get isRunning() { return rainState.isRunning; },
