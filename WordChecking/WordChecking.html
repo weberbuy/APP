@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.4-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.5-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.4-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.5-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -3484,24 +3484,110 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       },
       hand: {
         hand_none: "",
-        hand_fishbone: `<!-- 🐟 脆脆魚骨點心: 比照 🐟 emoji 可愛鮮藍完整小魚形貌 -->
-<g id="acc_hand_fishbone" transform="translate(78, 97) rotate(-15)">
-  <g filter="drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-    <polygon points="-2,0 -9,-6 -7,0 -9,6" fill="#0284c7" />
-    <polygon points="-1,0 -7,-5 -5,0 -7,5" fill="#38bdf8" />
-    <path d="M 8,-5 Q 12,-9 16,-5 Z" fill="#0284c7" />
-    <ellipse cx="10" cy="0" rx="12" ry="6.5" fill="#38bdf8" stroke="#0284c7" stroke-width="0.8" />
-    <path d="M 0,0 Q 10,6 20,0 Q 10,4 0,0 Z" fill="#bae6fd" />
-    <path d="M 15,-3 Q 13,0 15,3" stroke="#0284c7" stroke-width="1" fill="none" />
-    <circle cx="18" cy="-2" r="1.8" fill="#ffffff" />
-    <circle cx="18.5" cy="-2" r="1" fill="#0f172a" />
-    <circle cx="18.8" cy="-2.3" r="0.4" fill="#ffffff" />
-    <path d="M 21,1 Q 20,3 18,2" stroke="#0284c7" stroke-width="0.8" fill="none" />
+        hand_fishbone: `<!-- 🐟 脆脆魚骨點心: 咬在嘴巴上，可愛咀嚼動畫 -->
+<g id="acc_hand_fishbone">
+  <style>
+    @keyframes fishMouthNibble {
+      0%, 100% { transform: translate(60px, 63px) rotate(-8deg); }
+      50% { transform: translate(60px, 62px) rotate(-3deg); }
+    }
+  </style>
+  <g style="animation: fishMouthNibble 2.2s ease-in-out infinite;">
+    <g filter="drop-shadow(0 2px 3px rgba(0,0,0,0.22))">
+      <!-- Fish Tail & Fin (left side of mouth) -->
+      <polygon points="-12,-1 -21,-7 -18,0 -21,7" fill="#0284c7" />
+      <polygon points="-11,-1 -19,-5 -16,0 -19,5" fill="#38bdf8" />
+      <polygon points="-6,-1 -10,-4 -8,0 -10,4" fill="#0284c7" />
+      
+      <!-- Fish Bone / Spine in mouth -->
+      <line x1="-12" y1="0" x2="6" y2="0" stroke="#bae6fd" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="-8" y1="-3" x2="-6" y2="3" stroke="#bae6fd" stroke-width="1.2" />
+      <line x1="-4" y1="-3.5" x2="-2" y2="3.5" stroke="#bae6fd" stroke-width="1.2" />
+      <line x1="0" y1="-3" x2="2" y2="3" stroke="#bae6fd" stroke-width="1.2" />
+
+      <!-- Cute Fish Body & Head (right side of mouth) -->
+      <path d="M 0,-5 Q 8,-8 14,-4 Q 18,0 14,4 Q 8,8 0,5 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="0.8" />
+      <path d="M 4,-4 Q 10,-7 13,-4 Z" fill="#0284c7" />
+      <!-- Eye -->
+      <circle cx="11" cy="-1.5" r="1.8" fill="#ffffff" />
+      <circle cx="11.5" cy="-1.5" r="1.1" fill="#0f172a" />
+      <circle cx="11.8" cy="-1.8" r="0.4" fill="#ffffff" />
+      <!-- Cute Smile -->
+      <path d="M 14,1 Q 13,2.5 11,2" stroke="#0284c7" stroke-width="0.8" fill="none" />
+    </g>
   </g>
 </g>`,
         hand_book: `<!-- Lv.3 English Dictionary --><g id="acc_hand_book" transform="translate(75, 96) rotate(15)"><rect x="0" y="0" width="18" height="22" rx="2" fill="#2563eb" stroke="#1d4ed8" stroke-width="1" /><rect x="2" y="2" width="14" height="18" rx="1" fill="#ffffff" /><text x="9" y="14" text-anchor="middle" font-size="8" font-weight="bold" fill="#1e3a8a">EN</text></g>`,
-        hand_icecream: `<!-- 🍦 貓爪草莓甜筒: 比照 🍦 emoji 華夫甜筒與草莓霜淇淋旋紋 -->
-<g id="acc_hand_icecream" transform="translate(80, 93)"><g filter="drop-shadow(0 2px 3px rgba(0,0,0,0.2))"><polygon points="0,6 13,6 6.5,25" fill="#d97706" stroke="#b45309" stroke-width="0.7" /><line x1="3" y1="6" x2="8" y2="20" stroke="#92400e" stroke-width="0.6" /><line x1="10" y1="6" x2="5" y2="20" stroke="#92400e" stroke-width="0.6" /><line x1="2" y1="12" x2="11" y2="12" stroke="#92400e" stroke-width="0.6" /><line x1="4" y1="18" x2="9" y2="18" stroke="#92400e" stroke-width="0.6" /><ellipse cx="6.5" cy="5" rx="7.5" ry="3.5" fill="#f472b6" /><ellipse cx="6.5" cy="1.5" rx="5.5" ry="3.2" fill="#fb7185" /><circle cx="6.5" cy="-2" r="3.5" fill="#fda4af" /><ellipse cx="5" cy="0" rx="2" ry="1.2" fill="#ffffff" opacity="0.7" /><circle cx="6.5" cy="-5" r="2.2" fill="#dc2626" stroke="#991b1b" stroke-width="0.5" /><circle cx="5.8" cy="-5.8" r="0.6" fill="#ffffff" /><path d="M 6.5,-7 Q 9,-10 11,-8" stroke="#15803d" stroke-width="0.8" fill="none" /></g></g>`,
+        hand_icecream: `<!-- 🍦 貓爪草莓甜筒: 咬在嘴巴上，冰淇淋滴落地上與吃完重生循環動畫 -->
+<g id="acc_hand_icecream">
+  <style>
+    @keyframes coneMouthChew {
+      0%, 100% { transform: translate(57px, 62px) rotate(14deg); }
+      50% { transform: translate(57px, 61px) rotate(18deg); }
+    }
+    @keyframes scoopMeltEat {
+      0%, 20% { transform: scale(1); opacity: 1; }
+      40% { transform: scale(0.75, 0.65); opacity: 0.95; }
+      60% { transform: scale(0.45, 0.35) translateY(4px); opacity: 0.9; }
+      75%, 88% { transform: scale(0) translateY(8px); opacity: 0; }
+      92% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes creamDropFall1 {
+      0%, 18% { transform: translate(58px, 68px) scale(0); opacity: 0; }
+      22% { transform: translate(58px, 70px) scale(1); opacity: 1; }
+      38% { transform: translate(59px, 120px) scale(0.9, 1.4); opacity: 1; }
+      40%, 100% { transform: translate(59px, 120px) scale(1.8, 0.3); opacity: 0; }
+    }
+    @keyframes creamPuddle1 {
+      0%, 36% { transform: translate(59px, 120px) scale(0); opacity: 0; }
+      40% { transform: translate(59px, 120px) scale(1); opacity: 0.85; }
+      70% { transform: translate(59px, 120px) scale(1.1); opacity: 0.6; }
+      85%, 100% { transform: translate(59px, 120px) scale(0.4); opacity: 0; }
+    }
+  </style>
+
+  <!-- Ground Drop Splash & Puddle -->
+  <g class="icecream-puddle-anim" style="animation: creamPuddle1 5.5s ease-out infinite;">
+    <ellipse cx="0" cy="0" rx="3.8" ry="1.4" fill="#f472b6" opacity="0.85" />
+    <circle cx="2.5" cy="-0.5" r="0.7" fill="#fb7185" />
+    <circle cx="-2.2" cy="0.3" r="0.6" fill="#fda4af" />
+  </g>
+
+  <!-- Falling Drip -->
+  <g class="icecream-drop-anim" style="animation: creamDropFall1 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;">
+    <path d="M 0,-2.5 C 1.2,-1 1.2,1.5 0,2.5 C -1.2,1.5 -1.2,-1 0,-2.5 Z" fill="#f472b6" />
+  </g>
+
+  <!-- Ice cream Cone Held in Mouth -->
+  <g style="animation: coneMouthChew 2.8s ease-in-out infinite;">
+    <g filter="drop-shadow(0 2px 3px rgba(0,0,0,0.22))">
+      <!-- Waffle Cone (Pointing Down-Right) -->
+      <polygon points="-4,2 6,2 1,18" fill="#d97706" stroke="#b45309" stroke-width="0.7" />
+      <line x1="-2" y1="2" x2="3" y2="14" stroke="#92400e" stroke-width="0.5" />
+      <line x1="4" y1="2" x2="-1" y2="14" stroke="#92400e" stroke-width="0.5" />
+      <line x1="-3" y1="6" x2="4.5" y2="6" stroke="#92400e" stroke-width="0.5" />
+      <line x1="-1.5" y1="11" x2="3" y2="11" stroke="#92400e" stroke-width="0.5" />
+
+      <!-- Ice cream Scoop (Shrinks & gets eaten) -->
+      <g style="transform-origin: 1px 2px; animation: scoopMeltEat 5.5s ease-in-out infinite;">
+        <!-- Bottom Swirl / Drips -->
+        <ellipse cx="1" cy="1" rx="6.5" ry="3.2" fill="#f472b6" />
+        <circle cx="-2.5" cy="3.5" r="1.5" fill="#f472b6" />
+        <circle cx="4" cy="3" r="1.3" fill="#f472b6" />
+        <!-- Middle Scoop -->
+        <ellipse cx="1" cy="-2.5" rx="5" ry="3.5" fill="#fb7185" />
+        <!-- Top Swirl -->
+        <circle cx="1" cy="-6" r="3.2" fill="#fda4af" />
+        <!-- Strawberry on top -->
+        <circle cx="1" cy="-9" r="1.8" fill="#dc2626" />
+        <path d="M 1,-10.5 Q 3,-12.5 4.5,-11" stroke="#15803d" stroke-width="0.7" fill="none" />
+        <!-- Cream highlight -->
+        <ellipse cx="-0.8" cy="-4" rx="1.5" ry="0.8" fill="#ffffff" opacity="0.6" />
+      </g>
+    </g>
+  </g>
+</g>`,
         hand_wand: `<!-- 🪄 傳奇星月魔法杖: 比照 🪄 emoji 金星魔杖與四散星芒 -->
 <g id="acc_hand_wand" transform="translate(76, 90) rotate(22)"><g filter="drop-shadow(0 2px 4px rgba(0,0,0,0.25))"><line x1="0" y1="2" x2="0" y2="30" stroke="#475569" stroke-width="2.8" stroke-linecap="round" /><line x1="0" y1="2" x2="0" y2="10" stroke="#facc15" stroke-width="3" stroke-linecap="round" /><polygon points="0,-9 2.5,-3 8.5,-3 4,1 6,7 0,3.5 -6,7 -4,1 -8.5,-3 -2.5,-3" fill="#facc15" stroke="#ca8a04" stroke-width="0.8" /><polygon points="0,-7 1.8,-2.5 6,-2.5 3,0.5 4.5,5 0,2.5 -4.5,5 -3,0.5 -6,-2.5 -1.8,-2.5" fill="#fef08a" /><circle cx="0" cy="0" r="1.5" fill="#ffffff" /><circle cx="-7" cy="-8" r="1" fill="#facc15" opacity="0.9" /><circle cx="7" cy="-7" r="1.2" fill="#facc15" opacity="0.9" /><circle cx="9" cy="4" r="0.8" fill="#fde047" opacity="0.8" /><circle cx="-6" cy="6" r="0.8" fill="#fde047" opacity="0.8" /></g></g>`
       }
@@ -3541,9 +3627,9 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       ],
       hand: [
         { id: 'hand_none', name: '雙手空空', icon: '🚫', desc: '隨時準備擊掌或摸摸肉球', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'hand_fishbone', name: '🐟 脆脆魚骨點心', icon: '🐟', desc: '啃著最愛的小魚骨零嘴', unlockType: 'fish', price: 20, reqLevel: 1 },
+        { id: 'hand_fishbone', name: '🐟 脆脆魚骨點心', icon: '🐟', desc: '嘴裡叼著香噴噴的脆脆小魚！', unlockType: 'fish', price: 20, reqLevel: 1 },
         { id: 'hand_book', name: '📘 智慧英文字典', icon: '📘', desc: '【Lv.3 免費】隨身攜帶會考必備英文字典！', unlockType: 'level', price: 0, reqLevel: 3 },
-        { id: 'hand_icecream', name: '🍦 貓爪草莓甜筒', icon: '🍦', desc: '甜滋滋的草莓冰淇淋消暑點心', unlockType: 'fish', price: 35, reqLevel: 2 },
+        { id: 'hand_icecream', name: '🍦 貓爪草莓甜筒', icon: '🍦', desc: '嘴裡咬著草莓甜筒，冰淇淋滴滴答答吃光光！', unlockType: 'fish', price: 35, reqLevel: 2 },
         { id: 'hand_wand', name: '🪄 傳奇星月魔法杖', icon: '🪄', desc: '【Lv.5 免費】揮動星星法杖，單字通通滿分！', unlockType: 'level', price: 0, reqLevel: 5 }
       ],
       aura: [
@@ -3575,9 +3661,9 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       outfit_cloak: "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
       outfit_sailor: "水手服登場！青春活力滿點，今天模擬考一定能拿滿分喵！⚓💙",
       outfit_dress: "哇～夢幻粉紅蓬蓬裙！轉圈圈好漂亮喔，謝謝主人幫我打扮！👗💖",
-      hand_fishbone: "嚼嚼嚼～啃著香噴噴的魚骨點心，背單字更有力氣了！🐟😋",
+      hand_fishbone: "嚼嚼嚼～嘴裡叼著香噴噴的脆脆小魚，背單字更有力氣了！🐟😋",
       hand_book: "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
-      hand_icecream: "草莓貓爪冰淇淋！好冰好甜好滿足～吃完再來背十個單字！🍦🍓",
+      hand_icecream: "嘴裡咬著草莓冰淇淋甜筒！滴滴答答好消暑～吃完再來背十個單字喵！🍦🍓",
       hand_wand: "星星魔法杖發光了！點石成金，祝福妳所有的英文考試都順利通過！🪄⭐",
       aura_sparkle: "哇～閃閃發光的金色星芒！咪咪周圍都在發光耶！✨",
       aura_sakura: "喵～花瓣飄飄好浪漫喔，一邊賞花一邊背單字最幸福了～🌸",
@@ -7512,6 +7598,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       } else {
         if (isSpace) {
           lettersHtml += `<span class="inline-block w-3 sm:w-4 border-b-2 border-dashed border-slate-600 mx-0.5 text-center text-xs text-slate-500">␣</span>`;
+        } else if (targetChar === '.' || targetChar === "'") {
+          lettersHtml += `<span class="px-0.5 text-slate-400 border-b-2 border-slate-600 font-bold font-mono">${targetChar}</span>`;
         } else {
           lettersHtml += `<span class="px-1 text-slate-500 border-b-2 border-slate-600">_</span>`;
         }
@@ -7773,13 +7861,33 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       return;
     }
 
-    // 5. Alpha key a-z 或連字符號
-    if (e.key && e.key.length === 1 && /[a-zA-Z\-]/.test(e.key)) {
+    // 5. 鍵盤輸入字母、點號 (.)、單引號 (') 或連字符號 (-)
+    if (e.key && e.key.length === 1 && /[a-zA-Z\.\'\-]/.test(e.key)) {
       const keyLower = e.key.toLowerCase();
 
-      // 若目前期待的是空格，但使用者直接鍵入下一個單字的英文字母（連打跳過空格支援）
+      // 若目前期待的是空格，但使用者直接鍵入下一個字母（連打跳過空格支援）
       if (expectedChar === ' ' && b.wordClean[b.typed.length + 1] === keyLower) {
         b.typed += ' ' + keyLower;
+        renderActiveRainBlock();
+        if (b.typed.length === b.wordClean.length) {
+          handleWordEliminated();
+        }
+        return;
+      }
+
+      // 若目前期待的是點號 (.)，但使用者直接鍵入下一個字母（例如打 "pm" 自動推進 "p.m."）
+      if (expectedChar === '.' && keyLower !== '.' && b.wordClean[b.typed.length + 1] === keyLower) {
+        b.typed += '.' + keyLower;
+        renderActiveRainBlock();
+        if (b.typed.length === b.wordClean.length) {
+          handleWordEliminated();
+        }
+        return;
+      }
+
+      // 若目前期待的是單引號 (')，但使用者直接鍵入下一個字母（例如打 "oclock" 自動推進 "o'clock"）
+      if (expectedChar === "'" && keyLower !== "'" && b.wordClean[b.typed.length + 1] === keyLower) {
+        b.typed += "'" + keyLower;
         renderActiveRainBlock();
         if (b.typed.length === b.wordClean.length) {
           handleWordEliminated();
