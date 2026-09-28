@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.6-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.7-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.6-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.7-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -3920,6 +3920,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
 
     function closeFeedGourmetModal() {
       document.getElementById('feedGourmetModal').classList.add('hidden');
+      if (typeof flushPendingSyncToPi === 'function') flushPendingSyncToPi();
     }
 
     function feedMimiGourmet(type, cost, affectionGain, extraFever = 0) {
@@ -3967,6 +3968,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
     function closeGachaModal() {
       const modal = document.getElementById('gachaResultModal');
       if (modal) modal.classList.add('hidden');
+      if (typeof flushPendingSyncToPi === 'function') flushPendingSyncToPi();
     }
 
     function openGachaModal(data) {
@@ -4177,6 +4179,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
 
     function closeWardrobeModal() {
       document.getElementById('wardrobeModal').classList.add('hidden');
+      if (typeof flushPendingSyncToPi === 'function') flushPendingSyncToPi();
     }
 
     function switchWardrobeTab(tabKey) {
@@ -5412,32 +5415,75 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     // >>>>>>>>>> [MODULE START: 05_study_modes.js] >>>>>>>>>>
 
     // Helper: Pick next word based on user priority (newFirst or newAndWeakFirst)
-    function pickNextStudyItem(pool) {
+    function pickNextStudyItem(pool, mode = 'general') {
       if (!pool || pool.length === 0) return null;
       const order = currentCardOrder || 'default';
 
+      const newItems = pool.filter(x => !userProgress[x.word || x.num]);
+      const weakItems = pool.filter(x => userProgress[x.word || x.num] === 'weak');
+      const familiarItems = pool.filter(x => userProgress[x.word || x.num] === 'familiar');
+      const masteredItems = pool.filter(x => userProgress[x.word || x.num] === 'mastered');
+
+      // 1. 若選擇「✨ 優先練習新單字」
       if (order === 'newFirst') {
-        const newItems = pool.filter(x => !userProgress[x.word || x.num]);
         if (newItems.length > 0) {
           // 85% 機率出新單字，15% 溫故知新
           if (Math.random() < 0.85) {
             return newItems[Math.floor(Math.random() * newItems.length)];
           }
         }
+        // 新單字練完（或 15% 溫故抽樣）：階梯式推進
+        // 核心優化：若有「熟悉中」的單字，85% 高機率挑選熟悉中推進晉級，15% 挑選已掌握複習
+        if (familiarItems.length > 0) {
+          if (Math.random() < 0.85) {
+            return familiarItems[Math.floor(Math.random() * familiarItems.length)];
+          }
+        }
         return pool[Math.floor(Math.random() * pool.length)];
       }
 
+      // 2. 若選擇「🔥 優先新單字 + 待加強」
       if (order === 'newAndWeakFirst') {
         const priorityItems = pool.filter(x => {
           const st = userProgress[x.word || x.num];
           return !st || st === 'weak';
         });
         if (priorityItems.length > 0) {
+          // 85% 機率出新單字與待加強，15% 溫故知新
           if (Math.random() < 0.85) {
             return priorityItems[Math.floor(Math.random() * priorityItems.length)];
           }
         }
+        // 新單字與待加強都練完（或 15% 溫故抽樣）：階梯式推進
+        // 核心加成：只剩熟悉中與完全掌握時，85% 機率集中火力挑選「熟悉中」！
+        if (familiarItems.length > 0) {
+          if (Math.random() < 0.85) {
+            return familiarItems[Math.floor(Math.random() * familiarItems.length)];
+          }
+        }
         return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      // 3. 拼字練習專屬加權 (Spelling Mode)：
+      // 拼字練習的核心使命是將「熟悉中」鍛鍊晉級為「完全掌握」
+      if (mode === 'spelling') {
+        // 若新單字與待加強都已練完，只剩熟悉中與完全掌握：
+        if (newItems.length === 0 && weakItems.length === 0) {
+          if (familiarItems.length > 0) {
+            // 85% 高機率挑選熟悉中，15% 挑選已掌握抽測溫故
+            return (Math.random() < 0.85)
+              ? familiarItems[Math.floor(Math.random() * familiarItems.length)]
+              : pool[Math.floor(Math.random() * pool.length)];
+          }
+        } else {
+          // 若還有待加強或新詞，依然具備良好學習權重：弱詞(50%) -> 熟悉中(70%) -> 其他
+          if (weakItems.length > 0 && Math.random() < 0.5) {
+            return weakItems[Math.floor(Math.random() * weakItems.length)];
+          }
+          if (familiarItems.length > 0 && Math.random() < 0.7) {
+            return familiarItems[Math.floor(Math.random() * familiarItems.length)];
+          }
+        }
       }
 
       return null;
@@ -5450,7 +5496,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
       sayCatSpeech("四選一測驗！找出最正確的英文單字，別掉進易錯陷阱喵～🐾");
 
-      const priorityPick = pickNextStudyItem(filteredList);
+      const priorityPick = pickNextStudyItem(filteredList, 'quiz');
       if (priorityPick) {
         currentQuizItem = priorityPick;
       } else {
@@ -5575,8 +5621,20 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       sayCatSpeech("拼字挑戰：輸入完整的英文單字，字母要拼精準喔！🐾");
 
       if (!filteredList || filteredList.length === 0) return;
-      const prioritySpellPick = pickNextStudyItem(filteredList);
-      currentSpellItem = prioritySpellPick ? prioritySpellPick : filteredList[Math.floor(Math.random() * filteredList.length)];
+      const prioritySpellPick = pickNextStudyItem(filteredList, 'spelling');
+      if (prioritySpellPick) {
+        currentSpellItem = prioritySpellPick;
+      } else {
+        const familiarItems = filteredList.filter(x => userProgress[x.word || x.num] === 'familiar');
+        const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
+        if (weakItems.length > 0 && Math.random() < 0.6) {
+          currentSpellItem = weakItems[Math.floor(Math.random() * weakItems.length)];
+        } else if (familiarItems.length > 0 && Math.random() < 0.85) {
+          currentSpellItem = familiarItems[Math.floor(Math.random() * familiarItems.length)];
+        } else {
+          currentSpellItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+        }
+      }
 
       const sEl = document.getElementById('spellDigit');
       sEl.innerText = currentSpellItem.chinese;
@@ -5694,7 +5752,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function startNewSpeaking() {
       document.getElementById('speakFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
-      const prioritySpeakPick = pickNextStudyItem(filteredList);
+      const prioritySpeakPick = pickNextStudyItem(filteredList, 'speaking');
       currentSpeakItem = prioritySpeakPick ? prioritySpeakPick : filteredList[Math.floor(Math.random() * filteredList.length)];
 
       document.getElementById('speakEnglish').innerText = currentSpeakItem.word;
@@ -6049,6 +6107,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     let piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     let autoSaveTimer = null;
     let isAutoSyncing = false;
+    let isAutoSaving = false;
+    let lastAutoSaveTime = 0;
+    let hasPendingChangesToSync = false;
+    let pendingActionCount = 0;
+    const AUTO_SAVE_THROTTLE_MS = 30000; // 節流保護：背景自動同步最短間隔 30 秒
+    const AUTO_SAVE_DEBOUNCE_MS = 4000;  // 答題與操作常態防抖 4 秒
+    const AUTO_SAVE_BATCH_THRESHOLD = 8; // 連續累積 8 次操作強制觸發一次排程
 
     function updatePiSyncBadge(statusText, badgeClass, icon = null) {
       const badgeText = document.getElementById('piSyncText');
@@ -6274,7 +6339,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.11.6-test",
+        version: "2.11.7-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -6296,8 +6361,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       };
     }
 
-    // 防抖動背景靜默自動儲存 (Debounced Silent Auto Save)
-    function triggerAutoSaveToPi() {
+    // 智慧節流與批次背景自動儲存 (Smart Throttled & Batched Auto Save)
+    function triggerAutoSaveToPi(forceImmediate = false) {
       piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
       piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -6306,9 +6371,35 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         return;
       }
 
+      hasPendingChangesToSync = true;
+      pendingActionCount++;
+
+      // 若強制立即同步（例如：小考交卷、手動同步、切換模式、離開分頁）：
+      if (forceImmediate) {
+        if (autoSaveTimer) {
+          clearTimeout(autoSaveTimer);
+          autoSaveTimer = null;
+        }
+        performSilentAutoSave();
+        return;
+      }
+
+      // 若目前正在儲存中，等待當前儲存結束即可（hasPendingChangesToSync 仍為 true）
+      if (isAutoSaving) return;
+
+      const now = Date.now();
+      const timeSinceLastSave = now - lastAutoSaveTime;
+
+      // 若累積已達閾值且距離上次儲存已超過節流時間，快速排程執行
+      let delay = AUTO_SAVE_DEBOUNCE_MS;
+      if (timeSinceLastSave < AUTO_SAVE_THROTTLE_MS) {
+        // 處於節流冷卻期：將執行時間順延至冷卻期結束
+        delay = Math.max(AUTO_SAVE_DEBOUNCE_MS, AUTO_SAVE_THROTTLE_MS - timeSinceLastSave);
+      }
+
       updatePiSyncBadge('待儲存...', 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700', '⏳');
-      clearTimeout(autoSaveTimer);
-      autoSaveTimer = setTimeout(performSilentAutoSave, 2000);
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(performSilentAutoSave, delay);
     }
 
     async function performSilentAutoSave() {
@@ -6317,7 +6408,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
       if (!piServerUrl || !piApiKey) return;
+      if (isAutoSaving) return;
 
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = null;
+      }
+
+      isAutoSaving = true;
       updatePiSyncBadge('儲存中...', 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 animate-pulse', '⏳');
 
       const fileName = generateBackupFileName();
@@ -6325,20 +6423,38 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
       try {
         const response = await uploadPayloadToPi(fileName, payload);
+        lastAutoSaveTime = Date.now();
         if (response && response.ok) {
           localStorage.setItem('pi_last_synced_file', fileName);
+          hasPendingChangesToSync = false;
+          pendingActionCount = 0;
           updatePiSyncBadge('已自動儲存', 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700', '💾');
           setTimeout(() => {
             initPiSyncUI();
           }, 3000);
         } else if (response && response.status === 429) {
+          // 429 限流保護：冷卻時間拉長至 60 秒
+          lastAutoSaveTime = Date.now() + 30000;
           updatePiSyncBadge('限流保護 (429)', 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700', '⏳');
         } else {
           updatePiSyncBadge('自動儲存失敗', 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-700', '⚠️');
         }
       } catch (e) {
         updatePiSyncBadge('離線暫存', 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600', '⚪');
+      } finally {
+        isAutoSaving = false;
       }
+    }
+
+    // 保底關鍵節點同步輔助函式
+    function flushPendingSyncToPi() {
+      if (hasPendingChangesToSync) {
+        triggerAutoSaveToPi(true);
+      }
+    }
+    if (typeof window !== 'undefined') {
+      window.triggerAutoSaveToPi = triggerAutoSaveToPi;
+      window.flushPendingSyncToPi = flushPendingSyncToPi;
     }
 
     // 自動開頁與焦點喚醒同步 (Auto Sync from Pi on load & focus)
@@ -7224,6 +7340,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
     // Mode Switching
     function switchMode(mode) {
+      // 模式切換時，若有未同步進度，立即觸發一次保底同步
+      if (typeof flushPendingSyncToPi === 'function') {
+        flushPendingSyncToPi();
+      } else if (typeof triggerAutoSaveToPi === 'function') {
+        triggerAutoSaveToPi(true);
+      }
       const modes = ['map', 'card', 'quiz', 'spelling', 'speaking', 'exam', 'list', 'rain'];
       modes.forEach(m => {
         const sec = document.getElementById('mode' + capitalize(m));
@@ -7272,10 +7394,20 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
-// Auto sync when returning to tab or window focus
+// Auto sync on tab visibility change, focus, and unload
     window.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         checkAndAutoSyncFromPi(true);
+      } else if (document.visibilityState === 'hidden') {
+        // 切換離開分頁或縮小視窗時，若有未同步進度，立即保底同步
+        if (typeof flushPendingSyncToPi === 'function') {
+          flushPendingSyncToPi();
+        }
+      }
+    });
+    window.addEventListener('beforeunload', () => {
+      if (typeof flushPendingSyncToPi === 'function') {
+        flushPendingSyncToPi();
       }
     });
     window.addEventListener('focus', () => {
