@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.8-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.9-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.8-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.9-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -3729,7 +3729,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       },
       hand: {
         hand_none: "",
-        hand_fishbone: `<!-- 🐟 脆脆魚骨點心: 完整小魚一口一口被吃光，露出骨頭後吞下，再重生循環動畫 -->
+        hand_fishbone: `<!-- 🐟 脆脆魚骨點心: 香酥金黃炭烤秋刀魚，裊裊熱氣升騰，一口一口啃光露出魚骨再重生之循環動畫 -->
 <g id="acc_hand_fishbone">
   <style>
     @keyframes fishMouthChew {
@@ -3768,57 +3768,91 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       76%, 86% { opacity: 1; transform: scale(1.4); }
       90%, 100% { opacity: 0; transform: scale(0); }
     }
+    @keyframes grillSteamWisp1 {
+      0% { transform: translate(66px, 57px) scale(0.6); opacity: 0; }
+      25% { opacity: 0.75; }
+      60% { opacity: 0.5; }
+      100% { transform: translate(69px, 42px) scale(1.3); opacity: 0; }
+    }
+    @keyframes grillSteamWisp2 {
+      0% { transform: translate(54px, 58px) scale(0.5); opacity: 0; }
+      30% { opacity: 0.65; }
+      70% { opacity: 0.4; }
+      100% { transform: translate(51px, 44px) scale(1.2); opacity: 0; }
+    }
   </style>
+
+  <!-- Savory Hot Steam Wisps (Rising from freshly grilled fish) -->
+  <g pointer-events="none">
+    <path d="M 0,0 Q 2,-4 -1,-8 Q -4,-12 0,-16" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.6" style="animation: grillSteamWisp1 2.8s ease-out infinite 0.2s;" />
+    <path d="M 0,0 Q -2,-4 1,-7 Q 3,-11 0,-15" stroke="#ffffff" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.5" style="animation: grillSteamWisp2 3.2s ease-out infinite 1.4s;" />
+  </g>
 
   <!-- Fish in Mouth with Chewing Animation -->
   <g style="animation: fishMouthChew 6s ease-in-out infinite;">
-    <g filter="drop-shadow(0 2px 3px rgba(0,0,0,0.22))">
+    <g filter="drop-shadow(0 2px 3px rgba(120,53,15,0.35))">
       
-      <!-- 1. Fish Tail (Points to the left of mouth) -->
+      <!-- 1. Crispy Grilled Tail Fin (Toasted golden-brown) -->
       <g style="animation: fishTailBite 6s ease-in-out infinite;">
-        <polygon points="-12,-1 -21,-7 -18,0 -21,7" fill="#0284c7" />
-        <polygon points="-11,-1 -19,-5 -16,0 -19,5" fill="#38bdf8" />
-        <polygon points="-6,-1 -10,-4 -8,0 -10,4" fill="#0284c7" />
+        <polygon points="-12,-1 -21,-7 -18,0 -21,7" fill="#92400e" />
+        <polygon points="-11,-1 -19,-5 -16,0 -19,5" fill="#d97706" />
+        <polygon points="-6,-1 -10,-4 -8,0 -10,4" fill="#b45309" />
+        <!-- Charred crispy edge on tail -->
+        <line x1="-20" y1="-6" x2="-18" y2="-1" stroke="#78350f" stroke-width="0.8" />
+        <line x1="-20" y1="6" x2="-18" y2="1" stroke="#78350f" stroke-width="0.8" />
       </g>
 
-      <!-- 2. Exposed Spine & Ribs (Reveals as meat is eaten) -->
+      <!-- 2. Exposed Toasted Fish Bone (Reveals as meat is eaten) -->
       <g style="animation: fishBoneShow 6s ease-in-out infinite;">
-        <line x1="-12" y1="0" x2="12" y2="0" stroke="#f0f9ff" stroke-width="2.5" stroke-linecap="round" />
-        <line x1="-8" y1="-3.5" x2="-6" y2="3.5" stroke="#bae6fd" stroke-width="1.3" stroke-linecap="round" />
-        <line x1="-4" y1="-4" x2="-2" y2="4" stroke="#bae6fd" stroke-width="1.3" stroke-linecap="round" />
-        <line x1="0" y1="-4" x2="2" y2="4" stroke="#bae6fd" stroke-width="1.3" stroke-linecap="round" />
-        <line x1="4" y1="-3.5" x2="6" y2="3.5" stroke="#bae6fd" stroke-width="1.3" stroke-linecap="round" />
-        <!-- Bare Skull / Eye Hole -->
-        <circle cx="12" cy="0" r="3.2" fill="#e0f2fe" stroke="#38bdf8" stroke-width="0.8" />
-        <circle cx="12.5" cy="-0.5" r="1.2" fill="#0284c7" />
+        <line x1="-12" y1="0" x2="12" y2="0" stroke="#fefce8" stroke-width="2.5" stroke-linecap="round" />
+        <line x1="-8" y1="-3.5" x2="-6" y2="3.5" stroke="#fde68a" stroke-width="1.3" stroke-linecap="round" />
+        <line x1="-4" y1="-4" x2="-2" y2="4" stroke="#fde68a" stroke-width="1.3" stroke-linecap="round" />
+        <line x1="0" y1="-4" x2="2" y2="4" stroke="#fde68a" stroke-width="1.3" stroke-linecap="round" />
+        <line x1="4" y1="-3.5" x2="6" y2="3.5" stroke="#fde68a" stroke-width="1.3" stroke-linecap="round" />
+        <!-- Clean Fish Skull Bone -->
+        <circle cx="12" cy="0" r="3.2" fill="#fef9c3" stroke="#d97706" stroke-width="0.8" />
+        <circle cx="12.5" cy="-0.5" r="1.2" fill="#92400e" />
       </g>
 
-      <!-- 3. Fish Meat Layers (Plump, fresh blue fish) -->
-      <!-- Middle Belly Meat (Eaten in 2nd bite) -->
+      <!-- 3. Grilled Fish Meat Layers (Golden crispy skin & tender belly) -->
+      <!-- Meat Part A: Middle Belly Meat (Golden toasted skin + char marks, eaten in 2nd bite) -->
       <g style="animation: fishBellyBite 6s ease-in-out infinite;">
-        <path d="M -11,-3 Q -2,-7 6,-3 Q 6,3 -2,7 Q -11,3 -11,-3 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="0.7" />
-        <path d="M -7,-2 Q -2,-4 3,-2" stroke="#0284c7" stroke-width="0.8" fill="none" />
-        <path d="M -6,2 Q -1,4 4,2" stroke="#0284c7" stroke-width="0.8" fill="none" />
+        <!-- Plump Roasted Fish Body -->
+        <path d="M -11,-3 Q -2,-7 6,-3 Q 6,3 -2,7 Q -11,3 -11,-3 Z" fill="#d97706" stroke="#92400e" stroke-width="0.8" />
+        <!-- Tender White/Cream Cooked Belly -->
+        <path d="M -9,1 Q -2,5 4,2 Q 0,0 -9,1 Z" fill="#fef3c7" opacity="0.9" />
+        <!-- Charcoal Grill Sear Marks (Diagonal stripes) -->
+        <line x1="-7" y1="-5" x2="-4" y2="3.5" stroke="#78350f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="-2" y1="-5.5" x2="1" y2="4" stroke="#78350f" stroke-width="1.3" stroke-linecap="round" />
+        <line x1="3" y1="-4.5" x2="5.5" y2="2.5" stroke="#78350f" stroke-width="1.2" stroke-linecap="round" />
+        <!-- Crispy Skin Glistening Highlight -->
+        <ellipse cx="-2" cy="-2.5" rx="2.5" ry="0.8" fill="#fde68a" opacity="0.6" />
       </g>
 
-      <!-- Head & Front Cheek Meat (Eaten in 1st bite) -->
+      <!-- Meat Part B: Grilled Fish Head (Eaten in 1st bite) -->
       <g style="animation: fishHeadBite 6s ease-in-out infinite;">
-        <path d="M 4,-4 Q 10,-8 15,-4 Q 19,0 15,4 Q 10,8 4,4 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="0.8" />
-        <!-- Head Top fin -->
-        <polygon points="5,-4 10,-8 12,-4" fill="#0284c7" />
-        <!-- Big Cute Eye -->
+        <!-- Golden Roasted Head -->
+        <path d="M 4,-4 Q 10,-8 15,-4 Q 19,0 15,4 Q 10,8 4,4 Z" fill="#f59e0b" stroke="#b45309" stroke-width="0.8" />
+        <!-- Head Crispy Sear lines -->
+        <line x1="7" y1="-3" x2="9" y2="2" stroke="#78350f" stroke-width="1" stroke-linecap="round" />
+        <!-- Head Fin (Grilled amber) -->
+        <polygon points="5,-4 10,-8 12,-4" fill="#b45309" />
+        <!-- Grilled Fish Eye -->
         <circle cx="12" cy="-1.5" r="2.2" fill="#ffffff" />
-        <circle cx="12.6" cy="-1.5" r="1.3" fill="#0f172a" />
+        <circle cx="12.6" cy="-1.5" r="1.3" fill="#451a03" />
         <circle cx="13" cy="-1.8" r="0.5" fill="#ffffff" />
         <!-- Fish Smile -->
-        <path d="M 15,1 Q 14,2.5 12,2" stroke="#0284c7" stroke-width="0.8" fill="none" />
+        <path d="M 15,1 Q 14,2.5 12,2" stroke="#78350f" stroke-width="0.8" fill="none" />
       </g>
 
-      <!-- 4. Eating Crumbs & Chew Stars -->
+      <!-- 4. Eating Crumbs & Chew Stars (Golden crispy skin crumbs) -->
       <g style="animation: fishCrumbsCrunch 6s ease-out infinite;">
-        <circle cx="16" cy="-6" r="1.2" fill="#facc15" />
-        <circle cx="19" cy="2" r="1.4" fill="#38bdf8" />
-        <circle cx="15" cy="7" r="1" fill="#facc15" />
+        <circle cx="16" cy="-6" r="1.3" fill="#f59e0b" />
+        <circle cx="19" cy="2" r="1.5" fill="#d97706" />
+        <circle cx="15" cy="7" r="1.1" fill="#facc15" />
+        <circle cx="21" cy="-3" r="0.9" fill="#78350f" />
+        <!-- Crunchy Golden Star -->
+        <polygon points="18,-1 19.5,1 22,1 20,2.5 20.8,5 18,3.5 15.2,5 16,2.5 14,1 16.5,1" fill="#f59e0b" transform="scale(0.75) translate(8,-2)" />
       </g>
 
     </g>
@@ -3934,7 +3968,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       ],
       hand: [
         { id: 'hand_none', name: '雙手空空', icon: '🚫', desc: '隨時準備擊掌或摸摸肉球', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'hand_fishbone', name: '🐟 脆脆魚骨點心', icon: '🐟', desc: '嘴裡叼著香噴噴的脆脆小魚！', unlockType: 'fish', price: 20, reqLevel: 1 },
+        { id: 'hand_fishbone', name: '🐟 脆脆魚骨點心', icon: '🐟', desc: '現烤出爐的香脆金黃烤魚，熱氣騰騰一口口啃光！', unlockType: 'fish', price: 20, reqLevel: 1 },
         { id: 'hand_book', name: '📘 智慧英文字典', icon: '📘', desc: '【Lv.3 免費】隨身攜帶會考必備英文字典！', unlockType: 'level', price: 0, reqLevel: 3 },
         { id: 'hand_icecream', name: '🍦 貓爪草莓甜筒', icon: '🍦', desc: '嘴裡咬著草莓甜筒，冰淇淋滴滴答答吃光光！', unlockType: 'fish', price: 35, reqLevel: 2 },
         { id: 'hand_wand', name: '🪄 傳奇星月魔法杖', icon: '🪄', desc: '【Lv.5 免費】揮動星星法杖，單字通通滿分！', unlockType: 'level', price: 0, reqLevel: 5 }
@@ -3968,7 +4002,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       outfit_cloak: "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
       outfit_sailor: "水手服登場！青春活力滿點，今天模擬考一定能拿滿分喵！⚓💙",
       outfit_dress: "哇～夢幻粉紅蓬蓬裙！轉圈圈好漂亮喔，謝謝主人幫我打扮！👗💖",
-      hand_fishbone: "嚼嚼嚼～嘴裡叼著香噴噴的脆脆小魚，背單字更有力氣了！🐟😋",
+      hand_fishbone: "嚼嚼嚼～現烤出爐的香脆金黃烤魚！熱騰騰好美味，背單字更有力氣了！🐟♨️😋",
       hand_book: "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
       hand_icecream: "嘴裡咬著草莓冰淇淋甜筒！滴滴答答好消暑～吃完再來背十個單字喵！🍦🍓",
       hand_wand: "星星魔法杖發光了！點石成金，祝福妳所有的英文考試都順利通過！🪄⭐",
@@ -6627,7 +6661,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.11.8-test",
+        version: "2.11.9-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
