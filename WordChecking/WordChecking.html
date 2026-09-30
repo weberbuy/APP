@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.9-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.10-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.9-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.10-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -3516,7 +3516,111 @@ if (typeof window !== 'undefined') {
     <path d="M 0,-4.5 C 2.5,-4.5 4,-2 3.2,0.5 C 2.5,2.8 1.2,4.5 0,5 C -1.2,4.5 -2.5,2.8 -3.2,0.5 C -4,-2 -2.5,-4.5 0,-4.5 Z" fill="#f472b6" opacity="0.9" />
   </g>
 </g>`,
-        aura_wings: `<!-- Lv.4 Adventurer Wings --><g id="acc_aura_wings" opacity="0.92"><path d="M 36,75 C 10,65 -5,40 10,32 C 16,30 22,35 24,42 C 18,48 24,62 38,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" /><path d="M 24,42 C 28,45 32,56 38,65" stroke="#cbd5e1" stroke-width="1" fill="none" /><path d="M 84,75 C 110,65 125,40 110,32 C 104,30 98,35 96,42 C 102,48 96,62 82,72 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" /><path d="M 96,42 C 92,45 88,56 82,65" stroke="#cbd5e1" stroke-width="1" fill="none" /></g>`,
+        aura_wings: `<!-- 🪽 英勇天使羽翼: 比照附圖黑線圈選，高聳翱翔宏偉翼展、琉璃透光多層羽刃、內層幾何光帶、聖潔藍白微暈與展翅拍動微動態 -->
+<g id="acc_aura_wings" pointer-events="none">
+  <style>
+    @keyframes angelWingHoverLeft {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(-3.5deg) scale(1.025, 0.985); }
+    }
+    @keyframes angelWingHoverRight {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(3.5deg) scale(1.025, 0.985); }
+    }
+    @keyframes divineHaloPulse {
+      0%, 100% { opacity: 0.65; transform: scale(1); }
+      50% { opacity: 0.95; transform: scale(1.06); }
+    }
+    @keyframes featherShimmer {
+      0%, 100% { opacity: 0.85; }
+      50% { opacity: 1; }
+    }
+  </style>
+
+  <!-- Divine Angelic Back Aura & Feather Glow -->
+  <g style="filter: drop-shadow(0 0 7px rgba(56,189,248,0.5)) drop-shadow(0 0 2px rgba(255,255,255,0.85));">
+    
+    <!-- ==================== LEFT WING (Soaring High & Sweeping Outward) ==================== -->
+    <g style="transform-origin: 46px 64px; animation: angelWingHoverLeft 4.2s ease-in-out infinite;">
+      
+      <!-- Outer Primary Feathers (Layer 1 - Longest Feathers, translucent ice cyan to white) -->
+      <!-- Long Feather 1 (Bottom long sweep) -->
+      <path d="M 40,68 C 24,72 6,66 -4,52 C -8,46 -4,42 2,46 C 12,54 26,62 42,65 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" opacity="0.9" />
+      
+      <!-- Long Feather 2 (Mid-low flight blade) -->
+      <path d="M 38,62 C 16,62 -6,52 -10,34 C -12,28 -7,26 -2,30 C 10,40 24,52 40,58 Z" fill="#f0f9ff" stroke="#38bdf8" stroke-width="1.1" opacity="0.92" />
+      
+      <!-- Long Feather 3 (Main Outward Flight Feather) -->
+      <path d="M 36,54 C 10,48 -10,34 -8,16 C -7,10 -1,10 6,16 C 18,28 30,42 40,50 Z" fill="#ffffff" stroke="#7dd3fc" stroke-width="1.2" opacity="0.95" />
+      
+      <!-- Long Feather 4 (High Soaring Arch Feather - Reaches Near Canvas Top) -->
+      <path d="M 38,44 C 18,32 4,14 10,2 C 12,-3 18,-2 24,5 C 32,16 38,32 42,42 Z" fill="#ffffff" stroke="#bae6fd" stroke-width="1.3" />
+      
+      <!-- Top Wing Arch Bone / Main Upper Crest (Graceful top curve framing ears) -->
+      <path d="M 44,48 C 36,32 24,14 18,6 C 24,4 32,8 38,18 C 44,28 48,40 48,52 Z" fill="#ffffff" stroke="#38bdf8" stroke-width="1.2" />
+
+      <!-- Inner Layer: Crystal Geometric Feather Ribbons (Reference Image Luminous Diamond Lattice) -->
+      <g opacity="0.85" style="animation: featherShimmer 3s ease-in-out infinite;">
+        <!-- Glowing Spine Lines -->
+        <path d="M 44,52 C 28,42 12,28 8,16" stroke="#0284c7" stroke-width="1" fill="none" opacity="0.7" />
+        <path d="M 42,58 C 22,50 6,40 0,30" stroke="#0284c7" stroke-width="0.9" fill="none" opacity="0.6" />
+        <!-- Diamond Luminous Feather Accents (Like reference image wings) -->
+        <polygon points="26,30 32,24 38,30 32,36" fill="#bae6fd" stroke="#38bdf8" stroke-width="0.7" opacity="0.8" />
+        <polygon points="16,38 22,32 28,38 22,44" fill="#e0f2fe" stroke="#38bdf8" stroke-width="0.6" opacity="0.75" />
+        <polygon points="8,46 14,40 20,46 14,52" fill="#bae6fd" stroke="#38bdf8" stroke-width="0.6" opacity="0.7" />
+        <!-- Soft Cyan Inner Plumage Fill -->
+        <path d="M 42,52 C 32,40 22,32 20,26 C 26,26 34,36 42,48 Z" fill="#38bdf8" opacity="0.35" />
+      </g>
+
+    </g>
+
+    <!-- ==================== RIGHT WING (Symmetrical High Soaring Arch) ==================== -->
+    <g style="transform-origin: 74px 64px; animation: angelWingHoverRight 4.2s ease-in-out infinite;">
+      
+      <!-- Outer Primary Feathers (Layer 1 - Longest Feathers, translucent ice cyan to white) -->
+      <!-- Long Feather 1 (Bottom long sweep) -->
+      <path d="M 80,68 C 96,72 114,66 124,52 C 128,46 124,42 118,46 C 108,54 94,62 78,65 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" opacity="0.9" />
+      
+      <!-- Long Feather 2 (Mid-low flight blade) -->
+      <path d="M 82,62 C 104,62 126,52 130,34 C 132,28 127,26 122,30 C 110,40 96,52 80,58 Z" fill="#f0f9ff" stroke="#38bdf8" stroke-width="1.1" opacity="0.92" />
+      
+      <!-- Long Feather 3 (Main Outward Flight Feather) -->
+      <path d="M 84,54 C 110,48 130,34 128,16 C 127,10 121,10 114,16 C 102,28 90,42 80,50 Z" fill="#ffffff" stroke="#7dd3fc" stroke-width="1.2" opacity="0.95" />
+      
+      <!-- Long Feather 4 (High Soaring Arch Feather - Reaches Near Canvas Top) -->
+      <path d="M 82,44 C 102,32 116,14 110,2 C 108,-3 102,-2 96,5 C 88,16 82,32 78,42 Z" fill="#ffffff" stroke="#bae6fd" stroke-width="1.3" />
+      
+      <!-- Top Wing Arch Bone / Main Upper Crest (Graceful top curve framing ears) -->
+      <path d="M 76,48 C 84,32 96,14 102,6 C 96,4 88,8 82,18 C 76,28 72,40 72,52 Z" fill="#ffffff" stroke="#38bdf8" stroke-width="1.2" />
+
+      <!-- Inner Layer: Crystal Geometric Feather Ribbons (Reference Image Luminous Diamond Lattice) -->
+      <g opacity="0.85" style="animation: featherShimmer 3s ease-in-out infinite;">
+        <!-- Glowing Spine Lines -->
+        <path d="M 76,52 C 92,42 108,28 112,16" stroke="#0284c7" stroke-width="1" fill="none" opacity="0.7" />
+        <path d="M 78,58 C 98,50 114,40 120,30" stroke="#0284c7" stroke-width="0.9" fill="none" opacity="0.6" />
+        <!-- Diamond Luminous Feather Accents (Like reference image wings) -->
+        <polygon points="94,30 88,24 82,30 88,36" fill="#bae6fd" stroke="#38bdf8" stroke-width="0.7" opacity="0.8" />
+        <polygon points="104,38 98,32 92,38 98,44" fill="#e0f2fe" stroke="#38bdf8" stroke-width="0.6" opacity="0.75" />
+        <polygon points="112,46 106,40 100,46 106,52" fill="#bae6fd" stroke="#38bdf8" stroke-width="0.6" opacity="0.7" />
+        <!-- Soft Cyan Inner Plumage Fill -->
+        <path d="M 78,52 C 88,40 98,32 100,26 C 94,26 86,36 78,48 Z" fill="#38bdf8" opacity="0.35" />
+      </g>
+
+    </g>
+
+  </g>
+
+  <!-- Floating Divine Feather Particles -->
+  <g style="animation: divineHaloPulse 3.5s ease-in-out infinite;">
+    <circle cx="12" cy="18" r="1.3" fill="#ffffff" opacity="0.8" />
+    <circle cx="108" cy="18" r="1.3" fill="#ffffff" opacity="0.8" />
+    <circle cx="4" cy="58" r="1.1" fill="#bae6fd" opacity="0.7" />
+    <circle cx="116" cy="58" r="1.1" fill="#bae6fd" opacity="0.7" />
+    <!-- Floating tiny soft feather at bottom left -->
+    <path d="M 8,72 Q 12,70 14,75 Q 10,76 8,72 Z" fill="#ffffff" opacity="0.75" />
+    <path d="M 112,72 Q 108,70 106,75 Q 110,76 112,72 Z" fill="#ffffff" opacity="0.75" />
+  </g>
+</g>`,
         aura_rainbow: `<g id="acc_aura_rainbow"><path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" /></g>`
       },
       head: {
@@ -3725,7 +3829,67 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
 </g>`,
         outfit_cloak: `<!-- Lv.4 Hero Adventurer Cloak --><g id="acc_outfit_cloak"><path d="M 32,74 C 20,86 16,112 25,116 C 36,118 42,105 46,95 C 54,92 66,92 74,95 C 78,105 84,118 95,116 C 104,112 100,86 88,74 Z" fill="#b91c1c" /><path d="M 25,116 C 36,118 42,105 46,95" stroke="#facc15" stroke-width="2" fill="none" /><path d="M 74,95 C 78,105 84,118 95,116" stroke="#facc15" stroke-width="2" fill="none" /><circle cx="60" cy="76" r="4.5" fill="#facc15" /><circle cx="60" cy="76" r="2.5" fill="#ef4444" /></g>`,
         outfit_sailor: `<!-- Japanese Sailor Uniform --><g id="acc_outfit_sailor"><path d="M 36,80 C 32,95 44,106 60,106 C 76,106 88,95 84,80 Z" fill="#1e3a8a" /><polygon points="60,95 48,78 72,78" fill="#ffffff" /><polygon points="60,82 56,92 64,92" fill="#ef4444" /><polygon points="60,92 54,102 66,102" fill="#dc2626" /><path d="M 44,76 L 36,86 L 46,86" stroke="#ffffff" stroke-width="2" fill="none" /><path d="M 76,76 L 84,86 L 74,86" stroke="#ffffff" stroke-width="2" fill="none" /></g>`,
-        outfit_dress: `<!-- Princess Frilly Dress --><g id="acc_outfit_dress"><path d="M 40,78 C 30,94 28,108 34,112 C 45,115 75,115 86,112 C 92,108 90,94 80,78 Z" fill="#f472b6" /><path d="M 34,112 Q 47,108 60,112 Q 73,108 86,112" stroke="#ffffff" stroke-width="3" fill="none" /><rect x="42" y="86" width="36" height="4" rx="2" fill="#db2777" /><circle cx="60" cy="88" r="3.5" fill="#fbcfe8" /></g>`
+        outfit_dress: `<!-- 👗 夢幻粉紅蓬蓬裙: 高腰收腰、極致傘狀立體蓬度、多層荷葉邊與雪白蕾絲花邊、腰間大蝴蝶結與輕盈微動態 -->
+<g id="acc_outfit_dress">
+  <style>
+    @keyframes tutuBreatheSway {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.025, 0.985) rotate(0.6deg); }
+    }
+    @keyframes ribbonTailFlutter {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(-3deg); }
+    }
+  </style>
+
+  <!-- Puffy Skirt Group with Gentle Bouncy Breathing Animation -->
+  <g style="transform-origin: 60px 88px; animation: tutuBreatheSway 3s ease-in-out infinite;">
+    <g filter="drop-shadow(0 3px 4px rgba(190,24,93,0.22))">
+      
+      <!-- Layer 1: Underskirt Crisp White Scalloped Lace (Peeking out at bottom) -->
+      <path d="M 22,106 Q 16,112 24,115 Q 32,112 38,115 Q 46,112 52,116 Q 60,113 68,116 Q 74,112 82,115 Q 88,112 96,115 Q 104,112 98,106 Z" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.2" />
+
+      <!-- Layer 2: Main Dramatic Puffy Bell Tutu (Princess Pink, wide flared silhouette) -->
+      <path d="M 44,87 C 28,90 14,98 18,106 C 22,112 36,113 48,113 C 60,113.5 72,113 86,112 C 102,113 106,106 102,98 C 92,90 76,87 60,88 C 52,87 46,87 44,87 Z" fill="#f472b6" stroke="#db2777" stroke-width="1" />
+
+      <!-- Layer 2b: Puffy Tutu Vertical Flute / Pleat Folds (Volume shading) -->
+      <path d="M 32,96 Q 26,106 34,111" stroke="#ec4899" stroke-width="1.2" fill="none" opacity="0.6" stroke-linecap="round" />
+      <path d="M 44,93 Q 42,104 46,112" stroke="#ec4899" stroke-width="1.2" fill="none" opacity="0.6" stroke-linecap="round" />
+      <path d="M 60,94 Q 60,105 60,113" stroke="#ec4899" stroke-width="1.3" fill="none" opacity="0.5" stroke-linecap="round" />
+      <path d="M 76,93 Q 78,104 74,112" stroke="#ec4899" stroke-width="1.2" fill="none" opacity="0.6" stroke-linecap="round" />
+      <path d="M 88,96 Q 94,106 86,111" stroke="#ec4899" stroke-width="1.2" fill="none" opacity="0.6" stroke-linecap="round" />
+
+      <!-- Layer 3: Top Translucent Fairy Tulle Petal Apron (Soft Light Pink) -->
+      <path d="M 45,88 C 34,91 24,96 28,103 C 34,107 46,107 54,103 C 60,106 66,106 72,103 C 80,107 92,107 96,103 C 100,96 86,91 75,88 Z" fill="#fdf2f8" opacity="0.8" stroke="#f472b6" stroke-width="0.8" />
+      
+      <!-- Delicate Tulle Edge Sparkles / Scallops -->
+      <path d="M 30,102 Q 36,105 42,103 Q 48,105 54,102 Q 60,105 66,102 Q 72,105 78,103 Q 84,105 90,102" stroke="#ffffff" stroke-width="1.2" fill="none" opacity="0.9" />
+
+      <!-- Fitted Princess Bodice / Waistband (Cinched high at waist y:84-88) -->
+      <path d="M 46,84 Q 60,86 74,84 L 75,89 Q 60,91 45,89 Z" fill="#db2777" stroke="#be185d" stroke-width="0.8" />
+      <!-- Golden Bodice Lacing & Trims -->
+      <line x1="53" y1="85" x2="67" y2="88" stroke="#fbcfe8" stroke-width="0.8" />
+      <line x1="67" y1="85" x2="53" y2="88" stroke="#fbcfe8" stroke-width="0.8" />
+
+      <!-- Giant 3D Satin Ribbon Bow at Center Waist -->
+      <!-- Left Bow Loop -->
+      <path d="M 60,88 C 55,83 47,84 48,89 C 49,93 56,92 60,89 Z" fill="#f43f5e" stroke="#be185d" stroke-width="0.8" />
+      <path d="M 57,87 C 53,85 49,86 50,89" stroke="#fda4af" stroke-width="0.7" fill="none" />
+      <!-- Right Bow Loop -->
+      <path d="M 60,88 C 65,83 73,84 72,89 C 71,93 64,92 60,89 Z" fill="#f43f5e" stroke="#be185d" stroke-width="0.8" />
+      <path d="M 63,87 C 67,85 71,86 70,89" stroke="#fda4af" stroke-width="0.7" fill="none" />
+      <!-- Bow Knot & Center Pearl -->
+      <circle cx="60" cy="88.5" r="2.8" fill="#ffffff" stroke="#db2777" stroke-width="1" />
+      <circle cx="59.2" cy="87.7" r="0.8" fill="#ffffff" />
+      <!-- Fluttering Ribbon Tails -->
+      <g style="transform-origin: 60px 89px; animation: ribbonTailFlutter 2.6s ease-in-out infinite;">
+        <path d="M 58.5,90 Q 55,98 52,105 L 56,104 Q 59,98 60.5,90 Z" fill="#e11d48" opacity="0.9" />
+        <path d="M 61.5,90 Q 65,98 68,105 L 64,104 Q 61,98 59.5,90 Z" fill="#be185d" opacity="0.9" />
+      </g>
+
+    </g>
+  </g>
+</g>`
       },
       hand: {
         hand_none: "",
@@ -3964,7 +4128,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
         { id: 'outfit_backpack', name: '🎒 探險雙肩包', icon: '🎒', desc: '【Lv.2 免費】背起小書包探索單字世界！', unlockType: 'level', price: 0, reqLevel: 2 },
         { id: 'outfit_cloak', name: '🧥 英勇冒險披風', icon: '🧥', desc: '【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'outfit_sailor', name: '⚓ 可愛水手制服', icon: '⚓', desc: '日系海軍領水手服，青春活力', unlockType: 'fish', price: 70, reqLevel: 2 },
-        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '粉紅夢幻公主裙，散發華麗光彩', unlockType: 'fish', price: 80, reqLevel: 3 }
+        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '高腰傘狀芭蕾蓬蓬裙，層層蕾絲與腰間大蝴蝶結！', unlockType: 'fish', price: 80, reqLevel: 3 }
       ],
       hand: [
         { id: 'hand_none', name: '雙手空空', icon: '🚫', desc: '隨時準備擊掌或摸摸肉球', unlockType: 'free', price: 0, reqLevel: 1 },
@@ -3977,7 +4141,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
         { id: 'aura_none', name: '無特效', icon: '🚫', desc: '回歸純粹的貓咪氛圍', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '周圍閃爍璀璨的金色呼吸光芒', unlockType: 'fish', price: 40, reqLevel: 2 },
         { id: 'aura_sakura', name: '🌸 飛舞落櫻花瓣', icon: '🌸', desc: '浪漫櫻花瓣在身邊翩翩起舞', unlockType: 'fish', price: 50, reqLevel: 3 },
-        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】750字英勇旅伴展翅高飛！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】高聳翱翔琉璃大羽翼，聖潔藍白羽刃展翅！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'aura_fish', name: '🐟 游動小魚乾群', icon: '🐟', desc: '小魚乾環繞身旁，貓咪的天堂！', unlockType: 'fish', price: 65, reqLevel: 3 },
         { id: 'aura_rainbow', name: '🌈 傳奇幸運彩虹', icon: '🌈', desc: '【Lv.5 免費】1200字會考傳奇守護神七彩光暈！', unlockType: 'level', price: 0, reqLevel: 5 }
       ]
@@ -4001,14 +4165,14 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       outfit_backpack: "喵！背起小探險背包，今天也要去單字森林挖掘好多新寶藏！🎒✨",
       outfit_cloak: "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
       outfit_sailor: "水手服登場！青春活力滿點，今天模擬考一定能拿滿分喵！⚓💙",
-      outfit_dress: "哇～夢幻粉紅蓬蓬裙！轉圈圈好漂亮喔，謝謝主人幫我打扮！👗💖",
+      outfit_dress: "哇～超夢幻粉紅蓬蓬裙！層層蕾絲像芭蕾公主一樣，轉圈圈太漂亮了喵！👗💖",
       hand_fishbone: "嚼嚼嚼～現烤出爐的香脆金黃烤魚！熱騰騰好美味，背單字更有力氣了！🐟♨️😋",
       hand_book: "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
       hand_icecream: "嘴裡咬著草莓冰淇淋甜筒！滴滴答答好消暑～吃完再來背十個單字喵！🍦🍓",
       hand_wand: "星星魔法杖發光了！點石成金，祝福妳所有的英文考試都順利通過！🪄⭐",
       aura_sparkle: "哇～閃閃發光的金色星芒！咪咪周圍都在發光耶！✨",
       aura_sakura: "喵～花瓣飄飄好浪漫喔，一邊賞花一邊背單字最幸福了～🌸",
-      aura_wings: "展開天使羽翼！我們已經跨過 750 字難關，向著會考巔峰展翅高飛！🪽✨",
+      aura_wings: "展開聖潔大天使羽翼！神聖琉璃羽刃隨風翱翔，向著會考巔峰展翅高飛！🪽✨",
       aura_fish: "好多小魚乾在身邊游來游去！天啊～這是貓咪的天堂喵！🐟🐟🐟",
       aura_rainbow: "喵嗚～！七彩祥雲彩虹光芒！我是守護會考的傳奇神獸咪咪！🌈👑"
     };
@@ -6661,7 +6825,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.11.9-test",
+        version: "2.11.10-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
