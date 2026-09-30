@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.11-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.12-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.11-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.12-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -224,7 +224,7 @@
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 relative z-10">
         <!-- Animated Cat Avatar with Level Badge -->
         <div class="flex-shrink-0 cursor-pointer text-center group relative mx-auto sm:mx-0" onclick="petTheCat()">
-          <div id="catAvatarBox" class="w-24 h-28 sm:w-28 sm:h-32 bg-white/95 dark:bg-slate-700/95 rounded-3xl p-1.5 shadow-md border-2 border-rose-300 dark:border-rose-500/50 flex items-center justify-center transition transform group-hover:scale-105 relative overflow-visible cursor-pointer">
+          <div id="catAvatarBox" class="w-32 h-36 sm:w-40 sm:h-44 bg-white/95 dark:bg-slate-700/95 rounded-3xl p-1.5 shadow-md border-2 border-rose-300 dark:border-rose-500/50 flex items-center justify-center transition transform group-hover:scale-105 relative overflow-visible cursor-pointer">
             <!-- Level Badge -->
             <span id="catAvatarLevelBadge" class="absolute -top-2 -left-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[11px] font-black px-2 py-0.5 rounded-lg shadow-md border-2 border-white dark:border-slate-800 flex items-center gap-0.5 z-30">
               Lv.1 🍼
@@ -232,7 +232,7 @@
             <!-- Floating Hearts Container -->
             <div id="catHeartContainer" class="absolute inset-0 pointer-events-none overflow-visible z-40"></div>
 
-            <svg viewBox="0 0 120 130" id="mainCatSvg" class="w-full h-full overflow-visible">
+            <svg viewBox="-22 -15 164 150" id="mainCatSvg" class="w-full h-full overflow-visible">
               <!-- 0. Background Aura Layer -->
               <g id="mainCatAccAura"></g>
 
@@ -3516,84 +3516,119 @@ if (typeof window !== 'undefined') {
     <path d="M 0,-4.5 C 2.5,-4.5 4,-2 3.2,0.5 C 2.5,2.8 1.2,4.5 0,5 C -1.2,4.5 -2.5,2.8 -3.2,0.5 C -4,-2 -2.5,-4.5 0,-4.5 Z" fill="#f472b6" opacity="0.9" />
   </g>
 </g>`,
-        aura_wings: `<!-- 🪽 英勇天使羽翼: 位置在背後(y:62~92)、上下收窄、階梯式上長下短主羽、琉璃透光與拍動微動態 -->
+        aura_wings: `<!-- 🪽 英勇天使羽翼: 依據 star wing 2.png 完整重構雙倍身長雄偉羽翼、背部附著、三層立體羽毛結構與展翅微動態 -->
 <g id="acc_aura_wings" pointer-events="none">
   <style>
-    @keyframes angelWingHoverLeftBack {
+    @keyframes angelWingFlapLeft {
       0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(-3.5deg) translateY(-1px); }
+      50% { transform: rotate(-3.5deg) scale(1.02, 0.98); }
     }
-    @keyframes angelWingHoverRightBack {
+    @keyframes angelWingFlapRight {
       0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(3.5deg) translateY(-1px); }
-    }
-    @keyframes featherShimmer {
-      0%, 100% { opacity: 0.85; }
-      50% { opacity: 1; }
+      50% { transform: rotate(3.5deg) scale(1.02, 0.98); }
     }
   </style>
 
-  <g style="filter: drop-shadow(0 2px 6px rgba(56,189,248,0.5)) drop-shadow(0 0 2px rgba(255,255,255,0.85));">
-    <!-- Soft Back Divine Radiance -->
-    <ellipse cx="60" cy="78" rx="40" ry="16" fill="#38bdf8" opacity="0.2" />
+  <g style="filter: drop-shadow(0 4px 10px rgba(56,189,248,0.55)) drop-shadow(0 0 3px rgba(255,255,255,0.9));">
+    <ellipse cx="60" cy="55" rx="55" ry="40" fill="#38bdf8" opacity="0.16" />
 
-    <!-- ==================== LEFT WING (Attached to Back y:72, Upper Feathers Longest, Lower Shortest) ==================== -->
-    <g style="transform-origin: 44px 72px; animation: angelWingHoverLeftBack 3.5s ease-in-out infinite;">
-      <!-- Feather 1 (Top Primary Feather - Longest sweep outwards to x:5, y:64) -->
-      <path d="M 44,71 C 32,63 18,60 5,64 C 18,68 30,73 42,75 Z" fill="#ffffff" stroke="#7dd3fc" stroke-width="1.1" opacity="0.95" />
-      <path d="M 43,71.5 C 31,64 19,62 8,65 C 19,67.5 30,72 41,74 Z" fill="#e0f2fe" opacity="0.85" />
-      <!-- Feather 1 Inner Diamond Crystal Accent -->
-      <polygon points="36,69 24,64 14,65 26,68" fill="#ffffff" opacity="0.8" />
+    <!-- LEFT WING (star wing 2.png: 2x Body Length Crescent Wings) -->
+    <g style="transform-origin: 42px 90px; animation: angelWingFlapLeft 4s ease-in-out infinite;">
+      <!-- LAYER 1: OUTER LONG PRIMARY FLIGHT FEATHERS -->
+      <path d="M 38,91 C 28,94 18,92 10,87 C 8,85 10,81 14,83 C 22,86 32,86 39,88 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 36,90 C 26,92 18,90 12,86 C 18,87 26,88 36,88 Z" fill="#e0f2fe" opacity="0.7" />
 
-      <!-- Feather 2 (Upper Middle Feather - 2nd longest to x:11, y:73) -->
-      <path d="M 43,74 C 32,70 20,70 11,73 C 21,77 31,79 41,77 Z" fill="#ffffff" stroke="#38bdf8" stroke-width="1" opacity="0.92" />
-      <path d="M 42,74.5 C 31,71.5 21,71.5 13,74 C 22,76.5 31,78 40,76.5 Z" fill="#bae6fd" opacity="0.75" />
-      <polygon points="34,74 24,72 16,74 27,76" fill="#ffffff" opacity="0.75" />
+      <path d="M 37,87 C 24,88 12,82 4,75 C 2,73 4,69 8,71 C 18,75 28,78 38,82 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 35,85 C 24,85 14,80 7,74 C 15,77 24,79 35,82 Z" fill="#e0f2fe" opacity="0.7" />
 
-      <!-- Feather 3 (Lower Middle Feather - 3rd longest to x:19, y:82) -->
-      <path d="M 42,77 C 34,77 26,79 19,82 C 27,85 35,84 41,80 Z" fill="#f0f9ff" stroke="#38bdf8" stroke-width="0.9" opacity="0.9" />
-      <polygon points="33,77.5 26,79.5 21,82 29,82.5" fill="#ffffff" opacity="0.7" />
+      <path d="M 36,81 C 20,80 6,71 -2,62 C -4,59 -2,56 2,58 C 14,64 26,70 37,76 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 34,79 C 20,77 8,70 1,62 C 11,66 22,71 34,75 Z" fill="#e0f2fe" opacity="0.7" />
 
-      <!-- Feather 4 (Bottom Feather - Shortest, curves softly into lower back x:27, y:90) -->
-      <path d="M 41,80 C 36,83 31,86 27,90 C 33,91 38,87 40,83 Z" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="0.85" opacity="0.88" />
+      <path d="M 35,74 C 16,71 0,59 -7,48 C -9,45 -7,42 -3,44 C 10,51 24,60 36,68 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 33,72 C 16,68 2,58 -4,48 C 6,54 18,61 33,67 Z" fill="#e0f2fe" opacity="0.7" />
 
-      <!-- Wing Root Shoulder Joint & Diamond Spine -->
-      <path d="M 44,71 Q 32,69 22,71" stroke="#0284c7" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.7" />
-      <ellipse cx="43" cy="74" rx="2.2" ry="3" fill="#ffffff" stroke="#38bdf8" stroke-width="0.8" />
+      <path d="M 34,66 C 14,60 -3,46 -10,32 C -12,29 -9,26 -5,28 C 8,37 22,48 35,59 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 32,64 C 14,57 -1,45 -7,32 C 4,40 18,50 32,58 Z" fill="#e0f2fe" opacity="0.7" />
+
+      <path d="M 34,56 C 12,47 -4,31 -11,15 C -13,11 -9,8 -5,11 C 7,22 22,36 35,50 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 32,54 C 12,44 -2,30 -8,15 C 4,25 18,38 32,48 Z" fill="#bae6fd" opacity="0.6" />
+
+      <path d="M 33,46 C 12,33 -3,14 -7,-2 C -9,-6 -5,-8 -1,-5 C 10,8 24,24 34,40 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <path d="M 31,44 C 12,30 -1,13 -4,-2 C 6,10 19,26 31,39 Z" fill="#bae6fd" opacity="0.6" />
+
+      <path d="M 32,38 C 16,24 4,3 2,-10 C 2,-14 6,-14 9,-10 C 16,3 26,20 33,33 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <path d="M 30,36 C 16,22 6,4 4,-8 C 11,4 21,19 30,31 Z" fill="#e0f2fe" opacity="0.7" />
+
+      <path d="M 32,42 C 22,28 14,12 14,-2 C 14,-6 18,-6 20,-2 C 25,12 30,28 34,38 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <path d="M 34,48 C 26,36 21,22 23,10 C 24,6 27,6 29,10 C 32,22 35,36 37,45 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 36,56 C 30,46 28,34 31,24 C 32,20 35,20 36,24 C 38,34 39,46 40,54 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+
+      <!-- LAYER 2: MIDDLE COVERT FEATHERS -->
+      <path d="M 39,83 C 28,84 18,80 12,74 C 10,72 12,69 15,70 C 23,73 31,76 39,78 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 38,77 C 25,76 13,69 7,62 C 5,60 7,57 10,58 C 20,62 30,68 39,72 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 38,71 C 24,68 11,58 6,49 C 4,47 6,44 9,45 C 19,50 29,59 39,66 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 37,64 C 23,58 12,46 8,36 C 6,34 8,31 11,32 C 20,38 29,48 38,58 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 37,56 C 26,48 18,36 15,26 C 14,23 16,21 19,22 C 25,29 32,40 38,50 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+
+      <!-- LAYER 3: INNER BASE SCALLOPED COVERTS -->
+      <path d="M 42,91 C 36,94 28,94 22,90 C 20,88 22,85 25,86 C 30,88 36,88 41,87 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 42,87 C 34,89 27,87 23,83 C 21,81 23,78 26,79 C 31,81 36,82 41,83 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 41,83 C 33,83 26,79 23,74 C 21,72 24,69 27,70 C 32,73 37,75 41,78 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 41,78 C 34,76 28,70 26,64 C 25,62 27,59 30,60 C 34,64 38,68 41,72 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 41,72 C 35,68 31,61 30,55 C 29,53 31,51 34,52 C 37,56 40,62 42,67 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+
+      <ellipse cx="42" cy="89" rx="3.5" ry="4.5" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <circle cx="41.2" cy="87.8" r="1.2" fill="#38bdf8" />
     </g>
 
-    <!-- ==================== RIGHT WING (Attached to Back y:72, Upper Feathers Longest, Lower Shortest) ==================== -->
-    <g style="transform-origin: 76px 72px; animation: angelWingHoverRightBack 3.5s ease-in-out infinite;">
-      <!-- Feather 1 (Top Primary Feather - Longest sweep outwards to x:115, y:64) -->
-      <path d="M 76,71 C 88,63 102,60 115,64 C 102,68 90,73 78,75 Z" fill="#ffffff" stroke="#7dd3fc" stroke-width="1.1" opacity="0.95" />
-      <path d="M 77,71.5 C 89,64 101,62 112,65 C 101,67.5 90,72 79,74 Z" fill="#e0f2fe" opacity="0.85" />
-      <!-- Feather 1 Inner Diamond Crystal Accent -->
-      <polygon points="84,69 96,64 106,65 94,68" fill="#ffffff" opacity="0.8" />
+    <!-- RIGHT WING (star wing 2.png: Symmetrical Crescent Wings) -->
+    <g style="transform-origin: 78px 90px; animation: angelWingFlapRight 4s ease-in-out infinite;">
+      <!-- LAYER 1: OUTER LONG PRIMARY FLIGHT FEATHERS -->
+      <path d="M 82,91 C 92,94 102,92 110,87 C 112,85 110,81 106,83 C 98,86 88,86 81,88 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 84,90 C 94,92 102,90 108,86 C 102,87 94,88 84,88 Z" fill="#e0f2fe" opacity="0.7" />
 
-      <!-- Feather 2 (Upper Middle Feather - 2nd longest to x:109, y:73) -->
-      <path d="M 77,74 C 88,70 100,70 109,73 C 99,77 89,79 79,77 Z" fill="#ffffff" stroke="#38bdf8" stroke-width="1" opacity="0.92" />
-      <path d="M 78,74.5 C 89,71.5 99,71.5 107,74 C 98,76.5 89,78 80,76.5 Z" fill="#bae6fd" opacity="0.75" />
-      <polygon points="86,74 96,72 104,74 93,76" fill="#ffffff" opacity="0.75" />
+      <path d="M 83,87 C 96,88 108,82 116,75 C 118,73 116,69 112,71 C 102,75 92,78 82,82 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 85,85 C 96,85 106,80 113,74 C 105,77 96,79 85,82 Z" fill="#e0f2fe" opacity="0.7" />
 
-      <!-- Feather 3 (Lower Middle Feather - 3rd longest to x:101, y:82) -->
-      <path d="M 78,77 C 86,77 94,79 101,82 C 93,85 85,84 79,80 Z" fill="#f0f9ff" stroke="#38bdf8" stroke-width="0.9" opacity="0.9" />
-      <polygon points="87,77.5 94,79.5 99,82 91,82.5" fill="#ffffff" opacity="0.7" />
+      <path d="M 84,81 C 100,80 114,71 122,62 C 124,59 122,56 118,58 C 106,64 94,70 83,76 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 86,79 C 100,77 112,70 119,62 C 109,66 98,71 86,75 Z" fill="#e0f2fe" opacity="0.7" />
 
-      <!-- Feather 4 (Bottom Feather - Shortest, curves softly into lower back x:93, y:90) -->
-      <path d="M 79,80 C 84,83 89,86 93,90 C 87,91 82,87 80,83 Z" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="0.85" opacity="0.88" />
+      <path d="M 85,74 C 104,71 120,59 127,48 C 129,45 127,42 123,44 C 110,51 96,60 84,68 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 87,72 C 104,68 118,58 124,48 C 114,54 102,61 87,67 Z" fill="#e0f2fe" opacity="0.7" />
 
-      <!-- Wing Root Shoulder Joint & Diamond Spine -->
-      <path d="M 76,71 Q 88,69 98,71" stroke="#0284c7" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.7" />
-      <ellipse cx="77" cy="74" rx="2.2" ry="3" fill="#ffffff" stroke="#38bdf8" stroke-width="0.8" />
+      <path d="M 86,66 C 106,60 123,46 130,32 C 132,29 129,26 125,28 C 112,37 98,48 85,59 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 88,64 C 106,57 121,45 127,32 C 116,40 102,50 88,58 Z" fill="#e0f2fe" opacity="0.7" />
+
+      <path d="M 86,56 C 108,47 124,31 131,15 C 133,11 129,8 125,11 C 113,22 98,36 85,50 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 88,54 C 108,44 122,30 128,15 C 116,25 102,38 88,48 Z" fill="#bae6fd" opacity="0.6" />
+
+      <path d="M 87,46 C 108,33 123,14 127,-2 C 129,-6 125,-8 121,-5 C 110,8 96,24 86,40 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <path d="M 89,44 C 108,30 121,13 124,-2 C 114,10 101,26 89,39 Z" fill="#bae6fd" opacity="0.6" />
+
+      <path d="M 88,38 C 104,24 116,3 118,-10 C 118,-14 114,-14 111,-10 C 104,3 94,20 87,33 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <path d="M 90,36 C 104,22 114,4 116,-8 C 109,4 99,19 90,31 Z" fill="#e0f2fe" opacity="0.7" />
+
+      <path d="M 88,42 C 98,28 106,12 106,-2 C 106,-6 102,-6 100,-2 C 95,12 90,28 86,38 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <path d="M 86,48 C 94,36 99,22 97,10 C 96,6 93,6 91,10 C 88,22 85,36 83,45 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+      <path d="M 84,56 C 90,46 92,34 89,24 C 88,20 85,20 84,24 C 82,34 81,46 80,54 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.1" />
+
+      <!-- LAYER 2: MIDDLE COVERT FEATHERS -->
+      <path d="M 81,83 C 92,84 102,80 108,74 C 110,72 108,69 105,70 C 97,73 89,76 81,78 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 82,77 C 95,76 107,69 113,62 C 115,60 113,57 110,58 C 100,62 90,68 81,72 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 82,71 C 96,68 109,58 114,49 C 116,47 114,44 111,45 C 101,50 91,59 81,66 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 83,64 C 97,58 108,46 112,36 C 114,34 112,31 109,32 C 100,38 91,48 82,58 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 83,56 C 94,48 102,36 105,26 C 106,23 104,21 101,22 C 95,29 88,40 82,50 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+
+      <!-- LAYER 3: INNER BASE SCALLOPED COVERTS -->
+      <path d="M 78,91 C 84,94 92,94 98,90 C 100,88 98,85 95,86 C 90,88 84,88 79,87 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 78,87 C 86,89 93,87 97,83 C 99,81 97,78 94,79 C 89,81 84,82 79,83 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 79,83 C 87,83 94,79 97,74 C 99,72 96,69 93,70 C 88,73 83,75 79,78 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 79,78 C 86,76 92,70 94,64 C 95,62 93,59 90,60 C 86,64 82,68 79,72 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+      <path d="M 79,72 C 85,68 89,61 90,55 C 91,53 89,51 86,52 C 83,56 80,62 78,67 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1" />
+
+      <ellipse cx="78" cy="89" rx="3.5" ry="4.5" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <circle cx="78.8" cy="87.8" r="1.2" fill="#38bdf8" />
     </g>
-  </g>
-
-  <!-- Floating Divine Feather Particles -->
-  <g opacity="0.8">
-    <circle cx="16" cy="60" r="1.2" fill="#ffffff" />
-    <circle cx="104" cy="60" r="1.2" fill="#ffffff" />
-    <circle cx="10" cy="80" r="1.1" fill="#bae6fd" />
-    <circle cx="110" cy="80" r="1.1" fill="#bae6fd" />
   </g>
 </g>`,
         aura_rainbow: `<g id="acc_aura_rainbow"><path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" /></g>`
@@ -3804,70 +3839,67 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
 </g>`,
         outfit_cloak: `<!-- Lv.4 Hero Adventurer Cloak --><g id="acc_outfit_cloak"><path d="M 32,74 C 20,86 16,112 25,116 C 36,118 42,105 46,95 C 54,92 66,92 74,95 C 78,105 84,118 95,116 C 104,112 100,86 88,74 Z" fill="#b91c1c" /><path d="M 25,116 C 36,118 42,105 46,95" stroke="#facc15" stroke-width="2" fill="none" /><path d="M 74,95 C 78,105 84,118 95,116" stroke="#facc15" stroke-width="2" fill="none" /><circle cx="60" cy="76" r="4.5" fill="#facc15" /><circle cx="60" cy="76" r="2.5" fill="#ef4444" /></g>`,
         outfit_sailor: `<!-- Japanese Sailor Uniform --><g id="acc_outfit_sailor"><path d="M 36,80 C 32,95 44,106 60,106 C 76,106 88,95 84,80 Z" fill="#1e3a8a" /><polygon points="60,95 48,78 72,78" fill="#ffffff" /><polygon points="60,82 56,92 64,92" fill="#ef4444" /><polygon points="60,92 54,102 66,102" fill="#dc2626" /><path d="M 44,76 L 36,86 L 46,86" stroke="#ffffff" stroke-width="2" fill="none" /><path d="M 76,76 L 84,86 L 74,86" stroke="#ffffff" stroke-width="2" fill="none" /></g>`,
-        outfit_dress: `<!-- 👗 夢幻粉紅蓬蓬裙: 比照附圖 star skirt.png 三層波浪蛋糕荷葉邊、超蓬傘狀輪廓、雪白蕾絲花邊與立體蝴蝶結 -->
+        outfit_dress: `<!-- 👗 夢幻粉紅蓬蓬裙: 完整身軀上衣(圓領/泡泡袖/排釦)+腰帶大蝴蝶結+腰下展開三層蛋糕荷葉蓬蓬裙 -->
 <g id="acc_outfit_dress">
   <style>
-    @keyframes cupcakeTutuBreathe {
+    @keyframes dressCupcakeBreathe {
       0%, 100% { transform: scale(1) translateY(0); }
       50% { transform: scale(1.02, 0.985) translateY(-0.8px); }
     }
     @keyframes ribbonTailFlutter {
       0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(-3deg); }
+      50% { transform: rotate(-3.5deg); }
     }
   </style>
 
-  <!-- Puffy 3-Tier Cupcake Tutu Group with Gentle Breathing Animation -->
-  <g style="transform-origin: 60px 82px; animation: cupcakeTutuBreathe 2.8s ease-in-out infinite;">
-    <g filter="drop-shadow(0 3px 5px rgba(219,39,119,0.25))">
+  <g filter="drop-shadow(0 3px 6px rgba(219,39,119,0.25))">
+    <!-- 1. UPPER BODY CLOTHING (身軀正常衣服: 領口、泡泡袖、合身前襟與排釦) -->
+    <ellipse cx="34" cy="77" rx="6.5" ry="5.5" fill="#f472b6" stroke="#db2777" stroke-width="0.9" />
+    <path d="M 28,78 Q 34,81 40,78" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linecap="round" />
+    <path d="M 33,72 Q 33,76 33,81" stroke="#ec4899" stroke-width="0.7" fill="none" opacity="0.6" />
 
-      <!-- ==================== TIER 3: Bottom Most Voluminous Tutu Tier & White Lace Underskirt (x: 14 to 106, y: 95 to 108) ==================== -->
-      <!-- Crisp White Scalloped Lace Layer peeking out at bottom -->
-      <path d="M 16,102 Q 22,106 28,103 Q 34,107 41,104 Q 48,107 55,104 Q 60,107 65,104 Q 72,107 79,104 Q 86,107 92,103 Q 98,106 104,102 C 106,104 100,108 92,108 C 84,108 72,108 60,108 C 48,108 36,108 28,108 C 20,108 14,104 16,102 Z" fill="#ffffff" stroke="#fbcfe8" stroke-width="0.8" />
-      <!-- Tier 3 Pink Puffy Bell Flare Body -->
-      <path d="M 22,95 C 14,99 15,106 26,106 C 36,106 48,107 60,107 C 72,107 84,106 94,106 C 105,106 106,99 98,95 C 88,96 74,97 60,97 C 46,97 32,96 22,95 Z" fill="#f472b6" stroke="#db2777" stroke-width="0.9" />
-      <!-- Tier 3 Delicate Ruffle Scallop Highlights -->
-      <path d="M 26,106 Q 32,103 38,106 Q 44,103 50,106 Q 56,103 62,106 Q 68,103 74,106 Q 80,103 86,106 Q 92,103 94,106" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linecap="round" />
+    <ellipse cx="86" cy="77" rx="6.5" ry="5.5" fill="#f472b6" stroke="#db2777" stroke-width="0.9" />
+    <path d="M 80,78 Q 86,81 92,78" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linecap="round" />
+    <path d="M 87,72 Q 87,76 87,81" stroke="#ec4899" stroke-width="0.7" fill="none" opacity="0.6" />
 
-      <!-- ==================== TIER 2: Middle Tier Cascading Ruffle (x: 20 to 100, y: 88 to 98) ==================== -->
-      <!-- White Lace Trim on Tier 2 Edge -->
-      <path d="M 22,95 Q 28,98 34,95 Q 40,98 47,95 Q 53,98 60,95 Q 67,98 73,95 Q 80,98 86,95 Q 92,98 98,95" stroke="#ffffff" stroke-width="1.4" fill="none" stroke-linecap="round" />
-      <!-- Tier 2 Pink Gathered Skirt Body -->
-      <path d="M 28,88 C 18,91 19,97 30,97 C 40,97 50,98 60,98 C 70,98 80,97 90,97 C 101,97 102,91 92,88 C 82,89 71,90 60,90 C 49,90 38,89 28,88 Z" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.9" />
-      <!-- Vertical Fold Depth Shadows for Tier 2 -->
-      <path d="M 38,89 Q 39,94 40,97 M 49,90 Q 50,94 51,97 M 60,90 Q 60,94 60,98 M 71,90 Q 70,94 69,97 M 82,89 Q 81,94 80,97" stroke="#db2777" stroke-width="0.8" opacity="0.45" fill="none" />
+    <path d="M 40,71 C 48,72 72,72 80,71 C 86,76 87,83 84,87 C 76,88 44,88 36,87 C 33,83 34,76 40,71 Z" fill="#f472b6" stroke="#db2777" stroke-width="1" />
+    <path d="M 44,73 C 50,74 70,74 76,73 C 78,78 77,84 75,86 C 68,87 52,87 45,86 C 43,84 42,78 44,73 Z" fill="#fbcfe8" opacity="0.5" />
 
-      <!-- ==================== TIER 1: Top Tier Overlay & Waistband (x: 26 to 94, y: 81 to 90) ==================== -->
-      <!-- Tier 1 Soft Wave Hem with White Lace Trimming -->
-      <path d="M 27,88 Q 33,91 40,88 Q 47,91 54,88 Q 60,91 66,88 Q 73,91 80,88 Q 87,91 93,88" stroke="#ffffff" stroke-width="1.3" fill="none" stroke-linecap="round" />
-      <!-- Tier 1 Pink Puffy Peplum Bell -->
-      <path d="M 36,81 C 24,84 25,90 35,90 C 44,90 52,91 60,91 C 68,91 76,90 85,90 C 95,90 96,84 84,81 Z" fill="#fdf2f8" stroke="#f472b6" stroke-width="0.8" />
-      <!-- High Waist Satin Sash -->
-      <path d="M 40,80 Q 60,82 80,80 L 80,83 Q 60,85 40,83 Z" fill="#db2777" />
-      <line x1="41" y1="81.5" x2="79" y2="81.5" stroke="#ffffff" stroke-width="0.8" opacity="0.8" />
+    <path d="M 48,72 Q 46,79 45,87" stroke="#ec4899" stroke-width="0.8" fill="none" opacity="0.7" />
+    <path d="M 72,72 Q 74,79 75,87" stroke="#ec4899" stroke-width="0.8" fill="none" opacity="0.7" />
 
-      <!-- ==================== TOP BODICE: Sleeveless Ruffled Bodice fitting torso (y: 72 to 81) ==================== -->
-      <!-- Shoulder Ruffle Straps (波浪荷葉雙肩帶) -->
-      <path d="M 45,72 Q 44,76 43,80 Q 48,80 48,76 Q 49,72 45,72 Z" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.6" />
-      <path d="M 75,72 Q 76,76 77,80 Q 72,80 72,76 Q 71,72 75,72 Z" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.6" />
-      <!-- Fitted Pink Bodice Chest Center -->
-      <path d="M 46,74 Q 60,76 74,74 L 77,81 Q 60,83 43,81 Z" fill="#f472b6" stroke="#db2777" stroke-width="0.8" />
-      <!-- Delicate Scalloped Neckline Lace -->
-      <path d="M 47,74 Q 51,76 56,74 Q 60,76 64,74 Q 69,76 73,74" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linecap="round" />
+    <path d="M 46,71 Q 53,75 60,72 Q 67,75 74,71" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" />
+    <path d="M 48,71 Q 54,73 60,71 Q 66,73 72,71" fill="#ffffff" opacity="0.9" />
 
-      <!-- ==================== CENTER EMBELLISHMENT: 3D Satin Ribbon Bow & Pearl Brooch ==================== -->
-      <!-- Floating Ribbon Tails -->
-      <g style="transform-origin: 60px 82px; animation: ribbonTailFlutter 2.5s ease-in-out infinite;">
-        <path d="M 58,82 Q 54,86 52,90 Q 56,88 59,84 Z" fill="#e11d48" />
-        <path d="M 62,82 Q 66,86 68,90 Q 64,88 61,84 Z" fill="#e11d48" />
+    <circle cx="60" cy="75.5" r="1.2" fill="#ffffff" stroke="#db2777" stroke-width="0.6" />
+    <circle cx="60" cy="79.5" r="1.2" fill="#ffffff" stroke="#db2777" stroke-width="0.6" />
+    <circle cx="60" cy="83.5" r="1.2" fill="#ffffff" stroke="#db2777" stroke-width="0.6" />
+
+    <!-- 2. HIGH WAISTBAND & SATIN RIBBON BOW (腰部收腰與蝴蝶結) -->
+    <path d="M 37,86 Q 60,89 83,86 L 84,89.5 Q 60,92.5 36,89.5 Z" fill="#db2777" />
+    <line x1="38" y1="87.5" x2="82" y2="87.5" stroke="#fbcfe8" stroke-width="0.8" opacity="0.8" />
+
+    <!-- 3. PUFFY CUPCAKE TUTU SKIRT (腰部以下大幅展開之三層蓬蓬裙) -->
+    <g style="transform-origin: 60px 88px; animation: dressCupcakeBreathe 3s ease-in-out infinite;">
+      <path d="M 14,106 Q 20,111 26,108 Q 33,112 40,109 Q 47,113 54,110 Q 60,113 66,110 Q 73,113 80,109 Q 87,112 94,108 Q 100,111 106,106 C 108,109 100,113 92,113 C 80,113.5 60,113.5 40,113 C 28,113 20,109 14,106 Z" fill="#ffffff" stroke="#fbcfe8" stroke-width="0.9" />
+      <path d="M 20,99 C 10,104 11,111 22,111 C 34,111 48,112 60,112 C 72,112 86,111 98,111 C 109,111 110,104 100,99 C 88,100 74,101 60,101 C 46,101 32,100 20,99 Z" fill="#f472b6" stroke="#db2777" stroke-width="1" />
+      <path d="M 24,111 Q 30,108 36,111 Q 42,108 48,111 Q 54,108 60,111 Q 66,108 72,111 Q 78,108 84,111 Q 90,108 96,111" stroke="#ffffff" stroke-width="1.3" fill="none" stroke-linecap="round" />
+
+      <path d="M 20,99 Q 26,102 33,99 Q 40,102 47,99 Q 54,102 60,99 Q 66,102 73,99 Q 80,102 87,99 Q 94,102 100,99" stroke="#ffffff" stroke-width="1.4" fill="none" stroke-linecap="round" />
+      <path d="M 26,92 C 16,95 17,101 28,101 C 38,101 49,102 60,102 C 71,102 82,101 92,101 C 103,101 104,95 94,92 C 84,93 72,94 60,94 C 48,94 36,93 26,92 Z" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.9" />
+      <path d="M 36,93 Q 37,97 38,101 M 48,94 Q 49,98 50,101 M 60,94 Q 60,98 60,102 M 72,94 Q 71,98 70,101 M 84,93 Q 83,97 82,101" stroke="#db2777" stroke-width="0.8" opacity="0.45" fill="none" />
+
+      <path d="M 26,93 Q 32,96 39,93 Q 46,96 53,93 Q 60,96 67,93 Q 74,96 81,93 Q 88,96 94,93" stroke="#ffffff" stroke-width="1.3" fill="none" stroke-linecap="round" />
+      <path d="M 35,88 C 22,90 23,95 33,95 C 42,95 51,96 60,96 C 69,96 78,95 87,95 C 97,95 98,90 85,88 Z" fill="#fdf2f8" stroke="#f472b6" stroke-width="0.8" />
+
+      <g style="transform-origin: 60px 88px; animation: ribbonTailFlutter 2.5s ease-in-out infinite;">
+        <path d="M 58,89 Q 54,94 51,100 Q 55,98 59,92 Z" fill="#e11d48" />
+        <path d="M 62,89 Q 66,94 69,100 Q 65,98 61,92 Z" fill="#e11d48" />
       </g>
-      <!-- Bow Loops -->
-      <ellipse cx="56" cy="81.5" rx="3.5" ry="2.2" transform="rotate(-15 56 81.5)" fill="#f43f5e" stroke="#ffffff" stroke-width="0.6" />
-      <ellipse cx="64" cy="81.5" rx="3.5" ry="2.2" transform="rotate(15 64 81.5)" fill="#f43f5e" stroke="#ffffff" stroke-width="0.6" />
-      <!-- Central Gem / Pearl -->
-      <circle cx="60" cy="81.5" r="1.8" fill="#ffffff" stroke="#db2777" stroke-width="0.7" />
-      <circle cx="59.4" cy="80.9" r="0.6" fill="#ffffff" />
-
+      <ellipse cx="55.5" cy="88" rx="4" ry="2.6" transform="rotate(-15 55.5 88)" fill="#f43f5e" stroke="#ffffff" stroke-width="0.7" />
+      <ellipse cx="64.5" cy="88" rx="4" ry="2.6" transform="rotate(15 64.5 88)" fill="#f43f5e" stroke="#ffffff" stroke-width="0.7" />
+      <circle cx="60" cy="88" r="2.2" fill="#ffffff" stroke="#db2777" stroke-width="0.8" />
+      <circle cx="59.3" cy="87.3" r="0.7" fill="#ffffff" />
     </g>
   </g>
 </g>`
@@ -4109,7 +4141,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
         { id: 'outfit_backpack', name: '🎒 探險雙肩包', icon: '🎒', desc: '【Lv.2 免費】背起小書包探索單字世界！', unlockType: 'level', price: 0, reqLevel: 2 },
         { id: 'outfit_cloak', name: '🧥 英勇冒險披風', icon: '🧥', desc: '【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'outfit_sailor', name: '⚓ 可愛水手制服', icon: '⚓', desc: '日系海軍領水手服，青春活力', unlockType: 'fish', price: 70, reqLevel: 2 },
-        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '比照公主蓬蓬裙，三層蛋糕荷葉邊波浪大裙擺與蕾絲！', unlockType: 'fish', price: 80, reqLevel: 3 }
+        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '身軀公主洋裝與泡泡袖，腰下展開三層蛋糕荷葉蓬蓬裙！', unlockType: 'fish', price: 80, reqLevel: 3 }
       ],
       hand: [
         { id: 'hand_none', name: '雙手空空', icon: '🚫', desc: '隨時準備擊掌或摸摸肉球', unlockType: 'free', price: 0, reqLevel: 1 },
@@ -4122,7 +4154,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
         { id: 'aura_none', name: '無特效', icon: '🚫', desc: '回歸純粹的貓咪氛圍', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '周圍閃爍璀璨的金色呼吸光芒', unlockType: 'fish', price: 40, reqLevel: 2 },
         { id: 'aura_sakura', name: '🌸 飛舞落櫻花瓣', icon: '🌸', desc: '浪漫櫻花瓣在身邊翩翩起舞', unlockType: 'fish', price: 50, reqLevel: 3 },
-        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】背部展翅琉璃大羽翼，上長下短階梯聖潔羽刃！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】雙倍身長星空大天使羽翼，三層次羽毛展翅高飛！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'aura_fish', name: '🐟 游動小魚乾群', icon: '🐟', desc: '小魚乾環繞身旁，貓咪的天堂！', unlockType: 'fish', price: 65, reqLevel: 3 },
         { id: 'aura_rainbow', name: '🌈 傳奇幸運彩虹', icon: '🌈', desc: '【Lv.5 免費】1200字會考傳奇守護神七彩光暈！', unlockType: 'level', price: 0, reqLevel: 5 }
       ]
@@ -4146,14 +4178,14 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       outfit_backpack: "喵！背起小探險背包，今天也要去單字森林挖掘好多新寶藏！🎒✨",
       outfit_cloak: "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
       outfit_sailor: "水手服登場！青春活力滿點，今天模擬考一定能拿滿分喵！⚓💙",
-      outfit_dress: "哇～超夢幻三層蛋糕荷葉邊蓬蓬裙！層層蕾絲轉圈圈好蓬鬆好可愛喵！👗💖",
+      outfit_dress: "哇～身體穿上漂亮的公主洋裝，腰下展開夢幻蛋糕蓬蓬裙！像真正的小公主一樣喵！👗✨",
       hand_fishbone: "嚼嚼嚼～現烤出爐的香脆金黃烤魚！熱騰騰好美味，背單字更有力氣了！🐟♨️😋",
       hand_book: "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
       hand_icecream: "嘴裡咬著草莓冰淇淋甜筒！滴滴答答好消暑～吃完再來背十個單字喵！🍦🍓",
       hand_wand: "星星魔法杖發光了！點石成金，祝福妳所有的英文考試都順利通過！🪄⭐",
       aura_sparkle: "哇～閃閃發光的金色星芒！咪咪周圍都在發光耶！✨",
       aura_sakura: "喵～花瓣飄飄好浪漫喔，一邊賞花一邊背單字最幸福了～🌸",
-      aura_wings: "展開後背聖潔大天使羽翼！上長下短琉璃羽刃隨風翱翔，向著會考巔峰展翅高飛！🪽✨",
+      aura_wings: "展開兩倍身長星空大天使羽翼！如夢幻之翼般展翅翱翔，守護著會考全滿分喵！🪽🌟",
       aura_fish: "好多小魚乾在身邊游來游去！天啊～這是貓咪的天堂喵！🐟🐟🐟",
       aura_rainbow: "喵嗚～！七彩祥雲彩虹光芒！我是守護會考的傳奇神獸咪咪！🌈👑"
     };
@@ -6806,7 +6838,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.11.11-test",
+        version: "2.11.12-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
