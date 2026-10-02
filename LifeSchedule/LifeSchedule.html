@@ -350,7 +350,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.0-test (新增Forteller戰略推演矩陣與接力目標功能完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.1-test (Forteller規格澄清重構：動態領域與多層拆解步驟當月收斂完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -3481,66 +3481,13 @@ function renderTimelineMatrix(container) {
 
 
         // ==========================================
-        // 🔮 戰略推演羅盤 (Forteller 軌道演進矩陣模組)
+        // 🔮 戰略推演羅盤 (Forteller 軌道演進矩陣模組 - 動態卡片分析版)
         // ==========================================
 
-        let fortellerFilterScope = 'all'; // 'all', 'focus_only', or specific thoughtId
-        let fortellerFilterDomain = 'all'; // 'all' or domain name
+        let fortellerFilterDomain = 'all'; // 'all' or specific domain
+        let fortellerSelectedGoalId = 'all'; // 'all' or specific thoughtId
 
-        const FORTELLER_STANDARD_TRACKS = [
-            { no: 1, domain: "生產-發表自己", defaultVision: "金融，健康，家庭自體循環，遠端職業" },
-            { no: 2, domain: "生產-發表自己", defaultVision: "金融，健康，家庭自體循環，遠端職業" },
-            { no: 3, domain: "生產-發表自己", defaultVision: "金融，健康，家庭自體循環，遠端職業" },
-            { no: 4, domain: "生產-發表自己", defaultVision: "金融，健康，家庭自體循環，遠端職業" },
-            { no: 5, domain: "資產-健康", defaultVision: "LDL合格，建立永續生活節奏" },
-            { no: 6, domain: "資產-健康", defaultVision: "健康習慣-重訓 level 5 全達成" },
-            { no: 7, domain: "資產-健康", defaultVision: "6K(15loop) 持續有氧進展" },
-            { no: 8, domain: "資產-時間效率", defaultVision: "跨平台，追蹤，push and rest，以終為始，圖像化" },
-            { no: 9, domain: "資產-投資", defaultVision: "一個月一本書，共四本" },
-            { no: 10, domain: "家人", defaultVision: "家長有效陪伴，即時回應，星有效表達，勇於溝通" },
-            { no: 11, domain: "家人", defaultVision: "1200單練習/看新聞/類母語/父母也可以用" },
-            { no: 12, domain: "家人", defaultVision: "健康習慣-與家人有固定合作目標" },
-            { no: 13, domain: "家人", defaultVision: "Lu建立健康飲食及運動" },
-            { no: 14, domain: "創新-研發", defaultVision: "金融，健康，家庭自體循環，遠端職業" },
-            { no: 15, domain: "資產-人脈", defaultVision: "金融，健康，家庭自體循環，遠端職業" },
-            { no: 16, domain: "分紅-娛樂", defaultVision: "金融，健康，家庭自體循環，遠端職業" }
-        ];
-
-        // 取得卡片所屬軌道序號 (若無手動指定，依領域預設配對)
-        function getThoughtTrackNo(thought) {
-            if (thought.trackNo && typeof thought.trackNo === 'number' && thought.trackNo >= 1 && thought.trackNo <= 16) {
-                return thought.trackNo;
-            }
-            const cat = thought.category || '💼 事業';
-            // 領域映射
-            if (cat.includes('健康') || cat.includes('運動')) return 5;
-            if (cat.includes('時間') || cat.includes('效率')) return 8;
-            if (cat.includes('投資') || cat.includes('財務') || cat.includes('金錢')) return 9;
-            if (cat.includes('家') || cat.includes('親')) return 10;
-            if (cat.includes('研發') || cat.includes('創')) return 14;
-            if (cat.includes('人脈') || cat.includes('社交')) return 15;
-            if (cat.includes('娛樂') || cat.includes('休閒') || cat.includes('玩')) return 16;
-            return 1; // 預設為生產-發表自己
-        }
-
-        // 手動設定卡片軌道序號
-        function promptSetThoughtTrackNo(thoughtId) {
-            const thought = thoughts.find(t => t.id === thoughtId);
-            if (!thought) return;
-            const currentNo = getThoughtTrackNo(thought);
-            const input = prompt(`請輸入此卡片在 Forteller 戰略推演盤上的軌道編號 (1 ~ 16)：\n目前軌道：NO. ${currentNo} (${thought.category || '未分類'})`, currentNo);
-            if (input === null) return;
-            const num = parseInt(input.trim(), 10);
-            if (!isNaN(num) && num >= 1 && num <= 16) {
-                thought.trackNo = num;
-                saveData();
-                render();
-            } else {
-                alert('請輸入 1 到 16 之間的整數編號！');
-            }
-        }
-
-        // 編輯終局願景
+        // 編輯年度終局題目願景
         function editFortellerGrandVision() {
             const current = localStorage.getItem('forteller_grand_vision') || 'The Last day 人類能所見即所得，強化六感：金融，健康，家庭自體循環，遠端職業';
             const input = prompt('請輸入年度核心終局願景 (例如 2026/12/31 達成目標)：', current);
@@ -3550,419 +3497,289 @@ function renderTimelineMatrix(container) {
             }
         }
 
-        // 編輯單一軌道年度終局願景
-        function editTrackVision(trackNo) {
-            const track = FORTELLER_STANDARD_TRACKS.find(t => t.no === trackNo);
-            const current = localStorage.getItem(`forteller_track_vision_${trackNo}`) || (track ? track.defaultVision : '未設定');
-            const input = prompt(`請輸入 NO. ${trackNo} (${track ? track.domain : ''}) 的年度終局目標：`, current);
-            if (input !== null) {
-                localStorage.setItem(`forteller_track_vision_${trackNo}`, input.trim());
-                render();
-            }
-        }
-
-        // 於指定軌道與月份快速新增目標
-        function createGoalForTrack(trackNo, targetMonthStr) {
-            const track = FORTELLER_STANDARD_TRACKS.find(t => t.no === trackNo);
-            const domain = track ? track.domain : '💼 事業';
-            const text = prompt(`為 NO. ${trackNo} [${domain}] 規劃 ${targetMonthStr} 推進目標：`);
-            if (!text || text.trim() === '') return;
-
-            const targetDate = `${targetMonthStr.replace('/', '-')}-28`;
-            const newThought = {
-                id: Date.now(),
-                text: text.trim(),
-                goal: '',
-                category: domain,
-                trackNo: trackNo,
-                targetDate: targetDate,
-                isMainFocus: false,
-                goalDone: false,
-                steps: [],
-                createdAt: Date.now()
-            };
-            thoughts.unshift(newThought);
-            saveData();
-            render();
-        }
-
-        // 啟動下一個接力目標 (Successor Goal)
-        function createSuccessorGoal(prevThoughtId, defaultMonthStr = null) {
-            const prev = thoughts.find(t => t.id === prevThoughtId);
-            if (!prev) return;
-            const trackNo = getThoughtTrackNo(prev);
-            const domain = prev.category || '💼 事業';
-            
-            // 計算下個月份
-            let nextMonth = defaultMonthStr;
-            if (!nextMonth) {
-                const now = new Date();
-                const nextM = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-                nextMonth = `${nextM.getFullYear()}/${String(nextM.getMonth() + 1).padStart(2, '0')}`;
-            }
-
-            const text = prompt(`【目標接力鏈】為前身目標「${prev.text}」規劃下一個接力目標 (${nextMonth})：`);
-            if (!text || text.trim() === '') return;
-
-            const newThought = {
-                id: Date.now(),
-                text: text.trim(),
-                goal: prev.goal || '',
-                category: domain,
-                trackNo: trackNo,
-                previousGoalId: prev.id,
-                targetDate: `${nextMonth.replace('/', '-')}-28`,
-                isMainFocus: prev.isMainFocus || false,
-                goalDone: false,
-                steps: [],
-                createdAt: Date.now()
-            };
-            thoughts.unshift(newThought);
-            saveData();
-            render();
-            alert(`🎉 已成功在 NO. ${trackNo} 軌道建立接力目標「${newThought.text}」！`);
-        }
-
-        // 切換 Forteller 篩選範圍
-        function setFortellerScope(scope) {
-            fortellerFilterScope = scope;
-            render();
-        }
-
+        // 切換領域篩選
         function setFortellerDomain(domain) {
             fortellerFilterDomain = domain;
             render();
         }
 
-        // 判斷目標或步驟所屬月份欄位
-        function getThoughtMonthKey(thought) {
-            if (thought.goalDone) {
-                // 已完成的目標若完成日期在 9 月或更早，歸入過往 2026/9
-                if (thought.lastCompletedDate) {
-                    const m = thought.lastCompletedDate.slice(0, 7).replace('-', '/');
-                    return m;
-                }
-            }
-            if (thought.targetDate && thought.targetDate.length >= 7) {
-                return thought.targetDate.slice(0, 7).replace('-', '/');
-            }
-            // 若步驟有日期，取最小或最大未完成步驟日期
-            const steps = Array.isArray(thought.steps) ? thought.steps : [];
-            const stepDates = steps.map(s => s.stepDate).filter(d => d && d !== '未指定日期').sort();
-            if (stepDates.length > 0) {
-                return stepDates[0].slice(0, 7).replace('-', '/');
-            }
-            // 預設為當前月
-            const now = new Date();
-            return `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}`;
+        // 切換單卡目標定位
+        function setFortellerSelectedGoal(goalId) {
+            fortellerSelectedGoalId = goalId;
+            render();
         }
 
-        // 渲染 Forteller 戰略推演矩陣
+        // 遞迴解析目標及其子/孫拆解目標中的目標與步驟，並按月份分組
+        function collectGoalAndSubGoalItems(thought, allThoughts, currentMonthKey) {
+            const itemsByMonth = {};
+
+            function addItem(mKey, item) {
+                if (!itemsByMonth[mKey]) itemsByMonth[mKey] = [];
+                itemsByMonth[mKey].push(item);
+            }
+
+            function process(t, depth = 0, parentStepText = '') {
+                if (!t) return;
+
+                // 若此目標已結案，且結案時間較早，歸入過往
+                if (t.goalDone) {
+                    let doneMonth = currentMonthKey;
+                    if (t.lastCompletedDate) {
+                        doneMonth = t.lastCompletedDate.slice(0, 7).replace('-', '/');
+                    }
+                    if (doneMonth <= '2026/09') {
+                        addItem('2026/9', {
+                            type: 'goal_done',
+                            text: t.text,
+                            goal: t.goal || '',
+                            thoughtId: t.id,
+                            depth: depth
+                        });
+                    }
+                }
+
+                // 處理卡片內步驟
+                const steps = Array.isArray(t.steps) ? t.steps : [];
+                steps.forEach(s => {
+                    let mKey = currentMonthKey; // 只要沒指定日期的，自動標示在當月份
+                    if (s.stepDate && s.stepDate !== '未指定日期' && s.stepDate.length >= 7) {
+                        mKey = s.stepDate.slice(0, 7).replace('-', '/');
+                        if (mKey < '2026/09') mKey = '2026/9';
+                    }
+
+                    const isRec = (s.recurrence && s.recurrence !== 'none');
+                    const prefix = isRec ? 'o>' : '>';
+
+                    addItem(mKey, {
+                        type: 'step',
+                        prefix: prefix,
+                        text: s.text,
+                        done: s.done,
+                        stepDate: s.stepDate,
+                        thoughtId: t.id,
+                        stepId: s.id,
+                        depth: depth
+                    });
+
+                    // 檢查步驟是否有進一步的子拆解目標
+                    let childThought = null;
+                    if (s.linkedThoughtId) {
+                        childThought = allThoughts.find(x => x.id === s.linkedThoughtId);
+                    }
+                    if (!childThought) {
+                        childThought = allThoughts.find(x => x.parentStepInfo && x.parentStepInfo.parentThoughtId === t.id && x.parentStepInfo.parentStepId === s.id);
+                    }
+
+                    if (childThought) {
+                        // 標記拆解子目標
+                        addItem(mKey, {
+                            type: 'subgoal',
+                            text: childThought.text,
+                            goal: childThought.goal || '',
+                            done: childThought.goalDone,
+                            thoughtId: childThought.id,
+                            depth: depth + 1
+                        });
+                        // 遞迴處理子目標（及其孫目標）
+                        process(childThought, depth + 1, s.text);
+                    }
+                });
+            }
+
+            process(thought, 0);
+            return itemsByMonth;
+        }
+
+        // 渲染 Forteller 戰略推演矩陣 (完全動態分析版)
         function renderFortellerMatrixHtml() {
             const grandVision = localStorage.getItem('forteller_grand_vision') || 'The Last day 人類能所見即所得，強化六感：金融，健康，家庭自體循環，遠端職業';
 
-            // 動態定義當前月份與前後月份欄位 (以 2026 年第 4 季 Forteller 格式為基準)
+            // 固定時間欄位：以 Forteller 試算表格式為基準
             const monthCols = ['2026/9', '2026/10', '2026/11', '2026/12'];
             const currentMonthKey = '2026/10';
 
-            // 戰略盲點掃描：計算領域覆蓋度
-            const activeDomainsSet = new Set();
-            let missingStepsGoalCount = 0;
-            let singleStepCount = 0;
-            let recurringStepCount = 0;
+            // 1. 取得 LifeSchedule 中現有的所有領域清單 (如看板分頁 categoriesList，排除 '全部')
+            const domains = (Array.isArray(categoriesList) && categoriesList.length > 0)
+                ? categoriesList.filter(c => c !== '全部')
+                : ['💼 事業', '💪 健康', '🏠 家庭', '💰 財務', '🌱 成長', '🎨 興趣'];
 
-            thoughts.forEach(t => {
-                if (!t.goalDone) {
-                    activeDomainsSet.add(t.category || '💼 事業');
-                    const uncompleted = (t.steps || []).filter(s => !s.done);
-                    if (uncompleted.length === 0) {
-                        missingStepsGoalCount++;
-                    }
-                    uncompleted.forEach(s => {
-                        if (s.recurrence && s.recurrence !== 'none') recurringStepCount++;
-                        else singleStepCount++;
+            // 2. 動態建構推演軌道列 (Rows)：
+            // 領域會隨 LifeSchedule 領域增減。若同一個領域中有多個目標卡片，會重複出現複數個相同名稱的領域 (NO. 自動不同)
+            const rows = [];
+            let autoNo = 1;
+
+            domains.forEach(domain => {
+                // 找出屬於該領域的頂層目標卡片 (排除作為子目標嵌入在其他卡片內的拆解目標)
+                const domainThoughts = thoughts.filter(t => {
+                    const cat = t.category || '💼 事業';
+                    const isDirectChild = t.parentStepInfo && thoughts.some(p => p.id === t.parentStepInfo.parentThoughtId);
+                    return cat === domain && !isDirectChild;
+                });
+
+                if (domainThoughts.length === 0) {
+                    // 若此領域尚無任何目標，亦保留 1 列展示領域存在但無目標
+                    rows.append = rows.push({
+                        no: autoNo++,
+                        domain: domain,
+                        thought: null
+                    });
+                } else {
+                    domainThoughts.forEach(t => {
+                        rows.push({
+                            no: autoNo++,
+                            domain: domain,
+                            thought: t
+                        });
                     });
                 }
             });
 
-            // 取得所有唯一領域清單
-            const allDomains = Array.from(new Set(FORTELLER_STANDARD_TRACKS.map(t => t.domain)));
-            const missingDomains = allDomains.filter(d => !activeDomainsSet.has(d));
-
-            // 篩選軌道
-            let displayTracks = FORTELLER_STANDARD_TRACKS;
+            // 篩選功能：領域篩選
+            let displayRows = rows;
             if (fortellerFilterDomain !== 'all') {
-                displayTracks = displayTracks.filter(t => t.domain === fortellerFilterDomain);
+                displayRows = displayRows.filter(r => r.domain === fortellerFilterDomain);
             }
 
             return `
                 <div class="space-y-4 text-slate-800 dark:text-slate-100">
                     <!-- 頂部：Forteller 主題標題與終局願景橫幅 -->
-                    <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-md border border-indigo-700/60 relative overflow-hidden">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 z-10 relative">
+                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-700 relative">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xl">🔮</span>
-                                    <h3 class="font-extrabold text-base sm:text-lg tracking-wide">戰略推演羅盤 (Forteller 軌道演進矩陣)</h3>
-                                    <span class="text-[10px] bg-indigo-500/50 border border-indigo-400 text-indigo-100 px-2 py-0.5 rounded-full font-bold">全域宏觀視圖</span>
+                                    <span class="text-lg">🔮</span>
+                                    <h3 class="font-extrabold text-sm sm:text-base tracking-wide">Forteller 戰略推演盤</h3>
+                                    <span class="text-[10px] bg-indigo-900/80 border border-indigo-500/50 text-indigo-200 px-2 py-0.5 rounded-full font-bold">全域領域矩陣</span>
                                 </div>
-                                <div class="text-xs text-indigo-200/90 flex items-center gap-1.5 flex-wrap">
-                                    <span>🎯 終局題目：</span>
-                                    <span class="font-bold text-white bg-indigo-950/60 px-2.5 py-0.5 rounded-lg border border-indigo-400/40">${escapeHtml(grandVision)}</span>
-                                    <button onclick="editFortellerGrandVision()" class="text-[11px] text-amber-300 hover:text-amber-200 underline font-bold ml-1 cursor-pointer">✏️ 編輯</button>
+                                <div class="text-xs text-slate-300 flex items-center gap-1.5 flex-wrap">
+                                    <span>🎯 卡片題目：</span>
+                                    <span class="font-bold text-white bg-slate-800/90 px-2 py-0.5 rounded border border-slate-600">${escapeHtml(grandVision)}</span>
+                                    <button onclick="editFortellerGrandVision()" class="text-[10px] text-amber-300 hover:text-amber-200 underline font-bold cursor-pointer">✏️ 編輯題目</button>
                                 </div>
                             </div>
 
-                            <!-- 符號對照說明 -->
-                            <div class="bg-indigo-950/80 p-2.5 rounded-xl border border-indigo-500/40 text-[11px] space-y-1 shrink-0">
-                                <div class="font-bold text-indigo-300 flex items-center gap-1">
-                                    <span>📖 符號約定：</span>
-                                </div>
-                                <div class="flex items-center gap-3 text-slate-200 font-mono text-[10px]">
-                                    <span class="text-amber-300"><b>&gt;</b> 單步驟</span>
-                                    <span class="text-teal-300"><b>o&gt;</b> 循環步驟</span>
-                                    <span class="text-emerald-400"><b>✅</b> 已完成目標</span>
-                                    <span class="text-rose-400"><b>⚠️</b> 缺少步驟</span>
-                                </div>
+                            <!-- 符號對照說明 (簡潔橫列) -->
+                            <div class="flex items-center gap-3 text-xs bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700 font-mono text-[11px] self-start sm:self-auto">
+                                <span class="text-slate-300 font-sans">符號：</span>
+                                <span class="text-amber-300 font-bold">&gt; 單步驟</span>
+                                <span class="text-teal-300 font-bold">o&gt; 循環步驟</span>
+                                <span class="text-emerald-400 font-bold">✅ 已完成</span>
                             </div>
-                        </div>
-
-                        <!-- 戰略健康度雷達 (盲點警示) -->
-                        <div class="mt-3 pt-3 border-t border-indigo-700/50 flex items-center justify-between gap-2 flex-wrap text-xs">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="font-bold text-indigo-200">📊 戰略雷達：</span>
-                                <span class="bg-indigo-800/80 px-2 py-0.5 rounded-md border border-indigo-600 font-bold text-white">
-                                    領域覆蓋：${activeDomainsSet.size} / ${allDomains.length} 領域
-                                </span>
-                                <span class="bg-emerald-800/80 px-2 py-0.5 rounded-md border border-emerald-600 font-bold text-emerald-200">
-                                    活躍步驟：${singleStepCount + recurringStepCount} (單次 ${singleStepCount} | 循環 ${recurringStepCount})
-                                </span>
-                                ${missingStepsGoalCount > 0 ? `
-                                    <span class="bg-rose-900/80 px-2 py-0.5 rounded-md border border-rose-600 font-bold text-rose-200">
-                                        ⚠️ ${missingStepsGoalCount} 個進行中目標缺少步驟
-                                    </span>
-                                ` : ''}
-                            </div>
-                            ${missingDomains.length > 0 ? `
-                                <div class="text-[11px] text-amber-200 font-medium flex items-center gap-1">
-                                    <span>⚠️ 尚無目標之領域：</span>
-                                    <span class="font-bold text-amber-300">${missingDomains.slice(0, 3).join('、')}${missingDomains.length > 3 ? '...' : ''}</span>
-                                </div>
-                            ` : '<div class="text-[11px] text-emerald-300 font-bold">✨ 人生八大領域全數覆蓋！</div>'}
                         </div>
                     </div>
 
-                    <!-- 視圖篩選列：支援全域展示與單卡目標深入推演 -->
-                    <div class="flex items-center justify-between gap-2 flex-wrap bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
+                    <!-- 視圖篩選列：領域篩選與特定卡片定位 -->
+                    <div class="flex items-center justify-between gap-2 flex-wrap bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                                <span>🔍 檢視維度：</span>
-                            </span>
-                            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-bold">
-                                <button onclick="setFortellerScope('all')" class="px-2.5 py-1 rounded-md transition-all ${fortellerFilterScope === 'all' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}">
-                                    🌐 全域 16 軌道
-                                </button>
-                                <button onclick="setFortellerScope('focus_only')" class="px-2.5 py-1 rounded-md transition-all ${fortellerFilterScope === 'focus_only' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}">
-                                    ⭐ 僅看主推進鏈
-                                </button>
-                            </div>
-
-                            <!-- 領域下拉篩選 -->
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">領域篩選：</span>
                             <select onchange="setFortellerDomain(this.value)" class="text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none">
-                                <option value="all" ${fortellerFilterDomain === 'all' ? 'selected' : ''}>📁 全部人生領域</option>
-                                ${allDomains.map(d => `<option value="${d}" ${fortellerFilterDomain === d ? 'selected' : ''}>${d}</option>`).join('')}
+                                <option value="all" ${fortellerFilterDomain === 'all' ? 'selected' : ''}>📁 全部領域 (${displayRows.length} 軌道)</option>
+                                ${domains.map(d => `<option value="${d}" ${fortellerFilterDomain === d ? 'selected' : ''}>${d}</option>`).join('')}
                             </select>
                         </div>
 
-                        <!-- 單卡目標深入推演下拉 -->
+                        <!-- 快速定位至特定卡片 -->
                         <div class="flex items-center gap-1.5 text-xs">
-                            <span class="text-slate-500 font-bold hidden sm:inline">🎯 單卡追蹤：</span>
-                            <select onchange="setFortellerScope(this.value)" class="text-xs font-bold px-2 py-1 rounded-lg border border-indigo-300 dark:border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200 focus:outline-none max-w-48 sm:max-w-64 truncate">
-                                <option value="all">-- 選擇特定目標看接力鏈 --</option>
-                                ${thoughts.map(t => `<option value="${t.id}" ${fortellerFilterScope === String(t.id) ? 'selected' : ''}>${t.isMainFocus ? '⭐ ' : ''}${t.goalDone ? '✅ ' : ''}${escapeHtml(t.text)}</option>`).join('')}
+                            <span class="text-slate-500 font-bold">🔍 跳轉卡片：</span>
+                            <select onchange="if(this.value !== 'all') jumpToGoalCard(parseInt(this.value, 10))" class="text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none max-w-48 sm:max-w-60 truncate">
+                                <option value="all">-- 選擇卡片跳轉看板 --</option>
+                                ${thoughts.map(t => `<option value="${t.id}">${t.isMainFocus ? '⭐ ' : ''}${t.goalDone ? '✅ ' : ''}${escapeHtml(t.text)}</option>`).join('')}
                             </select>
                         </div>
                     </div>
 
-                    <!-- Forteller 核心矩陣大表格 (橫向捲動相容) -->
-                    <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xs">
-                        <table class="w-full border-collapse text-left text-xs min-w-[960px]">
+                    <!-- Forteller 核心表格 (緊湊高對比版，空白月份極小化) -->
+                    <div class="overflow-x-auto rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs">
+                        <table class="w-full border-collapse text-left text-xs table-auto">
                             <thead>
-                                <tr class="bg-slate-100 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700 select-none">
-                                    <th class="py-3 px-2 text-center font-extrabold w-12 border-r border-slate-200 dark:border-slate-700">NO.</th>
-                                    <th class="py-3 px-3 font-extrabold w-36 border-r border-slate-200 dark:border-slate-700">領域</th>
-                                    <th class="py-3 px-3 font-extrabold w-52 border-r border-slate-200 dark:border-slate-700">
-                                        <div class="flex items-center justify-between">
-                                            <span>2026/9 (過往完成)</span>
-                                            <span class="text-[10px] text-slate-400 font-normal">歷史積累</span>
-                                        </div>
-                                    </th>
-                                    <th class="py-3 px-3 font-extrabold w-64 border-r border-indigo-300 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200">
-                                        <div class="flex items-center justify-between">
-                                            <span>2026/10 (本月核心)</span>
-                                            <span class="text-[10px] bg-indigo-600 text-white px-1.5 py-0.2 rounded font-bold">當前進行</span>
-                                        </div>
-                                    </th>
-                                    <th class="py-3 px-3 font-extrabold w-56 border-r border-slate-200 dark:border-slate-700">
-                                        <div class="flex items-center justify-between">
-                                            <span>2026/11 (次月接力)</span>
-                                            <span class="text-[10px] text-slate-400 font-normal">預排里程碑</span>
-                                        </div>
-                                    </th>
-                                    <th class="py-3 px-3 font-extrabold w-56 border-r border-slate-200 dark:border-slate-700">
-                                        <div class="flex items-center justify-between">
-                                            <span>2026/12 (年末衝刺)</span>
-                                            <span class="text-[10px] text-slate-400 font-normal">階段目標</span>
-                                        </div>
-                                    </th>
-                                    <th class="py-3 px-3 font-extrabold w-56 bg-amber-50/60 dark:bg-amber-950/30 text-amber-950 dark:text-amber-200">
-                                        <div class="flex items-center justify-between">
-                                            <span>2026/12/31 終局願景</span>
-                                            <span class="text-[10px] text-amber-600 font-bold">以終為始</span>
-                                        </div>
-                                    </th>
+                                <tr class="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-b border-slate-300 dark:border-slate-700 select-none">
+                                    <th class="py-2.5 px-2 text-center font-extrabold w-10 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">NO.</th>
+                                    <th class="py-2.5 px-2.5 font-extrabold w-28 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">領域</th>
+                                    <th class="py-2.5 px-2.5 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/9</th>
+                                    <th class="py-2.5 px-2.5 font-extrabold border-r border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200 whitespace-nowrap">2026/10 (當月)</th>
+                                    <th class="py-2.5 px-2.5 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/11</th>
+                                    <th class="py-2.5 px-2.5 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/12</th>
+                                    <th class="py-2.5 px-2.5 font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap">2026/12/31 (終局目標)</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                ${displayTracks.map((track) => {
-                                    // 找出綁定在該軌道的所有目標
-                                    let trackThoughts = thoughts.filter(t => getThoughtTrackNo(t) === track.no);
-
-                                    // 若使用者啟用「單卡追蹤」，且該卡片不在這個軌道，則隱藏其他軌道
-                                    if (fortellerFilterScope !== 'all' && fortellerFilterScope !== 'focus_only') {
-                                        const targetId = parseInt(fortellerFilterScope, 10);
-                                        const hasTarget = trackThoughts.some(t => t.id === targetId || t.previousGoalId === targetId);
-                                        if (!hasTarget) return '';
-                                    }
-
-                                    // 若使用者啟用「僅看主推進鏈」
-                                    if (fortellerFilterScope === 'focus_only') {
-                                        const hasFocus = trackThoughts.some(t => t.isMainFocus || isDescendantOfMainFocus(t, thoughts));
-                                        if (!hasFocus) return '';
-                                    }
-
-                                    const trackVision = localStorage.getItem(`forteller_track_vision_${track.no}`) || track.defaultVision;
+                                ${displayRows.map(row => {
+                                    const t = row.thought;
+                                    // 收集該目標及其子/孫拆解目標之所有步驟與目標
+                                    const itemsByMonth = t ? collectGoalAndSubGoalItems(t, thoughts, currentMonthKey) : {};
 
                                     return `
                                         <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
-                                            <!-- NO. 編號 -->
-                                            <td class="py-3 px-2 text-center font-black text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-700 align-top">
-                                                <span class="inline-block px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-slate-700 dark:text-slate-300 font-mono text-[11px]">${track.no}</span>
+                                            <!-- NO. 自動序號 -->
+                                            <td class="py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap">
+                                                ${row.no}
                                             </td>
 
-                                            <!-- 領域 -->
-                                            <td class="py-3 px-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top">
-                                                <div class="space-y-1">
-                                                    <span class="inline-block px-2 py-0.5 rounded text-[11px] bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold">${track.domain}</span>
-                                                    <div class="text-[10px] text-slate-400 dark:text-slate-500 font-normal">軌道 ${track.no}</div>
-                                                </div>
+                                            <!-- 領域名稱 -->
+                                            <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap">
+                                                ${row.domain}
                                             </td>
 
-                                            <!-- 時間月度欄位 (2026/9, 2026/10, 2026/11, 2026/12) -->
-                                            ${monthCols.map((mKey) => {
+                                            <!-- 各月份欄位 (無步驟/目標時純空白，寬度最小化) -->
+                                            ${monthCols.map(mKey => {
+                                                const items = itemsByMonth[mKey] || [];
                                                 const isCurrent = (mKey === currentMonthKey);
-                                                // 篩選落在此月份或以此月份為目標的卡片
-                                                const cellThoughts = trackThoughts.filter(t => {
-                                                    const tMonth = getThoughtMonthKey(t);
-                                                    if (mKey === '2026/9') {
-                                                        // 9月包含已完成的歷史目標或 9 月目標
-                                                        return tMonth <= '2026/09' || (t.goalDone && tMonth <= '2026/10');
-                                                    }
-                                                    if (mKey === '2026/10') {
-                                                        return !t.goalDone && (tMonth === '2026/10' || !t.targetDate);
-                                                    }
-                                                    return tMonth === mKey;
-                                                });
 
+                                                if (items.length === 0) {
+                                                    // 空白月份：完全空白，寬度最小化
+                                                    return `
+                                                        <td class="py-1 px-1 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''} text-[10px] text-slate-300 dark:text-slate-600 text-center">
+                                                            <!-- 空白 -->
+                                                        </td>
+                                                    `;
+                                                }
+
+                                                // 有步驟或目標的月份：緊湊列出
                                                 return `
-                                                    <td class="py-2.5 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/30 dark:bg-indigo-950/20' : ''}">
-                                                        <div class="space-y-2">
-                                                            ${cellThoughts.length === 0 ? `
-                                                                <!-- 空白儲存格：提醒缺少推進或提供新增按鈕 -->
-                                                                <div class="p-2 border border-dashed ${isCurrent ? 'border-amber-300 dark:border-amber-700/60 bg-amber-50/40 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-800/40'} rounded-xl text-center group">
-                                                                    <div class="text-[10px] ${isCurrent ? 'text-amber-700 dark:text-amber-400 font-bold' : 'text-slate-400 dark:text-slate-500'}">
-                                                                        ${isCurrent ? '⚠️ 本月尚未推進' : '尚無排定'}
-                                                                    </div>
-                                                                    <button onclick="createGoalForTrack(${track.no}, '${mKey}')" class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold hover:underline opacity-80 group-hover:opacity-100 transition-opacity mt-0.5 cursor-pointer">
-                                                                        ➕ 新增此月目標
-                                                                    </button>
-                                                                </div>
-                                                            ` : `
-                                                                ${cellThoughts.map(t => {
-                                                                    const tag = getGoalFocusTag(t);
-                                                                    const steps = Array.isArray(t.steps) ? t.steps : [];
-                                                                    const uncompleted = steps.filter(s => !s.done);
-                                                                    const doneCount = steps.filter(s => s.done).length;
-                                                                    const totalCount = steps.length;
-                                                                    const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-
+                                                    <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
+                                                        <div class="space-y-1 leading-snug">
+                                                            ${items.map(item => {
+                                                                if (item.type === 'subgoal') {
+                                                                    // 子/孫拆解目標標題
                                                                     return `
-                                                                        <div class="p-2.5 rounded-xl border transition-all ${
-                                                                            t.goalDone 
-                                                                                ? 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 opacity-80' 
-                                                                                : (t.isMainFocus 
-                                                                                    ? 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 shadow-2xs' 
-                                                                                    : 'bg-white dark:bg-slate-750 border-slate-200 dark:border-slate-600 shadow-2xs')
-                                                                        }">
-                                                                            <!-- 目標頁首 -->
-                                                                            <div class="flex items-start justify-between gap-1 flex-wrap">
-                                                                                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border ${tag.badgeClass}">${tag.label}</span>
-                                                                                <span class="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-extrabold">${doneCount}/${totalCount} (${percent}%)</span>
-                                                                            </div>
-
-                                                                            <!-- 目標名稱 (點擊跳轉看板) -->
-                                                                            <h5 class="font-bold text-xs text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer mt-1 leading-snug" onclick="jumpToGoalCard(${t.id})" title="點擊跳轉至看板卡片">
-                                                                                ${t.goalDone ? '✅ ' : ''}${escapeHtml(t.text)}
-                                                                            </h5>
-
-                                                                            <!-- 步驟清單預覽 (支援 > 單步與 o> 循環步驟) -->
-                                                                            <div class="mt-1.5 pt-1.5 border-t border-slate-100 dark:border-slate-700 space-y-1">
-                                                                                ${steps.length === 0 ? `
-                                                                                    <div class="text-[10px] text-rose-500 font-bold">⚠️ 缺少步驟</div>
-                                                                                ` : `
-                                                                                    ${steps.slice(0, 3).map(s => {
-                                                                                        const isRec = (s.recurrence && s.recurrence !== 'none');
-                                                                                        const prefix = isRec ? 'o>' : '>';
-                                                                                        return `
-                                                                                            <div class="text-[10px] flex items-center justify-between text-slate-700 dark:text-slate-300 truncate cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400" onclick="jumpToGoalCard(${t.id})" title="點擊前往步驟">
-                                                                                                <span class="truncate ${s.done ? 'line-through text-slate-400' : (isRec ? 'text-teal-700 dark:text-teal-300 font-bold' : 'font-medium')}">
-                                                                                                    ${s.done ? '✅' : prefix} ${escapeHtml(s.text)}
-                                                                                                </span>
-                                                                                            </div>
-                                                                                        `;
-                                                                                    }).join('')}
-                                                                                    ${steps.length > 3 ? `<div class="text-[9px] text-slate-400 text-center font-mono">還有 ${steps.length - 3} 個步驟...</div>` : ''}
-                                                                                `}
-                                                                            </div>
-
-                                                                            <!-- 接力按鈕 -->
-                                                                            <div class="mt-2 pt-1 border-t border-dashed border-slate-200 dark:border-slate-700/80 flex items-center justify-between text-[10px]">
-                                                                                <button onclick="promptSetThoughtTrackNo(${t.id})" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-mono">
-                                                                                    #NO.${track.no}
-                                                                                </button>
-                                                                                <button onclick="createSuccessorGoal(${t.id})" class="text-indigo-600 dark:text-indigo-400 hover:underline font-bold flex items-center gap-0.5 cursor-pointer" title="生出下一個接力目標">
-                                                                                    <span>🚀 接力新目標</span>
-                                                                                </button>
-                                                                            </div>
+                                                                        <div class="font-bold text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer flex items-center gap-1 ${item.depth > 1 ? 'pl-2' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往拆解目標卡片">
+                                                                            <span>${item.depth > 1 ? '🌱' : '🌿'}</span>
+                                                                            <span class="${item.done ? 'line-through text-slate-400 font-normal' : ''}">${escapeHtml(item.text)}</span>
                                                                         </div>
                                                                     `;
-                                                                }).join('')}
-                                                            `}
+                                                                } else if (item.type === 'goal_done') {
+                                                                    // 已完成之目標
+                                                                    return `
+                                                                        <div class="text-[11px] text-slate-400 line-through cursor-pointer hover:text-indigo-600 flex items-center gap-1" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊查看已完成目標">
+                                                                            <span>✅</span>
+                                                                            <span>${escapeHtml(item.text)}</span>
+                                                                        </div>
+                                                                    `;
+                                                                } else {
+                                                                    // 步驟項目 (> 單步驟, o> 循環步驟)
+                                                                    const prefixColor = item.prefix === 'o>' ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400';
+                                                                    return `
+                                                                        <div class="text-[11px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer flex items-start gap-1 ${item.depth > 0 ? 'pl-2' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊跳轉至卡片進行編輯">
+                                                                            <span class="font-mono font-bold ${prefixColor} shrink-0 select-none">${item.prefix}</span>
+                                                                            <span class="${item.done ? 'line-through text-slate-400 dark:text-slate-500' : 'font-medium'} break-words">${escapeHtml(item.text)}</span>
+                                                                        </div>
+                                                                    `;
+                                                                }
+                                                            }).join('')}
                                                         </div>
                                                     </td>
                                                 `;
                                             }).join('')}
 
-                                            <!-- 2026/12/31 終局願景 -->
-                                            <td class="py-3 px-3 bg-amber-50/40 dark:bg-amber-950/20 text-slate-800 dark:text-slate-200 align-top">
-                                                <div class="space-y-1.5">
-                                                    <div class="text-xs font-bold text-amber-900 dark:text-amber-200 leading-snug">
-                                                        🎯 ${escapeHtml(trackVision)}
+                                            <!-- 2026/12/31 (終局目標) -->
+                                            <td class="py-2 px-2.5 bg-amber-50/30 dark:bg-amber-950/20 text-slate-800 dark:text-slate-200 align-top text-xs">
+                                                ${t && t.goal ? `
+                                                    <div class="font-bold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline" onclick="jumpToGoalCard(${t.id})" title="點擊前往目標卡片">
+                                                        🎯 ${escapeHtml(t.goal)}
                                                     </div>
-                                                    <button onclick="editTrackVision(${track.no})" class="text-[10px] text-amber-700 dark:text-amber-400 hover:underline font-bold cursor-pointer">
-                                                        ✏️ 編輯終局
-                                                    </button>
-                                                </div>
+                                                ` : `
+                                                    <div class="text-[10px] text-slate-300 dark:text-slate-600"></div>
+                                                `}
                                             </td>
                                         </tr>
                                     `;
@@ -5107,7 +4924,7 @@ const card = document.createElement('div');
                                         <span class="${thought.goalDone ? 'line-through text-slate-400 font-normal' : 'font-bold'}">🎯 最終目標：${escapeHtml(thought.goal || '未設定')}</span>
                                     </label>
                                     <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-800 border border-indigo-200/60 px-2.5 py-1 rounded-md font-medium">📅 預期日期：${thought.targetDate || '未指定'} [${thought.targetTimeSlot || '全天'}]</span>
-                                    <button type="button" onclick="promptSetThoughtTrackNo(${thought.id})" class="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-2 py-1 rounded-md font-mono text-[11px] cursor-pointer" title="點擊設定 Forteller 戰略推演軌道編號 (1~16)">🔮 軌道: NO.${getThoughtTrackNo(thought)}</button>
+
                                     ${thought.goalDone ? `
                                         <button type="button" onclick="createSuccessorGoal(${thought.id})" class="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded-md font-bold text-[11px] cursor-pointer shadow-2xs" title="目標完成後，在同一個軌道生出下一個接力目標">🚀 接力新目標</button>
                                     ` : ''}
