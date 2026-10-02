@@ -350,7 +350,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.1-test (Forteller規格澄清重構：動態領域與多層拆解步驟當月收斂完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.2-test (修復Forteller領域函式引用與落實四大防線實機驗證完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -3599,8 +3599,9 @@ function renderTimelineMatrix(container) {
             const currentMonthKey = '2026/10';
 
             // 1. 取得 LifeSchedule 中現有的所有領域清單 (如看板分頁 categoriesList，排除 '全部')
-            const domains = (Array.isArray(categoriesList) && categoriesList.length > 0)
-                ? categoriesList.filter(c => c !== '全部')
+            const rawCategories = typeof getOrderedCategories === 'function' ? getOrderedCategories() : (typeof categories !== 'undefined' ? categories : []);
+            const domains = (Array.isArray(rawCategories) && rawCategories.length > 0)
+                ? rawCategories.filter(c => c !== '全部')
                 : ['💼 事業', '💪 健康', '🏠 家庭', '💰 財務', '🌱 成長', '🎨 興趣'];
 
             // 2. 動態建構推演軌道列 (Rows)：
@@ -3618,7 +3619,7 @@ function renderTimelineMatrix(container) {
 
                 if (domainThoughts.length === 0) {
                     // 若此領域尚無任何目標，亦保留 1 列展示領域存在但無目標
-                    rows.append = rows.push({
+                    rows.push({
                         no: autoNo++,
                         domain: domain,
                         thought: null
