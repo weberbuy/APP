@@ -27,12 +27,20 @@
 
 
 
+
+
+
+
         /* 1. 頁面基底背景與預設文字 (柔和護眼深藍黑) */
         html.dark,
         html.dark body {
             background-color: #0b0f19 !important;
             color: #f1f5f9 !important;
         }
+
+
+
+
 
 
 
@@ -47,12 +55,20 @@
 
 
 
+
+
+
+
         /* 3. 次級區塊、嵌套卡片與底層面板 (slate-900 / slate-950) */
         html.dark [class*="bg-slate-50"] {
             background-color: #0f172a !important;
             color: #f8fafc !important;
             border-color: #334155 !important;
         }
+
+
+
+
 
 
 
@@ -66,11 +82,19 @@
 
 
 
+
+
+
+
         html.dark [class*="bg-slate-200"] {
             background-color: #475569 !important; /* slate-600 */
             color: #f8fafc !important;
             border-color: #64748b !important;
         }
+
+
+
+
 
 
 
@@ -85,9 +109,17 @@
 
 
 
+
+
+
+
         html.dark svg path.text-slate-200 {
             color: #334155 !important;
         }
+
+
+
+
 
 
 
@@ -103,10 +135,18 @@
 
 
 
+
+
+
+
         html.dark .text-slate-700,
         html.dark [class*="text-slate-700"] {
             color: #e2e8f0 !important;
         }
+
+
+
+
 
 
 
@@ -119,12 +159,20 @@
 
 
 
+
+
+
+
         html.dark .text-slate-500,
         html.dark .text-slate-400,
         html.dark [class*="text-slate-500"],
         html.dark [class*="text-slate-400"] {
             color: #94a3b8 !important;
         }
+
+
+
+
 
 
 
@@ -142,6 +190,10 @@
 
 
 
+
+
+
+
         html.dark .text-emerald-900,
         html.dark .text-emerald-800,
         html.dark .text-emerald-700,
@@ -149,6 +201,10 @@
         html.dark [class*="text-emerald-"] {
             color: #6ee7b7 !important;
         }
+
+
+
+
 
 
 
@@ -165,12 +221,20 @@
 
 
 
+
+
+
+
         html.dark .text-rose-900,
         html.dark .text-rose-800,
         html.dark .text-rose-700,
         html.dark [class*="text-rose-"] {
             color: #fda4af !important;
         }
+
+
+
+
 
 
 
@@ -185,12 +249,20 @@
 
 
 
+
+
+
+
         html.dark .text-blue-900,
         html.dark .text-blue-800,
         html.dark .text-blue-700,
         html.dark [class*="text-blue-"] {
             color: #93c5fd !important;
         }
+
+
+
+
 
 
 
@@ -205,6 +277,10 @@
 
 
 
+
+
+
+
         html.dark [class*="bg-emerald-50"],
         html.dark [class*="bg-emerald-100"] {
             background-color: rgba(6, 78, 59, 0.45) !important;
@@ -214,10 +290,18 @@
 
 
 
+
+
+
+
         html.dark [class*="bg-teal-50"] {
             background-color: rgba(19, 78, 74, 0.45) !important;
             border-color: #115e59 !important;
         }
+
+
+
+
 
 
 
@@ -231,6 +315,10 @@
 
 
 
+
+
+
+
         html.dark [class*="bg-amber-50"],
         html.dark [class*="bg-amber-100"] {
             background-color: rgba(120, 53, 15, 0.4) !important;
@@ -240,11 +328,19 @@
 
 
 
+
+
+
+
         html.dark [class*="bg-blue-50"],
         html.dark [class*="bg-blue-100"] {
             background-color: rgba(30, 58, 138, 0.4) !important;
             border-color: #1d4ed8 !important;
         }
+
+
+
+
 
 
 
@@ -261,10 +357,18 @@
 
 
 
+
+
+
+
         html.dark select option {
             background-color: #1e293b !important;
             color: #f8fafc !important;
         }
+
+
+
+
 
 
 
@@ -277,10 +381,18 @@
 
 
 
+
+
+
+
         /* 8. 邊框線調和 */
         html.dark [class*="border-slate-"] {
             border-color: #334155 !important;
         }
+
+
+
+
 
 
 
@@ -293,6 +405,10 @@
             border-color: #475569 !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75) !important;
         }
+
+
+
+
 
 
 
@@ -311,11 +427,19 @@
 
 
 
+
+
+
+
         /* 11. 按鈕懸停 (Hover) 過渡自然適配 */
         html.dark [class*="hover:bg-slate-100"]:hover,
         html.dark [class*="hover:bg-slate-200"]:hover {
             background-color: #475569 !important;
         }
+
+
+
+
 
 
 
@@ -331,7 +455,15 @@
 
 
 
+
+
+
+
     <!-- 動態模式寬度容器 -->
+
+
+
+
 
 
 
@@ -341,7 +473,15 @@
 
 
 
+
+
+
+
         <!-- 頁首與備份按鈕 -->
+
+
+
+
 
 
 
@@ -350,7 +490,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.2-test (修復Forteller領域函式引用與落實四大防線實機驗證完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.3-test (Forteller雙模式切換與目標卡片篩選及步驟收斂完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -370,12 +510,24 @@
 
 
 
+
+
+
+
         <!-- 📊 本週 (週一~週日) 總工時統計與警示面板 -->
 
 
 
 
+
+
+
+
         <div id="weeklyStatsPanel" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"></div>
+
+
+
+
 
 
 
@@ -396,6 +548,10 @@
 
 
 
+
+
+
+
         <!-- 表單輸入區 -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6">
             <div class="flex items-center justify-between cursor-pointer select-none" onclick="toggleForm()">
@@ -407,6 +563,10 @@
                     ➕ 展開表單
                 </button>
             </div>
+
+
+
+
 
 
 
@@ -460,7 +620,15 @@
 
 
 
+
+
+
+
         <!-- 頁籤列 -->
+
+
+
+
 
 
 
@@ -480,7 +648,15 @@
 
 
 
+
+
+
+
             <div id="tabsScrollContainer" class="overflow-x-auto pb-2 scroll-smooth">
+
+
+
+
 
 
 
@@ -492,7 +668,15 @@
 
 
 
+
+
+
+
         <!-- ⚙️ 資料管理與同步設定彈出視窗 (整合本機備份、匯入、樹莓派同步與連線設定) -->
+
+
+
+
 
 
 
@@ -509,6 +693,10 @@
                     </div>
                     <button onclick="closePiSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 transition-colors" title="關閉">✕</button>
                 </div>
+
+
+
+
 
 
 
@@ -538,6 +726,10 @@
 
 
 
+
+
+
+
                 <!-- 區塊二：樹莓派雲端同步手動操作 -->
                 <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 space-y-2.5">
                     <div class="flex items-center justify-between">
@@ -558,6 +750,10 @@
                         </button>
                     </div>
                 </div>
+
+
+
+
 
 
 
@@ -590,6 +786,10 @@
 
 
 
+
+
+
+
                 <!-- 底部操作列 -->
                 <div class="flex justify-between items-center pt-3 border-t border-slate-100">
                     <button onclick="closePiSettingsModal()" class="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors">關閉</button>
@@ -604,7 +804,15 @@
 
 
 
+
+
+
+
         <!-- 日期選擇器彈出視窗 -->
+
+
+
+
 
 
 
@@ -635,13 +843,25 @@
 
 
 
+
+
+
+
         <!-- 主顯示區塊 -->
+
+
+
+
 
 
 
 
         <div id="mainContentList" class="space-y-6"></div>
     </div>
+
+
+
+
 
 
 
@@ -653,6 +873,10 @@
     </button>
     <script>
 window.onerror = function(msg, url, line, col, error) {
+
+
+
+
 
 
 
@@ -671,6 +895,10 @@ window.onerror = function(msg, url, line, col, error) {
 
 
 
+
+
+
+
 function escapeHtml(str) {
     if (str === null || str === undefined) return '';
     return String(str)
@@ -684,10 +912,18 @@ function escapeHtml(str) {
 
 
 
+
+
+
+
 function escapeAttr(str) {
     if (!str) return '';
     return String(str).replace(/'/g, "\\'").replace(/"/g, '\&quot;');
 }
+
+
+
+
 
 
 
@@ -717,6 +953,10 @@ thoughts.forEach(t => {
 
 
 
+
+
+
+
 let blockedSlots = [];
 try { blockedSlots = JSON.parse(localStorage.getItem('my_blocked_slots')) || []; } catch(e) { blockedSlots = []; }
 let customTimelineDates = [];
@@ -732,7 +972,15 @@ let timelineStartDate = (storedTimelineStart !== null) ? storedTimelineStart : t
 
 
 
+
+
+
+
 // UI & Interaction State Variables
+
+
+
+
 
 
 
@@ -761,11 +1009,19 @@ let showAddStepFormMap = {};
 
 
 
+
+
+
+
 function toggleHideCompletedGoalsCards() {
     hideCompletedGoalsCards = !hideCompletedGoalsCards;
     localStorage.setItem('hide_completed_goals_cards', hideCompletedGoalsCards);
     render();
 }
+
+
+
+
 
 
 
@@ -782,8 +1038,16 @@ function getRecurrenceLabel(recurrence) {
 
 
 
+
+
+
+
 function getNextRecurrenceDate(baseDateStr, recurrence) {
     if (!baseDateStr || baseDateStr === '未指定日期') baseDateStr = todayStr;
+
+
+
+
 
 
 
@@ -809,6 +1073,10 @@ function getNextRecurrenceDate(baseDateStr, recurrence) {
 
 
 
+
+
+
+
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
@@ -818,10 +1086,18 @@ function getNextRecurrenceDate(baseDateStr, recurrence) {
 
 
 
+
+
+
+
 function toggleShowCompletedSteps(thoughtId) {
     showCompletedStepsMap[thoughtId] = !showCompletedStepsMap[thoughtId];
     render();
 }
+
+
+
+
 
 
 
@@ -840,14 +1116,26 @@ function toggleShowAddStepForm(thoughtId) {
 
 
 
+
+
+
+
 function isFileMatchingAccount(fileName, account) {
     if (!fileName || !fileName.startsWith('BL-') || !fileName.endsWith('.json')) return false;
 
 
 
 
+
+
+
+
     const acc = (account || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     if (acc) return fileName.endsWith('-' + acc + '.json');
+
+
+
+
 
 
 
@@ -860,7 +1148,15 @@ function isFileMatchingAccount(fileName, account) {
 
 
 
+
+
+
+
 function generateBackupFileName(account = piAccount) {
+
+
+
+
 
 
 
@@ -871,6 +1167,10 @@ function generateBackupFileName(account = piAccount) {
     const accSuffix = account ? `-${account}` : '';
     return `BL-${ts}${accSuffix}.json`;
 }
+
+
+
+
 
 
 
@@ -890,8 +1190,16 @@ function getExportPayload() {
 
 
 
+
+
+
+
 function applyImportedData(backupData, fileName) {
     if (!backupData) return false;
+
+
+
+
 
 
 
@@ -917,6 +1225,10 @@ function applyImportedData(backupData, fileName) {
 
 
 
+
+
+
+
 function handlePiBadgeClick() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
@@ -928,13 +1240,25 @@ function handlePiBadgeClick() {
 
 
 
+
+
+
+
 function updatePiSyncBadge(statusText, badgeClass) {
+
+
+
+
 
 
 
 
     const badge = document.getElementById('piSyncStatusBadge');
     if (badge) {
+
+
+
+
 
 
 
@@ -948,12 +1272,20 @@ function updatePiSyncBadge(statusText, badgeClass) {
 
 
 
+
+
+
+
         // 日間/夜間模式切換功能 (與首頁 weber_theme 完全同步)
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('weber_theme', isDark ? 'dark' : 'light');
             updateThemeUI(isDark);
         }
+
+
+
+
 
 
 
@@ -973,6 +1305,10 @@ function updatePiSyncBadge(statusText, badgeClass) {
 
 
 
+
+
+
+
         function updateThemeUI(isDark) {
             const icon = document.getElementById('themeIcon');
             const text = document.getElementById('themeText');
@@ -987,9 +1323,17 @@ function updatePiSyncBadge(statusText, badgeClass) {
 
 
 
+
+
+
+
 function openSettingsModal() {
     openPiSettingsModal();
 }
+
+
+
+
 
 
 
@@ -1001,11 +1345,19 @@ function closeSettingsModal() {
 
 
 
+
+
+
+
 function handleModalBackdropClick(event) {
     if (event.target && event.target.id === 'piSettingsModal') {
         closePiSettingsModal();
     }
 }
+
+
+
+
 
 
 
@@ -1023,7 +1375,15 @@ window.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
 function openPiSettingsModal() {
+
+
+
+
 
 
 
@@ -1041,7 +1401,15 @@ function openPiSettingsModal() {
 
 
 
+
+
+
+
 function closePiSettingsModal() {
+
+
+
+
 
 
 
@@ -1054,12 +1422,20 @@ async function uploadPayloadToPi(fileName, payload) {
 
 
 
+
+
+
+
     let response = await fetch(`${piServerUrl}/api/liveschedule/backup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': piApiKey, 'x-account': encodeURIComponent(piAccount) },
         body: JSON.stringify({ fileName, account: piAccount, data: payload })
     }).catch(() => null);
     if (!response || !response.ok) {
+
+
+
+
 
 
 
@@ -1080,6 +1456,10 @@ async function fetchLatestBackupForAccount(targetAccount) {
 
 
 
+
+
+
+
     const acc = (targetAccount || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     try {
         let response = await fetch(`${piServerUrl}/api/liveschedule/latest?account=${encodeURIComponent(acc)}`, {
@@ -1087,6 +1467,10 @@ async function fetchLatestBackupForAccount(targetAccount) {
             headers: { 'x-api-key': piApiKey, 'x-account': encodeURIComponent(acc) }
         });
         if (response.ok) {
+
+
+
+
 
 
 
@@ -1104,11 +1488,19 @@ async function fetchLatestBackupForAccount(targetAccount) {
 
 
 
+
+
+
+
             const filesData = await filesRes.json();
             const jsonFiles = (filesData.files || [])
                 .filter(f => !f.isDirectory && isFileMatchingAccount(f.name, acc))
                 .map(f => f.name).sort().reverse();
             if (jsonFiles.length > 0) {
+
+
+
+
 
 
 
@@ -1128,6 +1520,10 @@ async function savePiSettings() {
 
 
 
+
+
+
+
     const urlInput = document.getElementById('piServerUrlInput');
     const keyInput = document.getElementById('piApiKeyInput');
     const accInput = document.getElementById('piAccountInput');
@@ -1135,6 +1531,10 @@ async function savePiSettings() {
     if (newUrl && !/^https?:\/\//i.test(newUrl)) {
         newUrl = 'http://' + newUrl;
     }
+
+
+
+
 
 
 
@@ -1169,6 +1569,10 @@ async function savePiSettings() {
 
 
 
+
+
+
+
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
         if (backupData && fileName && applyImportedData(backupData, fileName)) {
             updatePiSyncBadge('🟢 已同步最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
@@ -1185,6 +1589,10 @@ async function savePiSettings() {
     alert("已儲存樹莓派伺服器連線設定！");
     checkAndAutoSyncFromPi();
 }
+
+
+
+
 
 
 
@@ -1207,6 +1615,10 @@ async function performSilentAutoSave() {
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     if (!piServerUrl || !piApiKey || thoughts.length === 0) return;
     updatePiSyncBadge('⏳ 儲存中...', 'bg-indigo-50 text-indigo-800 border-indigo-200 animate-pulse');
+
+
+
+
 
 
 
@@ -1240,6 +1652,10 @@ async function exportToPi() {
 
 
 
+
+
+
+
     const fileName = generateBackupFileName();
     const payload = getExportPayload();
     try {
@@ -1250,6 +1666,10 @@ async function exportToPi() {
             updatePiSyncBadge('🟢 已同步最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
             alert(`🎉 成功上傳備份至樹莓派！\n帳號：${piAccount || '未指定'}\n檔名：${fileName}`);
         } else {
+
+
+
+
 
 
 
@@ -1273,6 +1693,10 @@ async function importFromPi() {
     try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
         if (backupData && fileName) {
+
+
+
+
 
 
 
@@ -1321,6 +1745,10 @@ async function checkAndAutoSyncFromPi() {
 
 
 
+
+
+
+
 function jumpToCardsCategory(cat) {
             activeCategory = cat;
             setViewMode('cards');
@@ -1329,7 +1757,15 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
         function jumpToGoalCard(thoughtId) {
+
+
+
+
 
 
 
@@ -1349,6 +1785,10 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
                 const el = document.getElementById(`card-${thoughtId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1363,7 +1803,15 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
         function jumpToGoalEdit(thoughtId) {
+
+
+
+
 
 
 
@@ -1383,6 +1831,10 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
                 const el = document.getElementById(`card-${thoughtId}`);
                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 150);
@@ -1391,7 +1843,15 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
         function jumpToStepEdit(thoughtId, stepId) {
+
+
+
+
 
 
 
@@ -1403,6 +1863,10 @@ function jumpToCardsCategory(cat) {
                 hideCompletedGoalsCards = false;
                 localStorage.setItem('hide_completed_goals_cards', 'false');
             }
+
+
+
+
 
 
 
@@ -1419,10 +1883,18 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
                 const el = document.getElementById(`step-item-${thoughtId}-${stepId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
+
+
+
+
 
 
 
@@ -1436,10 +1908,18 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
         function toggleOverviewSubMode(subMode) {
             overviewSubMode = subMode;
             render();
         }
+
+
+
+
 
 
 
@@ -1452,7 +1932,15 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
         function getCategoryStats(cat) {
+
+
+
+
 
 
 
@@ -1469,6 +1957,10 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
                         const h = parseHours(s.stepTime);
                         totalHours += h;
                         if (s.done) completedHours += h;
@@ -1481,7 +1973,15 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
         function getCurrentWeekRange() {
+
+
+
+
 
 
 
@@ -1495,8 +1995,16 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
             const sunday = new Date(monday);
             sunday.setDate(monday.getDate() + 6);
+
+
+
+
 
 
 
@@ -1509,7 +2017,15 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
         function getWeeklyTotalHours(excludeStepId = null) {
+
+
+
+
 
 
 
@@ -1531,7 +2047,15 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
         function updateMaxWeeklyHours(val) {
+
+
+
+
 
 
 
@@ -1548,13 +2072,25 @@ function jumpToCardsCategory(cat) {
 
 
 
+
+
+
+
 function renderWeeklyStatsPanel() {
+
+
+
+
 
 
 
 
             const panel = document.getElementById('weeklyStatsPanel');
             if (!panel) return;
+
+
+
+
 
 
 
@@ -1587,7 +2123,15 @@ function renderWeeklyStatsPanel() {
 
 
 
+
+
+
+
 function updateContainerWidth() {
+
+
+
+
 
 
 
@@ -1606,7 +2150,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function getOrderedCategories() {
+
+
+
+
 
 
 
@@ -1620,7 +2172,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function scrollElement(id, offset) {
+
+
+
+
 
 
 
@@ -1632,7 +2192,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function scrollTabsLeft() { scrollElement('tabsScrollContainer', -220); }
+
+
+
+
 
 
 
@@ -1642,7 +2210,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function scrollMatrixLeft() { scrollElement('matrixScrollContainer', -300); }
+
+
+
+
 
 
 
@@ -1652,12 +2228,24 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function scrollTimelineLeft() { scrollElement('timelineTableContainer', -300); }
 
 
 
 
+
+
+
+
         function scrollTimelineRight() { scrollElement('timelineTableContainer', 300); }
+
+
+
+
 
 
 
@@ -1668,8 +2256,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             let s = String(timeStr).trim();
             if (s.includes('分')) {
+
+
+
+
 
 
 
@@ -1679,6 +2275,10 @@ function updateContainerWidth() {
             }
             return parseFloat(s) || 0;
         }
+
+
+
+
 
 
 
@@ -1697,10 +2297,18 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             thoughts.forEach(t => {
                 if (!Array.isArray(t.steps)) return;
                 const tag = getGoalFocusTag(t);
                 const isHabitGoal = (tag.key === 'habit');
+
+
+
+
 
 
 
@@ -1723,6 +2331,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             return {
                 totalHours: habitHours + projectHours,
                 habitHours: habitHours,
@@ -1733,8 +2345,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function getDailyTotalHours(dateStr, excludeStepId = null) {
             if (!dateStr || dateStr === '未指定日期') return 0;
+
+
+
+
 
 
 
@@ -1755,7 +2375,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function updateMaxDailyHours(val) {
+
+
+
+
 
 
 
@@ -1772,8 +2400,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function getBlockedSlot(dateStr, itemSlot = '全天') {
             if (!dateStr || dateStr === '未指定日期') return null;
+
+
+
+
 
 
 
@@ -1790,8 +2426,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function validateChildStepsDate(targetThoughtId, newTargetDate) {
             if (!newTargetDate || newTargetDate === '未指定日期') return true;
+
+
+
+
 
 
 
@@ -1806,6 +2450,10 @@ function updateContainerWidth() {
             }
             return true;
         }
+
+
+
+
 
 
 
@@ -1848,9 +2496,17 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function promoteStepToGoal(thoughtId, stepId) {
             const parentThought = thoughts.find(x => x.id === thoughtId);
             if (!parentThought) return;
+
+
+
+
 
 
 
@@ -1861,6 +2517,10 @@ function updateContainerWidth() {
             if (step.linkedThoughtId && thoughts.some(x => x.id === step.linkedThoughtId)) {
                 return alert("此步驟已經另存為獨立目標囉！");
             }
+
+
+
+
 
 
 
@@ -1889,7 +2549,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function autoCheckExpiredInTimeline() {
+
+
+
+
 
 
 
@@ -1915,7 +2583,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function convertExpiredToUnscheduled() {
+
+
+
+
 
 
 
@@ -1944,7 +2620,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function moveStepUp(thoughtId, stepId) {
+
+
+
+
 
 
 
@@ -1955,8 +2639,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const idx = t.steps.findIndex(s => s.id === stepId);
             if (idx > 0) {
+
+
+
+
 
 
 
@@ -1968,7 +2660,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function moveStepDown(thoughtId, stepId) {
+
+
+
+
 
 
 
@@ -1979,8 +2679,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const idx = t.steps.findIndex(s => s.id === stepId);
             if (idx !== -1 && idx < t.steps.length - 1) {
+
+
+
+
 
 
 
@@ -1992,6 +2700,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function moveCategoryLeft(cat, ev) {
             if (ev) ev.stopPropagation();
             getOrderedCategories();
@@ -1999,8 +2711,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const idx = categoryOrder.indexOf(cat);
             if (idx > 0) {
+
+
+
+
 
 
 
@@ -2012,6 +2732,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function moveCategoryRight(cat, ev) {
             if (ev) ev.stopPropagation();
             getOrderedCategories();
@@ -2019,8 +2743,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const idx = categoryOrder.indexOf(cat);
             if (idx !== -1 && idx < categoryOrder.length - 1) {
+
+
+
+
 
 
 
@@ -2032,7 +2764,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function toggleGoalDone(thoughtId) {
+
+
+
+
 
 
 
@@ -2040,6 +2780,10 @@ function updateContainerWidth() {
             const t = thoughts.find(x => x.id === thoughtId);
             if (t) { t.goalDone = !t.goalDone; saveData(); }
         }
+
+
+
+
 
 
 
@@ -2060,8 +2804,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const parent = thoughtsList.find(x => x.id === parentId);
             if (!parent) return false;
+
+
+
+
 
 
 
@@ -2072,9 +2824,17 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             // 若直接母目標本身也是拆解目標，繼續向上追溯其母目標是否源自「主推進」
             return isDescendantOfMainFocus(parent, thoughtsList, visited);
         }
+
+
+
+
 
 
 
@@ -2091,6 +2851,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             // 1. ⭐ 主推進：使用者手動勾選指定 (上限 3 個)
             if (thought.isMainFocus) {
                 return {
@@ -2099,6 +2863,10 @@ function updateContainerWidth() {
                     badgeClass: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-600'
                 };
             }
+
+
+
+
 
 
 
@@ -2115,8 +2883,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const steps = Array.isArray(thought.steps) ? thought.steps : [];
             const uncompleted = steps.filter(s => !s.done);
+
+
+
+
 
 
 
@@ -2133,6 +2909,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             // 計算 14 天前基準日期 (YYYY-MM-DD，超過 14 天/2週 冰存)
             const fourteenDaysAgo = new Date();
             fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
@@ -2141,9 +2921,17 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             // 檢查目標建立時間是否在兩週內 (若是兩週內新建立目標，即便尚無步驟也先標示為加分推進)
             const createdTimestamp = thought.createdAt || (typeof thought.id === 'number' && thought.id > 1600000000000 ? thought.id : 0);
             const isNewWithin14Days = createdTimestamp > 0 && (Date.now() - createdTimestamp < 14 * 86400000);
+
+
+
+
 
 
 
@@ -2158,9 +2946,17 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             // 4. 🧊 冰存推進：卡片內無步驟且無近期完成步驟 (超過兩週未規劃)，或所有未完成步驟均已逾期 > 14 天且近期無完成步驟
             const hasNoStepsFrozen = (steps.length === 0 || uncompleted.length === 0) && !isNewWithin14Days && !hasRecentCompletedStep;
             const allStepsExpiredFrozen = uncompleted.length > 0 && uncompleted.every(s => s.stepDate && s.stepDate !== '未指定日期' && s.stepDate < fourteenDaysAgoStr) && !hasRecentCompletedStep;
+
+
+
+
 
 
 
@@ -2176,6 +2972,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             // 5. 💡 加分推進：其餘新加入或一般進行中的目標
             return {
                 key: 'bonus',
@@ -2187,7 +2987,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         // 切換目標為「主推進」或取消 (落實巴菲特專注心法，上限 3 個)
+
+
+
+
 
 
 
@@ -2216,6 +3024,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         let showBacklogCards = false;
         function toggleShowBacklogCards() {
             showBacklogCards = !showBacklogCards;
@@ -2224,6 +3036,10 @@ function updateContainerWidth() {
         function toggleMainFocus(thoughtId) {
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
+
+
+
+
 
 
 
@@ -2242,9 +3058,17 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             saveData();
             render();
         }
+
+
+
+
 
 
 
@@ -2259,12 +3083,20 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function showAllTimelineHistory() {
             timelineStartDate = '';
             localStorage.setItem('my_timeline_start_date', timelineStartDate);
             render();
             triggerAutoSaveToPi();
         }
+
+
+
+
 
 
 
@@ -2279,7 +3111,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function toggleBlockPanel() { isBlockPanelOpen = !isBlockPanelOpen; render(); }
+
+
+
+
 
 
 
@@ -2289,7 +3129,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function addBlockedSlot() {
+
+
+
+
 
 
 
@@ -2309,6 +3157,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function deleteBlockedSlot(id) {
             blockedSlots = blockedSlots.filter(b => b.id !== id);
             saveBlockedSlots();
@@ -2317,8 +3169,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function openDatePickerModal(type, thoughtId, stepId) {
             pendingDropItem = { type, thoughtId, stepId };
+
+
+
+
 
 
 
@@ -2332,8 +3192,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function closeDatePickerModal() {
             pendingDropItem = null;
+
+
+
+
 
 
 
@@ -2345,7 +3213,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function confirmModalDate() {
+
+
+
+
 
 
 
@@ -2359,12 +3235,20 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const blocked = getBlockedSlot(selectedDate, selectedSlot);
             if (blocked) {
                 alert(`🚫 警告：${selectedDate} 的 [${blocked.timeSlot}] 已設定為不排事 (${blocked.note})！`);
                 return;
             }
             if (pendingDropItem) {
+
+
+
+
 
 
 
@@ -2387,8 +3271,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
                         const weekRange = getCurrentWeekRange();
                         if (selectedDate >= weekRange.mondayStr && selectedDate <= weekRange.sundayStr) {
+
+
+
+
 
 
 
@@ -2403,6 +3295,10 @@ function updateContainerWidth() {
                                 }
                             }
                         }
+
+
+
+
 
 
 
@@ -2423,8 +3319,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function toggleForm() {
             isFormOpen = !isFormOpen;
+
+
+
+
 
 
 
@@ -2443,8 +3347,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function getDateStatus(dateStr) {
             if (!dateStr || dateStr === '未指定日期') return { text: dateStr, style: '', badge: '' };
+
+
+
+
 
 
 
@@ -2474,13 +3386,25 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function setCategory(cat) { document.getElementById('categoryInput').value = cat; }
+
+
+
+
 
 
 
 
         function setViewMode(mode) {
             viewMode = mode;
+
+
+
+
 
 
 
@@ -2507,8 +3431,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function toggleReorderMode() {
             isReorderMode = !isReorderMode;
+
+
+
+
 
 
 
@@ -2526,12 +3458,20 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function saveData() {
             syncLinkedData();
             localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
             render();
             triggerAutoSaveToPi();
         }
+
+
+
+
 
 
 
@@ -2544,7 +3484,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function addCustomDateRow() {
+
+
+
+
 
 
 
@@ -2560,7 +3508,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function addThought() {
+
+
+
+
 
 
 
@@ -2573,6 +3529,10 @@ function updateContainerWidth() {
             const slotSelect = document.getElementById('goalSlotSelect');
             const targetTimeSlot = slotSelect ? slotSelect.value : '全天';
             if (!text) return alert("請填入思緒/想法主題！");
+
+
+
+
 
 
 
@@ -2593,13 +3553,25 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function duplicateThought(id) {
+
+
+
+
 
 
 
 
             const original = thoughts.find(t => t.id === id);
             if (!original) return;
+
+
+
+
 
 
 
@@ -2627,6 +3599,10 @@ function updateContainerWidth() {
             });
             saveData();
         }
+
+
+
+
 
 
 
@@ -2663,7 +3639,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function startEdit(id) { editingId = id; render(); }
+
+
+
+
 
 
 
@@ -2673,7 +3657,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function saveEdit(id) {
+
+
+
+
 
 
 
@@ -2690,11 +3682,19 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const blocked = getBlockedSlot(date, targetTimeSlot);
             if (blocked) {
                 return alert(`🚫 警告：${date} 的 [${blocked.timeSlot}] 已設定為不排事 (${blocked.note})！`);
             }
             if (!validateChildStepsDate(id, date)) return;
+
+
+
+
 
 
 
@@ -2709,7 +3709,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function addStep(thoughtId) {
+
+
+
+
 
 
 
@@ -2731,10 +3739,18 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const blocked = getBlockedSlot(stepDate, stepTimeSlot);
             if (blocked) {
                 return alert(`⚠️ 無法新增步驟！\n\n「${stepDate} [${stepTimeSlot}]」已被設定為不可排程時段：\n原因：${blocked.reason || '未提供理由'}`);
             }
+
+
+
+
 
 
 
@@ -2762,6 +3778,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function duplicateStep(thoughtId, stepId) {
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
@@ -2781,7 +3801,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function toggleStep(thoughtId, stepId) {
+
+
+
+
 
 
 
@@ -2792,8 +3820,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const s = (t.steps || []).find(x => x.id === stepId);
             if (!s) return;
+
+
+
+
 
 
 
@@ -2806,6 +3842,10 @@ function updateContainerWidth() {
                     const oldDate = s.stepDate || todayStr;
                     const nextDate = getNextRecurrenceDate(oldDate, s.recurrence);
                     const recLabel = getRecurrenceLabel(s.recurrence);
+
+
+
+
 
 
 
@@ -2837,6 +3877,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function deleteStep(thoughtId, stepId) {
             const t = thoughts.find(x => x.id === thoughtId);
             if (t) {
@@ -2855,7 +3899,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function startEditStep(thoughtId, stepId) { editingStepIdKey = `${thoughtId}-${stepId}`; render(); }
+
+
+
+
 
 
 
@@ -2865,7 +3917,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function saveEditStep(thoughtId, stepId) {
+
+
+
+
 
 
 
@@ -2887,6 +3947,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const blocked = getBlockedSlot(stepDate, stepTimeSlot);
             if (blocked) {
                 return alert(`⚠️ 無法指定步驟至此時段！\n\n「${stepDate} [${stepTimeSlot}]」已被設定為不可排程時段：\n原因：${blocked.reason || '未提供理由'}`);
@@ -2895,8 +3959,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const t = thoughts.find(x => x.id === thoughtId);
             if (t) {
+
+
+
+
 
 
 
@@ -2918,10 +3990,18 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function handleDragStart(ev, type, thoughtId, stepId) {
             draggedItemInfo = { type, thoughtId, stepId };
             ev.dataTransfer.setData("text/plain", JSON.stringify(draggedItemInfo));
         }
+
+
+
+
 
 
 
@@ -2931,10 +4011,18 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function handleDrop(ev, targetDate) {
             ev.preventDefault();
             if (!draggedItemInfo) return;
             if (targetDate === '__prompt_new_date__') {
+
+
+
+
 
 
 
@@ -2948,9 +4036,17 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const { type, thoughtId, stepId } = draggedItemInfo;
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
+
+
+
+
 
 
 
@@ -2962,10 +4058,18 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
                 const s = t.steps.find(x => x.id === stepId);
                 if (s) itemSlot = s.stepTimeSlot || '全天';
             }
             if (targetDate !== '__unscheduled__') {
+
+
+
+
 
 
 
@@ -2987,11 +4091,19 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
                 const newStepDate = (targetDate === '__unscheduled__') ? '' : targetDate;
                 if (newStepDate && t.targetDate && t.targetDate !== '未指定日期' && newStepDate > t.targetDate) {
                     alert(`步驟預期日期 (${newStepDate}) 不能超過最終目標預期日期 (${t.targetDate})！`);
                     draggedItemInfo = null; return;
                 }
+
+
+
+
 
 
 
@@ -3010,8 +4122,16 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function exportData() {
             if (thoughts.length === 0) return alert("目前沒有可匯出的思緒資料！");
+
+
+
+
 
 
 
@@ -3038,6 +4158,10 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
             const a = document.createElement('a'); a.href = dataStr;
             a.download = fileName; a.click();
@@ -3046,7 +4170,15 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function importData(e) {
+
+
+
+
 
 
 
@@ -3104,12 +4236,24 @@ function updateContainerWidth() {
 
 
 
+
+
+
+
         function setCategoryTab(cat) { activeCategory = cat; render(); }
 
 
 
 
+
+
+
+
 function renderTimelineMatrix(container) {
+
+
+
+
 
 
 
@@ -3125,10 +4269,18 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
             let sortedDates = Array.from(datesSet).sort();
             if (timelineStartDate) {
                 sortedDates = sortedDates.filter(d => d >= timelineStartDate);
             }
+
+
+
+
 
 
 
@@ -3140,8 +4292,16 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
             const wrapper = document.createElement('div');
             wrapper.className = "bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4 w-full";
+
+
+
+
 
 
 
@@ -3163,6 +4323,10 @@ function renderTimelineMatrix(container) {
                     </div>
                 </div>
             `;
+
+
+
+
 
 
 
@@ -3208,6 +4372,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
             let unscheduledHtml = `
                 <div ondragover="handleDragOver(event)" ondrop="handleDrop(event, '__unscheduled__')"
                     class="bg-slate-100/90 p-3.5 rounded-xl border-2 border-dashed border-slate-300 space-y-2">
@@ -3228,6 +4396,10 @@ function renderTimelineMatrix(container) {
                 });
             }
             unscheduledHtml += `</div></div>`;
+
+
+
+
 
 
 
@@ -3265,6 +4437,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                 <div id="timelineTableContainer" class="max-h-[70vh] overflow-y-auto overflow-x-auto rounded-xl border border-slate-200 w-full scroll-smooth">
                     <table class="w-full border-collapse text-sm min-w-full">
                         <thead class="sticky top-0 z-20 bg-indigo-100 border-b-2 border-indigo-200 shadow-sm">
@@ -3286,11 +4462,19 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                 const dateInfo = getDateStatus(date);
                 const dayBlocks = blockedSlots.filter(b => b.date === date);
                 const focusOnDate = calculateFocusHours(date);
                 const totalHoursOnDate = focusOnDate.totalHours;
                 const isOverMaxLimit = totalHoursOnDate > maxDailyHours;
+
+
+
+
 
 
 
@@ -3302,6 +4486,10 @@ function renderTimelineMatrix(container) {
                     healthBoxStyle = "bg-rose-50 dark:bg-rose-950/70 border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-200";
                     healthBadge = `<span class="text-[9px] bg-rose-600 text-white px-1.5 py-0.5 rounded font-bold shadow-2xs">⚠️ 超標 (>${maxDailyHours}h)</span>`;
                 }
+
+
+
+
 
 
 
@@ -3342,6 +4530,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                         let cellItems = [];
                         const matchingGoals = thoughts.filter(t => (t.category || '💼 事業') === cat && t.targetDate === date);
                         matchingGoals.forEach(g => cellItems.push({ type: 'goal', slot: g.targetTimeSlot || '全天', item: g }));
@@ -3357,6 +4549,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                                 const g = ci.item;
                                 html += `
                                     <div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})"
@@ -3368,6 +4564,10 @@ function renderTimelineMatrix(container) {
                                     </div>
                                 `;
                             } else if (ci.type === 'step') {
+
+
+
+
 
 
 
@@ -3398,6 +4598,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                     let dayItems = [];
                     thoughts.forEach(t => {
                         if (t.targetDate === date) {
@@ -3420,6 +4624,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                                 const g = ci.item;
                                 html += `
                                     <div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})"
@@ -3432,6 +4640,10 @@ function renderTimelineMatrix(container) {
                                     </div>
                                 `;
                             } else if (ci.type === 'step') {
+
+
+
+
 
 
 
@@ -3464,6 +4676,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
         // ============================================================
         // 🧠 戰略心智圖全景檢視模組 (Focus Mindmap & Tree View)
         // 視覺化呈現：⭐ 主推進 ➔ 🌿 子推進 / 🔄 習慣推進 ➔ 具體執行步驟
@@ -3480,21 +4696,24 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
+
         // ==========================================
-        // 🔮 戰略推演羅盤 (Forteller 軌道演進矩陣模組 - 動態卡片分析版)
+        // 🔮 戰略推演羅盤 (Forteller 雙模式與目標篩選模組)
         // ==========================================
 
-        let fortellerFilterDomain = 'all'; // 'all' or specific domain
-        let fortellerSelectedGoalId = 'all'; // 'all' or specific thoughtId
+        let fortellerMode = 'domain'; // 'domain' (領域模式) 或 'goal' (目標模式)
+        let fortellerFilterDomain = 'all'; // 'all' 或指定領域名稱
+        let fortellerSelectedGoalIds = []; // 空陣列代表全選，若有值代表複選特定目標 ID
+        let isFortellerGoalDropdownOpen = false; // 目標篩選下拉開關
 
-        // 編輯年度終局題目願景
-        function editFortellerGrandVision() {
-            const current = localStorage.getItem('forteller_grand_vision') || 'The Last day 人類能所見即所得，強化六感：金融，健康，家庭自體循環，遠端職業';
-            const input = prompt('請輸入年度核心終局願景 (例如 2026/12/31 達成目標)：', current);
-            if (input !== null && input.trim() !== '') {
-                localStorage.setItem('forteller_grand_vision', input.trim());
-                render();
-            }
+        // 切換 Forteller 檢視模式 (領域模式 vs 目標模式)
+        function setFortellerMode(mode) {
+            fortellerMode = mode;
+            render();
         }
 
         // 切換領域篩選
@@ -3503,13 +4722,43 @@ function renderTimelineMatrix(container) {
             render();
         }
 
-        // 切換單卡目標定位
-        function setFortellerSelectedGoal(goalId) {
-            fortellerSelectedGoalId = goalId;
+        // 切換目標卡片篩選下拉選單開合
+        function toggleFortellerGoalDropdown(e) {
+            if (e) e.stopPropagation();
+            isFortellerGoalDropdownOpen = !isFortellerGoalDropdownOpen;
             render();
         }
 
-        // 遞迴解析目標及其子/孫拆解目標中的目標與步驟，並按月份分組
+        // 切換單個目標勾選狀態
+        function toggleFortellerGoalSelection(goalId, e) {
+            if (e) e.stopPropagation();
+            // 若原本為全選 (空陣列)，點選單一目標時切換為除該目標外的其餘目標或僅選該目標
+            if (fortellerSelectedGoalIds.length === 0) {
+                // 轉為全選狀態的明確陣列
+                fortellerSelectedGoalIds = thoughts.map(t => t.id);
+            }
+            const idx = fortellerSelectedGoalIds.indexOf(goalId);
+            if (idx >= 0) {
+                fortellerSelectedGoalIds.splice(idx, 1);
+            } else {
+                fortellerSelectedGoalIds.push(goalId);
+            }
+            render();
+        }
+
+        // 目標卡片全選 / 清空
+        function setFortellerAllGoals(selectAll, e) {
+            if (e) e.stopPropagation();
+            if (selectAll) {
+                fortellerSelectedGoalIds = []; // 空陣列代表全選
+            } else {
+                fortellerSelectedGoalIds = [-9999]; // 代表全部不選
+            }
+            render();
+        }
+
+        // 遞迴解析目標及其子/孫拆解目標中的未完成步驟與已完成目標
+        // 規則：已完成步驟隱藏 (!s.done)，已完成目標保持顯示 (t.goalDone)
         function collectGoalAndSubGoalItems(thought, allThoughts, currentMonthKey) {
             const itemsByMonth = {};
 
@@ -3518,10 +4767,10 @@ function renderTimelineMatrix(container) {
                 itemsByMonth[mKey].push(item);
             }
 
-            function process(t, depth = 0, parentStepText = '') {
+            function process(t, depth = 0) {
                 if (!t) return;
 
-                // 若此目標已結案，且結案時間較早，歸入過往
+                // 已完成的目標仍然顯示 (包含過往已結案與當前結案)
                 if (t.goalDone) {
                     let doneMonth = currentMonthKey;
                     if (t.lastCompletedDate) {
@@ -3535,13 +4784,23 @@ function renderTimelineMatrix(container) {
                             thoughtId: t.id,
                             depth: depth
                         });
+                    } else if (doneMonth === '2026/10') {
+                        addItem('2026/10', {
+                            type: 'goal_done',
+                            text: t.text,
+                            goal: t.goal || '',
+                            thoughtId: t.id,
+                            depth: depth
+                        });
                     }
                 }
 
-                // 處理卡片內步驟
+                // 步驟只保留「未完成步驟 (!s.done)」
                 const steps = Array.isArray(t.steps) ? t.steps : [];
                 steps.forEach(s => {
-                    let mKey = currentMonthKey; // 只要沒指定日期的，自動標示在當月份
+                    if (s.done) return; // 已完成步驟不顯示，簡化畫面！
+
+                    let mKey = currentMonthKey; // 沒指定日期的步驟自動歸於當月份
                     if (s.stepDate && s.stepDate !== '未指定日期' && s.stepDate.length >= 7) {
                         mKey = s.stepDate.slice(0, 7).replace('-', '/');
                         if (mKey < '2026/09') mKey = '2026/9';
@@ -3554,14 +4813,13 @@ function renderTimelineMatrix(container) {
                         type: 'step',
                         prefix: prefix,
                         text: s.text,
-                        done: s.done,
                         stepDate: s.stepDate,
                         thoughtId: t.id,
                         stepId: s.id,
                         depth: depth
                     });
 
-                    // 檢查步驟是否有進一步的子拆解目標
+                    // 檢查步驟是否有拆解子目標
                     let childThought = null;
                     if (s.linkedThoughtId) {
                         childThought = allThoughts.find(x => x.id === s.linkedThoughtId);
@@ -3571,7 +4829,6 @@ function renderTimelineMatrix(container) {
                     }
 
                     if (childThought) {
-                        // 標記拆解子目標
                         addItem(mKey, {
                             type: 'subgoal',
                             text: childThought.text,
@@ -3580,8 +4837,7 @@ function renderTimelineMatrix(container) {
                             thoughtId: childThought.id,
                             depth: depth + 1
                         });
-                        // 遞迴處理子目標（及其孫目標）
-                        process(childThought, depth + 1, s.text);
+                        process(childThought, depth + 1);
                     }
                 });
             }
@@ -3590,201 +4846,384 @@ function renderTimelineMatrix(container) {
             return itemsByMonth;
         }
 
-        // 渲染 Forteller 戰略推演矩陣 (完全動態分析版)
-        function renderFortellerMatrixHtml() {
-            const grandVision = localStorage.getItem('forteller_grand_vision') || 'The Last day 人類能所見即所得，強化六感：金融，健康，家庭自體循環，遠端職業';
+        // 渲染步驟與目標單元格內部內容
+        function renderFortellerCellContent(items) {
+            if (!items || items.length === 0) return '';
+            return `
+                <div class="space-y-1 leading-snug">
+                    ${items.map(item => {
+                        if (item.type === 'subgoal') {
+                            return `
+                                <div class="font-bold text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer flex items-center gap-1 ${item.depth > 1 ? 'pl-2' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往拆解目標卡片">
+                                    <span>${item.depth > 1 ? '🌱' : '🌿'}</span>
+                                    <span class="${item.done ? 'line-through text-slate-400 font-normal' : ''}">${escapeHtml(item.text)}</span>
+                                </div>
+                            `;
+                        } else if (item.type === 'goal_done') {
+                            return `
+                                <div class="text-[11px] text-slate-400 line-through cursor-pointer hover:text-indigo-600 flex items-center gap-1" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊查看已完成目標">
+                                    <span>✅</span>
+                                    <span>${escapeHtml(item.text)}</span>
+                                </div>
+                            `;
+                        } else {
+                            const prefixColor = item.prefix === 'o>' ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400';
+                            return `
+                                <div class="text-[11px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer flex items-start gap-1 ${item.depth > 0 ? 'pl-2' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊跳轉至卡片進行編輯">
+                                    <span class="font-mono font-bold ${prefixColor} shrink-0 select-none">${item.prefix}</span>
+                                    <span class="font-medium break-words">${escapeHtml(item.text)}</span>
+                                </div>
+                            `;
+                        }
+                    }).join('')}
+                </div>
+            `;
+        }
 
-            // 固定時間欄位：以 Forteller 試算表格式為基準
+        // 渲染 Forteller 戰略推演矩陣 (整合領域模式與目標模式)
+        function renderFortellerMatrixHtml() {
             const monthCols = ['2026/9', '2026/10', '2026/11', '2026/12'];
             const currentMonthKey = '2026/10';
 
-            // 1. 取得 LifeSchedule 中現有的所有領域清單 (如看板分頁 categoriesList，排除 '全部')
+            // 取得 LifeSchedule 領域清單
             const rawCategories = typeof getOrderedCategories === 'function' ? getOrderedCategories() : (typeof categories !== 'undefined' ? categories : []);
             const domains = (Array.isArray(rawCategories) && rawCategories.length > 0)
                 ? rawCategories.filter(c => c !== '全部')
                 : ['💼 事業', '💪 健康', '🏠 家庭', '💰 財務', '🌱 成長', '🎨 興趣'];
 
-            // 2. 動態建構推演軌道列 (Rows)：
-            // 領域會隨 LifeSchedule 領域增減。若同一個領域中有多個目標卡片，會重複出現複數個相同名稱的領域 (NO. 自動不同)
-            const rows = [];
-            let autoNo = 1;
+            // 判斷目標卡片篩選狀態
+            const isAllGoalsSelected = (fortellerSelectedGoalIds.length === 0);
+            const selectedGoalCount = isAllGoalsSelected ? thoughts.length : fortellerSelectedGoalIds.filter(id => thoughts.some(t => t.id === id)).length;
 
-            domains.forEach(domain => {
-                // 找出屬於該領域的頂層目標卡片 (排除作為子目標嵌入在其他卡片內的拆解目標)
-                const domainThoughts = thoughts.filter(t => {
-                    const cat = t.category || '💼 事業';
-                    const isDirectChild = t.parentStepInfo && thoughts.some(p => p.id === t.parentStepInfo.parentThoughtId);
-                    return cat === domain && !isDirectChild;
-                });
-
-                if (domainThoughts.length === 0) {
-                    // 若此領域尚無任何目標，亦保留 1 列展示領域存在但無目標
-                    rows.push({
-                        no: autoNo++,
-                        domain: domain,
-                        thought: null
-                    });
-                } else {
-                    domainThoughts.forEach(t => {
-                        rows.push({
-                            no: autoNo++,
-                            domain: domain,
-                            thought: t
-                        });
-                    });
-                }
+            // 篩選有效的頂層目標卡片 (排除作為子目標嵌入在其他卡片內的拆解目標)
+            const rootThoughts = thoughts.filter(t => {
+                const isDirectChild = t.parentStepInfo && thoughts.some(p => p.id === t.parentStepInfo.parentThoughtId);
+                if (isDirectChild) return false;
+                if (!isAllGoalsSelected && !fortellerSelectedGoalIds.includes(t.id)) return false;
+                return true;
             });
 
-            // 篩選功能：領域篩選
-            let displayRows = rows;
-            if (fortellerFilterDomain !== 'all') {
-                displayRows = displayRows.filter(r => r.domain === fortellerFilterDomain);
+            // ==========================================
+            // 模式 A：領域模式 (Domain Mode)
+            // ==========================================
+            let domainRows = [];
+            let domainAutoNo = 1;
+
+            if (fortellerMode === 'domain') {
+                domains.forEach(domain => {
+                    if (fortellerFilterDomain !== 'all' && fortellerFilterDomain !== domain) return;
+
+                    const domainThoughts = rootThoughts.filter(t => (t.category || '💼 事業') === domain);
+                    if (domainThoughts.length === 0) {
+                        domainRows.push({
+                            no: domainAutoNo++,
+                            domain: domain,
+                            thought: null
+                        });
+                    } else {
+                        domainThoughts.forEach(t => {
+                            domainRows.push({
+                                no: domainAutoNo++,
+                                domain: domain,
+                                thought: t
+                            });
+                        });
+                    }
+                });
+            }
+
+            // ==========================================
+            // 模式 B：目標模式 (Goal Mode)
+            // 規則：步驟有拆解目標歸於子/孫目標領域，無拆解目標歸於原卡片領域；各行有各自 NO.，終局目標跨 NO. 合併
+            // ==========================================
+            let goalModeRows = [];
+            let goalAutoNo = 1;
+
+            if (fortellerMode === 'goal') {
+                rootThoughts.forEach(root => {
+                    if (fortellerFilterDomain !== 'all' && (root.category || '💼 事業') !== fortellerFilterDomain) {
+                        // 若設有領域篩選，只在 root 或其子目標符合時納入
+                    }
+
+                    const branches = [];
+                    // 1. 原目標卡片本身的直接步驟 (無拆解子目標)
+                    const directSteps = (root.steps || []).filter(s => {
+                        if (s.done) return false; // 排除已完成步驟
+                        const hasLinked = s.linkedThoughtId && thoughts.some(t => t.id === s.linkedThoughtId);
+                        const hasChild = thoughts.some(t => t.parentStepInfo && t.parentStepInfo.parentThoughtId === root.id && t.parentStepInfo.parentStepId === s.id);
+                        return !hasLinked && !hasChild;
+                    });
+
+                    // 即使無直接步驟，也保留原卡片本體作為第一列
+                    branches.push({
+                        domain: root.category || '💼 事業',
+                        targetGoal: root,
+                        steps: directSteps,
+                        isRootBranch: true
+                    });
+
+                    // 2. 檢視各步驟所屬的拆解子目標 (步驟歸於子/孫目標的領域)
+                    (root.steps || []).forEach(s => {
+                        if (s.done) return; // 排除已完成步驟
+                        let linkedChild = null;
+                        if (s.linkedThoughtId) linkedChild = thoughts.find(t => t.id === s.linkedThoughtId);
+                        if (!linkedChild) linkedChild = thoughts.find(t => t.parentStepInfo && t.parentStepInfo.parentThoughtId === root.id && t.parentStepInfo.parentStepId === s.id);
+
+                        if (linkedChild) {
+                            const childDomain = linkedChild.category || root.category || '💼 事業';
+                            const childUncompletedSteps = (linkedChild.steps || []).filter(cs => !cs.done);
+
+                            branches.push({
+                                domain: childDomain,
+                                targetGoal: linkedChild,
+                                triggerStep: s,
+                                steps: [s, ...childUncompletedSteps],
+                                isRootBranch: false
+                            });
+                        }
+                    });
+
+                    // 依領域過濾篩選分支
+                    let filteredBranches = branches;
+                    if (fortellerFilterDomain !== 'all') {
+                        filteredBranches = filteredBranches.filter(b => b.domain === fortellerFilterDomain);
+                    }
+
+                    if (filteredBranches.length > 0) {
+                        const totalBranchCount = filteredBranches.length;
+                        filteredBranches.forEach((b, bIdx) => {
+                            goalModeRows.push({
+                                no: goalAutoNo++,
+                                domain: b.domain,
+                                branch: b,
+                                rootGoal: root,
+                                isFirstInRoot: (bIdx === 0),
+                                rootRowspan: totalBranchCount
+                            });
+                        });
+                    }
+                });
             }
 
             return `
-                <div class="space-y-4 text-slate-800 dark:text-slate-100">
-                    <!-- 頂部：Forteller 主題標題與終局願景橫幅 -->
-                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-700 relative">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-lg">🔮</span>
-                                    <h3 class="font-extrabold text-sm sm:text-base tracking-wide">Forteller 戰略推演盤</h3>
-                                    <span class="text-[10px] bg-indigo-900/80 border border-indigo-500/50 text-indigo-200 px-2 py-0.5 rounded-full font-bold">全域領域矩陣</span>
-                                </div>
-                                <div class="text-xs text-slate-300 flex items-center gap-1.5 flex-wrap">
-                                    <span>🎯 卡片題目：</span>
-                                    <span class="font-bold text-white bg-slate-800/90 px-2 py-0.5 rounded border border-slate-600">${escapeHtml(grandVision)}</span>
-                                    <button onclick="editFortellerGrandVision()" class="text-[10px] text-amber-300 hover:text-amber-200 underline font-bold cursor-pointer">✏️ 編輯題目</button>
-                                </div>
-                            </div>
-
-                            <!-- 符號對照說明 (簡潔橫列) -->
-                            <div class="flex items-center gap-3 text-xs bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700 font-mono text-[11px] self-start sm:self-auto">
-                                <span class="text-slate-300 font-sans">符號：</span>
-                                <span class="text-amber-300 font-bold">&gt; 單步驟</span>
-                                <span class="text-teal-300 font-bold">o&gt; 循環步驟</span>
-                                <span class="text-emerald-400 font-bold">✅ 已完成</span>
+                <div class="space-y-3.5 text-slate-800 dark:text-slate-100">
+                    <!-- 頂部精簡控制列：模式切換、目標篩選與符號說明 -->
+                    <div class="flex items-center justify-between gap-3 flex-wrap bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xs">
+                        <!-- 左側：視圖模式切換 (領域模式 vs 目標模式) -->
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-sm font-extrabold flex items-center gap-1.5 text-indigo-950 dark:text-indigo-200">
+                                <span>🔮 Forteller 戰略推演盤</span>
+                            </span>
+                            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
+                                <button type="button" onclick="setFortellerMode('domain')" class="px-3 py-1 rounded-lg transition-all cursor-pointer ${fortellerMode === 'domain' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'}">
+                                    📂 領域模式
+                                </button>
+                                <button type="button" onclick="setFortellerMode('goal')" class="px-3 py-1 rounded-lg transition-all cursor-pointer ${fortellerMode === 'goal' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'}">
+                                    🎯 目標模式
+                                </button>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 視圖篩選列：領域篩選與特定卡片定位 -->
-                    <div class="flex items-center justify-between gap-2 flex-wrap bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">領域篩選：</span>
-                            <select onchange="setFortellerDomain(this.value)" class="text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none">
-                                <option value="all" ${fortellerFilterDomain === 'all' ? 'selected' : ''}>📁 全部領域 (${displayRows.length} 軌道)</option>
+                        <!-- 中間與右側：目標卡片篩選與領域篩選 -->
+                        <div class="flex items-center gap-2 flex-wrap text-xs">
+                            <!-- 目標卡片多選下拉容器 (relative) -->
+                            <div class="relative">
+                                <button type="button" onclick="toggleFortellerGoalDropdown(event)" class="px-2.5 py-1.5 rounded-lg border border-indigo-300 dark:border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/50 text-indigo-900 dark:text-indigo-200 font-bold flex items-center gap-1 cursor-pointer">
+                                    <span>🎯 目標卡片：</span>
+                                    <span class="underline">${isAllGoalsSelected ? '全部目標' : `已選 ${selectedGoalCount} 個`}</span>
+                                    <span class="text-[10px]">▼</span>
+                                </button>
+
+                                ${isFortellerGoalDropdownOpen ? `
+                                    <div class="absolute right-0 mt-1.5 w-64 bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 shadow-xl p-2.5 z-50 space-y-2 text-xs" onclick="event.stopPropagation()">
+                                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-1.5">
+                                            <span class="font-extrabold text-slate-800 dark:text-slate-200">目標卡片篩選</span>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button" onclick="setFortellerAllGoals(true, event)" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">全選</button>
+                                                <span class="text-slate-300">|</span>
+                                                <button type="button" onclick="setFortellerAllGoals(false, event)" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-bold">清空</button>
+                                            </div>
+                                        </div>
+                                        <div class="max-h-52 overflow-y-auto space-y-1 pr-1">
+                                            ${thoughts.map(t => {
+                                                const checked = isAllGoalsSelected || fortellerSelectedGoalIds.includes(t.id);
+                                                return `
+                                                    <label class="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-slate-50 dark:hover:bg-slate-700/60 cursor-pointer select-none">
+                                                        <input type="checkbox" onchange="toggleFortellerGoalSelection(${t.id}, event)" ${checked ? 'checked' : ''} class="w-3.5 h-3.5 text-indigo-600 rounded">
+                                                        <span class="truncate ${t.goalDone ? 'line-through text-slate-400' : 'text-slate-800 dark:text-slate-200 font-medium'}">
+                                                            ${t.isMainFocus ? '⭐ ' : ''}${escapeHtml(t.text)}
+                                                        </span>
+                                                    </label>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                        <div class="pt-1 border-t border-slate-100 dark:border-slate-700 text-right">
+                                            <button type="button" onclick="toggleFortellerGoalDropdown(event)" class="px-2 py-0.5 text-[11px] font-bold bg-indigo-600 text-white rounded-md">完成</button>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <!-- 領域下拉篩選 -->
+                            <select onchange="setFortellerDomain(this.value)" class="text-xs font-bold px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none">
+                                <option value="all" ${fortellerFilterDomain === 'all' ? 'selected' : ''}>📁 全部領域</option>
                                 ${domains.map(d => `<option value="${d}" ${fortellerFilterDomain === d ? 'selected' : ''}>${d}</option>`).join('')}
                             </select>
-                        </div>
 
-                        <!-- 快速定位至特定卡片 -->
-                        <div class="flex items-center gap-1.5 text-xs">
-                            <span class="text-slate-500 font-bold">🔍 跳轉卡片：</span>
-                            <select onchange="if(this.value !== 'all') jumpToGoalCard(parseInt(this.value, 10))" class="text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none max-w-48 sm:max-w-60 truncate">
-                                <option value="all">-- 選擇卡片跳轉看板 --</option>
-                                ${thoughts.map(t => `<option value="${t.id}">${t.isMainFocus ? '⭐ ' : ''}${t.goalDone ? '✅ ' : ''}${escapeHtml(t.text)}</option>`).join('')}
-                            </select>
+                            <!-- 符號對照 -->
+                            <div class="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-mono text-[11px]">
+                                <span class="text-amber-500 font-bold">&gt; 單步</span>
+                                <span class="text-teal-500 font-bold">o&gt; 循環</span>
+                                <span class="text-emerald-500 font-bold">✅ 已完成</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Forteller 核心表格 (緊湊高對比版，空白月份極小化) -->
+                    <!-- 模式說明提示條 -->
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between px-1">
+                        <span>
+                            ${fortellerMode === 'domain' 
+                                ? '📂 目前為「領域模式」：依看板領域動態展開目標與未完成步驟。' 
+                                : '🎯 目前為「目標模式」：依卡片目標深度展開步驟所屬領域，終局目標跨 NO. 合併顯示。'}
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">點擊文字直接前往卡片</span>
+                    </div>
+
+                    <!-- Forteller 核心表格 -->
                     <div class="overflow-x-auto rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs">
                         <table class="w-full border-collapse text-left text-xs table-auto">
                             <thead>
                                 <tr class="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-b border-slate-300 dark:border-slate-700 select-none">
-                                    <th class="py-2.5 px-2 text-center font-extrabold w-10 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">NO.</th>
-                                    <th class="py-2.5 px-2.5 font-extrabold w-28 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">領域</th>
-                                    <th class="py-2.5 px-2.5 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/9</th>
-                                    <th class="py-2.5 px-2.5 font-extrabold border-r border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200 whitespace-nowrap">2026/10 (當月)</th>
-                                    <th class="py-2.5 px-2.5 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/11</th>
-                                    <th class="py-2.5 px-2.5 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/12</th>
-                                    <th class="py-2.5 px-2.5 font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap">2026/12/31 (終局目標)</th>
+                                    <th class="py-2 px-2 text-center font-extrabold w-10 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">NO.</th>
+                                    <th class="py-2 px-2.5 font-extrabold w-28 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">領域</th>
+                                    <th class="py-2 px-2 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/9</th>
+                                    <th class="py-2 px-2 font-extrabold border-r border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200 whitespace-nowrap">2026/10 (當月)</th>
+                                    <th class="py-2 px-2 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/11</th>
+                                    <th class="py-2 px-2 font-extrabold border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">2026/12</th>
+                                    <th class="py-2 px-2.5 font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap">2026/12/31 (終局目標)</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                ${displayRows.map(row => {
-                                    const t = row.thought;
-                                    // 收集該目標及其子/孫拆解目標之所有步驟與目標
-                                    const itemsByMonth = t ? collectGoalAndSubGoalItems(t, thoughts, currentMonthKey) : {};
+                                ${fortellerMode === 'domain' ? `
+                                    <!-- =================== 領域模式列表 =================== -->
+                                    ${domainRows.map(row => {
+                                        const t = row.thought;
+                                        const itemsByMonth = t ? collectGoalAndSubGoalItems(t, thoughts, currentMonthKey) : {};
 
-                                    return `
-                                        <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
-                                            <!-- NO. 自動序號 -->
-                                            <td class="py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap">
-                                                ${row.no}
-                                            </td>
-
-                                            <!-- 領域名稱 -->
-                                            <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap">
-                                                ${row.domain}
-                                            </td>
-
-                                            <!-- 各月份欄位 (無步驟/目標時純空白，寬度最小化) -->
-                                            ${monthCols.map(mKey => {
-                                                const items = itemsByMonth[mKey] || [];
-                                                const isCurrent = (mKey === currentMonthKey);
-
-                                                if (items.length === 0) {
-                                                    // 空白月份：完全空白，寬度最小化
+                                        return `
+                                            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
+                                                <td class="py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap">
+                                                    ${row.no}
+                                                </td>
+                                                <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap">
+                                                    ${row.domain}
+                                                </td>
+                                                ${monthCols.map(mKey => {
+                                                    const items = itemsByMonth[mKey] || [];
+                                                    const isCurrent = (mKey === currentMonthKey);
+                                                    if (items.length === 0) {
+                                                        return `<td class="py-1 px-1 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
+                                                    }
                                                     return `
-                                                        <td class="py-1 px-1 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''} text-[10px] text-slate-300 dark:text-slate-600 text-center">
-                                                            <!-- 空白 -->
+                                                        <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
+                                                            ${renderFortellerCellContent(items)}
                                                         </td>
                                                     `;
-                                                }
+                                                }).join('')}
+                                                <td class="py-2 px-2.5 bg-amber-50/30 dark:bg-amber-950/20 text-slate-800 dark:text-slate-200 align-top text-xs">
+                                                    ${t && t.goal ? `
+                                                        <div class="font-bold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline" onclick="jumpToGoalCard(${t.id})" title="點擊前往目標卡片">
+                                                            🎯 ${escapeHtml(t.goal)}
+                                                        </div>
+                                                    ` : ''}
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                ` : `
+                                    <!-- =================== 目標模式列表 (跨NO.終局合併) =================== -->
+                                    ${goalModeRows.map(row => {
+                                        const b = row.branch;
+                                        const root = row.rootGoal;
+                                        // 收集該分支底下的項目按月份分組
+                                        const branchItemsByMonth = {};
+                                        function addBranchItem(mKey, item) {
+                                            if (!branchItemsByMonth[mKey]) branchItemsByMonth[mKey] = [];
+                                            branchItemsByMonth[mKey].push(item);
+                                        }
 
-                                                // 有步驟或目標的月份：緊湊列出
-                                                return `
-                                                    <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
-                                                        <div class="space-y-1 leading-snug">
-                                                            ${items.map(item => {
-                                                                if (item.type === 'subgoal') {
-                                                                    // 子/孫拆解目標標題
-                                                                    return `
-                                                                        <div class="font-bold text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer flex items-center gap-1 ${item.depth > 1 ? 'pl-2' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往拆解目標卡片">
-                                                                            <span>${item.depth > 1 ? '🌱' : '🌿'}</span>
-                                                                            <span class="${item.done ? 'line-through text-slate-400 font-normal' : ''}">${escapeHtml(item.text)}</span>
-                                                                        </div>
-                                                                    `;
-                                                                } else if (item.type === 'goal_done') {
-                                                                    // 已完成之目標
-                                                                    return `
-                                                                        <div class="text-[11px] text-slate-400 line-through cursor-pointer hover:text-indigo-600 flex items-center gap-1" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊查看已完成目標">
-                                                                            <span>✅</span>
-                                                                            <span>${escapeHtml(item.text)}</span>
-                                                                        </div>
-                                                                    `;
-                                                                } else {
-                                                                    // 步驟項目 (> 單步驟, o> 循環步驟)
-                                                                    const prefixColor = item.prefix === 'o>' ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400';
-                                                                    return `
-                                                                        <div class="text-[11px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer flex items-start gap-1 ${item.depth > 0 ? 'pl-2' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊跳轉至卡片進行編輯">
-                                                                            <span class="font-mono font-bold ${prefixColor} shrink-0 select-none">${item.prefix}</span>
-                                                                            <span class="${item.done ? 'line-through text-slate-400 dark:text-slate-500' : 'font-medium'} break-words">${escapeHtml(item.text)}</span>
-                                                                        </div>
-                                                                    `;
-                                                                }
-                                                            }).join('')}
+                                        (b.steps || []).forEach(s => {
+                                            let mKey = currentMonthKey;
+                                            if (s.stepDate && s.stepDate !== '未指定日期' && s.stepDate.length >= 7) {
+                                                mKey = s.stepDate.slice(0, 7).replace('-', '/');
+                                                if (mKey < '2026/09') mKey = '2026/9';
+                                            }
+                                            const isRec = (s.recurrence && s.recurrence !== 'none');
+                                            addBranchItem(mKey, {
+                                                type: 'step',
+                                                prefix: isRec ? 'o>' : '>',
+                                                text: s.text,
+                                                done: s.done,
+                                                thoughtId: b.targetGoal ? b.targetGoal.id : root.id,
+                                                stepId: s.id,
+                                                depth: 0
+                                            });
+                                        });
+
+                                        // 若目標已結案，亦顯示在對應月份
+                                        if (b.targetGoal && b.targetGoal.goalDone) {
+                                            let doneMonth = currentMonthKey;
+                                            if (b.targetGoal.lastCompletedDate) {
+                                                doneMonth = b.targetGoal.lastCompletedDate.slice(0, 7).replace('-', '/');
+                                            }
+                                            if (doneMonth <= '2026/09') {
+                                                addBranchItem('2026/9', {
+                                                    type: 'goal_done',
+                                                    text: b.targetGoal.text,
+                                                    thoughtId: b.targetGoal.id,
+                                                    depth: 0
+                                                });
+                                            }
+                                        }
+
+                                        return `
+                                            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
+                                                <td class="py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap">
+                                                    ${row.no}
+                                                </td>
+                                                <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap">
+                                                    ${row.domain}
+                                                </td>
+                                                ${monthCols.map(mKey => {
+                                                    const items = branchItemsByMonth[mKey] || [];
+                                                    const isCurrent = (mKey === currentMonthKey);
+                                                    if (items.length === 0) {
+                                                        return `<td class="py-1 px-1 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
+                                                    }
+                                                    return `
+                                                        <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
+                                                            ${renderFortellerCellContent(items)}
+                                                        </td>
+                                                    `;
+                                                }).join('')}
+
+                                                <!-- 終局目標：同一個目標卡片跨 NO. 合併顯示 (rowspan) -->
+                                                ${row.isFirstInRoot ? `
+                                                    <td rowspan="${row.rootRowspan}" class="py-2.5 px-3 bg-amber-50/40 dark:bg-amber-950/25 text-slate-800 dark:text-slate-200 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
+                                                        <div class="space-y-1">
+                                                            <div class="font-extrabold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline" onclick="jumpToGoalCard(${root.id})" title="點擊前往目標卡片">
+                                                                🎯 ${escapeHtml(root.goal || root.text)}
+                                                            </div>
+                                                            <div class="text-[10px] text-amber-700/80 dark:text-amber-400 font-mono">
+                                                                (跨 ${row.rootRowspan} 軌道合併)
+                                                            </div>
                                                         </div>
                                                     </td>
-                                                `;
-                                            }).join('')}
-
-                                            <!-- 2026/12/31 (終局目標) -->
-                                            <td class="py-2 px-2.5 bg-amber-50/30 dark:bg-amber-950/20 text-slate-800 dark:text-slate-200 align-top text-xs">
-                                                ${t && t.goal ? `
-                                                    <div class="font-bold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline" onclick="jumpToGoalCard(${t.id})" title="點擊前往目標卡片">
-                                                        🎯 ${escapeHtml(t.goal)}
-                                                    </div>
-                                                ` : `
-                                                    <div class="text-[10px] text-slate-300 dark:text-slate-600"></div>
-                                                `}
-                                            </td>
-                                        </tr>
-                                    `;
-                                }).join('')}
+                                                ` : ''}
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                `}
                             </tbody>
                         </table>
                     </div>
@@ -3796,6 +5235,10 @@ function renderTimelineMatrix(container) {
             const isDone = s.done;
             const isRecurring = s.recurrence && s.recurrence !== 'none';
             const hasLinked = s.linkedThoughtId && thoughts.find(x => x.id === s.linkedThoughtId);
+
+
+
+
 
 
 
@@ -3825,10 +5268,18 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
         
         // 渲染帶有子目標展開按鈕之步驟項目
         function renderStepWithSubGoal(parentGoal, s, linkedGoal, isHabitType, visited = new Set()) {
             const isExpanded = linkedGoal ? !!mindmapExpandedSubGoalsMap[linkedGoal.id] : false;
+
+
+
+
 
 
 
@@ -3863,6 +5314,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
         function renderChildGoalBranch(childGoal, visited = new Set()) {
             if (!childGoal || visited.has(childGoal.id)) return '';
             visited.add(childGoal.id);
@@ -3876,8 +5331,16 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
             // 檢查此子目標底下是否還有再往下一層的拆解目標 (孫目標)
             const grandChildGoals = thoughts.filter(t => t.parentStepInfo && t.parentStepInfo.parentThoughtId === childGoal.id && !t.goalDone);
+
+
+
+
 
 
 
@@ -3907,6 +5370,10 @@ function renderTimelineMatrix(container) {
                             </button>
                         </div>
                     </div>
+
+
+
+
 
 
 
@@ -3943,6 +5410,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
         function renderMiniGoalTreeCard(goal) {
             const steps = Array.isArray(goal.steps) ? goal.steps : [];
             const pendingSteps = steps.filter(s => !s.done);
@@ -3950,6 +5421,10 @@ function renderTimelineMatrix(container) {
             const totalCount = steps.length;
             const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
             const tag = getGoalFocusTag(goal);
+
+
+
+
 
 
 
@@ -3965,6 +5440,10 @@ function renderTimelineMatrix(container) {
                             ${escapeHtml(goal.text)}
                         </h4>
                         <div class="text-[11px] text-amber-800 dark:text-amber-400 font-medium truncate">🎯 ${escapeHtml(goal.goal || '未設定')}</div>
+
+
+
+
 
 
 
@@ -4003,11 +5482,19 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
         
         // 快速回到頁面頂部功能
         function scrollToPageTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+
+
+
 
 
 
@@ -4027,6 +5514,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
         function jumpToCardsViewWithBacklog() {
             activeCategory = '全部'; // 自動切換至「全部」領域分頁，確保所有冰存目標立即可見
             showBacklogCards = true;
@@ -4040,6 +5531,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
         function renderFocusMindmapHtml() {
             const mainGoals = thoughts.filter(t => t.isMainFocus && !t.goalDone);
             const completedMainGoals = thoughts.filter(t => t.isMainFocus && t.goalDone);
@@ -4047,6 +5542,10 @@ function renderTimelineMatrix(container) {
             const habitGoals = thoughts.filter(t => !t.isMainFocus && getGoalFocusTag(t).key === 'habit' && !t.goalDone);
             const bonusGoals = thoughts.filter(t => !t.isMainFocus && getGoalFocusTag(t).key === 'bonus' && !t.goalDone);
             const frozenGoals = thoughts.filter(t => !t.isMainFocus && getGoalFocusTag(t).key === 'frozen' && !t.goalDone);
+
+
+
+
 
 
 
@@ -4083,6 +5582,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                     <!-- 1. ⭐ 核心主推進戰略樹 -->
                     <div class="space-y-4">
                         <div class="flex items-center justify-between border-b-2 border-amber-300 dark:border-amber-700 pb-2">
@@ -4095,6 +5598,10 @@ function renderTimelineMatrix(container) {
                             </span>
                         </div>
             `;
+
+
+
+
 
 
 
@@ -4120,6 +5627,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                     // 三類步驟分流解析
                     const classifiedDirectSteps = [];
                     const classifiedBreakdownSteps = [];
@@ -4128,10 +5639,18 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                     pendingSteps.forEach(s => {
                         const linkedGoal = s.linkedThoughtId 
                             ? thoughts.find(x => x.id === s.linkedThoughtId && !x.goalDone) 
                             : thoughts.find(x => x.parentStepInfo && x.parentStepInfo.parentThoughtId === mainGoal.id && x.parentStepInfo.parentStepId === s.id && !x.goalDone);
+
+
+
+
 
 
 
@@ -4148,6 +5667,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                         if (linkedGoal && !isLinkedHabit) {
                             // 類別 2: 拆解步驟 (即有拆解目標/子孫推進)
                             classifiedBreakdownSteps.push({ step: s, linkedGoal });
@@ -4159,6 +5682,10 @@ function renderTimelineMatrix(container) {
                             classifiedDirectSteps.push(s);
                         }
                     });
+
+
+
+
 
 
 
@@ -4193,6 +5720,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                             <!-- 步驟三類分流結構 (1.待執行步驟 2.拆解步驟 3.習慣步驟，子孫目標預設折疊) -->
                             <div class="pl-3 sm:pl-6 border-l-2 border-dashed border-amber-300 dark:border-amber-700/80 space-y-5">
                                 ${pendingSteps.length === 0 ? `
@@ -4221,6 +5752,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
                                     <!-- 類別 2: 🌿 拆解步驟 (即有拆解目標/子孫推進，預設折疊) -->
                                     <div class="space-y-2.5 pt-3 border-t border-dashed border-slate-200 dark:border-slate-700">
                                         <div class="flex items-center justify-between text-xs font-extrabold text-emerald-800 dark:text-emerald-300">
@@ -4238,6 +5773,10 @@ function renderTimelineMatrix(container) {
                                             </div>
                                         `}
                                     </div>
+
+
+
+
 
 
 
@@ -4271,6 +5810,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
             // 2. 💡 加分推進目標群 (Bonus Focus)
             html += `
                 <div class="space-y-4 pt-6 border-t-2 border-slate-200 dark:border-slate-700">
@@ -4294,6 +5837,10 @@ function renderTimelineMatrix(container) {
                 `;
             }
             html += `</div>`;
+
+
+
+
 
 
 
@@ -4325,6 +5872,10 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
             // 4. 📦 冰存休眠庫提示
             if (frozenGoals.length > 0) {
                 html += `
@@ -4347,9 +5898,17 @@ function renderTimelineMatrix(container) {
 
 
 
+
+
+
+
             html += `</div>`;
             return html;
         }
+
+
+
+
 
 
 
@@ -4363,9 +5922,17 @@ function renderOverview(container) {
 
 
 
+
+
+
+
             const categoriesList = getOrderedCategories();
             const dashboardBox = document.createElement('div');
             dashboardBox.className = "bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-6 space-y-3";
+
+
+
+
 
 
 
@@ -4380,6 +5947,10 @@ function renderOverview(container) {
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     ${categoriesList.map(cat => {
+
+
+
+
 
 
 
@@ -4417,8 +5988,16 @@ function renderOverview(container) {
 
 
 
+
+
+
+
             const viewControlWrapper = document.createElement('div');
             viewControlWrapper.className = "space-y-3";
+
+
+
+
 
 
 
@@ -4452,6 +6031,10 @@ function renderOverview(container) {
 
 
 
+
+
+
+
                             const cardList = thoughts.filter(t => (t.category || '💼 事業') === cat);
                             const stats = getCategoryStats(cat);
                             const percentGoals = stats.totalGoals > 0 ? Math.round((stats.completedGoals / stats.totalGoals) * 100) : 0;
@@ -4471,6 +6054,10 @@ function renderOverview(container) {
                                         <div class="space-y-2.5 mt-3">
                                             ${cardList.length === 0 ? `<div class="text-xs text-slate-400 italic py-3 text-center">尚無目標</div>` : ''}
                                             ${cardList.map((t, i) => {
+
+
+
+
 
 
 
@@ -4518,9 +6105,17 @@ function renderOverview(container) {
 
 
 
+
+
+
+
                     <div id="matrixScrollContainer" class="overflow-x-auto pb-4 scroll-smooth w-full">
                         <div class="flex gap-3.5 items-start min-w-max">
                             ${categoriesList.map(cat => {
+
+
+
+
 
 
 
@@ -4538,6 +6133,10 @@ function renderOverview(container) {
                                         <div class="space-y-3">
                                             ${cardList.length === 0 ? `<div class="text-xs text-slate-400 italic py-4 text-center">尚無目標</div>` : ''}
                                             ${cardList.map((t, i) => {
+
+
+
+
 
 
 
@@ -4588,7 +6187,15 @@ function renderOverview(container) {
 
 
 
+
+
+
+
 function renderCards(container) {
+
+
+
+
 
 
 
@@ -4601,9 +6208,17 @@ function renderCards(container) {
 
 
 
+
+
+
+
                 const displayCategories = ['全部', ...categoriesList];
                 if (!displayCategories.includes(activeCategory)) activeCategory = '全部';
                 displayCategories.forEach((cat) => {
+
+
+
+
 
 
 
@@ -4614,6 +6229,10 @@ function renderCards(container) {
                     tabWrapper.className = `px-3.5 py-1.5 text-xs font-semibold rounded-xl whitespace-nowrap transition-all flex items-center gap-1.5 select-none shrink-0 ${
                         isActive ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
                     }`;
+
+
+
+
 
 
 
@@ -4639,6 +6258,10 @@ function renderCards(container) {
 
 
 
+
+
+
+
                         const allCategoryGoals = activeCategory === '全部' ? thoughts : thoughts.filter(t => (t.category || '💼 事業') === activeCategory);
             const pendingGoals = allCategoryGoals.filter(t => !t.goalDone);
             const completedGoals = allCategoryGoals.filter(t => t.goalDone);
@@ -4646,9 +6269,17 @@ function renderCards(container) {
 
 
 
+
+
+
+
             // 分流活躍推進目標 (主推進、子推進、習慣推進、加分推進) 與 冰存推進目標
             const activeGoals = pendingGoals.filter(t => getGoalFocusTag(t).key !== 'frozen');
             const frozenGoals = pendingGoals.filter(t => getGoalFocusTag(t).key === 'frozen');
+
+
+
+
 
 
 
@@ -4685,8 +6316,16 @@ function renderCards(container) {
 
 
 
+
+
+
+
             // 看板主區域只渲染活躍目標 (主推進、子推進、加分推進、習慣推進)，冰存目標不直接出現在看板主視野
             const mainGoalsToRender = hideCompletedGoalsCards ? activeGoals : [...activeGoals, ...completedGoals];
+
+
+
+
 
 
 
@@ -4719,10 +6358,18 @@ function renderCards(container) {
 
 
 
+
+
+
+
             function createGoalCardElement(thought, index, isFrozen = false) {
 const card = document.createElement('div');
                 card.id = isFrozen ? `frozen-card-${thought.id}` : `card-${thought.id}`;
                 card.className = isFrozen ? "bg-white dark:bg-slate-800/95 rounded-2xl shadow-2xs border border-slate-300 dark:border-slate-700 overflow-hidden opacity-95 hover:opacity-100 transition-all" : "bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden";
+
+
+
+
 
 
 
@@ -4805,6 +6452,10 @@ const card = document.createElement('div');
                         `;
                     }
                 };
+
+
+
+
 
 
 
@@ -4926,6 +6577,7 @@ const card = document.createElement('div');
                                     </label>
                                     <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-800 border border-indigo-200/60 px-2.5 py-1 rounded-md font-medium">📅 預期日期：${thought.targetDate || '未指定'} [${thought.targetTimeSlot || '全天'}]</span>
 
+
                                     ${thought.goalDone ? `
                                         <button type="button" onclick="createSuccessorGoal(${thought.id})" class="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded-md font-bold text-[11px] cursor-pointer shadow-2xs" title="目標完成後，在同一個軌道生出下一個接力目標">🚀 接力新目標</button>
                                     ` : ''}
@@ -4990,11 +6642,19 @@ const card = document.createElement('div');
 
 
 
+
+
+
+
             // 渲染主看板中的活躍目標卡片
             mainGoalsToRender.forEach((thought, index) => {
                 const card = createGoalCardElement(thought, index, false);
                 container.appendChild(card);
             });
+
+
+
+
 
 
 
@@ -5029,6 +6689,10 @@ const card = document.createElement('div');
 
 
 
+
+
+
+
                 if (showBacklogCards) {
                     const frozenContainer = backlogCard.querySelector('#frozenCardsContainer');
                     frozenGoals.forEach((thought, fIdx) => {
@@ -5037,6 +6701,10 @@ const card = document.createElement('div');
                     });
                 }
             }
+
+
+
+
 
 
 
@@ -5056,12 +6724,20 @@ const card = document.createElement('div');
 
 
 
+
+
+
+
             const thoughtInput = document.getElementById('thoughtInput');
             if (thoughtInput) {
                 thoughtInput.addEventListener('keypress', function (e) {
                     if (e.key === 'Enter') addThought();
                 });
             }
+
+
+
+
 
 
 
@@ -5079,6 +6755,10 @@ const card = document.createElement('div');
 
 
 
+
+
+
+
             const matrixContainer = document.getElementById('matrixScrollContainer');
             if (matrixContainer) {
                 matrixContainer.addEventListener('wheel', (e) => {
@@ -5088,6 +6768,10 @@ const card = document.createElement('div');
                     }
                 });
             }
+
+
+
+
 
 
 
@@ -5107,10 +6791,18 @@ const card = document.createElement('div');
 
 
 
+
+
+
+
 function render() {
     syncLinkedData();
     updateContainerWidth();
     renderWeeklyStatsPanel();
+
+
+
+
 
 
 
