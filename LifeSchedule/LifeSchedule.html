@@ -490,7 +490,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.5-test (Forteller多層拆解目標最終目標顯示與遞迴軌道完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.6-test (Forteller預設目標模式與拆解目標去重優化完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -4705,7 +4705,7 @@ function renderTimelineMatrix(container) {
         // 🔮 戰略推演羅盤 (Forteller 雙模式與目標篩選模組)
         // ==========================================
 
-        let fortellerMode = 'domain'; // 'domain' (領域模式) 或 'goal' (目標模式)
+        let fortellerMode = 'goal'; // 預設以「目標模式 (goal)」進入 Forteller
         let fortellerFilterDomain = 'all'; // 'all' 或指定領域名稱
         let fortellerSelectedGoalIds = []; // 空陣列代表全選，若有值代表複選特定目標 ID
         let isFortellerGoalDropdownOpen = false; // 目標篩選下拉開關
@@ -5002,7 +5002,7 @@ function renderTimelineMatrix(container) {
                             }
                         });
 
-                        // 建立當前 t 的軌道
+                        // 建立當前 t 的軌道 (記錄 parentStep 以供精準追溯來源)
                         rootTracks.push({
                             thought: t,
                             domain: t.category || root.category || '💼 事業',
@@ -5010,7 +5010,8 @@ function renderTimelineMatrix(container) {
                             isRootTrack: (depth === 0),
                             subGoalCard: (depth > 0 ? t : null),
                             directSteps: directSteps,
-                            subGoalSteps: stepsWithSubgoals
+                            subGoalSteps: stepsWithSubgoals,
+                            parentStep: parentStep
                         });
 
                         // 依序遞迴深入每一個有拆解目標的子卡片（子目標、孫目標、曾孫目標...）
@@ -5261,29 +5262,7 @@ function renderTimelineMatrix(container) {
                                             }
                                         }
 
-                                        // C. 核心要求：若步驟有拆解目標 (子/孫目標)，該步驟改為顯示該拆解卡片的最終目標！
-                                        (tr.subGoalSteps || []).forEach(item => {
-                                            const s = item.step;
-                                            const child = item.child;
-                                            const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey);
-                                            const childDateBadge = (child.targetDate && child.targetDate !== '未指定日期') ? child.targetDate.slice(5) : '';
-
-                                            if (child.goalDone) {
-                                                addBranchItem(mKey, {
-                                                    type: 'goal_done',
-                                                    text: child.goal || child.text,
-                                                    thoughtId: child.id,
-                                                    dateBadge: childDateBadge
-                                                });
-                                            } else {
-                                                addBranchItem(mKey, {
-                                                    type: 'subgoal',
-                                                    text: child.goal || child.text,
-                                                    thoughtId: child.id,
-                                                    dateBadge: childDateBadge
-                                                });
-                                            }
-                                        });
+                                        // C. 拆解目標去重優化：子/孫目標已於其自身專屬軌道 (depth > 0) 呈現最終目標與執行步驟，母步驟無需重複顯示，確保每項最終目標於推演盤上精確呈現一次！
 
                                         // D. 放置未拆解的純待辦步驟 (乾淨文字，> 單步，o> 循環)
                                         (tr.directSteps || []).forEach(s => {
