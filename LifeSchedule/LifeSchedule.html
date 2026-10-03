@@ -490,7 +490,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.2.0-test (步驟即時綁定目標棒次、Forteller全人生領域檢視與空白領域激發大躍進版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.0-test (看板分頁領域動態連動、領域模式多里程碑修復與空白領域月曆選取大躍進版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -574,13 +574,16 @@
             <div id="formContent" class="hidden mt-4 space-y-4 pt-3 border-t border-slate-100">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="md:col-span-1">
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">上一層領域/類別：</label>
-                        <input type="text" id="categoryInput" value="💼 事業" placeholder="輸入或點選標籤" class="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <div class="flex flex-wrap gap-1 mt-1.5">
-                            <button type="button" onclick="setCategory('❤️ 健康')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md">❤️ 健康</button>
-                            <button type="button" onclick="setCategory('💼 事業')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md">💼 事業</button>
-                            <button type="button" onclick="setCategory('💰 理財')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md">💰 理財</button>
-                            <button type="button" onclick="setCategory('🌱 個人成長')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md">🌱 個人成長</button>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">上一層領域/類別：</label>
+                        <div class="space-y-1.5">
+                            <input type="text" id="categoryInput" value="💼 事業" placeholder="輸入自訂領域或從選單挑選" class="w-full px-3.5 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold">
+                            <!-- 【v5.3.0 看板分頁領域動態下拉選單】：自動列出看板分頁目前擁有的所有領域 -->
+                            <select id="categorySelectDropdown" onchange="if(this.value){ setCategory(this.value); this.value=''; }" class="w-full px-2.5 py-1.5 text-xs border border-indigo-200 dark:border-indigo-800 rounded-xl bg-indigo-50/70 dark:bg-slate-750 text-indigo-900 dark:text-indigo-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer" title="從看板分頁現有領域快速選取">
+                                <option value="">📋 從看板分頁領域快速挑選...</option>
+                            </select>
+                            <div id="categoryQuickButtons" class="flex flex-wrap gap-1 pt-0.5">
+                                <!-- 動態注入看板領域標籤按鈕 -->
+                            </div>
                         </div>
                     </div>
                     <div class="md:col-span-2">
@@ -907,6 +910,74 @@
                 </div>
             </div>
         </div>
+
+        <!-- 【v5.3.0 空白領域構思新目標彈出視窗】(支援日曆選取、快速預排與時段設定) -->
+        <div id="quickAddGoalModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>🎯 為「<span id="quickGoalDomainHeading"></span>」構思新目標</span>
+                    </h3>
+                    <button type="button" onclick="closeQuickAddGoalModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg text-lg font-bold cursor-pointer">&times;</button>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                    為此生活面向規劃全新目標卡片與預期達成日期，平衡人生視野：
+                </p>
+
+                <input type="hidden" id="quickGoalDomain">
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                            目標名稱：
+                        </label>
+                        <input type="text" id="quickGoalTitle" placeholder="例如：每週規律慢跑與心肺耐力提升" class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                            📅 預期達成日期（直接點擊月曆選取）：
+                        </label>
+                        <input type="date" id="quickGoalDate" class="w-full px-3.5 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-mono font-bold cursor-pointer">
+                        
+                        <!-- 快速試算預排捷徑 -->
+                        <div class="flex items-center gap-1.5 flex-wrap mt-2">
+                            <span class="text-[10px] text-slate-400 font-bold">快速試算：</span>
+                            <button type="button" onclick="quickSetNewGoalDate(1)" class="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-slate-700 dark:text-slate-300 hover:text-indigo-700 cursor-pointer transition-colors">+1個月</button>
+                            <button type="button" onclick="quickSetNewGoalDate(3)" class="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-slate-700 dark:text-slate-300 hover:text-indigo-700 cursor-pointer transition-colors">+3個月 (次季)</button>
+                            <button type="button" onclick="quickSetNewGoalDate(6)" class="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-slate-700 dark:text-slate-300 hover:text-indigo-700 cursor-pointer transition-colors">+半年</button>
+                            <button type="button" onclick="quickSetNewGoalDate(12)" class="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-slate-700 dark:text-slate-300 hover:text-indigo-700 cursor-pointer transition-colors">+1年</button>
+                            <button type="button" onclick="setExactNewGoalDate('2026-12-31')" class="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 cursor-pointer transition-colors">2026年底</button>
+                            <button type="button" onclick="setExactNewGoalDate('2027-01-31')" class="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 cursor-pointer transition-colors">2027/1</button>
+                            <button type="button" onclick="setExactNewGoalDate('2027-06-30')" class="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 cursor-pointer transition-colors">2027年中</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                            目標時段：
+                        </label>
+                        <select id="quickGoalSlot" class="w-full px-3.5 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-medium">
+                            <option value="全天">全天</option>
+                            <option value="上午">上午</option>
+                            <option value="下午">下午</option>
+                            <option value="晚上">晚上</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <button type="button" onclick="closeQuickAddGoalModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl cursor-pointer transition-colors">
+                        取消
+                    </button>
+                    <button type="button" onclick="saveQuickAddGoalModal()" class="px-4 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md cursor-pointer transition-colors flex items-center gap-1.5">
+                        <span>💾</span>
+                        <span>建立新目標</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
 
 
 
@@ -3868,25 +3939,83 @@ function updateContainerWidth() {
         }
 
         // 於空白人生領域一鍵快速建立新目標 (激發行動靈感)
-        function quickAddGoalForDomain(domain) {
-            const text = prompt(`【為「${domain}」領域構思新行動/目標】\n請輸入目標名稱：`, '');
-            if (!text || text.trim() === '') return;
-            const targetDate = prompt('請輸入預期完成日期 (YYYY-MM-DD)：', '2026-12-31') || '2026-12-31';
+        // ==========================================
+        // 【v5.3.0 空白領域構思新目標彈出視窗核心邏輯】
+        // ==========================================
+
+        function openQuickAddGoalModal(domain) {
+            const modal = document.getElementById('quickAddGoalModal');
+            if (!modal) return;
+
+            document.getElementById('quickGoalDomain').value = domain;
+            const headingEl = document.getElementById('quickGoalDomainHeading');
+            if (headingEl) headingEl.innerText = domain;
+
+            const titleInput = document.getElementById('quickGoalTitle');
+            const dateInput = document.getElementById('quickGoalDate');
+            const slotSelect = document.getElementById('quickGoalSlot');
+
+            if (titleInput) titleInput.value = '';
+            // 預設日期為本季末或年底
+            if (dateInput) dateInput.value = '2026-12-31';
+            if (slotSelect) slotSelect.value = '全天';
+
+            modal.classList.remove('hidden');
+            if (titleInput) titleInput.focus();
+        }
+
+        function closeQuickAddGoalModal() {
+            const modal = document.getElementById('quickAddGoalModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function quickSetNewGoalDate(monthsOffset) {
+            const dateInput = document.getElementById('quickGoalDate');
+            if (!dateInput) return;
+            let baseDate = new Date();
+            if (dateInput.value) {
+                const p = dateInput.value.replace(/\//g, '-').split('-');
+                if (p.length >= 2) {
+                    baseDate = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]) || 28);
+                }
+            }
+            baseDate.setMonth(baseDate.getMonth() + monthsOffset);
+            dateInput.value = `${baseDate.getFullYear()}-${String(baseDate.getMonth() + 1).padStart(2, '0')}-${String(baseDate.getDate()).padStart(2, '0')}`;
+        }
+
+        function setExactNewGoalDate(dateStr) {
+            const dateInput = document.getElementById('quickGoalDate');
+            if (dateInput) dateInput.value = dateStr;
+        }
+
+        function saveQuickAddGoalModal() {
+            const domain = document.getElementById('quickGoalDomain').value;
+            const titleInput = document.getElementById('quickGoalTitle');
+            const dateInput = document.getElementById('quickGoalDate');
+            const slotSelect = document.getElementById('quickGoalSlot');
+
+            const text = titleInput ? titleInput.value.trim() : '';
+            if (!text) {
+                alert('請輸入目標名稱！');
+                return;
+            }
+            const targetDate = (dateInput && dateInput.value) ? dateInput.value : '2026-12-31';
+            const targetTimeSlot = slotSelect ? slotSelect.value : '全天';
 
             const newThought = {
                 id: Date.now(),
-                text: text.trim(),
-                goal: text.trim(),
+                text: text,
+                goal: text,
                 category: domain,
                 targetDate: targetDate,
-                targetTimeSlot: '全天',
+                targetTimeSlot: targetTimeSlot,
                 goalDone: false,
                 isMainFocus: false,
                 milestones: [{
                     id: Date.now(),
-                    title: text.trim(),
+                    title: text,
                     targetDate: targetDate,
-                    targetTimeSlot: '全天',
+                    targetTimeSlot: targetTimeSlot,
                     done: false,
                     completedDate: '',
                     createdAt: Date.now()
@@ -3896,8 +4025,36 @@ function updateContainerWidth() {
             };
             thoughts.push(newThought);
             saveData();
+            closeQuickAddGoalModal();
             render();
             alert(`🎉 已成功在「${domain}」建立新目標：「${newThought.text}」！`);
+        }
+
+        // 於空白人生領域一鍵快速建立新目標 (開啟月曆選取視窗)
+        function quickAddGoalForDomain(domain) {
+            openQuickAddGoalModal(domain);
+        }
+
+        // 更新頂部「記錄新的思緒與目標」之領域下拉選單與快速按鈕 (完全連動看板分頁領域)
+        function updateCategoryQuickSelectors() {
+            const dropdown = document.getElementById('categorySelectDropdown');
+            const quickContainer = document.getElementById('categoryQuickButtons');
+            const cats = typeof getOrderedCategories === 'function' ? getOrderedCategories().filter(c => c !== '全部') : [];
+
+            if (dropdown) {
+                dropdown.innerHTML = `
+                    <option value="">📋 從看板分頁領域快速挑選...</option>
+                    ${cats.map(c => `<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join('')}
+                `;
+            }
+
+            if (quickContainer) {
+                quickContainer.innerHTML = cats.map(c => `
+                    <button type="button" onclick="setCategory('${escapeAttr(c)}')" class="text-[10px] bg-slate-100 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-300 px-2 py-0.5 rounded-md font-bold transition-colors cursor-pointer">
+                        ${escapeHtml(c)}
+                    </button>
+                `).join('');
+            }
         }
 
         function addMilestoneToThought(thoughtId) {
@@ -5150,30 +5307,7 @@ function renderTimelineMatrix(container) {
             function process(t, depth = 0) {
                 if (!t) return;
 
-                // 已完成的目標仍然顯示 (包含過往已結案與當前結案)
-                if (t.goalDone) {
-                    let doneMonth = currentMonthKey;
-                    if (t.lastCompletedDate) {
-                        doneMonth = t.lastCompletedDate.slice(0, 7).replace('-', '/');
-                    }
-                    if (doneMonth <= '2026/09') {
-                        addItem('2026/9', {
-                            type: 'goal_done',
-                            text: t.text,
-                            goal: t.goal || '',
-                            thoughtId: t.id,
-                            depth: depth
-                        });
-                    } else if (doneMonth === '2026/10') {
-                        addItem('2026/10', {
-                            type: 'goal_done',
-                            text: t.text,
-                            goal: t.goal || '',
-                            thoughtId: t.id,
-                            depth: depth
-                        });
-                    }
-                }
+                // 【v5.3.0】：拆解子目標若已完成，由下方 childThought 處理時精準落點在其預期完成月份，不再強制歸入當月
 
                 // 步驟處理：若步驟有拆解目標，改為顯示該拆解卡片的最終目標；無拆解目標則顯示待辦步驟
                 const steps = Array.isArray(t.steps) ? t.steps : [];
@@ -5403,11 +5537,9 @@ function renderTimelineMatrix(container) {
             const monthCols = getFortellerMonthCols();
             const currentMonthKey = '2026/10';
 
-            // 取得 LifeSchedule 領域清單 (【v5.2.0】：合併目前使用中領域與系統所有人生領域，確保空白領域完整展示以激發行動)
+            // 取得看板分頁中的領域清單 (【v5.3.0】：完全依據看板模式下的領域分頁，不擅自混入未使用的預設領域)
             const rawCategories = typeof getOrderedCategories === 'function' ? getOrderedCategories() : [];
-            const activeCats = (Array.isArray(rawCategories) ? rawCategories : []).filter(c => c !== '全部');
-            const defaultLifeDomains = ['💼 事業', '💰 財務', '💪 健康', '🏠 家庭', '🌱 成長', '🎨 興趣'];
-            const domains = Array.from(new Set([...activeCats, ...defaultLifeDomains]));
+            const domains = (Array.isArray(rawCategories) ? rawCategories : []).filter(c => c !== '全部');
 
             // 判斷目標卡片篩選狀態
             const isAllGoalsSelected = (fortellerSelectedGoalIds.length === 0);
@@ -5648,18 +5780,32 @@ function renderTimelineMatrix(container) {
                                         const t = row.thought;
                                         const itemsByMonth = t ? collectGoalAndSubGoalItems(t, thoughts, currentMonthKey, monthCols) : {};
 
-                                        // 若卡片目標本身設定在特定月份 (早於12/31)，亦在該月份呈現卡片目標色塊
-                                        if (t && t.goal && !t.goalDone) {
-                                            const targetM = getFortellerMonthKey(t.targetDate, '2026/12/31', monthCols);
-                                            if (monthCols.includes(targetM)) {
-                                                if (!itemsByMonth[targetM]) itemsByMonth[targetM] = [];
-                                                itemsByMonth[targetM].unshift({
-                                                    type: 'card_goal',
-                                                    text: t.goal || t.text,
-                                                    thoughtId: t.id,
-                                                    dateBadge: t.targetDate ? t.targetDate.slice(5) : ''
-                                                });
-                                            }
+                                        // 【v5.3.0 領域模式多里程碑接力支援】：展開所有接力目標，精準落點在其預期月份，已完成目標依其日期呈現綠色色塊
+                                        if (t) {
+                                            const tMilestones = getThoughtMilestones(t);
+                                            tMilestones.forEach((m, mIdx) => {
+                                                const mTargetM = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
+                                                const mDateBadge = (m.targetDate && m.targetDate !== '未指定日期') ? m.targetDate.slice(5) : '';
+
+                                                if (!itemsByMonth[mTargetM]) itemsByMonth[mTargetM] = [];
+                                                if (m.done) {
+                                                    itemsByMonth[mTargetM].unshift({
+                                                        type: 'goal_done',
+                                                        text: m.title,
+                                                        thoughtId: t.id,
+                                                        dateBadge: mDateBadge
+                                                    });
+                                                } else {
+                                                    const isFuture = (mIdx > 0 && !tMilestones[mIdx - 1]?.done);
+                                                    const gtype = isFuture ? 'future_goal' : 'card_goal';
+                                                    itemsByMonth[mTargetM].unshift({
+                                                        type: gtype,
+                                                        text: m.title,
+                                                        thoughtId: t.id,
+                                                        dateBadge: mDateBadge
+                                                    });
+                                                }
+                                            });
                                         }
 
                                         return `
@@ -5682,17 +5828,42 @@ function renderTimelineMatrix(container) {
                                                         </td>
                                                     `;
                                                 }).join('')}
-                                                <td class="py-2 px-2.5 bg-amber-50/30 dark:bg-amber-950/20 text-slate-800 dark:text-slate-200 align-top text-xs">
-                                                    ${t ? `
-                                                        <div class="space-y-1">
-                                                            <div class="font-bold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline" onclick="jumpToGoalCard(${t.id})" title="點擊前往目標卡片">
-                                                                🎯 ${escapeHtml(t.goal || t.text)}
+                                                <td class="py-2.5 px-3 bg-amber-50/30 dark:bg-amber-950/20 text-slate-800 dark:text-slate-200 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
+                                                    ${t ? (() => {
+                                                        const tAllM = getThoughtMilestones(t);
+                                                        const tDates = tAllM.map(x => x.targetDate).filter(d => d && d !== '未指定日期').sort();
+                                                        const minTargetDate = tDates.length > 0 ? tDates[0] : '';
+                                                        const maxTargetDate = tDates.length > 0 ? tDates[tDates.length - 1] : '';
+                                                        const tDoneCount = tAllM.filter(x => x.done).length;
+                                                        const tActiveIdx = tAllM.findIndex(x => !x.done);
+                                                        const activeMilestone = (tActiveIdx >= 0) ? tAllM[tActiveIdx] : tAllM[tAllM.length - 1];
+
+                                                        return `
+                                                            <div class="space-y-1.5">
+                                                                <div class="font-extrabold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline text-xs" onclick="jumpToGoalCard(${t.id})" title="點擊前往目標卡片">
+                                                                    🎯 ${escapeHtml(t.text)}
+                                                                </div>
+                                                                <div class="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                                                                    ${escapeHtml(activeMilestone ? activeMilestone.title : (t.goal || '未設定'))}
+                                                                </div>
+                                                                <div class="flex items-center gap-1.5 flex-wrap">
+                                                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 font-mono">
+                                                                        📅 ${minTargetDate && maxTargetDate && minTargetDate !== maxTargetDate ? `${minTargetDate.slice(0, 7)} ➔ ${maxTargetDate.slice(0, 7)}` : (maxTargetDate || '2026/12/31')}
+                                                                    </span>
+                                                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-mono">
+                                                                        🏁 接力 ${tDoneCount}/${tAllM.length}
+                                                                    </span>
+                                                                </div>
                                                             </div>
-                                                            <div class="text-[10px] text-amber-700/80 dark:text-amber-400 font-mono">
-                                                                📅 ${t.targetDate ? t.targetDate : '2026/12/31'}
-                                                            </div>
+                                                        `;
+                                                    })() : `
+                                                        <div class="text-[11px] text-slate-400 dark:text-slate-500 italic py-1 flex items-center justify-between gap-1.5">
+                                                            <span>尚無規劃中的目標</span>
+                                                            <button type="button" onclick="quickAddGoalForDomain('${escapeAttr(row.domain)}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-colors cursor-pointer" title="為此領域快速建立新目標">
+                                                                <span>➕ 思考新行動</span>
+                                                            </button>
                                                         </div>
-                                                    ` : ''}
+                                                    `}
                                                 </td>
                                             </tr>
                                         `;
@@ -7528,6 +7699,7 @@ const card = document.createElement('div');
 
 
 function render() {
+            updateCategoryQuickSelectors();
     syncLinkedData();
     updateContainerWidth();
     renderWeeklyStatsPanel();
