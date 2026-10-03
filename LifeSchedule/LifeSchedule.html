@@ -537,6 +537,32 @@
 
 
 
+        
+        /* 【v5.3.2 接力里程碑各棒次專屬調色盤】：支援 10 大獨立色盤，保證各瀏覽器 Light / Dark 模式 100% 顯色 */
+        .stage-palette-amber { background-color: #fef3c7 !important; color: #78350f !important; border-color: #fcd34d !important; }
+        .stage-palette-purple { background-color: #f3e8ff !important; color: #581c87 !important; border-color: #d8b4fe !important; }
+        .stage-palette-sky { background-color: #e0f2fe !important; color: #0369a1 !important; border-color: #7dd3fc !important; }
+        .stage-palette-teal { background-color: #ccfbf1 !important; color: #115e59 !important; border-color: #5eead4 !important; }
+        .stage-palette-rose { background-color: #ffe4e6 !important; color: #9f1239 !important; border-color: #fda4af !important; }
+        .stage-palette-indigo { background-color: #e0e7ff !important; color: #3730a3 !important; border-color: #a5b4fc !important; }
+        .stage-palette-fuchsia { background-color: #fae8ff !important; color: #701a75 !important; border-color: #f0abfc !important; }
+        .stage-palette-lime { background-color: #ecfccb !important; color: #3f6212 !important; border-color: #bef264 !important; }
+        .stage-palette-orange { background-color: #ffedd5 !important; color: #9a3412 !important; border-color: #fdba74 !important; }
+        .stage-palette-violet { background-color: #ede9fe !important; color: #4c1d95 !important; border-color: #c4b5fd !important; }
+        .stage-palette-done { background-color: #d1fae5 !important; color: #065f46 !important; border-color: #6ee7b7 !important; }
+
+        html.dark .stage-palette-amber { background-color: rgba(120, 53, 15, 0.45) !important; color: #fde68a !important; border-color: #b45309 !important; }
+        html.dark .stage-palette-purple { background-color: rgba(88, 28, 135, 0.45) !important; color: #e9d5ff !important; border-color: #7e22ce !important; }
+        html.dark .stage-palette-sky { background-color: rgba(3, 105, 161, 0.45) !important; color: #bae6fd !important; border-color: #0284c7 !important; }
+        html.dark .stage-palette-teal { background-color: rgba(19, 78, 74, 0.45) !important; color: #99f6e4 !important; border-color: #0f766e !important; }
+        html.dark .stage-palette-rose { background-color: rgba(159, 18, 57, 0.45) !important; color: #fecdd3 !important; border-color: #be123c !important; }
+        html.dark .stage-palette-indigo { background-color: rgba(49, 46, 129, 0.45) !important; color: #c7d2fe !important; border-color: #4338ca !important; }
+        html.dark .stage-palette-fuchsia { background-color: rgba(112, 26, 117, 0.45) !important; color: #f5d0fe !important; border-color: #a21caf !important; }
+        html.dark .stage-palette-lime { background-color: rgba(63, 98, 18, 0.45) !important; color: #d9f99d !important; border-color: #4d7c0f !important; }
+        html.dark .stage-palette-orange { background-color: rgba(154, 52, 18, 0.45) !important; color: #fed7aa !important; border-color: #c2410c !important; }
+        html.dark .stage-palette-violet { background-color: rgba(76, 29, 149, 0.45) !important; color: #ddd6fe !important; border-color: #6d28d9 !important; }
+        html.dark .stage-palette-done { background-color: rgba(6, 78, 59, 0.45) !important; color: #a7f3d0 !important; border-color: #047857 !important; }
+
         /* 7. 表單輸入框、下拉選單與 Textarea (深底 + 清晰灰框 + 純白輸入文字) */
         html.dark input,
         html.dark select,
@@ -770,7 +796,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.1-test (接力目標多棒次專屬色彩、領域模式拆解子目標歸位、空白月份智能壓縮與橫向快速導航版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.2-test (里程碑10大專屬調色盤修復、階段接力鏈全棒次同調與Forteller起始月份自訂版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -5704,26 +5730,54 @@ function updateContainerWidth() {
 
         // 輔助函式：取得卡片的多階段接力里程碑清單 (完全向下相容舊卡片資料)
         
-        // 【v5.3.1 多棒次專屬色彩系統】：支援第 1, 2, 3, 4, 5... 棒各具專屬高識別度調色盤，並在完成時呈現綠色勾勾
+        // 【v5.3.2 擴充多棒次專屬調色盤系統】：支援 10 大獨立高識別度調色盤，並在完成時呈現綠色勾勾
         function getMilestoneStageStyle(stageIndex, isDone = false) {
             if (isDone) {
                 return {
                     name: 'emerald',
                     icon: '✅',
-                    className: 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700'
+                    className: 'stage-palette-done',
+                    paletteClass: 'stage-palette-done'
                 };
             }
             const palettes = [
-                { name: 'amber', icon: '🎯', className: 'bg-amber-100 dark:bg-amber-950/70 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-700' },
-                { name: 'purple', icon: '🔮', className: 'bg-purple-100 dark:bg-purple-950/70 text-purple-900 dark:text-purple-200 border-purple-300 dark:border-purple-700' },
-                { name: 'sky', icon: '🔷', className: 'bg-sky-100 dark:bg-sky-950/70 text-sky-900 dark:text-sky-200 border-sky-300 dark:border-sky-700' },
-                { name: 'teal', icon: '🌿', className: 'bg-teal-100 dark:bg-teal-950/70 text-teal-900 dark:text-teal-200 border-teal-300 dark:border-teal-700' },
-                { name: 'rose', icon: '🚩', className: 'bg-rose-100 dark:bg-rose-950/70 text-rose-900 dark:text-rose-200 border-rose-300 dark:border-rose-700' },
-                { name: 'indigo', icon: '⚡', className: 'bg-indigo-100 dark:bg-indigo-950/70 text-indigo-900 dark:text-indigo-200 border-indigo-300 dark:border-indigo-700' },
-                { name: 'fuchsia', icon: '✨', className: 'bg-fuchsia-100 dark:bg-fuchsia-950/70 text-fuchsia-900 dark:text-fuchsia-200 border-fuchsia-300 dark:border-fuchsia-700' }
+                { name: 'amber', icon: '🎯', className: 'stage-palette-amber', label: '琥珀暖橘' },   // 0: 第1棒
+                { name: 'purple', icon: '🔮', className: 'stage-palette-purple', label: '丁香幻紫' }, // 1: 第2棒
+                { name: 'sky', icon: '🔷', className: 'stage-palette-sky', label: '湛藍天青' },       // 2: 第3棒
+                { name: 'teal', icon: '🌿', className: 'stage-palette-teal', label: '薄荷翡翠' },     // 3: 第4棒
+                { name: 'rose', icon: '🚩', className: 'stage-palette-rose', label: '晨曦玫瑰' },     // 4: 第5棒
+                { name: 'indigo', icon: '⚡', className: 'stage-palette-indigo', label: '沉穩靛藍' },  // 5: 第6棒
+                { name: 'fuchsia', icon: '✨', className: 'stage-palette-fuchsia', label: '幻彩粉桃' },// 6: 第7棒
+                { name: 'lime', icon: '🍏', className: 'stage-palette-lime', label: '青檸翠綠' },     // 7: 第8棒
+                { name: 'orange', icon: '🍊', className: 'stage-palette-orange', label: '珊瑚蜜橙' }, // 8: 第9棒
+                { name: 'violet', icon: '🪻', className: 'stage-palette-violet', label: '薰衣草紫' }   // 9: 第10棒
             ];
             const p = palettes[Math.max(0, stageIndex) % palettes.length];
-            return p;
+            return {
+                name: p.name,
+                icon: p.icon,
+                className: p.className,
+                paletteClass: p.className,
+                label: p.label
+            };
+        }
+
+        // 輔助函式：計算相對月度 Key (如當前月前一個月)
+        function getRelativeMonthKey(baseMonthKey, offsetMonths) {
+            if (!baseMonthKey || !baseMonthKey.includes('/')) return '2026/9';
+            const [y, m] = baseMonthKey.split('/').map(Number);
+            const d = new Date(y, m - 1 + offsetMonths, 1);
+            return `${d.getFullYear()}/${d.getMonth() + 1}`;
+        }
+
+        // 【v5.3.2 Forteller 起始月份偏好管理】
+        function getFortellerStartMonthSetting() {
+            return localStorage.getItem('my_forteller_start_month') || 'prev_month';
+        }
+
+        function setFortellerStartMonth(val) {
+            localStorage.setItem('my_forteller_start_month', val);
+            render();
         }
 
         // 輔助函式：尋找根節點母卡片 (追溯拆解來源)
@@ -7948,11 +8002,30 @@ function renderTimelineMatrix(container) {
 
         // 動態計算 Forteller 戰略推演盤月份欄位清單 (自動延伸至遠期目標月份，支援 2027/1 及跨年度)
         function getFortellerMonthCols() {
-            let startYear = 2026, startMonth = 9;
-            let endYear = 2027, endMonth = 2; // 預設至少涵蓋 2026/9 ~ 2027/2
             const currentMonthKey = '2026/10';
+            const prevMonthKey = getRelativeMonthKey(currentMonthKey, -1);
+            const startSetting = getFortellerStartMonthSetting();
 
-            const activeMonthsSet = new Set(['2026/9', currentMonthKey]); // 基準起點與當月恆保留
+            // 【v5.3.2 起始月份動態計算】：預設為當月前1個月 (2026/9)，過早的歷史資料預設折疊隱藏
+            let cutoffMonthKey = prevMonthKey;
+            if (startSetting === 'current_month') {
+                cutoffMonthKey = currentMonthKey;
+            } else if (startSetting === 'year_start') {
+                const [y] = currentMonthKey.split('/');
+                cutoffMonthKey = `${y}/1`;
+            } else if (startSetting === 'all') {
+                cutoffMonthKey = '2020/1'; // 顯示全部歷史月份
+            } else if (startSetting.includes('/')) {
+                cutoffMonthKey = startSetting;
+            }
+
+            const [cutY, cutM] = cutoffMonthKey.split('/').map(Number);
+            const cutoffVal = cutY * 12 + cutM;
+
+            let startYear = cutY, startMonth = cutM;
+            let endYear = 2027, endMonth = 2; // 預設至少涵蓋至 2027/2
+
+            const activeMonthsSet = new Set([cutoffMonthKey, currentMonthKey]); // 起始基準月與當月恆保留
 
             thoughts.forEach(t => {
                 const ms = getThoughtMilestones(t);
@@ -7962,14 +8035,13 @@ function renderTimelineMatrix(container) {
                         const y = parseInt(p[0]);
                         const mo = parseInt(p[1]);
                         if (!isNaN(y) && !isNaN(mo)) {
-                            activeMonthsSet.add(`${y}/${mo}`);
-                            if (y > endYear || (y === endYear && mo > endMonth)) {
-                                endYear = y;
-                                endMonth = mo;
-                            }
-                            if (y < startYear || (y === startYear && mo < startMonth)) {
-                                startYear = y;
-                                startMonth = mo;
+                            const val = y * 12 + mo;
+                            if (val >= cutoffVal) {
+                                activeMonthsSet.add(`${y}/${mo}`);
+                                if (y > endYear || (y === endYear && mo > endMonth)) {
+                                    endYear = y;
+                                    endMonth = mo;
+                                }
                             }
                         }
                     }
@@ -7980,21 +8052,20 @@ function renderTimelineMatrix(container) {
                         const y = parseInt(p[0]);
                         const mo = parseInt(p[1]);
                         if (!isNaN(y) && !isNaN(mo)) {
-                            activeMonthsSet.add(`${y}/${mo}`);
-                            if (y > endYear || (y === endYear && mo > endMonth)) {
-                                endYear = y;
-                                endMonth = mo;
-                            }
-                            if (y < startYear || (y === startYear && mo < startMonth)) {
-                                startYear = y;
-                                startMonth = mo;
+                            const val = y * 12 + mo;
+                            if (val >= cutoffVal) {
+                                activeMonthsSet.add(`${y}/${mo}`);
+                                if (y > endYear || (y === endYear && mo > endMonth)) {
+                                    endYear = y;
+                                    endMonth = mo;
+                                }
                             }
                         }
                     }
                 });
             });
 
-            // 建立連續時間軸全量月份
+            // 建立從 cutoff 到 endYear/endMonth 的連續全量時間軸
             const fullCalendar = [];
             let curY = startYear, curM = startMonth;
             let count = 0;
@@ -8008,7 +8079,7 @@ function renderTimelineMatrix(container) {
                 count++;
             }
 
-            // 【v5.3.1 空白月份智能壓縮】：連續空白月份在相鄰有數據的月份之間最多僅保留 1 個空白緩衝月
+            // 【空白月份智能壓縮】：連續空白月份在相鄰有數據的月份之間最多僅保留 1 個空白緩衝月
             const compressedCols = [];
             let prevWasEmpty = false;
             fullCalendar.forEach(mKey => {
@@ -8024,7 +8095,7 @@ function renderTimelineMatrix(container) {
                 }
             });
 
-            return compressedCols.length > 0 ? compressedCols : ['2026/9', '2026/10', '2026/11'];
+            return compressedCols.length > 0 ? compressedCols : [cutoffMonthKey, currentMonthKey];
         }
 
 
@@ -8376,6 +8447,17 @@ function renderTimelineMatrix(container) {
                                 <button type="button" onclick="scrollFortellerTable(280)" class="px-2.5 py-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center gap-1" title="向右平移 (亦可滑鼠滾輪上下滾動直接左右平移)">
                                     <span class="hidden sm:inline">往右</span> <span>▶</span>
                                 </button>
+                            </div>
+
+                            <!-- 【v5.3.2 自訂起始月份】：預設從當月前1個月開始，歷史過多亦可隨時切換 -->
+                            <div class="flex items-center gap-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <span class="text-slate-600 dark:text-slate-300 whitespace-nowrap pl-1">📅 起始:</span>
+                                <select onchange="setFortellerStartMonth(this.value)" class="text-xs font-bold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-slate-600 cursor-pointer focus:outline-none" title="設定戰略推演盤的最早起始月份">
+                                    <option value="prev_month" ${getFortellerStartMonthSetting() === 'prev_month' ? 'selected' : ''}>前1個月 (${getRelativeMonthKey(currentMonthKey, -1)}) · 預設</option>
+                                    <option value="current_month" ${getFortellerStartMonthSetting() === 'current_month' ? 'selected' : ''}>當月 (${currentMonthKey})</option>
+                                    <option value="year_start" ${getFortellerStartMonthSetting() === 'year_start' ? 'selected' : ''}>今年初 (${currentMonthKey.split('/')[0]}/1)</option>
+                                    <option value="all" ${getFortellerStartMonthSetting() === 'all' ? 'selected' : ''}>全部歷史月份</option>
+                                </select>
                             </div>
 
 
@@ -10640,18 +10722,18 @@ const card = document.createElement('div');
                                             const allM = getThoughtMilestones(thought);
                                             const isDone = m.done;
                                             const isCurrent = !isDone && (mIdx === 0 || allM[mIdx - 1]?.done);
-                                            const badge = isDone ? '✅ 已達成' : (isCurrent ? '🎯 衝刺中' : '🔮 接力預排');
-                                            const badgeClass = isDone ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700'
-                                                : (isCurrent ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-700'
-                                                : 'bg-purple-100 dark:bg-purple-900/60 text-purple-900 dark:text-purple-200 border-purple-300 dark:border-purple-700');
-
+                                            const isLast = (mIdx === allM.length - 1);
+                                            const stageStyle = getMilestoneStageStyle(mIdx, isDone);
+                                            const statusLabel = isDone ? '已達成' : (isCurrent ? '衝刺中' : (isLast ? '終局目標' : '接力預排'));
+                                            const badgeText = `第 ${mIdx + 1} 棒 · ${stageStyle.icon} ${statusLabel}`;
+                                            const badgeClass = stageStyle.paletteClass || stageStyle.className;
 
                                             return `
                                                 <div class="flex items-center justify-between gap-2 text-xs py-1 px-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 shadow-2xs">
                                                     <label class="flex items-center gap-1.5 cursor-pointer select-none grow min-w-0">
                                                         <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleMilestoneDone(${thought.id}, ${m.id})" class="w-4 h-4 text-amber-600 rounded border-slate-300 shrink-0">
-                                                        <span class="text-[10px] font-mono px-1 py-0.2 rounded border font-bold ${badgeClass} shrink-0">
-                                                            第 ${mIdx + 1} 棒 · ${badge}
+                                                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border font-bold ${badgeClass} shrink-0 shadow-2xs">
+                                                            ${badgeText}
                                                         </span>
                                                         <span class="truncate ${isDone ? 'line-through text-slate-400 font-normal' : 'font-bold text-slate-800 dark:text-slate-100'}">
                                                             ${escapeHtml(m.title)}
