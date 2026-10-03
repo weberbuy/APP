@@ -490,7 +490,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.6-test (Forteller預設目標模式與拆解目標去重優化完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.7-test (接力新目標修復與Forteller目標篩選記憶完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -3600,6 +3600,43 @@ function updateContainerWidth() {
             saveData();
         }
 
+        // 【接力新目標】：前身目標結案後，規劃下一個接力目標保持動能
+        function createSuccessorGoal(prevThoughtId, defaultMonthStr = null) {
+            const prev = thoughts.find(t => t.id === prevThoughtId);
+            if (!prev) return;
+            const domain = prev.category || '💼 事業';
+            
+            // 計算下個月份
+            let nextMonth = defaultMonthStr;
+            if (!nextMonth) {
+                const now = new Date();
+                const nextM = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+                nextMonth = `${nextM.getFullYear()}/${String(nextM.getMonth() + 1).padStart(2, '0')}`;
+            }
+
+            const text = prompt(`【目標接力鏈】為前身目標「${prev.text}」規劃下一個接力目標 (${nextMonth})：`);
+            if (!text || text.trim() === '') return;
+
+            const newThought = {
+                id: Date.now(),
+                text: text.trim(),
+                goal: prev.goal || '',
+                category: domain,
+                previousGoalId: prev.id,
+                targetDate: `${nextMonth.replace('/', '-')}-28`,
+                targetTimeSlot: prev.targetTimeSlot || '全天',
+                isMainFocus: prev.isMainFocus || false,
+                goalDone: false,
+                steps: [],
+                createdAt: Date.now()
+            };
+            thoughts.unshift(newThought);
+            saveData();
+            render();
+            alert(`🎉 已成功建立接力目標「${newThought.text}」！`);
+        }
+
+
 
 
 
@@ -4708,6 +4745,15 @@ function renderTimelineMatrix(container) {
         let fortellerMode = 'goal'; // 預設以「目標模式 (goal)」進入 Forteller
         let fortellerFilterDomain = 'all'; // 'all' 或指定領域名稱
         let fortellerSelectedGoalIds = []; // 空陣列代表全選，若有值代表複選特定目標 ID
+        try {
+            const savedSelectedGoals = localStorage.getItem('my_forteller_selected_goals');
+            if (savedSelectedGoals) {
+                const parsed = JSON.parse(savedSelectedGoals);
+                if (Array.isArray(parsed)) fortellerSelectedGoalIds = parsed;
+            }
+        } catch (e) {
+            fortellerSelectedGoalIds = [];
+        }
         let isFortellerGoalDropdownOpen = false; // 目標篩選下拉開關
 
         // 切換 Forteller 檢視模式 (領域模式 vs 目標模式)
@@ -4736,7 +4782,7 @@ function renderTimelineMatrix(container) {
             render();
         }
 
-        // 切換單個目標勾選狀態
+        // 切換單個目標勾選狀態 (並持久化記憶至 localStorage)
         function toggleFortellerGoalSelection(goalId, e) {
             if (e) e.stopPropagation();
             // 若原本為全選 (空陣列)，點選單一目標時切換為除該目標外的其餘目標或僅選該目標
@@ -4750,10 +4796,13 @@ function renderTimelineMatrix(container) {
             } else {
                 fortellerSelectedGoalIds.push(goalId);
             }
+            try {
+                localStorage.setItem('my_forteller_selected_goals', JSON.stringify(fortellerSelectedGoalIds));
+            } catch (err) {}
             render();
         }
 
-        // 目標卡片全選 / 清空
+        // 目標卡片全選 / 清空 (並持久化記憶至 localStorage)
         function setFortellerAllGoals(selectAll, e) {
             if (e) e.stopPropagation();
             if (selectAll) {
@@ -4761,6 +4810,9 @@ function renderTimelineMatrix(container) {
             } else {
                 fortellerSelectedGoalIds = [-9999]; // 代表全部不選
             }
+            try {
+                localStorage.setItem('my_forteller_selected_goals', JSON.stringify(fortellerSelectedGoalIds));
+            } catch (err) {}
             render();
         }
 
