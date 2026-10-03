@@ -490,7 +490,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.7-test (接力新目標修復與Forteller目標篩選記憶完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.0.0-test (單卡多階段接力里程碑鏈與長程戰略推演跨度大躍進版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -3600,40 +3600,153 @@ function updateContainerWidth() {
             saveData();
         }
 
-        // 【接力新目標】：前身目標結案後，規劃下一個接力目標保持動能
-        function createSuccessorGoal(prevThoughtId, defaultMonthStr = null) {
-            const prev = thoughts.find(t => t.id === prevThoughtId);
-            if (!prev) return;
-            const domain = prev.category || '💼 事業';
-            
-            // 計算下個月份
-            let nextMonth = defaultMonthStr;
-            if (!nextMonth) {
-                const now = new Date();
-                const nextM = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-                nextMonth = `${nextM.getFullYear()}/${String(nextM.getMonth() + 1).padStart(2, '0')}`;
+        // ==========================================
+        // 【v5.0.0 核心演進】：單卡多階段接力里程碑鏈 (Milestones Chain)
+        // ==========================================
+
+        // 輔助函式：取得卡片的多階段接力里程碑清單 (完全向下相容舊卡片資料)
+        function getThoughtMilestones(thought) {
+            if (!thought) return [];
+            if (Array.isArray(thought.milestones) && thought.milestones.length > 0) {
+                return thought.milestones;
+            }
+            return [{
+                id: thought.id,
+                title: thought.goal || thought.text || '未設定目標',
+                targetDate: thought.targetDate || '未指定日期',
+                targetTimeSlot: thought.targetTimeSlot || '全天',
+                done: Boolean(thought.goalDone),
+                completedDate: thought.lastCompletedDate || '',
+                createdAt: thought.createdAt || Date.now()
+            }];
+        }
+
+        // 輔助函式：確保卡片具備 milestones 陣列
+        function ensureThoughtMilestones(thought) {
+            if (!Array.isArray(thought.milestones) || thought.milestones.length === 0) {
+                thought.milestones = getThoughtMilestones(thought);
+            }
+            return thought.milestones;
+        }
+
+        // 輔助函式：將 milestones 狀態同步回舊卡片欄位，確保全域 100% 向下相容
+        function syncMilestonesToLegacy(thought) {
+            if (!thought || !thought.milestones || thought.milestones.length === 0) return;
+            const activeM = thought.milestones.find(m => !m.done) || thought.milestones[thought.milestones.length - 1];
+            thought.goal = activeM.title;
+            thought.targetDate = activeM.targetDate;
+            thought.targetTimeSlot = activeM.targetTimeSlot || '全天';
+            thought.goalDone = thought.milestones.every(m => m.done);
+            if (thought.goalDone && !thought.lastCompletedDate) {
+                thought.lastCompletedDate = todayStr;
+            }
+        }
+
+        // 在原卡片新增「接力新目標」 (無論當前目標完成與否皆可預排半年/一年/兩年後目標)
+        function addMilestoneToThought(thoughtId) {
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            ensureThoughtMilestones(t);
+
+            const nextIdx = t.milestones.length + 1;
+            const lastM = t.milestones[t.milestones.length - 1];
+
+            // 智慧推算下一個建議日期
+            let nextTargetDate = '2026-12-31';
+            if (lastM && lastM.targetDate && lastM.targetDate.length >= 7 && lastM.targetDate !== '未指定日期') {
+                try {
+                    const parts = lastM.targetDate.split('-');
+                    const curY = parseInt(parts[0]);
+                    const curM = parseInt(parts[1]);
+                    const nextDate = new Date(curY, curM, 28);
+                    nextTargetDate = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-28`;
+                } catch(e) {}
+            } else {
+                const d = new Date();
+                d.setMonth(d.getMonth() + 3);
+                nextTargetDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-28`;
             }
 
-            const text = prompt(`【目標接力鏈】為前身目標「${prev.text}」規劃下一個接力目標 (${nextMonth})：`);
-            if (!text || text.trim() === '') return;
+            const title = prompt(`【階段接力新目標】為「${t.text}」規劃第 ${nextIdx} 棒接力目標名稱：`, `階段 ${nextIdx} 目標`);
+            if (!title || title.trim() === '') return;
 
-            const newThought = {
+            const dateStr = prompt(`請輸入第 ${nextIdx} 棒接力目標之預期日期 (YYYY-MM-DD)：`, nextTargetDate);
+            const finalDate = (dateStr && dateStr.trim() !== '') ? dateStr.trim() : nextTargetDate;
+
+            const newMilestone = {
                 id: Date.now(),
-                text: text.trim(),
-                goal: prev.goal || '',
-                category: domain,
-                previousGoalId: prev.id,
-                targetDate: `${nextMonth.replace('/', '-')}-28`,
-                targetTimeSlot: prev.targetTimeSlot || '全天',
-                isMainFocus: prev.isMainFocus || false,
-                goalDone: false,
-                steps: [],
+                title: title.trim(),
+                targetDate: finalDate,
+                targetTimeSlot: '全天',
+                done: false,
+                completedDate: '',
                 createdAt: Date.now()
             };
-            thoughts.unshift(newThought);
+
+            t.milestones.push(newMilestone);
+            syncMilestonesToLegacy(t);
             saveData();
             render();
-            alert(`🎉 已成功建立接力目標「${newThought.text}」！`);
+            alert(`🎉 已成功在卡片「${t.text}」建立第 ${nextIdx} 棒接力目標：「${newMilestone.title}」！`);
+        }
+
+        // 切換特定接力目標之完成狀態
+        function toggleMilestoneDone(thoughtId, milestoneId) {
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            ensureThoughtMilestones(t);
+            const m = t.milestones.find(x => x.id === milestoneId);
+            if (!m) return;
+
+            m.done = !m.done;
+            m.completedDate = m.done ? todayStr : '';
+
+            syncMilestonesToLegacy(t);
+            saveData();
+            render();
+        }
+
+        // 編輯特定里程碑目標
+        function editMilestone(thoughtId, milestoneId) {
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            ensureThoughtMilestones(t);
+            const m = t.milestones.find(x => x.id === milestoneId);
+            if (!m) return;
+
+            const newTitle = prompt('編輯里程碑目標名稱：', m.title);
+            if (newTitle === null) return;
+            const newDate = prompt('編輯里程碑預期日期 (YYYY-MM-DD)：', m.targetDate);
+            if (newDate === null) return;
+
+            m.title = newTitle.trim() || m.title;
+            m.targetDate = newDate.trim() || m.targetDate;
+
+            syncMilestonesToLegacy(t);
+            saveData();
+            render();
+        }
+
+        // 刪除特定接力里程碑
+        function deleteMilestone(thoughtId, milestoneId) {
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            ensureThoughtMilestones(t);
+            if (t.milestones.length <= 1) {
+                alert('卡片至少需保留一個最終目標！');
+                return;
+            }
+            if (!confirm('確定要刪除此階段接力目標嗎？')) return;
+
+            t.milestones = t.milestones.filter(x => x.id !== milestoneId);
+            syncMilestonesToLegacy(t);
+            saveData();
+            render();
+        }
+
+        // 【接力新目標】：前身目標結案後或隨時點選，無縫呼叫 addMilestoneToThought
+        function createSuccessorGoal(prevThoughtId, defaultMonthStr = null) {
+            addMilestoneToThought(prevThoughtId);
         }
 
 
@@ -4938,6 +5051,14 @@ function renderTimelineMatrix(container) {
                                     <span class="break-words font-black">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-75 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
                                 </div>
                             `;
+                        } else if (item.type === 'future_goal') {
+                            // 🔮 遠期接力目標 -> 紫色底色
+                            return `
+                                <div class="p-1 px-1.5 rounded-md bg-purple-100 dark:bg-purple-950/70 border border-purple-300 dark:border-purple-700 text-purple-950 dark:text-purple-200 font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往遠期接力目標卡片">
+                                    <span class="shrink-0 select-none">🔮</span>
+                                    <span class="break-words font-black">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-75 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
+                                </div>
+                            `;
                         } else if (item.type === 'subgoal') {
                             // 🔷 拆解目標 (步驟拆解之子/孫目標最終目標) -> 藍青底色
                             return `
@@ -5168,6 +5289,7 @@ function renderTimelineMatrix(container) {
                             <div class="hidden sm:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-[11px] font-medium flex-wrap">
                                 <span class="px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 font-bold">🎯 卡片目標</span>
                                 <span class="px-1.5 py-0.2 rounded bg-sky-100 dark:bg-sky-950/70 text-sky-950 dark:text-sky-200 border border-sky-300 dark:border-sky-700 font-bold">🔷 拆解目標</span>
+                                <span class="px-1.5 py-0.2 rounded bg-purple-100 dark:bg-purple-950/70 text-purple-950 dark:text-purple-200 border border-purple-300 dark:border-purple-700 font-bold">🔮 遠期接力</span>
                                 <span class="px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold">✅ 已完成</span>
                                 <span class="text-amber-600 dark:text-amber-400 font-mono font-bold">&gt; 單步</span>
                                 <span class="text-teal-600 dark:text-teal-400 font-mono font-bold">o&gt; 循環</span>
@@ -5256,7 +5378,7 @@ function renderTimelineMatrix(container) {
                                         `;
                                     }).join('')}
                                 ` : `
-                                    <!-- =================== 目標模式列表 (色彩管理與時序落點 & 遞迴子孫目標) =================== -->
+                                    <!-- =================== 目標模式列表 (v5.0.0 多階段里程碑接力與長程跨度彙整) =================== -->
                                     ${goalModeRows.map(row => {
                                         const tr = row.track;
                                         const root = row.rootGoal;
@@ -5266,57 +5388,32 @@ function renderTimelineMatrix(container) {
                                             branchItemsByMonth[mKey].push(item);
                                         }
 
-                                        // A. 若該軌道代表「拆解子/孫目標 (depth > 0)」：
-                                        // 呈現該拆解目標卡片自身的最終目標 (帶藍青色 sky-100 背景標籤，點擊前往該卡片)
-                                        if (tr.depth > 0 && tr.thought) {
-                                            const sub = tr.thought;
-                                            const subTargetM = getFortellerMonthKey(sub.targetDate, currentMonthKey);
-                                            const subDateBadge = (sub.targetDate && sub.targetDate !== '未指定日期') ? sub.targetDate.slice(5) : '';
+                                        // A. 取出該卡片的所有階段接力里程碑，按各自的 targetDate 落點於月度單元格
+                                        const tMilestones = getThoughtMilestones(tr.thought);
+                                        tMilestones.forEach((m, mIdx) => {
+                                            const mTargetM = getFortellerMonthKey(m.targetDate, currentMonthKey);
+                                            const mDateBadge = (m.targetDate && m.targetDate !== '未指定日期') ? m.targetDate.slice(5) : '';
 
-                                            if (sub.goalDone) {
-                                                addBranchItem(subTargetM, {
+                                            if (m.done) {
+                                                addBranchItem(mTargetM, {
                                                     type: 'goal_done',
-                                                    text: sub.goal || sub.text,
-                                                    thoughtId: sub.id,
-                                                    dateBadge: subDateBadge
+                                                    text: m.title,
+                                                    thoughtId: tr.thought.id,
+                                                    dateBadge: mDateBadge
                                                 });
                                             } else {
-                                                addBranchItem(subTargetM, {
-                                                    type: 'subgoal',
-                                                    text: sub.goal || sub.text,
-                                                    thoughtId: sub.id,
-                                                    dateBadge: subDateBadge
+                                                const isFuture = (mIdx > 0 && !tMilestones[mIdx - 1]?.done);
+                                                const gtype = isFuture ? 'future_goal' : (tr.isRootTrack ? 'card_goal' : 'subgoal');
+                                                addBranchItem(mTargetM, {
+                                                    type: gtype,
+                                                    text: m.title,
+                                                    thoughtId: tr.thought.id,
+                                                    dateBadge: mDateBadge
                                                 });
                                             }
-                                        }
+                                        });
 
-                                        // B. 若為根目標軌道 (isRootTrack)，且根目標設定在 9、10、11 月 (早於年底)：
-                                        // 依真實日期動態落點至所屬月份！
-                                        if (tr.isRootTrack && root.goal) {
-                                            const rootTargetM = getFortellerMonthKey(root.targetDate, '2026/12');
-                                            if (['2026/9', '2026/10', '2026/11'].includes(rootTargetM)) {
-                                                const rootDateBadge = (root.targetDate && root.targetDate !== '未指定日期') ? root.targetDate.slice(5) : '';
-                                                if (root.goalDone) {
-                                                    addBranchItem(rootTargetM, {
-                                                        type: 'goal_done',
-                                                        text: root.goal || root.text,
-                                                        thoughtId: root.id,
-                                                        dateBadge: rootDateBadge
-                                                    });
-                                                } else {
-                                                    addBranchItem(rootTargetM, {
-                                                        type: 'card_goal',
-                                                        text: root.goal || root.text,
-                                                        thoughtId: root.id,
-                                                        dateBadge: rootDateBadge
-                                                    });
-                                                }
-                                            }
-                                        }
-
-                                        // C. 拆解目標去重優化：子/孫目標已於其自身專屬軌道 (depth > 0) 呈現最終目標與執行步驟，母步驟無需重複顯示，確保每項最終目標於推演盤上精確呈現一次！
-
-                                        // D. 放置未拆解的純待辦步驟 (乾淨文字，> 單步，o> 循環)
+                                        // B. 放置未拆解的純待辦步驟 (乾淨文字，> 單步，o> 循環)
                                         (tr.directSteps || []).forEach(s => {
                                             const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey);
                                             const isRec = (s.recurrence && s.recurrence !== 'none');
@@ -5330,6 +5427,15 @@ function renderTimelineMatrix(container) {
                                                 depth: 0
                                             });
                                         });
+
+                                        // 計算 root 卡片的所有接力目標時間跨度與當前進度
+                                        const rootAllM = getThoughtMilestones(root);
+                                        const rootDates = rootAllM.map(x => x.targetDate).filter(d => d && d !== '未指定日期').sort();
+                                        const minTargetDate = rootDates.length > 0 ? rootDates[0] : '';
+                                        const maxTargetDate = rootDates.length > 0 ? rootDates[rootDates.length - 1] : '';
+                                        const rootDoneCount = rootAllM.filter(x => x.done).length;
+                                        const rootActiveIdx = rootAllM.findIndex(x => !x.done);
+                                        const activeMilestone = (rootActiveIdx >= 0) ? rootAllM[rootActiveIdx] : rootAllM[rootAllM.length - 1];
 
                                         return `
                                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
@@ -5352,16 +5458,22 @@ function renderTimelineMatrix(container) {
                                                     `;
                                                 }).join('')}
 
-                                                <!-- 終局目標：同一個目標卡片跨 NO. 合併顯示 (rowspan)，清楚標明各卡片真實目標日期與結案時序 -->
+                                                <!-- 【v5.0.0 終局目標 / 結案時間】：跨 NO. 合併展示長程接力鏈跨度、推進狀態與終極願景 -->
                                                 ${row.isFirstInRoot ? `
                                                     <td rowspan="${row.rootRowspan}" class="py-2.5 px-3 bg-amber-50/40 dark:bg-amber-950/25 text-slate-800 dark:text-slate-200 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
                                                         <div class="space-y-1.5">
-                                                            <div class="font-extrabold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline" onclick="jumpToGoalCard(${root.id})" title="點擊前往目標卡片">
-                                                                🎯 ${escapeHtml(root.goal || root.text)}
+                                                            <div class="font-extrabold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline text-xs" onclick="jumpToGoalCard(${root.id})" title="點擊前往卡片">
+                                                                🎯 ${escapeHtml(root.text)}
+                                                            </div>
+                                                            <div class="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                                                                ${escapeHtml(activeMilestone ? activeMilestone.title : (root.goal || '未設定'))}
                                                             </div>
                                                             <div class="flex items-center gap-1.5 flex-wrap">
-                                                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${root.targetDate && root.targetDate <= '2026-12-30' ? 'bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'} font-mono">
-                                                                    📅 ${root.targetDate ? root.targetDate : '2026 終局願景'}
+                                                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 font-mono">
+                                                                    📅 ${minTargetDate && maxTargetDate && minTargetDate !== maxTargetDate ? `${minTargetDate.slice(0, 7)} ➔ ${maxTargetDate.slice(0, 7)}` : (maxTargetDate || '2026/12/31')}
+                                                                </span>
+                                                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-mono">
+                                                                    🏁 接力 ${rootDoneCount}/${rootAllM.length} (共 ${rootAllM.length} 階段接力)
                                                                 </span>
                                                                 ${row.rootRowspan > 1 ? `
                                                                     <span class="text-[10px] text-amber-700/80 dark:text-amber-400 font-mono">
@@ -5369,11 +5481,9 @@ function renderTimelineMatrix(container) {
                                                                     </span>
                                                                 ` : ''}
                                                             </div>
-                                                            ${root.targetDate && root.targetDate <= '2026-12-30' ? `
-                                                                <div class="text-[10px] text-amber-800/90 dark:text-amber-300 font-medium">
-                                                                    💡 目標落點於 ${root.targetDate.slice(5, 7)} 月推演欄位
-                                                                </div>
-                                                            ` : ''}
+                                                            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                                                                🏃 目前推進：第 ${(rootActiveIdx >= 0 ? rootActiveIdx : rootAllM.length - 1) + 1} 棒
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 ` : ''}
@@ -6728,16 +6838,51 @@ const card = document.createElement('div');
                             <div class="ml-0 sm:ml-10 space-y-2 mt-2">
                                 ${thought.detail ? `<p class="text-xs text-slate-600 bg-white/80 p-2.5 rounded-xl whitespace-pre-wrap leading-relaxed border border-slate-200/60">📝 ${escapeHtml(thought.detail)}</p>` : ''}
                                 <div class="flex flex-wrap gap-2 text-xs">
-                                    <label class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-900 border border-amber-200/80 px-2.5 py-1 rounded-md font-medium cursor-pointer">
-                                        <input type="checkbox" ${thought.goalDone ? 'checked' : ''} onchange="toggleGoalDone(${thought.id})" class="w-4 h-4 text-amber-600 rounded border-slate-300">
-                                        <span class="${thought.goalDone ? 'line-through text-slate-400 font-normal' : 'font-bold'}">🎯 最終目標：${escapeHtml(thought.goal || '未設定')}</span>
-                                    </label>
-                                    <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-800 border border-indigo-200/60 px-2.5 py-1 rounded-md font-medium">📅 預期日期：${thought.targetDate || '未指定'} [${thought.targetTimeSlot || '全天'}]</span>
+                                    <!-- 【v5.0.0 階段接力目標鏈】：單卡多階段生命週期管理 -->
+                                <div class="space-y-1.5 bg-slate-50/70 dark:bg-slate-750/50 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700">
+                                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                                        <div class="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                                            <span>🎯 階段接力目標鏈</span>
+                                            <span class="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200">
+                                                ${getThoughtMilestones(thought).filter(m => m.done).length} / ${getThoughtMilestones(thought).length} 達成
+                                            </span>
+                                        </div>
+                                        <button type="button" onclick="addMilestoneToThought(${thought.id})" class="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-0.5 rounded-lg font-bold text-[11px] cursor-pointer shadow-2xs transition-colors" title="在同張卡片上規劃下一棒接力新目標（半年/一年/兩年後）">
+                                            <span>➕ 接力新目標</span>
+                                        </button>
+                                    </div>
+                                    <div class="space-y-1 mt-1">
+                                        ${getThoughtMilestones(thought).map((m, mIdx) => {
+                                            const allM = getThoughtMilestones(thought);
+                                            const isDone = m.done;
+                                            const isCurrent = !isDone && (mIdx === 0 || allM[mIdx - 1]?.done);
+                                            const badge = isDone ? '✅ 已達成' : (isCurrent ? '🎯 衝刺中' : '🔮 接力預排');
+                                            const badgeClass = isDone ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700'
+                                                : (isCurrent ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-700'
+                                                : 'bg-purple-100 dark:bg-purple-900/60 text-purple-900 dark:text-purple-200 border-purple-300 dark:border-purple-700');
 
-
-                                    ${thought.goalDone ? `
-                                        <button type="button" onclick="createSuccessorGoal(${thought.id})" class="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded-md font-bold text-[11px] cursor-pointer shadow-2xs" title="目標完成後，在同一個軌道生出下一個接力目標">🚀 接力新目標</button>
-                                    ` : ''}
+                                            return `
+                                                <div class="flex items-center justify-between gap-2 text-xs py-1 px-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 shadow-2xs">
+                                                    <label class="flex items-center gap-1.5 cursor-pointer select-none grow min-w-0">
+                                                        <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleMilestoneDone(${thought.id}, ${m.id})" class="w-4 h-4 text-amber-600 rounded border-slate-300 shrink-0">
+                                                        <span class="text-[10px] font-mono px-1 py-0.2 rounded border font-bold ${badgeClass} shrink-0">
+                                                            第 ${mIdx + 1} 棒 · ${badge}
+                                                        </span>
+                                                        <span class="truncate ${isDone ? 'line-through text-slate-400 font-normal' : 'font-bold text-slate-800 dark:text-slate-100'}">
+                                                            ${escapeHtml(m.title)}
+                                                        </span>
+                                                    </label>
+                                                    <div class="flex items-center gap-1.5 shrink-0 text-[11px] text-slate-500 font-mono">
+                                                        <span>📅 ${m.targetDate || '未指定'}</span>
+                                                        <button type="button" onclick="editMilestone(${thought.id}, ${m.id})" class="text-slate-400 hover:text-indigo-600 p-0.5 cursor-pointer" title="編輯里程碑目標與日期">✏️</button>
+                                                        ${allM.length > 1 ? `
+                                                            <button type="button" onclick="deleteMilestone(${thought.id}, ${m.id})" class="text-slate-300 hover:text-rose-500 p-0.5 cursor-pointer" title="刪除此接力目標">🗑️</button>
+                                                        ` : ''}
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
                                 </div>
                             </div>
                         </div>
