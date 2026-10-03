@@ -490,7 +490,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.4-test (Forteller目標色彩管理與動態時序落點及點擊背景關閉完整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v4.12.5-test (Forteller多層拆解目標最終目標顯示與遞迴軌道完整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -4802,31 +4802,14 @@ function renderTimelineMatrix(container) {
                     }
                 }
 
-                // 步驟只保留「未完成步驟 (!s.done)」
+                // 步驟處理：若步驟有拆解目標，改為顯示該拆解卡片的最終目標；無拆解目標則顯示待辦步驟
                 const steps = Array.isArray(t.steps) ? t.steps : [];
                 steps.forEach(s => {
                     if (s.done) return; // 已完成步驟不顯示，簡化畫面！
 
-                    let mKey = currentMonthKey; // 沒指定日期的步驟自動歸於當月份
-                    if (s.stepDate && s.stepDate !== '未指定日期' && s.stepDate.length >= 7) {
-                        mKey = s.stepDate.slice(0, 7).replace('-', '/');
-                        if (mKey < '2026/09') mKey = '2026/9';
-                    }
+                    let mKey = getFortellerMonthKey(s.stepDate, currentMonthKey);
 
-                    const isRec = (s.recurrence && s.recurrence !== 'none');
-                    const prefix = isRec ? 'o>' : '>';
-
-                    addItem(mKey, {
-                        type: 'step',
-                        prefix: prefix,
-                        text: s.text,
-                        stepDate: s.stepDate,
-                        thoughtId: t.id,
-                        stepId: s.id,
-                        depth: depth
-                    });
-
-                    // 檢查步驟是否有拆解子目標
+                    // 檢查步驟是否有拆解子/孫目標
                     let childThought = null;
                     if (s.linkedThoughtId) {
                         childThought = allThoughts.find(x => x.id === s.linkedThoughtId);
@@ -4836,15 +4819,40 @@ function renderTimelineMatrix(container) {
                     }
 
                     if (childThought) {
-                        addItem(mKey, {
-                            type: 'subgoal',
-                            text: childThought.text,
-                            goal: childThought.goal || '',
-                            done: childThought.goalDone,
-                            thoughtId: childThought.id,
-                            depth: depth + 1
-                        });
+                        // 依需求：若步驟有拆解目標，改為顯示該拆解卡片的最終目標 (帶藍青色塊)
+                        const childDateBadge = (childThought.targetDate && childThought.targetDate !== '未指定日期') ? childThought.targetDate.slice(5) : '';
+                        if (childThought.goalDone) {
+                            addItem(mKey, {
+                                type: 'goal_done',
+                                text: childThought.goal || childThought.text,
+                                thoughtId: childThought.id,
+                                dateBadge: childDateBadge,
+                                depth: depth
+                            });
+                        } else {
+                            addItem(mKey, {
+                                type: 'subgoal',
+                                text: childThought.goal || childThought.text,
+                                thoughtId: childThought.id,
+                                dateBadge: childDateBadge,
+                                depth: depth
+                            });
+                        }
+                        // 遞迴深入該拆解卡片底下的子步驟與孫目標
                         process(childThought, depth + 1);
+                    } else {
+                        // 無拆解目標之純步驟
+                        const isRec = (s.recurrence && s.recurrence !== 'none');
+                        const prefix = isRec ? 'o>' : '>';
+                        addItem(mKey, {
+                            type: 'step',
+                            prefix: prefix,
+                            text: s.text,
+                            stepDate: s.stepDate,
+                            thoughtId: t.id,
+                            stepId: s.id,
+                            depth: depth
+                        });
                     }
                 });
             }
@@ -4853,18 +4861,15 @@ function renderTimelineMatrix(container) {
             return itemsByMonth;
         }
 
-        // 輔助函式：將日期字串轉為所屬月份 Key
+        // 輔助函式：將日期字串轉為所屬月份 Key (確保 12/31 或跨年落點於 2026/12 欄位，絕不遺失)
         function getFortellerMonthKey(dateStr, fallbackMonthKey) {
-            if (!dateStr || dateStr === '未指定日期' || dateStr.length < 7) return fallbackMonthKey;
+            if (!dateStr || dateStr === '未指定日期' || dateStr.length < 7) return fallbackMonthKey || '2026/10';
             const m = dateStr.slice(0, 7).replace('-', '/');
             if (m <= '2026/09') return '2026/9';
             if (m === '2026/10') return '2026/10';
             if (m === '2026/11') return '2026/11';
-            if (m === '2026/12') {
-                if (dateStr.startsWith('2026-12-31')) return '2026/12/31';
-                return '2026/12';
-            }
-            return '2026/12/31';
+            if (m >= '2026/12') return '2026/12';
+            return fallbackMonthKey || '2026/10';
         }
 
         // 渲染步驟與目標單元格內部內容 (落實 Forteller 試算表之色彩管理：卡片目標橘黃、拆解目標藍青、已完成綠色、步驟乾淨文字)
@@ -4973,63 +4978,65 @@ function renderTimelineMatrix(container) {
 
             if (fortellerMode === 'goal') {
                 rootThoughts.forEach(root => {
-                    const branches = [];
+                    const rootTracks = [];
+                    const visitedThoughts = new Set();
 
-                    // 1. 原目標卡片本身的直接步驟 (無拆解子目標)
-                    const directSteps = (root.steps || []).filter(s => {
-                        if (s.done) return false; // 排除已完成步驟
-                        const hasLinked = s.linkedThoughtId && thoughts.some(t => t.id === s.linkedThoughtId);
-                        const hasChild = thoughts.some(t => t.parentStepInfo && t.parentStepInfo.parentThoughtId === root.id && t.parentStepInfo.parentStepId === s.id);
-                        return !hasLinked && !hasChild;
-                    });
+                    // 遞迴生成該目標及其所有子、孫拆解目標的專屬軌道
+                    function buildTracks(t, depth, parentStep) {
+                        if (!t || visitedThoughts.has(t.id)) return;
+                        visitedThoughts.add(t.id);
 
-                    // 原卡片本體分支 (第一列)
-                    branches.push({
-                        domain: root.category || '💼 事業',
-                        targetGoal: root,
-                        steps: directSteps,
-                        subGoal: null,
-                        isRootBranch: true
-                    });
+                        const stepsWithSubgoals = [];
+                        const directSteps = [];
 
-                    // 2. 檢視各步驟所屬的拆解子目標 (步驟歸於子/孫目標的領域)
-                    (root.steps || []).forEach(s => {
-                        if (s.done) return; // 排除已完成步驟
-                        let linkedChild = null;
-                        if (s.linkedThoughtId) linkedChild = thoughts.find(t => t.id === s.linkedThoughtId);
-                        if (!linkedChild) linkedChild = thoughts.find(t => t.parentStepInfo && t.parentStepInfo.parentThoughtId === root.id && t.parentStepInfo.parentStepId === s.id);
+                        (t.steps || []).forEach(s => {
+                            if (s.done) return; // 排除已完成步驟
+                            let child = null;
+                            if (s.linkedThoughtId) child = thoughts.find(x => x.id === s.linkedThoughtId);
+                            if (!child) child = thoughts.find(x => x.parentStepInfo && x.parentStepInfo.parentThoughtId === t.id && x.parentStepInfo.parentStepId === s.id);
 
-                        if (linkedChild) {
-                            const childDomain = linkedChild.category || root.category || '💼 事業';
-                            const childUncompletedSteps = (linkedChild.steps || []).filter(cs => !cs.done);
+                            if (child) {
+                                stepsWithSubgoals.push({ step: s, child: child });
+                            } else {
+                                directSteps.push(s);
+                            }
+                        });
 
-                            branches.push({
-                                domain: childDomain,
-                                targetGoal: linkedChild,
-                                triggerStep: s,
-                                subGoal: linkedChild, // 拆解目標
-                                steps: childUncompletedSteps, // 子目標自身的未完成步驟
-                                isRootBranch: false
-                            });
-                        }
-                    });
+                        // 建立當前 t 的軌道
+                        rootTracks.push({
+                            thought: t,
+                            domain: t.category || root.category || '💼 事業',
+                            depth: depth,
+                            isRootTrack: (depth === 0),
+                            subGoalCard: (depth > 0 ? t : null),
+                            directSteps: directSteps,
+                            subGoalSteps: stepsWithSubgoals
+                        });
 
-                    // 依領域過濾篩選分支
-                    let filteredBranches = branches;
-                    if (fortellerFilterDomain !== 'all') {
-                        filteredBranches = filteredBranches.filter(b => b.domain === fortellerFilterDomain);
+                        // 依序遞迴深入每一個有拆解目標的子卡片（子目標、孫目標、曾孫目標...）
+                        stepsWithSubgoals.forEach(item => {
+                            buildTracks(item.child, depth + 1, item.step);
+                        });
                     }
 
-                    if (filteredBranches.length > 0) {
-                        const totalBranchCount = filteredBranches.length;
-                        filteredBranches.forEach((b, bIdx) => {
+                    buildTracks(root, 0, null);
+
+                    // 領域篩選過濾
+                    let filteredTracks = rootTracks;
+                    if (fortellerFilterDomain !== 'all') {
+                        filteredTracks = filteredTracks.filter(tr => tr.domain === fortellerFilterDomain);
+                    }
+
+                    if (filteredTracks.length > 0) {
+                        const totalCount = filteredTracks.length;
+                        filteredTracks.forEach((tr, trIdx) => {
                             goalModeRows.push({
                                 no: goalAutoNo++,
-                                domain: b.domain,
-                                branch: b,
+                                domain: tr.domain,
+                                track: tr,
                                 rootGoal: root,
-                                isFirstInRoot: (bIdx === 0),
-                                rootRowspan: totalBranchCount
+                                isFirstInRoot: (trIdx === 0),
+                                rootRowspan: totalCount
                             });
                         });
                     }
@@ -5196,9 +5203,9 @@ function renderTimelineMatrix(container) {
                                         `;
                                     }).join('')}
                                 ` : `
-                                    <!-- =================== 目標模式列表 (色彩管理與時序落點) =================== -->
+                                    <!-- =================== 目標模式列表 (色彩管理與時序落點 & 遞迴子孫目標) =================== -->
                                     ${goalModeRows.map(row => {
-                                        const b = row.branch;
+                                        const tr = row.track;
                                         const root = row.rootGoal;
                                         const branchItemsByMonth = {};
                                         function addBranchItem(mKey, item) {
@@ -5206,76 +5213,88 @@ function renderTimelineMatrix(container) {
                                             branchItemsByMonth[mKey].push(item);
                                         }
 
-                                        // A. 若該分支代表「拆解目標 (subGoal)」：
-                                        // 依需求 1：改顯示拆解目標的最終目標，且如 Forteller 試算表一樣有背景顏色 (藍青色 sky-100)
-                                        if (b.subGoal) {
-                                            const sub = b.subGoal;
+                                        // A. 若該軌道代表「拆解子/孫目標 (depth > 0)」：
+                                        // 呈現該拆解目標卡片自身的最終目標 (帶藍青色 sky-100 背景標籤，點擊前往該卡片)
+                                        if (tr.depth > 0 && tr.thought) {
+                                            const sub = tr.thought;
                                             const subTargetM = getFortellerMonthKey(sub.targetDate, currentMonthKey);
+                                            const subDateBadge = (sub.targetDate && sub.targetDate !== '未指定日期') ? sub.targetDate.slice(5) : '';
 
                                             if (sub.goalDone) {
-                                                // 已完成的拆解目標 -> 綠底
-                                                let doneM = currentMonthKey;
-                                                if (sub.lastCompletedDate) doneM = sub.lastCompletedDate.slice(0, 7).replace('-', '/');
-                                                if (doneM <= '2026/09') doneM = '2026/9';
-                                                addBranchItem(doneM, {
+                                                addBranchItem(subTargetM, {
                                                     type: 'goal_done',
                                                     text: sub.goal || sub.text,
                                                     thoughtId: sub.id,
-                                                    dateBadge: sub.targetDate ? sub.targetDate.slice(5) : ''
+                                                    dateBadge: subDateBadge
                                                 });
                                             } else {
-                                                // 未完成的拆解目標 -> 藍青底
                                                 addBranchItem(subTargetM, {
                                                     type: 'subgoal',
                                                     text: sub.goal || sub.text,
                                                     thoughtId: sub.id,
-                                                    dateBadge: sub.targetDate ? sub.targetDate.slice(5) : ''
+                                                    dateBadge: subDateBadge
                                                 });
                                             }
                                         }
 
-                                        // B. 若為根目標分支 (isRootBranch)，且根目標設定在特定月份 (早於12/31)：
-                                        // 依需求 3：依該目標卡片的日期來顯示在各自月份！
-                                        if (b.isRootBranch && root.goal) {
-                                            const rootTargetM = getFortellerMonthKey(root.targetDate, '2026/12/31');
-                                            if (monthCols.includes(rootTargetM)) {
+                                        // B. 若為根目標軌道 (isRootTrack)，且根目標設定在 9、10、11 月 (早於年底)：
+                                        // 依真實日期動態落點至所屬月份！
+                                        if (tr.isRootTrack && root.goal) {
+                                            const rootTargetM = getFortellerMonthKey(root.targetDate, '2026/12');
+                                            if (['2026/9', '2026/10', '2026/11'].includes(rootTargetM)) {
+                                                const rootDateBadge = (root.targetDate && root.targetDate !== '未指定日期') ? root.targetDate.slice(5) : '';
                                                 if (root.goalDone) {
-                                                    // 已完成根目標 -> 綠底
-                                                    let doneM = currentMonthKey;
-                                                    if (root.lastCompletedDate) doneM = root.lastCompletedDate.slice(0, 7).replace('-', '/');
-                                                    if (doneM <= '2026/09') doneM = '2026/9';
-                                                    addBranchItem(doneM, {
+                                                    addBranchItem(rootTargetM, {
                                                         type: 'goal_done',
                                                         text: root.goal || root.text,
                                                         thoughtId: root.id,
-                                                        dateBadge: root.targetDate ? root.targetDate.slice(5) : ''
+                                                        dateBadge: rootDateBadge
                                                     });
                                                 } else {
-                                                    // 未完成根目標 -> 橘黃底
                                                     addBranchItem(rootTargetM, {
                                                         type: 'card_goal',
                                                         text: root.goal || root.text,
                                                         thoughtId: root.id,
-                                                        dateBadge: root.targetDate ? root.targetDate.slice(5) : ''
+                                                        dateBadge: rootDateBadge
                                                     });
                                                 }
                                             }
                                         }
 
-                                        // C. 放置未完成的具體步驟 (乾淨文字，> 單步，o> 循環)
-                                        (b.steps || []).forEach(s => {
-                                            let mKey = currentMonthKey;
-                                            if (s.stepDate && s.stepDate !== '未指定日期' && s.stepDate.length >= 7) {
-                                                mKey = s.stepDate.slice(0, 7).replace('-', '/');
-                                                if (mKey < '2026/09') mKey = '2026/9';
+                                        // C. 核心要求：若步驟有拆解目標 (子/孫目標)，該步驟改為顯示該拆解卡片的最終目標！
+                                        (tr.subGoalSteps || []).forEach(item => {
+                                            const s = item.step;
+                                            const child = item.child;
+                                            const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey);
+                                            const childDateBadge = (child.targetDate && child.targetDate !== '未指定日期') ? child.targetDate.slice(5) : '';
+
+                                            if (child.goalDone) {
+                                                addBranchItem(mKey, {
+                                                    type: 'goal_done',
+                                                    text: child.goal || child.text,
+                                                    thoughtId: child.id,
+                                                    dateBadge: childDateBadge
+                                                });
+                                            } else {
+                                                addBranchItem(mKey, {
+                                                    type: 'subgoal',
+                                                    text: child.goal || child.text,
+                                                    thoughtId: child.id,
+                                                    dateBadge: childDateBadge
+                                                });
                                             }
+                                        });
+
+                                        // D. 放置未拆解的純待辦步驟 (乾淨文字，> 單步，o> 循環)
+                                        (tr.directSteps || []).forEach(s => {
+                                            const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey);
                                             const isRec = (s.recurrence && s.recurrence !== 'none');
                                             addBranchItem(mKey, {
                                                 type: 'step',
                                                 prefix: isRec ? 'o>' : '>',
                                                 text: s.text,
                                                 done: s.done,
-                                                thoughtId: b.targetGoal ? b.targetGoal.id : root.id,
+                                                thoughtId: tr.thought.id,
                                                 stepId: s.id,
                                                 depth: 0
                                             });
