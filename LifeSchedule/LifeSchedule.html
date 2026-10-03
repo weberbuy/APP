@@ -490,7 +490,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.1.0-test (月曆選取接力日期、步驟綁定目標棒次與Forteller動態跨年月份推演大躍進版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.2.0-test (步驟即時綁定目標棒次、Forteller全人生領域檢視與空白領域激發大躍進版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -3846,6 +3846,60 @@ function updateContainerWidth() {
         }
 
         // 在原卡片新增「接力新目標」 (開啟月曆選取視窗)
+        // ==========================================
+        // 【v5.2.0 步驟目標棒次精準綁定與全領域激發】
+        // ==========================================
+
+        // 直接設定特定步驟所屬之目標棒次 (永久綁定，不隨第一棒完成而錯誤跳動)
+        function setStepMilestone(thoughtId, stepId, milestoneId) {
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t || !Array.isArray(t.steps)) return;
+            const s = t.steps.find(x => x.id === stepId);
+            if (!s) return;
+            s.milestoneId = (milestoneId !== null && milestoneId !== undefined && !isNaN(milestoneId)) ? parseInt(milestoneId) : milestoneId;
+            saveData();
+            render();
+        }
+
+        // 切換 Forteller 是否顯示未有目標/步驟的人生領域
+        function toggleFortellerShowAllDomains() {
+            fortellerShowAllDomains = !fortellerShowAllDomains;
+            render();
+        }
+
+        // 於空白人生領域一鍵快速建立新目標 (激發行動靈感)
+        function quickAddGoalForDomain(domain) {
+            const text = prompt(`【為「${domain}」領域構思新行動/目標】\n請輸入目標名稱：`, '');
+            if (!text || text.trim() === '') return;
+            const targetDate = prompt('請輸入預期完成日期 (YYYY-MM-DD)：', '2026-12-31') || '2026-12-31';
+
+            const newThought = {
+                id: Date.now(),
+                text: text.trim(),
+                goal: text.trim(),
+                category: domain,
+                targetDate: targetDate,
+                targetTimeSlot: '全天',
+                goalDone: false,
+                isMainFocus: false,
+                milestones: [{
+                    id: Date.now(),
+                    title: text.trim(),
+                    targetDate: targetDate,
+                    targetTimeSlot: '全天',
+                    done: false,
+                    completedDate: '',
+                    createdAt: Date.now()
+                }],
+                steps: [],
+                createdAt: Date.now()
+            };
+            thoughts.push(newThought);
+            saveData();
+            render();
+            alert(`🎉 已成功在「${domain}」建立新目標：「${newThought.text}」！`);
+        }
+
         function addMilestoneToThought(thoughtId) {
             openMilestoneModal(thoughtId, null);
         }
@@ -4279,6 +4333,11 @@ function updateContainerWidth() {
                     s.stepTime = stepTime;
                     s.stepTimeSlot = stepTimeSlot;
                     s.recurrence = recurrence;
+                    const mSelect = document.getElementById(`edit-step-milestone-${thoughtId}-${stepId}`);
+                    if (mSelect && mSelect.value) {
+                        const val = mSelect.value;
+                        s.milestoneId = isNaN(val) ? val : parseInt(val);
+                    }
                     editingStepIdKey = null;
                     saveData();
                 }
@@ -5005,7 +5064,8 @@ function renderTimelineMatrix(container) {
 
         let fortellerMode = 'goal'; // 預設以「目標模式 (goal)」進入 Forteller
         let fortellerFilterDomain = 'all'; // 'all' 或指定領域名稱
-        let fortellerSelectedGoalIds = []; // 空陣列代表全選，若有值代表複選特定目標 ID
+        let fortellerSelectedGoalIds = [];
+        let fortellerShowAllDomains = true; // 【v5.2.0 全人生領域檢視】：預設於推演盤展示所有人生領域，方便省思空白領域之 action // 空陣列代表全選，若有值代表複選特定目標 ID
         try {
             const savedSelectedGoals = localStorage.getItem('my_forteller_selected_goals');
             if (savedSelectedGoals) {
@@ -5343,11 +5403,11 @@ function renderTimelineMatrix(container) {
             const monthCols = getFortellerMonthCols();
             const currentMonthKey = '2026/10';
 
-            // 取得 LifeSchedule 領域清單
-            const rawCategories = typeof getOrderedCategories === 'function' ? getOrderedCategories() : (typeof categories !== 'undefined' ? categories : []);
-            const domains = (Array.isArray(rawCategories) && rawCategories.length > 0)
-                ? rawCategories.filter(c => c !== '全部')
-                : ['💼 事業', '💪 健康', '🏠 家庭', '💰 財務', '🌱 成長', '🎨 興趣'];
+            // 取得 LifeSchedule 領域清單 (【v5.2.0】：合併目前使用中領域與系統所有人生領域，確保空白領域完整展示以激發行動)
+            const rawCategories = typeof getOrderedCategories === 'function' ? getOrderedCategories() : [];
+            const activeCats = (Array.isArray(rawCategories) ? rawCategories : []).filter(c => c !== '全部');
+            const defaultLifeDomains = ['💼 事業', '💰 財務', '💪 健康', '🏠 家庭', '🌱 成長', '🎨 興趣'];
+            const domains = Array.from(new Set([...activeCats, ...defaultLifeDomains]));
 
             // 判斷目標卡片篩選狀態
             const isAllGoalsSelected = (fortellerSelectedGoalIds.length === 0);
@@ -5373,11 +5433,13 @@ function renderTimelineMatrix(container) {
 
                     const domainThoughts = rootThoughts.filter(t => (t.category || '💼 事業') === domain);
                     if (domainThoughts.length === 0) {
-                        domainRows.push({
-                            no: domainAutoNo++,
-                            domain: domain,
-                            thought: null
-                        });
+                        if (fortellerShowAllDomains) {
+                            domainRows.push({
+                                no: domainAutoNo++,
+                                domain: domain,
+                                thought: null
+                            });
+                        }
                     } else {
                         domainThoughts.forEach(t => {
                             domainRows.push({
@@ -5482,6 +5544,12 @@ function renderTimelineMatrix(container) {
                                     🎯 目標模式
                                 </button>
                             </div>
+
+                            <!-- 【v5.2.0 全人生領域檢視切換按鈕】 -->
+                            <button type="button" onclick="toggleFortellerShowAllDomains()" class="px-2.5 py-1 rounded-xl transition-all cursor-pointer border text-xs font-bold flex items-center gap-1 shadow-2xs ${fortellerShowAllDomains ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border-teal-300 dark:border-teal-700' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-slate-800'}" title="在推演盤最下方顯示所有人生領域，即便尚未規劃目標亦完整展現，助您省思並激發其他領域的 Action">
+                                <span>🌐</span>
+                                <span>${fortellerShowAllDomains ? '全領域已展開' : '僅顯示有目標領域'}</span>
+                            </button>
                         </div>
 
                         <!-- 中間與右側：目標卡片篩選、領域篩選與色彩符號圖例 -->
@@ -5630,7 +5698,7 @@ function renderTimelineMatrix(container) {
                                         `;
                                     }).join('')}
                                 ` : `
-                                    <!-- =================== 目標模式列表 (v5.0.0 多階段里程碑接力與長程跨度彙整) =================== -->
+                                    <!-- =================== 目標模式列表 (v5.2.0 多階段里程碑接力與全人生領域激發) =================== -->
                                     ${goalModeRows.map(row => {
                                         const tr = row.track;
                                         const root = row.rootGoal;
@@ -5670,14 +5738,14 @@ function renderTimelineMatrix(container) {
                                             const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
                                             const isRec = (s.recurrence && s.recurrence !== 'none');
 
-                                            // 取得此步驟對應之里程碑棒次
+                                            // 取得此步驟對應之里程碑棒次 (優先依據 s.milestoneId 精準比對)
                                             const tMilestones = getThoughtMilestones(tr.thought);
                                             let milestoneBadge = '';
                                             let milestoneTitle = '';
                                             if (tMilestones.length > 0) {
                                                 let mIdx = -1;
-                                                if (s.milestoneId) {
-                                                    mIdx = tMilestones.findIndex(m => m.id === s.milestoneId);
+                                                if (s.milestoneId !== undefined && s.milestoneId !== null) {
+                                                    mIdx = tMilestones.findIndex(m => String(m.id) === String(s.milestoneId));
                                                 }
                                                 if (mIdx === -1) {
                                                     mIdx = tMilestones.findIndex(m => !m.done);
@@ -5732,7 +5800,7 @@ function renderTimelineMatrix(container) {
                                                     `;
                                                 }).join('')}
 
-                                                <!-- 【v5.0.0 終局目標 / 結案時間】：跨 NO. 合併展示長程接力鏈跨度、推進狀態與終極願景 -->
+                                                <!-- 【終局目標 / 結案時間】：跨 NO. 合併展示長程接力鏈跨度、推進狀態與終極願景 -->
                                                 ${row.isFirstInRoot ? `
                                                     <td rowspan="${row.rootRowspan}" class="py-2.5 px-3 bg-amber-50/40 dark:bg-amber-950/25 text-slate-800 dark:text-slate-200 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
                                                         <div class="space-y-1.5">
@@ -5764,6 +5832,43 @@ function renderTimelineMatrix(container) {
                                             </tr>
                                         `;
                                     }).join('')}
+
+                                    <!-- 【v5.2.0 全人生領域展示】：列出尚未規劃目標的領域，激發全面思考與行動 -->
+                                    ${(() => {
+                                        if (!fortellerShowAllDomains) return '';
+                                        const usedDomains = new Set(goalModeRows.map(r => r.domain));
+                                        const emptyDomains = domains.filter(d => !usedDomains.has(d));
+                                        if (emptyDomains.length === 0) return '';
+
+                                        return emptyDomains.map(dom => {
+                                            return `
+                                                <tr class="bg-slate-50/40 dark:bg-slate-800/25 border-b border-slate-200/70 dark:border-slate-700/70 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
+                                                    <td class="py-2.5 px-1 text-center font-mono text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-700 align-middle text-[11px] whitespace-nowrap select-none">
+                                                        -
+                                                    </td>
+                                                    <td class="py-2.5 px-2.5 font-bold text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-middle text-xs whitespace-nowrap">
+                                                        ${dom}
+                                                    </td>
+                                                    ${monthCols.map(mKey => {
+                                                        const isCurrent = (mKey === currentMonthKey);
+                                                        return `
+                                                            <td class="py-2 px-2 border-r border-slate-200/60 dark:border-slate-700/60 align-middle text-center text-slate-300 dark:text-slate-600 text-xs ${isCurrent ? 'bg-indigo-50/15 dark:bg-indigo-950/10' : ''}">
+                                                                ·
+                                                            </td>
+                                                        `;
+                                                    }).join('')}
+                                                    <td class="py-2 px-3 text-slate-400 dark:text-slate-500 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
+                                                        <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                                                            <span class="text-[11px] italic text-slate-400 dark:text-slate-500">尚無規劃中的目標</span>
+                                                            <button type="button" onclick="quickAddGoalForDomain('${escapeAttr(dom)}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-colors cursor-pointer" title="為此領域快速建立新目標">
+                                                                <span>➕ 思考新行動</span>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            `;
+                                        }).join('');
+                                    })()}
                                 `}
                             </tbody>
                         </table>
@@ -6940,7 +7045,7 @@ const card = document.createElement('div');
                                     <span class="shrink-0 font-bold text-[10px]">🎯 歸屬棒次：</span>
                                     <select id="edit-step-milestone-${thought.id}-${s.id}" class="w-full px-2 py-1 text-xs border border-slate-300 rounded bg-white text-slate-800 font-medium">
                                         ${getThoughtMilestones(thought).map((m, mIdx) => {
-                                            const isSelected = (s.milestoneId === m.id) || (!s.milestoneId && !m.done);
+                                            const isSelected = (String(s.milestoneId) === String(m.id)) || (!s.milestoneId && !m.done);
                                             return `<option value="${m.id}" ${isSelected ? 'selected' : ''}>第 ${mIdx + 1} 棒 · ${escapeHtml(m.title)}</option>`;
                                         }).join('')}
                                     </select>
@@ -6975,29 +7080,31 @@ const card = document.createElement('div');
                             <li id="step-item-${thought.id}-${s.id}" class="flex flex-col sm:flex-row sm:items-center justify-between py-2 px-3 bg-slate-50 rounded-xl gap-2">
                                 <label class="flex items-center gap-2.5 cursor-pointer flex-1">
                                     <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleStep(${thought.id}, ${s.id})" class="w-4 h-4 text-indigo-600 rounded border-slate-300">
-                                    <!-- 【v5.1.0 目標棒次徽章】：顯示此步驟為哪一棒服務 -->
+                                    <!-- 【v5.2.0 目標棒次下拉選單】：可直接點選切換此步驟為哪一棒服務，永久綁定不跳動 -->
                                     ${(() => {
                                         const tMilestones = getThoughtMilestones(thought);
-                                        let mObj = null;
+                                        if (tMilestones.length === 0) return '';
                                         let mIndex = -1;
-                                        if (s.milestoneId) {
-                                            mIndex = tMilestones.findIndex(m => m.id === s.milestoneId);
-                                            if (mIndex >= 0) mObj = tMilestones[mIndex];
+                                        if (s.milestoneId !== undefined && s.milestoneId !== null) {
+                                            mIndex = tMilestones.findIndex(m => String(m.id) === String(s.milestoneId));
                                         }
-                                        if (!mObj && tMilestones.length > 0) {
+                                        if (mIndex === -1) {
                                             mIndex = tMilestones.findIndex(m => !m.done);
                                             if (mIndex === -1) mIndex = 0;
-                                            mObj = tMilestones[mIndex];
                                         }
-                                        if (mObj) {
-                                            const isDone = mObj.done;
-                                            return `
-                                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${isDone ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700' : 'bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-700'} border shrink-0 select-none" title="專屬第 ${mIndex + 1} 棒【${escapeHtml(mObj.title)}】服務的執行步驟">
-                                                    🎯 第${mIndex + 1}棒
-                                                </span>
-                                            `;
-                                        }
-                                        return '';
+                                        const currentM = tMilestones[mIndex];
+                                        const isDone = currentM ? currentM.done : false;
+
+                                        return `
+                                            <div class="inline-flex items-center shrink-0" onclick="event.stopPropagation()">
+                                                <select onchange="setStepMilestone(${thought.id}, ${s.id}, this.value)" class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${isDone ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700' : 'bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-700'} border cursor-pointer select-none focus:outline-none" title="點選直接切換此步驟所屬目標棒次">
+                                                    ${tMilestones.map((m, idx) => {
+                                                        const isSelected = (idx === mIndex);
+                                                        return `<option value="${m.id}" ${isSelected ? 'selected' : ''}>🎯 第${idx + 1}棒</option>`;
+                                                    }).join('')}
+                                                </select>
+                                            </div>
+                                        `;
                                     })()}
                                     <span class="${s.done ? 'line-through text-slate-400' : 'text-slate-700'} text-sm font-medium">${escapeHtml(s.text)}</span>
                                 </label>
