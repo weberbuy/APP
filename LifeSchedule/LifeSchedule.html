@@ -1358,7 +1358,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.3-test (步驟預期日期上限解除第1棒限制、支援選取至最後一個接力目標日期版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.4-test (看板步驟棒次精簡徽章化、Forteller全部歷史月份動態探測與跨年修復版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -13065,7 +13065,58 @@ function renderTimelineMatrix(container) {
             const startSetting = getFortellerStartMonthSetting();
 
 
-            // 【v5.3.2 起始月份動態計算】：預設為當月前1個月 (2026/9)，過早的歷史資料預設折疊隱藏
+            // 【v5.3.4 Forteller 全部歷史月份動態探測修復】：自動搜尋實際最早歷史資料月份，動態計算連續時間軸並自然交由空白壓縮處理
+            let earliestDataMonthKey = prevMonthKey;
+            let [curY0, curM0] = currentMonthKey.split('/').map(Number);
+            let minDataVal = curY0 * 12 + curM0;
+
+            thoughts.forEach(t => {
+                [t.targetDate, t.lastCompletedDate].forEach(d => {
+                    if (d && d.length >= 7 && d !== '未指定日期') {
+                        const p = d.replace(/\//g, '-').split('-');
+                        const y = parseInt(p[0]), mo = parseInt(p[1]);
+                        if (!isNaN(y) && !isNaN(mo) && y >= 2000 && y <= 2100) {
+                            const v = y * 12 + mo;
+                            if (v < minDataVal) {
+                                minDataVal = v;
+                                earliestDataMonthKey = `${y}/${mo}`;
+                            }
+                        }
+                    }
+                });
+                const ms = getThoughtMilestones(t);
+                ms.forEach(m => {
+                    [m.targetDate, m.completedDate].forEach(d => {
+                        if (d && d.length >= 7 && d !== '未指定日期') {
+                            const p = d.replace(/\//g, '-').split('-');
+                            const y = parseInt(p[0]), mo = parseInt(p[1]);
+                            if (!isNaN(y) && !isNaN(mo) && y >= 2000 && y <= 2100) {
+                                const v = y * 12 + mo;
+                                if (v < minDataVal) {
+                                    minDataVal = v;
+                                    earliestDataMonthKey = `${y}/${mo}`;
+                                }
+                            }
+                        }
+                    });
+                });
+                (t.steps || []).forEach(s => {
+                    [s.stepDate, s.completedDate].forEach(d => {
+                        if (d && d.length >= 7 && d !== '未指定日期') {
+                            const p = d.replace(/\//g, '-').split('-');
+                            const y = parseInt(p[0]), mo = parseInt(p[1]);
+                            if (!isNaN(y) && !isNaN(mo) && y >= 2000 && y <= 2100) {
+                                const v = y * 12 + mo;
+                                if (v < minDataVal) {
+                                    minDataVal = v;
+                                    earliestDataMonthKey = `${y}/${mo}`;
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+
             let cutoffMonthKey = prevMonthKey;
             if (startSetting === 'current_month') {
                 cutoffMonthKey = currentMonthKey;
@@ -13073,7 +13124,7 @@ function renderTimelineMatrix(container) {
                 const [y] = currentMonthKey.split('/');
                 cutoffMonthKey = `${y}/1`;
             } else if (startSetting === 'all') {
-                cutoffMonthKey = '2020/1'; // 顯示全部歷史月份
+                cutoffMonthKey = earliestDataMonthKey; // 依實際最早資料動態決定起始歷史月份
             } else if (startSetting.includes('/')) {
                 cutoffMonthKey = startSetting;
             }
@@ -13132,8 +13183,9 @@ function renderTimelineMatrix(container) {
             // 建立從 cutoff 到 endYear/endMonth 的連續全量時間軸
             const fullCalendar = [];
             let curY = startYear, curM = startMonth;
+            const maxSpan = (endYear - startYear + 1) * 12 + 24; // 動態計算安全上限，確保完整生成至 endYear/endMonth
             let count = 0;
-            while ((curY < endYear || (curY === endYear && curM <= endMonth)) && count < 60) {
+            while ((curY < endYear || (curY === endYear && curM <= endMonth)) && count < maxSpan) {
                 fullCalendar.push(`${curY}/${curM}`);
                 curM++;
                 if (curM > 12) {
@@ -16552,9 +16604,16 @@ const card = document.createElement('div');
 
 
 
+                                        const targetTitle = currentM ? (currentM.title || '') : '';
+                                        const tooltipText = `所屬目標：${escapeAttr(targetTitle)} (點擊可切換棒次)`;
                                         return `
-                                            <div class="inline-flex items-center shrink-0" onclick="event.stopPropagation()">
-                                                <select onchange="setStepMilestone(${thought.id}, ${s.id}, this.value)" class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${stageStyle.className} border cursor-pointer select-none focus:outline-none" title="點選直接切換此步驟所屬目標棒次">
+                                            <!-- 【v5.3.4 方案 A：純棒次精簡標籤】：外觀小巧精美，懸停顯示完整目標文字，點擊展開完整選單 -->
+                                            <div class="relative inline-flex items-center shrink-0 cursor-pointer" onclick="event.stopPropagation()" title="${tooltipText}">
+                                                <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${stageStyle.className} border select-none pointer-events-none flex items-center gap-0.5 shadow-2xs">
+                                                    <span>${stageStyle.icon} 第 ${mIndex + 1} 棒</span>
+                                                    <span class="text-[9px] opacity-75">▾</span>
+                                                </span>
+                                                <select onchange="setStepMilestone(${thought.id}, ${s.id}, this.value)" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" title="${tooltipText}">
                                                     ${tMilestones.map((m, idx) => {
                                                         const isSelected = (idx === mIndex);
                                                         const optStyle = getMilestoneStageStyle(idx, m.done);
