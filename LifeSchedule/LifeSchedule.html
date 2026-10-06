@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.6-test (獨立目標標籤智慧截斷、Forteller手機端篩選彈窗自適應優化版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.7-test (Forteller目標模式段落目標時序穿插、各棒次目標與步驟交錯對齊版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -4070,10 +4070,46 @@ function renderTimelineMatrix(container) {
                         <span>
                             ${fortellerMode === 'domain' 
                                 ? '📂 目前為「領域模式」：依看板領域動態展開目標與未完成步驟。' 
-                                : '🎯 目前為「目標模式」：步驟有拆解目標改顯示拆解最終目標（帶顏色管理），終局目標依日期落點各自月份並跨軌道合併。'}
+                                : '🎯 目前為「目標模式」：步驟有拆解目標改顯示拆解最終目標（帶顏色管理），各階段「段落目標」依時間月份穿插標示，步驟與拆解目標座落於各段落目標之間月份。'}
                         </span>
                         <span class="text-[10px] text-slate-400 font-mono">點擊文字直接前往卡片</span>
                     </div>
+
+                    <!-- 【v5.3.7 Forteller 目標模式動態欄位計算】：找出有里程碑結案之月份，於該月份後緊鄰插入「段落目標」欄位 -->
+                    ${(() => {
+                        // 收集目前目標模式可見目標中，所有里程碑落點之月份
+                        const milestoneMonthsSet = new Set();
+                        if (fortellerMode === 'goal') {
+                            goalModeRows.forEach(row => {
+                                const tr = row.track;
+                                const tMilestones = getThoughtMilestones(tr.thought);
+                                tMilestones.forEach(m => {
+                                    if (m.targetDate && m.targetDate !== '未指定日期') {
+                                        const mKey = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
+                                        if (mKey && monthCols.includes(mKey)) {
+                                            milestoneMonthsSet.add(mKey);
+                                        }
+                                    }
+                                });
+                            });
+                        }
+
+                        // 建構目標模式專屬交錯欄位清單 (月份 + 緊接之段落目標)
+                        window._fortellerGoalTableCols = [];
+                        monthCols.forEach(mKey => {
+                            window._fortellerGoalTableCols.push({ type: 'month', monthKey: mKey, label: mKey });
+                            if (milestoneMonthsSet.has(mKey)) {
+                                window._fortellerGoalTableCols.push({ type: 'milestone', afterMonth: mKey, label: '段落目標' });
+                            }
+                        });
+
+                        // 防呆：若無任何月份有里程碑，至少於最後一欄提供一個段落目標欄位
+                        if (fortellerMode === 'goal' && !window._fortellerGoalTableCols.some(c => c.type === 'milestone')) {
+                            const lastM = monthCols[monthCols.length - 1];
+                            window._fortellerGoalTableCols.push({ type: 'milestone', afterMonth: lastM, label: '段落目標' });
+                        }
+                        return '';
+                    })()}
 
                     <!-- Forteller 核心表格 (支援滾輪左右平移與滑鼠抓取拖曳) -->
                     <div id="fortellerTableContainer" class="overflow-x-auto rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs scroll-smooth select-none cursor-grab active:cursor-grabbing">
@@ -4082,15 +4118,34 @@ function renderTimelineMatrix(container) {
                                 <tr class="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-b border-slate-300 dark:border-slate-700 select-none">
                                     <th class="py-2 px-2 text-center font-extrabold w-10 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">NO.</th>
                                     <th class="py-2 px-2.5 font-extrabold w-28 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">領域</th>
-                                    ${monthCols.map(mKey => {
-                                        const isCurrent = (mKey === currentMonthKey);
-                                        return `
-                                            <th class="py-2 px-2 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap">
-                                                ${mKey}${isCurrent ? ' (當月)' : ''}
-                                            </th>
-                                        `;
-                                    }).join('')}
-                                    <th class="py-2 px-2.5 font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap">🎯 終局目標 / 結案時間</th>
+                                    ${fortellerMode === 'goal' ? `
+                                        ${(window._fortellerGoalTableCols || []).map(col => {
+                                            if (col.type === 'month') {
+                                                const isCurrent = (col.monthKey === currentMonthKey);
+                                                return `
+                                                    <th class="py-2 px-2 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center">
+                                                        ${col.monthKey}${isCurrent ? ' (當月)' : ''}
+                                                    </th>
+                                                `;
+                                            } else {
+                                                return `
+                                                    <th class="py-2 px-2.5 font-extrabold bg-amber-50/80 dark:bg-amber-950/50 text-amber-950 dark:text-amber-200 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap text-center">
+                                                        🎯 段落目標
+                                                    </th>
+                                                `;
+                                            }
+                                        }).join('')}
+                                    ` : `
+                                        ${monthCols.map(mKey => {
+                                            const isCurrent = (mKey === currentMonthKey);
+                                            return `
+                                                <th class="py-2 px-2 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap">
+                                                    ${mKey}${isCurrent ? ' (當月)' : ''}
+                                                </th>
+                                            `;
+                                        }).join('')}
+                                        <th class="py-2 px-2.5 font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap">🎯 終局目標 / 結案時間</th>
+                                    `}
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
@@ -4240,7 +4295,7 @@ function renderTimelineMatrix(container) {
                                         `;
                                     }).join('')}
                                 ` : `
-                                    <!-- =================== 目標模式列表 (v5.2.0 多階段里程碑接力與全人生領域激發) =================== -->
+                                    <!-- =================== 目標模式列表 (v5.3.7 段落目標穿插與時序交錯對齊) =================== -->
                                     ${goalModeRows.map(row => {
                                         const tr = row.track;
                                         const root = row.rootGoal;
@@ -4250,31 +4305,12 @@ function renderTimelineMatrix(container) {
                                             branchItemsByMonth[mKey].push(item);
                                         }
 
-                                        // A. 取出該卡片的所有階段接力里程碑，按各自的 targetDate 落點於月度單元格
-                                        const tMilestones = getThoughtMilestones(tr.thought);
-                                        tMilestones.forEach((m, mIdx) => {
-                                            const mTargetM = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
-                                            const mDateBadge = (m.targetDate && m.targetDate !== '未指定日期') ? m.targetDate.slice(5) : '';
-                                            const stageStyle = getMilestoneStageStyle(mIdx, m.done);
-
-                                            addBranchItem(mTargetM, {
-                                                type: 'milestone',
-                                                text: m.title,
-                                                thoughtId: tr.thought.id,
-                                                dateBadge: mDateBadge,
-                                                done: m.done,
-                                                milestoneStageIndex: mIdx,
-                                                stageStyle: stageStyle
-                                            });
-                                        });
-
-                                        // B. 放置未拆解的純待辦步驟 (乾淨文字，> 單步，o> 循環，並關聯所屬接力棒次專屬色彩)
+                                        // A. 放置待辦步驟 (乾淨文字，> 單步，o> 循環，並關聯所屬接力棒次專屬色彩)
                                         (tr.directSteps || []).forEach(s => {
                                             const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
                                             const isRec = (s.recurrence && s.recurrence !== 'none');
                                             const sDateBadge = (s.stepDate && s.stepDate !== '未指定日期') ? s.stepDate.slice(5) : '';
 
-                                            // 取得此步驟對應之里程碑棒次 (優先依據 s.milestoneId 精準比對)
                                             const tMilestones = getThoughtMilestones(tr.thought);
                                             let milestoneBadge = '';
                                             let milestoneTitle = '';
@@ -4315,14 +4351,7 @@ function renderTimelineMatrix(container) {
                                             });
                                         });
 
-                                        // 計算 root 卡片的所有接力目標時間跨度與當前進度
-                                        const rootAllM = getThoughtMilestones(root);
-                                        const rootDates = rootAllM.map(x => x.targetDate).filter(d => d && d !== '未指定日期').sort();
-                                        const minTargetDate = rootDates.length > 0 ? rootDates[0] : '';
-                                        const maxTargetDate = rootDates.length > 0 ? rootDates[rootDates.length - 1] : '';
-                                        const rootDoneCount = rootAllM.filter(x => x.done).length;
-                                        const rootActiveIdx = rootAllM.findIndex(x => !x.done);
-                                        const activeMilestone = (rootActiveIdx >= 0) ? rootAllM[rootActiveIdx] : rootAllM[rootAllM.length - 1];
+                                        const goalTableCols = window._fortellerGoalTableCols || [];
 
                                         return `
                                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
@@ -4332,48 +4361,60 @@ function renderTimelineMatrix(container) {
                                                 <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap">
                                                     ${row.domain}
                                                 </td>
-                                                ${monthCols.map(mKey => {
-                                                    const items = branchItemsByMonth[mKey] || [];
-                                                    const isCurrent = (mKey === currentMonthKey);
-                                                    if (items.length === 0) {
-                                                        return `<td class="py-1 px-1 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
-                                                    }
-                                                    return `
-                                                        <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
-                                                            ${renderFortellerCellContent(items)}
-                                                        </td>
-                                                    `;
-                                                }).join('')}
+                                                ${goalTableCols.map((col, cIdx) => {
+                                                    if (col.type === 'month') {
+                                                        const items = branchItemsByMonth[col.monthKey] || [];
+                                                        const isCurrent = (col.monthKey === currentMonthKey);
+                                                        if (items.length === 0) {
+                                                            return `<td class="py-1 px-1 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
+                                                        }
+                                                        return `
+                                                            <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
+                                                                ${renderFortellerCellContent(items)}
+                                                            </td>
+                                                        `;
+                                                    } else {
+                                                        // 【v5.3.7 段落目標單元格】：依預期達成月份緊接標示對應接力目標
+                                                        const isLastCol = (cIdx === goalTableCols.length - 1);
+                                                        const matchedMilestones = [];
+                                                        const tMilestones = getThoughtMilestones(tr.thought);
+                                                        tMilestones.forEach((m, mIdx) => {
+                                                            const mTargetM = (m.targetDate && m.targetDate !== '未指定日期') 
+                                                                ? getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols)
+                                                                : (isLastCol ? col.afterMonth : null);
+                                                            if (mTargetM === col.afterMonth) {
+                                                                matchedMilestones.push({ milestone: m, stageIndex: mIdx });
+                                                            }
+                                                        });
 
-                                                <!-- 【終局目標 / 結案時間】：跨 NO. 合併展示長程接力鏈跨度、推進狀態與終極願景 -->
-                                                ${row.isFirstInRoot ? `
-                                                    <td rowspan="${row.rootRowspan}" class="py-2.5 px-3 bg-amber-50/40 dark:bg-amber-950/25 text-slate-800 dark:text-slate-200 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
-                                                        <div class="space-y-1.5">
-                                                            <div class="font-extrabold text-amber-900 dark:text-amber-200 leading-snug cursor-pointer hover:underline text-xs" onclick="jumpToGoalCard(${root.id})" title="點擊前往卡片">
-                                                                🎯 ${escapeHtml(root.text)}
-                                                            </div>
-                                                            <div class="text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                                                                ${escapeHtml(activeMilestone ? activeMilestone.title : (root.goal || '未設定'))}
-                                                            </div>
-                                                            <div class="flex items-center gap-1.5 flex-wrap">
-                                                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 font-mono">
-                                                                    📅 ${minTargetDate && maxTargetDate && minTargetDate !== maxTargetDate ? `${minTargetDate.slice(0, 7)} ➔ ${maxTargetDate.slice(0, 7)}` : (maxTargetDate || '2026/12/31')}
-                                                                </span>
-                                                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-mono">
-                                                                    🏁 接力 ${rootDoneCount}/${rootAllM.length} (共 ${rootAllM.length} 階段接力)
-                                                                </span>
-                                                                ${row.rootRowspan > 1 ? `
-                                                                    <span class="text-[10px] text-amber-700/80 dark:text-amber-400 font-mono">
-                                                                        (跨 ${row.rootRowspan} 軌道)
-                                                                    </span>
-                                                                ` : ''}
-                                                            </div>
-                                                            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                                                                🏃 目前推進：第 ${(rootActiveIdx >= 0 ? rootActiveIdx : rootAllM.length - 1) + 1} 棒
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                ` : ''}
+                                                        if (matchedMilestones.length === 0) {
+                                                            return `<td class="py-1 px-1.5 border-r border-slate-200 dark:border-slate-700 align-middle bg-slate-50/30 dark:bg-slate-850/20"></td>`;
+                                                        }
+
+                                                        return `
+                                                            <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-middle bg-amber-50/30 dark:bg-amber-950/20 min-w-[140px] max-w-[200px]">
+                                                                <div class="space-y-1.5">
+                                                                    ${matchedMilestones.map(({ milestone: m, stageIndex: mIdx }) => {
+                                                                        const stageStyle = getMilestoneStageStyle(mIdx, m.done);
+                                                                        const badgeClass = stageStyle.paletteClass || stageStyle.className;
+                                                                        const isDone = m.done;
+                                                                        return `
+                                                                            <div class="p-1.5 rounded-lg border font-bold ${badgeClass} shadow-2xs cursor-pointer hover:opacity-90 transition-all text-xs leading-snug flex flex-col gap-0.5" onclick="jumpToGoalCard(${tr.thought.id})" title="點擊跳轉至目標卡片：${escapeAttr(m.title)}">
+                                                                                <div class="flex items-center justify-between gap-1 text-[10px] font-mono">
+                                                                                    <span>${stageStyle.icon} 第 ${mIdx + 1} 棒</span>
+                                                                                    <span class="text-[9px] opacity-80">${m.targetDate && m.targetDate !== '未指定日期' ? m.targetDate.slice(5) : ''}</span>
+                                                                                </div>
+                                                                                <div class="${isDone ? 'line-through opacity-70 font-normal' : 'font-extrabold'} break-words">
+                                                                                    ${escapeHtml(m.title)}
+                                                                                </div>
+                                                                            </div>
+                                                                        `;
+                                                                    }).join('')}
+                                                                </div>
+                                                            </td>
+                                                        `;
+                                                    }
+                                                }).join('')}
                                             </tr>
                                         `;
                                     }).join('')}
@@ -4384,6 +4425,7 @@ function renderTimelineMatrix(container) {
                                         const usedDomains = new Set(goalModeRows.map(r => r.domain));
                                         const emptyDomains = domains.filter(d => !usedDomains.has(d));
                                         if (emptyDomains.length === 0) return '';
+                                        const goalTableCols = window._fortellerGoalTableCols || monthCols;
 
                                         return emptyDomains.map(dom => {
                                             return `
@@ -4392,30 +4434,29 @@ function renderTimelineMatrix(container) {
                                                         -
                                                     </td>
                                                     <td class="py-2.5 px-2.5 font-bold text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-middle text-xs whitespace-nowrap">
-                                                        ${dom}
+                                                        <div class="flex items-center justify-between gap-1.5">
+                                                            <span>${dom}</span>
+                                                            <button type="button" onclick="quickAddGoalForDomain('${escapeAttr(dom)}')" class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-colors cursor-pointer" title="為此領域快速建立新目標">
+                                                                <span>➕</span>
+                                                            </button>
+                                                        </div>
                                                     </td>
-                                                    ${monthCols.map(mKey => {
+                                                    ${goalTableCols.map(col => {
+                                                        const mKey = col.monthKey || col.afterMonth || '';
                                                         const isCurrent = (mKey === currentMonthKey);
+                                                        const isMilestone = (col.type === 'milestone');
                                                         return `
-                                                            <td class="py-2 px-2 border-r border-slate-200/60 dark:border-slate-700/60 align-middle text-center text-slate-300 dark:text-slate-600 text-xs ${isCurrent ? 'bg-indigo-50/15 dark:bg-indigo-950/10' : ''}">
+                                                            <td class="py-2 px-2 border-r border-slate-200/60 dark:border-slate-700/60 align-middle text-center text-slate-300 dark:text-slate-600 text-xs ${isCurrent ? 'bg-indigo-50/15 dark:bg-indigo-950/10' : ''} ${isMilestone ? 'bg-amber-50/20 dark:bg-amber-950/10' : ''}">
                                                                 ·
                                                             </td>
                                                         `;
                                                     }).join('')}
-                                                    <td class="py-2 px-3 text-slate-400 dark:text-slate-500 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
-                                                        <div class="flex items-center justify-between gap-1.5 flex-wrap">
-                                                            <span class="text-[11px] italic text-slate-400 dark:text-slate-500">尚無規劃中的目標</span>
-                                                            <button type="button" onclick="quickAddGoalForDomain('${escapeAttr(dom)}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-colors cursor-pointer" title="為此領域快速建立新目標">
-                                                                <span>➕ 思考新行動</span>
-                                                            </button>
-                                                        </div>
-                                                    </td>
                                                 </tr>
                                             `;
                                         }).join('');
                                     })()}
                                 `}
-                            </tbody>
+</tbody>
                         </table>
                     </div>
                 </div>
