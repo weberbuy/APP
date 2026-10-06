@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.7-test (Forteller目標模式段落目標時序穿插、各棒次目標與步驟交錯對齊版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.8-test (Forteller目標模式月份目標回歸、段落目標母卡片資訊跨NO合併儲存格版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -4075,15 +4075,14 @@ function renderTimelineMatrix(container) {
                         <span class="text-[10px] text-slate-400 font-mono">點擊文字直接前往卡片</span>
                     </div>
 
-                    <!-- 【v5.3.7 Forteller 目標模式動態欄位計算】：找出有里程碑結案之月份，於該月份後緊鄰插入「段落目標」欄位 -->
+                    <!-- 【v5.3.8 Forteller 目標模式動態欄位計算】：以母卡片里程碑為基準，於對應預期達成月份後緊鄰插入「段落目標」欄位 -->
                     ${(() => {
-                        // 收集目前目標模式可見目標中，所有里程碑落點之月份
+                        // 收集目前目標模式可見之所有母卡片中，所有接力里程碑落點之月份
                         const milestoneMonthsSet = new Set();
                         if (fortellerMode === 'goal') {
-                            goalModeRows.forEach(row => {
-                                const tr = row.track;
-                                const tMilestones = getThoughtMilestones(tr.thought);
-                                tMilestones.forEach(m => {
+                            rootThoughts.forEach(root => {
+                                const rootMilestones = getThoughtMilestones(root);
+                                rootMilestones.forEach(m => {
                                     if (m.targetDate && m.targetDate !== '未指定日期') {
                                         const mKey = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
                                         if (mKey && monthCols.includes(mKey)) {
@@ -4295,7 +4294,7 @@ function renderTimelineMatrix(container) {
                                         `;
                                     }).join('')}
                                 ` : `
-                                    <!-- =================== 目標模式列表 (v5.3.7 段落目標穿插與時序交錯對齊) =================== -->
+                                    <!-- =================== 目標模式列表 (v5.3.8 月份目標回歸 + 段落目標母卡片合併儲存格) =================== -->
                                     ${goalModeRows.map(row => {
                                         const tr = row.track;
                                         const root = row.rootGoal;
@@ -4305,13 +4304,30 @@ function renderTimelineMatrix(container) {
                                             branchItemsByMonth[mKey].push(item);
                                         }
 
-                                        // A. 放置待辦步驟 (乾淨文字，> 單步，o> 循環，並關聯所屬接力棒次專屬色彩)
+                                        // A. 【母/子/孫目標落點月度】：將本軌道對應卡片之接力里程碑目標按 targetDate 顯示在數字月份欄位內
+                                        const tMilestones = getThoughtMilestones(tr.thought);
+                                        tMilestones.forEach((m, mIdx) => {
+                                            const mTargetM = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
+                                            const mDateBadge = (m.targetDate && m.targetDate !== '未指定日期') ? m.targetDate.slice(5) : '';
+                                            const stageStyle = getMilestoneStageStyle(mIdx, m.done);
+
+                                            addBranchItem(mTargetM, {
+                                                type: 'milestone',
+                                                text: m.title,
+                                                thoughtId: tr.thought.id,
+                                                dateBadge: mDateBadge,
+                                                done: m.done,
+                                                milestoneStageIndex: mIdx,
+                                                stageStyle: stageStyle
+                                            });
+                                        });
+
+                                        // B. 放置未拆解的待辦步驟 (乾淨文字，> 單步，o> 循環，並關聯所屬接力棒次專屬色彩)
                                         (tr.directSteps || []).forEach(s => {
                                             const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
                                             const isRec = (s.recurrence && s.recurrence !== 'none');
                                             const sDateBadge = (s.stepDate && s.stepDate !== '未指定日期') ? s.stepDate.slice(5) : '';
 
-                                            const tMilestones = getThoughtMilestones(tr.thought);
                                             let milestoneBadge = '';
                                             let milestoneTitle = '';
                                             let mIdx = -1;
@@ -4351,6 +4367,24 @@ function renderTimelineMatrix(container) {
                                             });
                                         });
 
+                                        // C. 若此軌道為子/孫卡片，且由母步驟拆解而來 (parentStep)，將該觸發步驟亦納入月度欄位
+                                        if (tr.parentStep && !tr.parentStep.done) {
+                                            const s = tr.parentStep;
+                                            const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
+                                            const isRec = (s.recurrence && s.recurrence !== 'none');
+                                            const sDateBadge = (s.stepDate && s.stepDate !== '未指定日期') ? s.stepDate.slice(5) : '';
+                                            addBranchItem(mKey, {
+                                                type: 'step',
+                                                prefix: isRec ? 'o>' : '>',
+                                                text: s.text,
+                                                stepDate: s.stepDate,
+                                                dateBadge: sDateBadge,
+                                                thoughtId: tr.thought.id,
+                                                stepId: s.id,
+                                                isParentStep: true
+                                            });
+                                        }
+
                                         const goalTableCols = window._fortellerGoalTableCols || [];
 
                                         return `
@@ -4374,11 +4408,16 @@ function renderTimelineMatrix(container) {
                                                             </td>
                                                         `;
                                                     } else {
-                                                        // 【v5.3.7 段落目標單元格】：依預期達成月份緊接標示對應接力目標
+                                                        // 【v5.3.8 段落目標單元格】：只放母卡片的目標資訊，且跨 NO. 合併儲存格 (含所有同一母卡片下的子孫步驟)
+                                                        if (!row.isFirstInRoot) {
+                                                            // 非母卡片第一軌道，由首軌道之 rowspan 涵蓋，此處不渲染 td
+                                                            return '';
+                                                        }
+
                                                         const isLastCol = (cIdx === goalTableCols.length - 1);
                                                         const matchedMilestones = [];
-                                                        const tMilestones = getThoughtMilestones(tr.thought);
-                                                        tMilestones.forEach((m, mIdx) => {
+                                                        const rootMilestones = getThoughtMilestones(root);
+                                                        rootMilestones.forEach((m, mIdx) => {
                                                             const mTargetM = (m.targetDate && m.targetDate !== '未指定日期') 
                                                                 ? getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols)
                                                                 : (isLastCol ? col.afterMonth : null);
@@ -4388,25 +4427,34 @@ function renderTimelineMatrix(container) {
                                                         });
 
                                                         if (matchedMilestones.length === 0) {
-                                                            return `<td class="py-1 px-1.5 border-r border-slate-200 dark:border-slate-700 align-middle bg-slate-50/30 dark:bg-slate-850/20"></td>`;
+                                                            return `<td rowspan="${row.rootRowspan}" class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-middle bg-slate-50/20 dark:bg-slate-850/10 text-center text-slate-300 dark:text-slate-600 font-mono text-xs select-none">·</td>`;
                                                         }
 
                                                         return `
-                                                            <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-middle bg-amber-50/30 dark:bg-amber-950/20 min-w-[140px] max-w-[200px]">
-                                                                <div class="space-y-1.5">
+                                                            <td rowspan="${row.rootRowspan}" class="py-2.5 px-3 border-r border-slate-300 dark:border-slate-600 align-middle bg-amber-50/40 dark:bg-amber-950/25 text-slate-800 dark:text-slate-200 min-w-[150px] max-w-[220px] shadow-2xs">
+                                                                <div class="space-y-2">
+                                                                    <div class="font-extrabold text-amber-950 dark:text-amber-200 leading-snug cursor-pointer hover:underline text-xs flex items-center gap-1" onclick="jumpToGoalCard(${root.id})" title="點擊前往母目標卡片：${escapeAttr(root.text)}">
+                                                                        <span class="select-none text-sm">🎯</span>
+                                                                        <span class="break-words font-black">${escapeHtml(root.text)}</span>
+                                                                    </div>
                                                                     ${matchedMilestones.map(({ milestone: m, stageIndex: mIdx }) => {
                                                                         const stageStyle = getMilestoneStageStyle(mIdx, m.done);
                                                                         const badgeClass = stageStyle.paletteClass || stageStyle.className;
                                                                         const isDone = m.done;
                                                                         return `
-                                                                            <div class="p-1.5 rounded-lg border font-bold ${badgeClass} shadow-2xs cursor-pointer hover:opacity-90 transition-all text-xs leading-snug flex flex-col gap-0.5" onclick="jumpToGoalCard(${tr.thought.id})" title="點擊跳轉至目標卡片：${escapeAttr(m.title)}">
+                                                                            <div class="p-2 rounded-xl border font-bold ${badgeClass} shadow-2xs cursor-pointer hover:opacity-95 transition-all text-xs leading-snug flex flex-col gap-1" onclick="jumpToGoalCard(${root.id})" title="點擊跳轉至母目標卡片：${escapeAttr(m.title)}">
                                                                                 <div class="flex items-center justify-between gap-1 text-[10px] font-mono">
-                                                                                    <span>${stageStyle.icon} 第 ${mIdx + 1} 棒</span>
+                                                                                    <span class="font-black">${stageStyle.icon} 第 ${mIdx + 1} 棒</span>
                                                                                     <span class="text-[9px] opacity-80">${m.targetDate && m.targetDate !== '未指定日期' ? m.targetDate.slice(5) : ''}</span>
                                                                                 </div>
-                                                                                <div class="${isDone ? 'line-through opacity-70 font-normal' : 'font-extrabold'} break-words">
+                                                                                <div class="${isDone ? 'line-through opacity-70 font-normal' : 'font-black text-[12px]'} break-words">
                                                                                     ${escapeHtml(m.title)}
                                                                                 </div>
+                                                                                ${m.done ? `
+                                                                                    <div class="text-[9px] text-emerald-700 dark:text-emerald-300 font-mono">
+                                                                                        ✓ 已達成 ${m.completedDate ? `(${m.completedDate.slice(5)})` : ''}
+                                                                                    </div>
+                                                                                ` : ''}
                                                                             </div>
                                                                         `;
                                                                     }).join('')}
