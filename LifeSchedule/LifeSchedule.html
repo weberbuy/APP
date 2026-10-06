@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.5-test (雙軌高可用備份引擎、樹莓派與Google雲端自動對齊、XSS加固與輕量瘦身版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.6-test (獨立目標標籤智慧截斷、Forteller手機端篩選彈窗自適應優化版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -4015,19 +4015,19 @@ function renderTimelineMatrix(container) {
                                 </button>
 
                                 ${isFortellerGoalDropdownOpen ? `
-                                    <!-- 點擊視窗外背景即關閉選擇視窗之透明遮罩 -->
-                                    <div class="fixed inset-0 z-40 bg-transparent cursor-default" onclick="closeFortellerGoalDropdown(event)"></div>
+                                    <!-- 【v5.3.6 手機自適應遮罩與彈窗】：手機端置中彈窗，桌機端為按鈕下方下拉選單 -->
+                                    <div class="fixed inset-0 z-40 bg-slate-900/40 sm:bg-transparent cursor-default" onclick="closeFortellerGoalDropdown(event)"></div>
 
-                                    <div class="absolute right-0 mt-1.5 w-64 bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 shadow-xl p-2.5 z-50 space-y-2 text-xs" onclick="event.stopPropagation()">
-                                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-1.5">
-                                            <span class="font-extrabold text-slate-800 dark:text-slate-200">目標卡片篩選</span>
+                                    <div class="fixed sm:absolute left-4 right-4 sm:left-0 sm:right-auto top-28 sm:top-full mt-1.5 w-auto sm:w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-800 rounded-2xl sm:rounded-xl border border-slate-300 dark:border-slate-700 shadow-2xl sm:shadow-xl p-3 sm:p-2.5 z-50 space-y-2 text-xs max-h-[75vh] flex flex-col" onclick="event.stopPropagation()">
+                                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
+                                            <span class="font-extrabold text-slate-800 dark:text-slate-200 text-sm sm:text-xs">🎯 目標卡片篩選</span>
                                             <div class="flex items-center gap-2">
                                                 <button type="button" onclick="setFortellerAllGoals(true, event)" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline cursor-pointer">全選</button>
                                                 <span class="text-slate-300">|</span>
                                                 <button type="button" onclick="setFortellerAllGoals(false, event)" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-bold cursor-pointer">清空</button>
                                             </div>
                                         </div>
-                                        <div class="max-h-52 overflow-y-auto space-y-1 pr-1">
+                                        <div class="overflow-y-auto space-y-1 pr-1 grow max-h-64 sm:max-h-52">
                                             ${thoughts.map(t => {
                                                 const checked = isAllGoalsSelected || fortellerSelectedGoalIds.includes(t.id);
                                                 return `
@@ -4040,8 +4040,8 @@ function renderTimelineMatrix(container) {
                                                 `;
                                             }).join('')}
                                         </div>
-                                        <div class="pt-1 border-t border-slate-100 dark:border-slate-700 text-right">
-                                            <button type="button" onclick="closeFortellerGoalDropdown(event)" class="px-2.5 py-0.5 text-[11px] font-bold bg-indigo-600 text-white rounded-md cursor-pointer hover:bg-indigo-700">完成</button>
+                                        <div class="pt-2 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+                                            <button type="button" onclick="closeFortellerGoalDropdown(event)" class="w-full sm:w-auto px-4 py-1.5 sm:px-3 sm:py-0.5 text-xs sm:text-[11px] font-bold bg-indigo-600 text-white rounded-lg sm:rounded-md cursor-pointer hover:bg-indigo-700 transition-colors shadow-2xs">完成</button>
                                         </div>
                                     </div>
                                 ` : ''}
@@ -5330,11 +5330,18 @@ const card = document.createElement('div');
                                     ${s.recurrence && s.recurrence !== 'none' ? `<span class="bg-teal-50 text-teal-800 border border-teal-200 px-2 py-0.5 rounded-md font-medium">🔄 ${getRecurrenceLabel(s.recurrence)}</span>` : ''}
                                     ${s.stepTime ? `<span class="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-md font-medium">⏰ ${s.stepTime}</span>` : ''}
                                     <button onclick="startEditStep(${thought.id}, ${s.id})" class="bg-slate-200/80 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded-md font-medium transition-colors">✏️ 編輯</button>
-                                    ${s.linkedThoughtId && thoughts.find(x => x.id === s.linkedThoughtId) ? `
-                                        <span onclick="jumpToGoalEdit(${s.linkedThoughtId})" class="inline-flex items-center gap-1 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-lg font-bold cursor-pointer transition-colors shadow-2xs" title="點擊直接跳轉至此獨立拆解目標">
-                                            🌱 已轉獨立目標：${escapeAttr(thoughts.find(x => x.id === s.linkedThoughtId).goal || thoughts.find(x => x.id === s.linkedThoughtId).text)} 🔗
-                                        </span>
-                                    ` : `
+                                    ${s.linkedThoughtId && thoughts.find(x => x.id === s.linkedThoughtId) ? (() => {
+                                        const linkedT = thoughts.find(x => x.id === s.linkedThoughtId);
+                                        const linkedGoalTitle = linkedT.goal || linkedT.text;
+                                        return `
+                                            <!-- 【v5.3.6 方案 B：獨立目標智慧限寬截斷】：外觀精簡整齊、懸停完整Tooltip、點擊直接跳轉 -->
+                                            <span onclick="jumpToGoalEdit(${s.linkedThoughtId})" class="inline-flex items-center gap-1 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-md font-bold cursor-pointer transition-colors shadow-2xs max-w-[130px] sm:max-w-[170px]" title="🌱 獨立拆解目標：${escapeAttr(linkedGoalTitle)} (點擊跳轉)">
+                                                <span class="shrink-0">🌱 獨立:</span>
+                                                <span class="truncate">${escapeHtml(linkedGoalTitle)}</span>
+                                                <span class="shrink-0 text-[10px]">🔗</span>
+                                            </span>
+                                        `;
+                                    })() : `
                                         <button onclick="promoteStepToGoal(${thought.id}, ${s.id})" class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2.5 py-1 rounded-lg font-bold border border-emerald-200 transition-colors shadow-2xs">
                                             🌱 轉目標
                                         </button>
