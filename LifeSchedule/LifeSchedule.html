@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.9-test (Forteller全表欄寬統一鎖定、文字流式排版、拆解目標步驟去重優化版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.10-test (Forteller全表欄位自適應螢幕跨度、2D畫布拖曳平移、凍結表頭與手機雙向滑動版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -2289,6 +2289,16 @@ function updateContainerWidth() {
             render();
         }
 
+        // 【v5.3.10 Forteller 顯示月份跨度偏好管理 (支援依螢幕寬度自動適配或手動指定)】
+        function getFortellerSpanSetting() {
+            return localStorage.getItem('my_forteller_span') || 'auto';
+        }
+
+        function setFortellerSpan(val) {
+            localStorage.setItem('my_forteller_span', val);
+            render();
+        }
+
         // 輔助函式：尋找根節點母卡片 (追溯拆解來源)
         function getRootThought(t) {
             if (!t) return null;
@@ -3654,7 +3664,30 @@ function renderTimelineMatrix(container) {
                 }
             });
 
-            return compressedCols.length > 0 ? compressedCols : [cutoffMonthKey, currentMonthKey];
+            let finalCols = compressedCols.length > 0 ? compressedCols : [cutoffMonthKey, currentMonthKey];
+
+            // 【v5.3.10 依螢幕寬度動態自適應顯示月份資料量】：寬螢幕展現更多，窄螢幕聚焦當前
+            const spanSetting = getFortellerSpanSetting();
+            let maxMonthCount = 999;
+            if (spanSetting === 'auto') {
+                const w = (typeof window !== 'undefined' && window.innerWidth) ? window.innerWidth : 1440;
+                if (w >= 2200) maxMonthCount = 16;
+                else if (w >= 1800) maxMonthCount = 12;
+                else if (w >= 1400) maxMonthCount = 9;
+                else if (w >= 1024) maxMonthCount = 6;
+                else if (w >= 768) maxMonthCount = 4;
+                else maxMonthCount = 3;
+            } else if (spanSetting === '3') maxMonthCount = 3;
+            else if (spanSetting === '6') maxMonthCount = 6;
+            else if (spanSetting === '12') maxMonthCount = 12;
+            else if (spanSetting === '18') maxMonthCount = 18;
+            else if (spanSetting === 'all') maxMonthCount = 999;
+
+            if (finalCols.length > maxMonthCount) {
+                finalCols = finalCols.slice(0, maxMonthCount);
+            }
+
+            return finalCols;
         }
 
         // 輔助函式：將日期字串精準轉為所屬月份 Key (支援動態月份清單，保證 2027/1 落點在 2027/1)
@@ -3708,35 +3741,65 @@ function renderTimelineMatrix(container) {
             if (!el || el.dataset.scrollInited) return;
             el.dataset.scrollInited = 'true';
 
-            // 1. 滑鼠滾輪直接轉水平捲動 (免按 Shift 鍵)
+            // 1. 滑鼠滾輪自然滾動 (支援垂直滾動與 Shift+水平滾動)
             el.addEventListener('wheel', (e) => {
-                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-                    e.preventDefault();
-                    el.scrollLeft += e.deltaY;
+                if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+                    el.scrollLeft += (e.deltaX || e.deltaY);
+                } else {
+                    el.scrollTop += e.deltaY;
                 }
-            }, { passive: false });
+            }, { passive: true });
 
-            // 2. 滑鼠按住拖曳 (Grab & Drag)
+            // 2. 滑鼠按住左鍵 2D 全方位拖曳平移 (支援上下左右自由滑動，附帶拖曳防誤觸卡片保護)
             let isDown = false;
-            let startX = 0;
-            let scrollLeft = 0;
+            let startX = 0, startY = 0;
+            let scrollLeft = 0, scrollTop = 0;
+            let hasDragged = false;
 
             el.addEventListener('mousedown', (e) => {
-                if (e.target.closest('button, a, input, select, [onclick]')) return;
+                if (e.target.closest('button, a, input, select')) return;
+                if (e.button !== 0) return; // 僅限左鍵拖曳
+
                 isDown = true;
+                hasDragged = false;
                 startX = e.pageX - el.offsetLeft;
+                startY = e.pageY - el.offsetTop;
                 scrollLeft = el.scrollLeft;
+                scrollTop = el.scrollTop;
+                el.classList.add('cursor-grabbing');
+                el.classList.remove('cursor-grab');
             });
 
-            el.addEventListener('mouseleave', () => { isDown = false; });
-            el.addEventListener('mouseup', () => { isDown = false; });
-            el.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const x = e.pageX - el.offsetLeft;
-                const walk = (x - startX) * 1.5;
-                el.scrollLeft = scrollLeft - walk;
+            window.addEventListener('mouseup', () => {
+                if (isDown) {
+                    isDown = false;
+                    el.classList.remove('cursor-grabbing');
+                    el.classList.add('cursor-grab');
+                }
             });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                const x = e.pageX - el.offsetLeft;
+                const y = e.pageY - el.offsetTop;
+                const walkX = (x - startX);
+                const walkY = (y - startY);
+
+                if (Math.abs(walkX) > 4 || Math.abs(walkY) > 4) {
+                    hasDragged = true;
+                }
+                el.scrollLeft = scrollLeft - walkX;
+                el.scrollTop = scrollTop - walkY;
+            });
+
+            // 拖曳防誤觸保護：若使用者是在拖曳滑動表格，放開滑鼠時阻止觸發單元格內部的點擊跳轉
+            el.addEventListener('click', (e) => {
+                if (hasDragged) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    hasDragged = false;
+                }
+            }, true);
         }
 
         function renderFortellerCellContent(items) {
@@ -4000,6 +4063,19 @@ function renderTimelineMatrix(container) {
                                 </select>
                             </div>
 
+                            <!-- 【v5.3.10 自適應螢幕跨度 / 顯示月份資料量切換】：寬螢幕自動展現更多，免滾輪滑來滑去 -->
+                            <div class="flex items-center gap-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <span class="text-slate-600 dark:text-slate-300 whitespace-nowrap pl-1">🔭 跨度:</span>
+                                <select onchange="setFortellerSpan(this.value)" class="text-xs font-bold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-slate-600 cursor-pointer focus:outline-none" title="設定顯示月份跨度：依螢幕寬度自動適配，或自訂月份數量">
+                                    <option value="auto" ${getFortellerSpanSetting() === 'auto' ? 'selected' : ''}>🌐 依螢幕自適應 · 預設</option>
+                                    <option value="3" ${getFortellerSpanSetting() === '3' ? 'selected' : ''}>3 個月 (聚焦近期)</option>
+                                    <option value="6" ${getFortellerSpanSetting() === '6' ? 'selected' : ''}>半年 (6 個月)</option>
+                                    <option value="12" ${getFortellerSpanSetting() === '12' ? 'selected' : ''}>1 年 (12 個月)</option>
+                                    <option value="18" ${getFortellerSpanSetting() === '18' ? 'selected' : ''}>1.5 年 (18 個月)</option>
+                                    <option value="all" ${getFortellerSpanSetting() === 'all' ? 'selected' : ''}>全部時程</option>
+                                </select>
+                            </div>
+
                             <!-- 【v5.2.0 全人生領域檢視切換按鈕】 -->
                             <button type="button" onclick="toggleFortellerShowAllDomains()" class="px-2.5 py-1 rounded-xl transition-all cursor-pointer border text-xs font-bold flex items-center gap-1 shadow-2xs ${fortellerShowAllDomains ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border-teal-300 dark:border-teal-700' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-slate-800'}" title="在推演盤最下方顯示所有人生領域，即便尚未規劃目標亦完整展現，助您省思並激發其他領域的 Action">
                                 <span>🌐</span>
@@ -4113,13 +4189,13 @@ function renderTimelineMatrix(container) {
                         return '';
                     })()}
 
-                    <!-- Forteller 核心表格 (支援滾輪左右平移與滑鼠抓取拖曳) -->
-                    <div id="fortellerTableContainer" class="overflow-x-auto rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs scroll-smooth select-none cursor-grab active:cursor-grabbing">
-                        <table class="w-full border-collapse text-left text-xs table-auto">
+                    <!-- Forteller 核心表格 (【v5.3.10】：支援 2D 全方位滑鼠拖曳平移、手機雙向觸控手勢、凍結表頭與凍結左側欄) -->
+                    <div id="fortellerTableContainer" class="max-h-[75vh] overflow-auto rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs select-none cursor-grab active:cursor-grabbing touch-pan-x touch-pan-y" style="-webkit-overflow-scrolling: touch;">
+                        <table class="w-full border-collapse text-left text-xs table-auto relative">
                             <thead>
-                                <tr class="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-b border-slate-300 dark:border-slate-700 select-none">
-                                    <th class="py-2 px-2 text-center font-extrabold w-12 min-w-[48px] border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">NO.</th>
-                                    <th class="py-2 px-2.5 font-extrabold w-32 min-w-[120px] border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">領域</th>
+                                <tr class="sticky top-0 z-30 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-b border-slate-300 dark:border-slate-700 select-none shadow-xs">
+                                    <th class="sticky left-0 top-0 z-40 bg-slate-100 dark:bg-slate-900 py-2.5 px-2 text-center font-extrabold w-12 min-w-[48px] border-r border-slate-300 dark:border-slate-700 whitespace-nowrap shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">NO.</th>
+                                    <th class="sticky left-[48px] top-0 z-40 bg-slate-100 dark:bg-slate-900 py-2.5 px-2.5 font-extrabold w-32 min-w-[120px] border-r border-slate-300 dark:border-slate-700 whitespace-nowrap shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]">領域</th>
                                     ${fortellerMode === 'goal' ? `
                                         ${(window._fortellerGoalTableCols || []).map(col => {
                                             if (col.type === 'month') {
@@ -4232,10 +4308,10 @@ function renderTimelineMatrix(container) {
 
                                         return `
                                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
-                                                <td class="py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap">
+                                                <td class="sticky left-0 z-20 bg-white dark:bg-slate-800 py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap w-12 min-w-[48px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
                                                     ${row.no}
                                                 </td>
-                                                <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap">
+                                                <td class="sticky left-[48px] z-20 bg-white dark:bg-slate-800 py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap w-32 min-w-[120px] shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]">
                                                     ${row.domain}
                                                 </td>
                                                 ${monthCols.map(mKey => {
@@ -4375,10 +4451,10 @@ function renderTimelineMatrix(container) {
 
                                         return `
                                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
-                                                <td class="py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap w-12 min-w-[48px]">
+                                                <td class="sticky left-0 z-20 bg-white dark:bg-slate-800 py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap w-12 min-w-[48px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
                                                     ${row.no}
                                                 </td>
-                                                <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap w-32 min-w-[120px]">
+                                                <td class="sticky left-[48px] z-20 bg-white dark:bg-slate-800 py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap w-32 min-w-[120px] shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]">
                                                     ${row.domain}
                                                 </td>
                                                 ${goalTableCols.map((col, cIdx) => {
@@ -4464,10 +4540,10 @@ function renderTimelineMatrix(container) {
                                         return emptyDomains.map(dom => {
                                             return `
                                                 <tr class="bg-slate-50/40 dark:bg-slate-800/25 border-b border-slate-200/70 dark:border-slate-700/70 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
-                                                    <td class="py-2.5 px-1 text-center font-mono text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-700 align-middle text-[11px] whitespace-nowrap select-none">
+                                                    <td class="sticky left-0 z-20 bg-slate-50/90 dark:bg-slate-800/90 py-2.5 px-1 text-center font-mono text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-700 align-middle text-[11px] whitespace-nowrap select-none w-12 min-w-[48px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
                                                         -
                                                     </td>
-                                                    <td class="py-2.5 px-2.5 font-bold text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-middle text-xs whitespace-nowrap">
+                                                    <td class="sticky left-[48px] z-20 bg-slate-50/90 dark:bg-slate-800/90 py-2.5 px-2.5 font-bold text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-middle text-xs whitespace-nowrap w-32 min-w-[120px] shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]">
                                                         <div class="flex items-center justify-between gap-1.5">
                                                             <span>${dom}</span>
                                                             <button type="button" onclick="quickAddGoalForDomain('${escapeAttr(dom)}')" class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-colors cursor-pointer" title="為此領域快速建立新目標">
@@ -5784,6 +5860,17 @@ window.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('focus', () => {
     checkAndAutoSyncFromPi();
+});
+
+// 【v5.3.10 視窗縮放自動重繪】：若處於自動適配模式，螢幕寬度改變自動更新可視月份量
+let _fortellerResizeTimer = null;
+window.addEventListener('resize', () => {
+    if (_fortellerResizeTimer) clearTimeout(_fortellerResizeTimer);
+    _fortellerResizeTimer = setTimeout(() => {
+        if (typeof viewMode !== 'undefined' && viewMode === 'overview' && typeof overviewSubMode !== 'undefined' && overviewSubMode === 'forteller' && typeof getFortellerSpanSetting === 'function' && getFortellerSpanSetting() === 'auto') {
+            render();
+        }
+    }, 300);
 });
 </script>
 </body>
