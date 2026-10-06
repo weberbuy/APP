@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.8-test (Forteller目標模式月份目標回歸、段落目標母卡片資訊跨NO合併儲存格版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.9-test (Forteller全表欄寬統一鎖定、文字流式排版、拆解目標步驟去重優化版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -3792,23 +3792,26 @@ function renderTimelineMatrix(container) {
                                 </div>
                             `;
                         } else {
-                            // 未完成步驟 (> 單步, o> 循環) -> 乾淨文字，標籤顏色精準對齊所屬接力棒次 (第1棒橘黃、第2棒紫、第3棒天藍、第4棒薄荷綠...)
+                            // 未完成步驟 (> 單步, o> 循環) -> 結構化流式排版，前綴左側錨定，文字自然換行不破碎
                             const prefixColor = item.prefix === 'o>' ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400';
                             const stepStageStyle = item.stageStyle || getMilestoneStageStyle(item.milestoneStageIndex || 0, item.milestoneDone);
                             return `
-                                <div class="text-[11px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer flex items-start gap-1 flex-wrap ${item.depth > 0 ? 'pl-1.5' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="${escapeAttr(item.milestoneTitle ? `專屬【${item.milestoneTitle}】的步驟` : '點擊跳轉至卡片進行編輯')}">
-                                    <span class="font-mono font-bold ${prefixColor} shrink-0 select-none">${item.prefix}</span>
-                                    ${item.milestoneBadge ? `
-                                        <span class="text-[9px] font-mono font-bold px-1 py-0.2 rounded ${stepStageStyle.className} border shrink-0 select-none" title="此步驟屬於：第${(item.milestoneStageIndex || 0) + 1}棒【${escapeHtml(item.milestoneTitle || '')}】">
-                                            ${stepStageStyle.icon} ${escapeHtml(item.milestoneBadge)}
-                                        </span>
-                                    ` : ''}
-                                    ${item.goalTitle ? `
-                                        <span class="text-[9px] font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-750 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shrink-0 select-none" title="所屬目標：${escapeHtml(item.goalTitle)}">
-                                            📌 ${escapeHtml(item.goalTitle)}
-                                        </span>
-                                    ` : ''}
-                                    <span class="break-words">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-70 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
+                                <div class="text-[11px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer flex items-start gap-1.5 leading-snug ${item.depth > 0 ? 'pl-1.5' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="${escapeAttr(item.milestoneTitle ? `專屬【${item.milestoneTitle}】的步驟` : '點擊跳轉至卡片進行編輯')}">
+                                    <span class="font-mono font-bold ${prefixColor} shrink-0 select-none mt-0.5">${item.prefix}</span>
+                                    <div class="min-w-0 flex-1 break-words">
+                                        ${item.milestoneBadge ? `
+                                            <span class="inline-block text-[9px] font-mono font-bold px-1 py-0.2 rounded ${stepStageStyle.className} border shrink-0 select-none mr-1 align-baseline" title="此步驟屬於：第${(item.milestoneStageIndex || 0) + 1}棒【${escapeHtml(item.milestoneTitle || '')}】">
+                                                ${stepStageStyle.icon} ${escapeHtml(item.milestoneBadge)}
+                                            </span>
+                                        ` : ''}
+                                        ${item.goalTitle ? `
+                                            <span class="inline-block text-[9px] font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-750 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shrink-0 select-none mr-1 align-baseline" title="所屬目標：${escapeHtml(item.goalTitle)}">
+                                                📌 ${escapeHtml(item.goalTitle)}
+                                            </span>
+                                        ` : ''}
+                                        <span class="font-medium">${escapeHtml(item.text)}</span>
+                                        ${item.dateBadge ? ` <span class="text-[9px] opacity-70 font-mono font-normal whitespace-nowrap">(${item.dateBadge})</span>` : ''}
+                                    </div>
                                 </div>
                             `;
                         }
@@ -4115,20 +4118,20 @@ function renderTimelineMatrix(container) {
                         <table class="w-full border-collapse text-left text-xs table-auto">
                             <thead>
                                 <tr class="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-b border-slate-300 dark:border-slate-700 select-none">
-                                    <th class="py-2 px-2 text-center font-extrabold w-10 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">NO.</th>
-                                    <th class="py-2 px-2.5 font-extrabold w-28 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">領域</th>
+                                    <th class="py-2 px-2 text-center font-extrabold w-12 min-w-[48px] border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">NO.</th>
+                                    <th class="py-2 px-2.5 font-extrabold w-32 min-w-[120px] border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">領域</th>
                                     ${fortellerMode === 'goal' ? `
                                         ${(window._fortellerGoalTableCols || []).map(col => {
                                             if (col.type === 'month') {
                                                 const isCurrent = (col.monthKey === currentMonthKey);
                                                 return `
-                                                    <th class="py-2 px-2 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center">
+                                                    <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] max-w-[220px]">
                                                         ${col.monthKey}${isCurrent ? ' (當月)' : ''}
                                                     </th>
                                                 `;
                                             } else {
                                                 return `
-                                                    <th class="py-2 px-2.5 font-extrabold bg-amber-50/80 dark:bg-amber-950/50 text-amber-950 dark:text-amber-200 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap text-center">
+                                                    <th class="py-2 px-3 font-extrabold bg-amber-50/80 dark:bg-amber-950/50 text-amber-950 dark:text-amber-200 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap text-center w-52 min-w-[180px] max-w-[240px]">
                                                         🎯 段落目標
                                                     </th>
                                                 `;
@@ -4138,12 +4141,12 @@ function renderTimelineMatrix(container) {
                                         ${monthCols.map(mKey => {
                                             const isCurrent = (mKey === currentMonthKey);
                                             return `
-                                                <th class="py-2 px-2 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap">
+                                                <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] max-w-[220px]">
                                                     ${mKey}${isCurrent ? ' (當月)' : ''}
                                                 </th>
                                             `;
                                         }).join('')}
-                                        <th class="py-2 px-2.5 font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap">🎯 終局目標 / 結案時間</th>
+                                        <th class="py-2 px-3 font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap text-center w-52 min-w-[180px] max-w-[240px]">🎯 終局目標 / 結案時間</th>
                                     `}
                                 </tr>
                             </thead>
@@ -4239,10 +4242,10 @@ function renderTimelineMatrix(container) {
                                                     const items = itemsByMonth[mKey] || [];
                                                     const isCurrent = (mKey === currentMonthKey);
                                                     if (items.length === 0) {
-                                                        return `<td class="py-1 px-1 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
+                                                        return `<td class="py-2 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top w-44 min-w-[160px] max-w-[220px] ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
                                                     }
                                                     return `
-                                                        <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
+                                                        <td class="py-2 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top w-44 min-w-[160px] max-w-[220px] ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
                                                             ${renderFortellerCellContent(items)}
                                                         </td>
                                                     `;
@@ -4367,32 +4370,15 @@ function renderTimelineMatrix(container) {
                                             });
                                         });
 
-                                        // C. 若此軌道為子/孫卡片，且由母步驟拆解而來 (parentStep)，將該觸發步驟亦納入月度欄位
-                                        if (tr.parentStep && !tr.parentStep.done) {
-                                            const s = tr.parentStep;
-                                            const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
-                                            const isRec = (s.recurrence && s.recurrence !== 'none');
-                                            const sDateBadge = (s.stepDate && s.stepDate !== '未指定日期') ? s.stepDate.slice(5) : '';
-                                            addBranchItem(mKey, {
-                                                type: 'step',
-                                                prefix: isRec ? 'o>' : '>',
-                                                text: s.text,
-                                                stepDate: s.stepDate,
-                                                dateBadge: sDateBadge,
-                                                thoughtId: tr.thought.id,
-                                                stepId: s.id,
-                                                isParentStep: true
-                                            });
-                                        }
-
+                                        // 【v5.3.9 拆解目標去重優化】：若母卡片步驟已有拆解目標，則本軌道僅顯示該拆解子/孫卡片自身的目標與步驟，不重複顯示母卡片原步驟
                                         const goalTableCols = window._fortellerGoalTableCols || [];
 
                                         return `
                                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
-                                                <td class="py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap">
+                                                <td class="py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap w-12 min-w-[48px]">
                                                     ${row.no}
                                                 </td>
-                                                <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap">
+                                                <td class="py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap w-32 min-w-[120px]">
                                                     ${row.domain}
                                                 </td>
                                                 ${goalTableCols.map((col, cIdx) => {
@@ -4400,10 +4386,10 @@ function renderTimelineMatrix(container) {
                                                         const items = branchItemsByMonth[col.monthKey] || [];
                                                         const isCurrent = (col.monthKey === currentMonthKey);
                                                         if (items.length === 0) {
-                                                            return `<td class="py-1 px-1 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
+                                                            return `<td class="py-2 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top w-44 min-w-[160px] max-w-[220px] ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
                                                         }
                                                         return `
-                                                            <td class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-top ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
+                                                            <td class="py-2 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top w-44 min-w-[160px] max-w-[220px] ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
                                                                 ${renderFortellerCellContent(items)}
                                                             </td>
                                                         `;
