@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.11-test (Forteller寬螢幕滿版寬度解鎖、欄位動態延展版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.12-test (手機看板模式目標響應式排版解鎖、編輯同步與全系統行動端觸控防溢出優化版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -293,15 +293,15 @@
         <div id="weeklyStatsPanel" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"></div>
 
         <!-- 三模式切換列 -->
-        <div class="mb-6 bg-slate-200/80 p-1.5 rounded-2xl flex items-center shadow-inner border border-slate-300/60 gap-1 overflow-x-auto">
-            <button onclick="setViewMode('overview')" id="btnViewOverview" class="flex-1 py-2.5 px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white text-indigo-600 shadow-md whitespace-nowrap">
-                🎯 總覽模式 (整體思考)
+        <div class="mb-6 bg-slate-200/80 dark:bg-slate-800 p-1.5 rounded-2xl flex items-center shadow-inner border border-slate-300/60 dark:border-slate-700 gap-1 overflow-x-auto">
+            <button onclick="setViewMode('overview')" id="btnViewOverview" class="flex-1 py-2 px-2 sm:py-2.5 sm:px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1 bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-md whitespace-nowrap">
+                <span>🎯 總覽</span><span class="hidden sm:inline">模式 (整體思考)</span>
             </button>
-            <button onclick="setViewMode('cards')" id="btnViewCards" class="flex-1 py-2.5 px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 whitespace-nowrap">
-                🎴 看板模式 (完整卡片)
+            <button onclick="setViewMode('cards')" id="btnViewCards" class="flex-1 py-2 px-2 sm:py-2.5 sm:px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 whitespace-nowrap">
+                <span>🎴 看板</span><span class="hidden sm:inline">模式 (完整卡片)</span>
             </button>
-            <button onclick="setViewMode('timeline')" id="btnViewTimeline" class="flex-1 py-2.5 px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 whitespace-nowrap">
-                ⏳ 時間軸模式 (對照矩陣)
+            <button onclick="setViewMode('timeline')" id="btnViewTimeline" class="flex-1 py-2 px-2 sm:py-2.5 sm:px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 whitespace-nowrap">
+                <span>⏳ 時間軸</span><span class="hidden sm:inline">模式 (對照矩陣)</span>
             </button>
         </div>
 
@@ -501,7 +501,7 @@
         <!-- 日期選擇器彈出視窗 -->
 
         <div id="datePickerModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 hidden z-50">
-            <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-xl border border-slate-100 space-y-4 max-h-[92vh] overflow-y-auto">
                 <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
                     <span>📅 請點選新預期日期與時段</span>
                 </h3>
@@ -525,7 +525,7 @@
 
         <!-- 【v5.1.0 階段接力目標設定彈出視窗】(支援日曆選取、快速預排與時段設定) -->
         <div id="milestoneModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 hidden z-50">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 max-h-[92vh] overflow-y-auto">
                 <div class="flex items-center justify-between">
                     <h3 id="milestoneModalHeading" class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                         <span>🎯 規劃階段接力目標</span>
@@ -593,7 +593,7 @@
 
         <!-- 【v5.3.0 空白領域構思新目標彈出視窗】(支援日曆選取、快速預排與時段設定) -->
         <div id="quickAddGoalModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 hidden z-50">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 max-h-[92vh] overflow-y-auto">
                 <div class="flex items-center justify-between">
                     <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                         <span>🎯 為「<span id="quickGoalDomainHeading"></span>」構思新目標</span>
@@ -2726,6 +2726,16 @@ function updateContainerWidth() {
             const t = thoughts.find(x => x.id === id);
             if (t) {
                 t.category = cat || '💼 事業'; t.text = text; t.detail = detail || ''; t.goal = goal || '未設定目標'; t.targetDate = date || '未指定日期'; t.targetTimeSlot = targetTimeSlot;
+
+                // 【v5.3.12 編輯目標雙向同步里程碑】：同步更新至目前活躍之接力里程碑，徹底解決手機/看板模式下編輯目標無效之問題
+                if (Array.isArray(t.milestones) && t.milestones.length > 0) {
+                    const activeM = t.milestones.find(m => !m.done) || t.milestones[t.milestones.length - 1];
+                    if (activeM) {
+                        activeM.title = t.goal;
+                        activeM.targetDate = t.targetDate;
+                        activeM.targetTimeSlot = t.targetTimeSlot;
+                    }
+                }
                 editingId = null; saveData();
             }
         }
@@ -5646,22 +5656,29 @@ const card = document.createElement('div');
                                             const badgeClass = stageStyle.paletteClass || stageStyle.className;
 
                                             return `
-                                                <div class="flex items-center justify-between gap-2 text-xs py-1 px-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 shadow-2xs">
-                                                    <label class="flex items-center gap-1.5 cursor-pointer select-none grow min-w-0">
-                                                        <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleMilestoneDone(${thought.id}, ${m.id})" class="w-4 h-4 text-amber-600 rounded border-slate-300 shrink-0">
+                                                <!-- 【v5.3.12 手機看板目標卡片響應式排版】：手機雙層流式展開，大按鈕好按防溢出；桌機水平整齊單行 -->
+                                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs py-1.5 px-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs">
+                                                    <label class="flex items-start sm:items-center gap-2 cursor-pointer select-none grow min-w-0">
+                                                        <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleMilestoneDone(${thought.id}, ${m.id})" class="w-4 h-4 text-amber-600 rounded border-slate-300 shrink-0 mt-0.5 sm:mt-0">
                                                         <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border font-bold ${badgeClass} shrink-0 shadow-2xs">
                                                             ${badgeText}
                                                         </span>
-                                                        <span class="truncate ${isDone ? 'line-through text-slate-400 font-normal' : 'font-bold text-slate-800 dark:text-slate-100'}">
+                                                        <span class="break-words sm:truncate ${isDone ? 'line-through text-slate-400 font-normal' : 'font-bold text-slate-800 dark:text-slate-100'}">
                                                             ${escapeHtml(m.title)}
                                                         </span>
                                                     </label>
-                                                    <div class="flex items-center gap-1.5 shrink-0 text-[11px] text-slate-500 font-mono">
-                                                        <span>📅 ${m.targetDate || '未指定'}</span>
-                                                        <button type="button" onclick="editMilestone(${thought.id}, ${m.id})" class="text-slate-400 hover:text-indigo-600 p-0.5 cursor-pointer" title="編輯里程碑目標與日期">✏️</button>
-                                                        ${allM.length > 1 ? `
-                                                            <button type="button" onclick="deleteMilestone(${thought.id}, ${m.id})" class="text-slate-300 hover:text-rose-500 p-0.5 cursor-pointer" title="刪除此接力目標">🗑️</button>
-                                                        ` : ''}
+                                                    <div class="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 text-xs text-slate-500 font-mono pl-6 sm:pl-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-700/60">
+                                                        <span class="text-[11px] text-slate-600 dark:text-slate-300 font-bold">📅 ${m.targetDate || '未指定'}</span>
+                                                        <div class="flex items-center gap-1.5">
+                                                            <button type="button" onclick="editMilestone(${thought.id}, ${m.id})" class="px-2.5 py-1 text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-lg font-bold border border-indigo-200 dark:border-indigo-800 cursor-pointer flex items-center gap-1 transition-all shadow-2xs active:scale-95" title="編輯里程碑目標與日期">
+                                                                <span>✏️</span><span class="sm:hidden">編輯</span>
+                                                            </button>
+                                                            ${allM.length > 1 ? `
+                                                                <button type="button" onclick="deleteMilestone(${thought.id}, ${m.id})" class="px-2 py-1 text-xs bg-slate-100 hover:bg-rose-50 dark:bg-slate-700 dark:hover:bg-rose-950/60 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg font-medium border border-slate-200 dark:border-slate-600 cursor-pointer transition-all active:scale-95" title="刪除此接力目標">
+                                                                    <span>🗑️</span>
+                                                                </button>
+                                                            ` : ''}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             `;
