@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.12-test (手機看板模式目標響應式排版解鎖、編輯同步與全系統行動端觸控防溢出優化版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.13-test (今日習慣打卡專區、一鍵批次完成、輕量通知與近14天失敗率>50%習慣健康診斷調整版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -291,6 +291,9 @@
         <!-- 📊 本週 (週一~週日) 總工時統計與警示面板 -->
 
         <div id="weeklyStatsPanel" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"></div>
+
+        <!-- 📌 今日習慣與循環打卡專區 (Daily Routine Hub) -->
+        <div id="dailyRoutineHub" class="mb-6"></div>
 
         <!-- 三模式切換列 -->
         <div class="mb-6 bg-slate-200/80 dark:bg-slate-800 p-1.5 rounded-2xl flex items-center shadow-inner border border-slate-300/60 dark:border-slate-700 gap-1 overflow-x-auto">
@@ -522,6 +525,122 @@
                 </div>
             </div>
         </div>
+
+        <!-- 💡 習慣健康診斷與調整建議彈窗 (Habit Diagnostics & Adaptation Modal) -->
+    <div id="habitDiagnosticModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 hidden max-h-[92vh] overflow-y-auto">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 animate-in fade-in zoom-in duration-200">
+            <!-- 彈窗頁首 -->
+            <div class="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-700 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 p-2.5 rounded-2xl text-xl font-bold select-none">💡</div>
+                    <div>
+                        <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                            <span>習慣健康診斷與調整建議</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">依據近 14 天履約數據，科學化降低阻力重建動能</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeHabitDiagnosticModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg p-1 rounded-lg transition-colors cursor-pointer">✕</button>
+            </div>
+
+            <!-- 習慣與當前數據看板 -->
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-3">
+                <div>
+                    <span id="diagHabitThought" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/70 px-2 py-0.5 rounded-md"></span>
+                    <h4 id="diagHabitTitle" class="text-base font-black text-slate-900 dark:text-white mt-1"></h4>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <div class="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/80 dark:border-slate-700">
+                        <div class="text-[10px] text-slate-500 font-medium">近14天應執行</div>
+                        <div id="diagHabitExpected" class="text-sm font-bold text-slate-800 dark:text-slate-200 mt-0.5"></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/80 dark:border-slate-700">
+                        <div class="text-[10px] text-slate-500 font-medium">實際完成</div>
+                        <div id="diagHabitActual" class="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5"></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/80 dark:border-slate-700">
+                        <div class="text-[10px] text-slate-500 font-medium">失敗率</div>
+                        <div id="diagHabitFailRate" class="text-sm font-black text-rose-600 mt-0.5"></div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800 leading-relaxed">
+                    🧠 <strong>行為科學指南</strong>：當失敗率超過 50%，代表習慣阻力大於心理動力。先降低門檻以維持連續性，待成功率穩定回升至 80% 再逐步加強！
+                </div>
+            </div>
+
+            <!-- 三大因應調整策略 -->
+            <div class="space-y-3">
+                <h5 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">🛠️ 選擇因應策略 (一鍵直接套用)</h5>
+
+                <!-- 策略 A：調降循環頻率 -->
+                <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-indigo-300 transition-colors bg-white dark:bg-slate-800/80 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                            <span>🔄 策略 A：調整循環週期</span>
+                            <span class="text-[10px] font-normal text-slate-500">（降低執行頻率）</span>
+                        </span>
+                        <button type="button" onclick="applyDiagnosticRecurrence()" class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-xl shadow-2xs transition-colors cursor-pointer">
+                            套用新週期
+                        </button>
+                    </div>
+                    <select id="diagNewRecurrence" class="w-full px-3 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold">
+                        <option value="daily">🔄 每日循環 (1週7天)</option>
+                        <option value="weekdays">🔄 工作日循環 (週一~五，週末休息)</option>
+                        <option value="weekends">🔄 週末循環 (週六、日)</option>
+                        <option value="weekly">🔄 每週循環 (每週 1 次)</option>
+                        <option value="monthly">🔄 每月循環 (每月 1 次)</option>
+                    </select>
+                </div>
+
+                <!-- 策略 B：微習慣法 -->
+                <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-teal-300 transition-colors bg-white dark:bg-slate-800/80 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                            <span>🌱 策略 B：微習慣法 (縮小規模與工時)</span>
+                            <span class="text-[10px] font-normal text-slate-500">（減輕啟動負擔）</span>
+                        </span>
+                        <button type="button" onclick="applyDiagnosticMicroHabit()" class="text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-xl shadow-2xs transition-colors cursor-pointer">
+                            更新微習慣
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="text" id="diagMicroText" placeholder="修改習慣名稱" class="col-span-2 px-3 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold">
+                        <input type="text" id="diagMicroTime" placeholder="工時(如0.1h)" class="col-span-1 px-3 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-center font-bold">
+                    </div>
+                </div>
+
+                <!-- 策略 C：調整時段 -->
+                <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-colors bg-white dark:bg-slate-800/80 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                            <span>🕐 策略 C：調整執行時段</span>
+                            <span class="text-[10px] font-normal text-slate-500">（更換情境與環境）</span>
+                        </span>
+                        <button type="button" onclick="applyDiagnosticTimeSlot()" class="text-xs font-bold bg-slate-800 hover:bg-slate-900 dark:bg-slate-600 dark:hover:bg-slate-500 text-white px-3 py-1 rounded-xl shadow-2xs transition-colors cursor-pointer">
+                            更新時段
+                        </button>
+                    </div>
+                    <select id="diagNewTimeSlot" class="w-full px-3 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold">
+                        <option value="全天">全天</option>
+                        <option value="晨間">晨間 (起床醒腦第一件事)</option>
+                        <option value="上午">上午 (精力充沛時段)</option>
+                        <option value="下午">下午</option>
+                        <option value="晚上">晚上</option>
+                        <option value="夜間">夜間</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 彈窗底部 -->
+            <div class="flex justify-end pt-2 border-t border-slate-100 dark:border-slate-700">
+                <button type="button" onclick="closeHabitDiagnosticModal()" class="px-4 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl transition-colors cursor-pointer">
+                    保持現狀關閉
+                </button>
+            </div>
+        </div>
+    </div>
 
         <!-- 【v5.1.0 階段接力目標設定彈出視窗】(支援日曆選取、快速預排與時段設定) -->
         <div id="milestoneModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 hidden z-50">
@@ -2801,8 +2920,500 @@ function updateContainerWidth() {
             saveData();
         }
 
-        function toggleStep(thoughtId, stepId) {
+        // ============================================================
+        // 【v5.3.13 今日習慣打卡專區 (Daily Routine Hub) & Fail Rate 核心】
+        // ============================================================
 
+        function showToast(message, type = 'success') {
+            let container = document.getElementById('lsToastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'lsToastContainer';
+                container.className = 'fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' 
+                ? 'bg-emerald-600 text-white shadow-emerald-900/30' 
+                : type === 'warning'
+                ? 'bg-amber-500 text-white shadow-amber-900/30'
+                : type === 'error'
+                ? 'bg-rose-600 text-white shadow-rose-900/30'
+                : 'bg-indigo-600 text-white shadow-indigo-900/30';
+
+            toast.className = `${bgClass} pointer-events-auto px-4 py-3 rounded-2xl shadow-xl flex items-start gap-2.5 text-xs sm:text-sm font-bold transition-all duration-300 transform translate-y-[-10px] opacity-0 border border-white/20`;
+            
+            const icon = type === 'success' ? '🎉' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️';
+            toast.innerHTML = `
+                <span class="text-base select-none">${icon}</span>
+                <div class="flex-1 leading-snug break-words">${message}</div>
+            `;
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-10px]', 'opacity-0');
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 300);
+            }, 2800);
+        }
+
+        function calculateStepFailRate(thought, step, baseTodayStr = todayStr) {
+            if (!step || !step.recurrence || step.recurrence === 'none') {
+                return { expected: 0, actual: 0, failRate: 0, percent: 0, isHighFail: false, effectiveStartStr: baseTodayStr };
+            }
+            const rec = step.recurrence;
+            const targetText = (step.text || '').trim();
+            
+            // 找出同目標下同名稱的所有步驟實例 (歷史與待辦)
+            const allInstances = (thought.steps || []).filter(s => (s.text || '').trim() === targetText);
+            
+            const today = new Date(baseTodayStr + 'T00:00:00');
+            const windowStart = new Date(today.getTime() - 13 * 86400000); // 近 14 天 (含今天)
+            
+            // 找出最早出現日期，避免剛建立新習慣就被計算為 14 次失敗
+            const validDates = allInstances
+                .map(s => s.stepDate || (s.id && s.id > 1000000000000 ? new Date(s.id).toISOString().slice(0, 10) : null))
+                .filter(Boolean)
+                .sort();
+            const earliestStr = validDates[0] || baseTodayStr;
+            const earliestDate = new Date(earliestStr + 'T00:00:00');
+            const effectiveStart = earliestDate > windowStart ? earliestDate : windowStart;
+            
+            let expected = 0;
+            const cur = new Date(effectiveStart.getTime());
+            while (cur <= today) {
+                const day = cur.getDay(); // 0 is Sun, 6 is Sat
+                if (rec === 'daily') {
+                    expected++;
+                } else if (rec === 'weekdays') {
+                    if (day >= 1 && day <= 5) expected++;
+                } else if (rec === 'weekends') {
+                    if (day === 0 || day === 6) expected++;
+                } else if (rec === 'weekly') {
+                    expected++;
+                }
+                cur.setDate(cur.getDate() + 1);
+            }
+            if (rec === 'weekly') {
+                const daysDiff = Math.max(1, Math.round((today - effectiveStart) / 86400000));
+                expected = Math.max(1, Math.round(daysDiff / 7));
+            } else if (rec === 'monthly') {
+                expected = 1;
+            }
+            
+            // 統計區間內實際完成天數 (利用 Set 去除同一天重複打卡)
+            const effectiveStartStr = effectiveStart.toISOString().slice(0, 10);
+            const completedDays = new Set();
+            allInstances.forEach(s => {
+                if (s.done) {
+                    const cDate = s.completedDate || s.stepDate;
+                    if (cDate && cDate >= effectiveStartStr && cDate <= baseTodayStr) {
+                        completedDays.add(cDate);
+                    }
+                }
+            });
+            
+            const actual = completedDays.size;
+            const failRate = expected > 0 ? Math.max(0, (expected - actual) / expected) : 0;
+            const percent = Math.round(failRate * 100);
+            const isHighFail = expected >= 3 && failRate > 0.5;
+            
+            return {
+                expected,
+                actual,
+                failRate,
+                percent,
+                isHighFail,
+                effectiveStartStr,
+                recLabel: getRecurrenceLabel(rec)
+            };
+        }
+
+        function toggleRoutineHub() {
+            const isCollapsed = localStorage.getItem('ls_routine_hub_collapsed') === 'true';
+            localStorage.setItem('ls_routine_hub_collapsed', (!isCollapsed).toString());
+            renderDailyRoutineHub();
+        }
+
+        function renderDailyRoutineHub() {
+            const hub = document.getElementById('dailyRoutineHub');
+            if (!hub) return;
+
+            // 收集所有循環步驟
+            const dueTodayList = [];
+            const overdueList = [];
+            const completedTodayList = [];
+
+            thoughts.forEach(t => {
+                (t.steps || []).forEach(s => {
+                    if (!s.recurrence || s.recurrence === 'none') return;
+                    const sDate = s.stepDate || '';
+                    const stats = calculateStepFailRate(t, s);
+                    if (!s.done) {
+                        if (sDate === todayStr || sDate === '') {
+                            dueTodayList.push({ thought: t, step: s, stats });
+                        } else if (sDate < todayStr) {
+                            overdueList.push({ thought: t, step: s, stats });
+                        }
+                    } else if (s.completedDate === todayStr) {
+                        completedTodayList.push({ thought: t, step: s, stats });
+                    }
+                });
+            });
+
+            const totalToday = dueTodayList.length + overdueList.length + completedTodayList.length;
+            if (totalToday === 0) {
+                hub.innerHTML = '';
+                return;
+            }
+
+            const completedCount = completedTodayList.length;
+            const pendingCount = dueTodayList.length + overdueList.length;
+            const percent = Math.round((completedCount / totalToday) * 100);
+            const isCollapsed = localStorage.getItem('ls_routine_hub_collapsed') === 'true';
+
+            // 檢查是否有高失敗率項目 (>50%)
+            const highFailCount = [...dueTodayList, ...overdueList].filter(item => item.stats.isHighFail).length;
+
+            let html = `
+                <div class="bg-gradient-to-r from-indigo-50/90 via-white to-slate-50 dark:from-slate-800/90 dark:via-slate-800 dark:to-slate-850 p-4 sm:p-5 rounded-2xl shadow-sm border border-indigo-100 dark:border-slate-700 transition-all">
+                    <!-- 標題與操作工具列 -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-indigo-100/60 dark:border-slate-700/60">
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <span class="text-xl select-none">📌</span>
+                            <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                <span>今日習慣打卡專區</span>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded-full ${completedCount === totalToday ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'}">
+                                    已完成 ${completedCount} / ${totalToday} (${percent}%)
+                                </span>
+                            </h2>
+                            ${highFailCount > 0 ? `
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 flex items-center gap-1 animate-pulse">
+                                    ⚠️ ${highFailCount} 個習慣近14天失敗率 > 50%
+                                </span>
+                            ` : ''}
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            ${pendingCount > 0 ? `
+                                <button type="button" onclick="batchCompleteTodayRoutines()" class="text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-3.5 py-1.5 rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer hover:shadow-sm">
+                                    <span>⚡ 一鍵全部完成 (${pendingCount})</span>
+                                </button>
+                            ` : `
+                                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                                    🎉 今日習慣皆已全數達成！
+                                </span>
+                            `}
+                            <button type="button" onclick="toggleRoutineHub()" class="text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 shadow-2xs transition-colors flex items-center gap-1 cursor-pointer" title="切換收合/展開">
+                                <span>${isCollapsed ? '展開 ▼' : '收合 ▲'}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 進度條 -->
+                    <div class="w-full bg-slate-200/80 dark:bg-slate-700 rounded-full h-2 mt-3 overflow-hidden">
+                        <div class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-2 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+                    </div>
+            `;
+
+            if (!isCollapsed) {
+                html += `<div class="mt-4 space-y-3.5">`;
+
+                // 1. 逾期未完成清單
+                if (overdueList.length > 0) {
+                    html += `
+                        <div class="bg-rose-50/80 dark:bg-rose-950/30 p-3 rounded-xl border border-rose-200 dark:border-rose-900/60 space-y-2">
+                            <div class="text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center gap-1.5">
+                                <span>⚠️ 逾期未打卡 (${overdueList.length})</span>
+                                <span class="text-[10px] font-normal text-rose-600 dark:text-rose-400">可點擊補打卡，或遞延至今日</span>
+                            </div>
+                            <div class="space-y-1.5">
+                                ${overdueList.map(item => renderRoutineRow(item, true)).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // 2. 今日待辦習慣
+                if (dueTodayList.length > 0) {
+                    html += `
+                        <div class="space-y-1.5">
+                            <div class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                                <span>☀️ 今日待辦習慣 (${dueTodayList.length})</span>
+                            </div>
+                            <div class="space-y-1.5">
+                                ${dueTodayList.map(item => renderRoutineRow(item, false)).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // 3. 今日已完成習慣
+                if (completedTodayList.length > 0) {
+                    html += `
+                        <div class="pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                            <details class="group">
+                                <summary class="text-xs font-bold text-emerald-700 dark:text-emerald-400 cursor-pointer select-none flex items-center gap-1.5">
+                                    <span class="transition-transform group-open:rotate-90 inline-block">▶</span>
+                                    <span>✅ 今日已打卡完成 (${completedTodayList.length})</span>
+                                </summary>
+                                <div class="mt-2 space-y-1.5 opacity-80 pl-2">
+                                    ${completedTodayList.map(item => renderRoutineRow(item, false, true)).join('')}
+                                </div>
+                            </details>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+            }
+
+            html += `</div>`;
+            hub.innerHTML = html;
+        }
+
+        function renderRoutineRow(item, isOverdue = false, isCompleted = false) {
+            const { thought: t, step: s, stats } = item;
+            const isDone = s.done;
+            const recLabel = getRecurrenceLabel(s.recurrence);
+
+            return `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-xl border transition-all gap-2 ${
+                    isCompleted 
+                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/40 text-slate-500' 
+                        : isOverdue 
+                        ? 'bg-white dark:bg-slate-800 border-rose-200 dark:border-rose-800/60 shadow-2xs hover:border-rose-300' 
+                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-2xs hover:border-indigo-300'
+                }">
+                    <!-- 左側：勾選框與名稱 -->
+                    <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                        <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleStep(${t.id}, ${s.id})" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-xs font-bold ${isDone ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'} break-words">
+                                    ${escapeHtml(s.text)}
+                                </span>
+                                ${s.stepTime ? `<span class="text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">⏱️ ${escapeHtml(s.stepTime)}h</span>` : ''}
+                                ${s.stepTimeSlot ? `<span class="text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">🕐 ${escapeHtml(s.stepTimeSlot)}</span>` : ''}
+                            </div>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1 flex-wrap mt-0.5">
+                                <span>[${escapeHtml(t.category || '目標')}]</span>
+                                <span class="truncate max-w-[180px]">${escapeHtml(t.text)}</span>
+                                ${isOverdue ? `<span class="text-rose-600 font-bold">(原定 ${s.stepDate})</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右側：週期、Fail Rate 指標與快捷行動 -->
+                    <div class="flex items-center gap-1.5 text-xs shrink-0 flex-wrap justify-end">
+                        <span class="text-[10px] font-medium bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 px-1.5 py-0.5 rounded border border-teal-200 dark:border-teal-800">
+                            🔄 ${recLabel}
+                        </span>
+
+                        <!-- Fail Rate 警示標籤 -->
+                        ${stats.isHighFail ? `
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-black bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 px-2 py-0.5 rounded-full flex items-center gap-0.5" title="近14天應執行 ${stats.expected} 次，實際完成 ${stats.actual} 次">
+                                    ⚠️ 失敗率 ${stats.percent}%
+                                </span>
+                                <button type="button" onclick="openHabitDiagnosticModal(${t.id}, ${s.id})" class="text-[10px] font-bold bg-amber-100 hover:bg-amber-200 dark:bg-amber-950 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-lg transition-colors cursor-pointer flex items-center gap-0.5" title="習慣健康診斷與調整建議">
+                                    💡 診斷調整
+                                </button>
+                            </div>
+                        ` : stats.expected >= 3 && stats.failRate <= 0.2 ? `
+                            <span class="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-1.5 py-0.5 rounded-full" title="近14天完成 ${stats.actual}/${stats.expected} 次">
+                                🔥 達成率 ${100 - stats.percent}%
+                            </span>
+                        ` : stats.expected >= 3 ? `
+                            <span class="text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-full" title="近14天完成 ${stats.actual}/${stats.expected} 次">
+                                📊 達成率 ${100 - stats.percent}%
+                            </span>
+                        ` : ''}
+
+                        <!-- 逾期專屬遞延按鈕 -->
+                        ${isOverdue ? `
+                            <button type="button" onclick="skipOverdueRoutine(${t.id}, ${s.id})" class="text-[10px] font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-slate-600 transition-colors cursor-pointer" title="跳過逾期紀錄，直接改為今日執行">
+                                ⏭️ 遞延至今日
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function batchCompleteTodayRoutines() {
+            // 找出所有今日到期與逾期的循環步驟
+            const pendingItems = [];
+            thoughts.forEach(t => {
+                (t.steps || []).forEach(s => {
+                    if (!s.recurrence || s.recurrence === 'none' || s.done) return;
+                    const sDate = s.stepDate || '';
+                    if (sDate === todayStr || sDate === '' || sDate < todayStr) {
+                        pendingItems.push({ thought: t, step: s });
+                    }
+                });
+            });
+
+            if (pendingItems.length === 0) {
+                showToast('今日沒有待辦的循環步驟！', 'info');
+                return;
+            }
+
+            if (typeof confirm !== "undefined" && !confirm(`確定要一次將今日 ${pendingItems.length} 項習慣步驟全部打卡完成嗎？\n系統將自動記錄工時並建立下一次循環。`)) {
+                return;
+            }
+
+            let completedCount = 0;
+            pendingItems.forEach(({ thought: t, step: s }) => {
+                s.done = true;
+                s.completedDate = todayStr;
+                t.lastCompletedDate = todayStr;
+                const oldDate = s.stepDate || todayStr;
+                const nextDate = getNextRecurrenceDate(oldDate, s.recurrence);
+                const alreadyHasNext = t.steps.some(x => x.text === s.text && x.stepDate === nextDate && !x.done);
+                if (!alreadyHasNext) {
+                    t.steps.push({
+                        id: Date.now() + Math.floor(Math.random() * 1000),
+                        text: s.text,
+                        stepDate: nextDate,
+                        stepTime: s.stepTime,
+                        stepTimeSlot: s.stepTimeSlot,
+                        recurrence: s.recurrence,
+                        done: false
+                    });
+                }
+                completedCount++;
+            });
+
+            saveData();
+            render();
+            showToast(`🎉 太棒了！已批次完成 ${completedCount} 項習慣步驟，並自動推進至下一輪循環！`, 'success');
+        }
+
+        function skipOverdueRoutine(thoughtId, stepId) {
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            const s = (t.steps || []).find(x => x.id === stepId);
+            if (!s) return;
+            
+            s.stepDate = todayStr;
+            saveData();
+            render();
+            showToast(`已跳過過往紀錄，步驟「${s.text}」遞延至今日 (${todayStr}) 待辦！`, 'info');
+        }
+
+        let currentDiagnosticTarget = null;
+
+        function openHabitDiagnosticModal(thoughtId, stepId) {
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            const s = (t.steps || []).find(x => x.id === stepId);
+            if (!s) return;
+
+            currentDiagnosticTarget = { thoughtId, stepId };
+            const stats = calculateStepFailRate(t, s);
+
+            const modal = document.getElementById('habitDiagnosticModal');
+            if (!modal) return;
+
+            document.getElementById('diagHabitTitle').textContent = s.text;
+            document.getElementById('diagHabitThought').textContent = `${t.category || ''} ${t.text}`;
+            document.getElementById('diagHabitExpected').textContent = `${stats.expected} 次`;
+            document.getElementById('diagHabitActual').textContent = `${stats.actual} 次`;
+            
+            const failRateEl = document.getElementById('diagHabitFailRate');
+            failRateEl.textContent = `${stats.percent}%`;
+            if (stats.percent > 50) {
+                failRateEl.className = 'text-sm font-black text-rose-600 dark:text-rose-400';
+            } else {
+                failRateEl.className = 'text-sm font-black text-emerald-600 dark:text-emerald-400';
+            }
+
+            // 初始化策略控制項
+            const recSelect = document.getElementById('diagNewRecurrence');
+            if (recSelect) recSelect.value = s.recurrence || 'daily';
+
+            const textInput = document.getElementById('diagMicroText');
+            if (textInput) textInput.value = s.text;
+
+            const timeInput = document.getElementById('diagMicroTime');
+            if (timeInput) timeInput.value = s.stepTime || '0.5';
+
+            const slotSelect = document.getElementById('diagNewTimeSlot');
+            if (slotSelect) slotSelect.value = s.stepTimeSlot || '上午';
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeHabitDiagnosticModal() {
+            const modal = document.getElementById('habitDiagnosticModal');
+            if (modal) modal.classList.add('hidden');
+            currentDiagnosticTarget = null;
+        }
+
+        function applyDiagnosticRecurrence() {
+            if (!currentDiagnosticTarget) return;
+            const { thoughtId, stepId } = currentDiagnosticTarget;
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            const s = (t.steps || []).find(x => x.id === stepId);
+            if (!s) return;
+
+            const newRec = document.getElementById('diagNewRecurrence').value;
+            s.recurrence = newRec;
+            saveData();
+            render();
+            closeHabitDiagnosticModal();
+            showToast(`✅ 已將「${s.text}」循環週期更新為【${getRecurrenceLabel(newRec)}】！`, 'success');
+        }
+
+        function applyDiagnosticMicroHabit() {
+            if (!currentDiagnosticTarget) return;
+            const { thoughtId, stepId } = currentDiagnosticTarget;
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            const s = (t.steps || []).find(x => x.id === stepId);
+            if (!s) return;
+
+            const newText = (document.getElementById('diagMicroText').value || '').trim();
+            const newTime = (document.getElementById('diagMicroTime').value || '').trim();
+            if (!newText) {
+                if (typeof alert !== "undefined") alert("請輸入微習慣步驟名稱");
+                return;
+            }
+            s.text = newText;
+            if (newTime) s.stepTime = newTime;
+            saveData();
+            render();
+            closeHabitDiagnosticModal();
+            showToast(`✅ 已將步驟更新為微習慣「${s.text} (${s.stepTime}h)」！降低阻力重新出發。`, 'success');
+        }
+
+        function applyDiagnosticTimeSlot() {
+            if (!currentDiagnosticTarget) return;
+            const { thoughtId, stepId } = currentDiagnosticTarget;
+            const t = thoughts.find(x => x.id === thoughtId);
+            if (!t) return;
+            const s = (t.steps || []).find(x => x.id === stepId);
+            if (!s) return;
+
+            const newSlot = document.getElementById('diagNewTimeSlot').value;
+            s.stepTimeSlot = newSlot;
+            saveData();
+            render();
+            closeHabitDiagnosticModal();
+            showToast(`✅ 已將「${s.text}」執行時段調整為【${newSlot}】！`, 'success');
+        }
+
+        function toggleStep(thoughtId, stepId) {
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
 
@@ -2831,14 +3442,17 @@ function updateContainerWidth() {
                         });
                     }
                     saveData();
-                    alert(`🎉 步驟「${s.text}」已完成本次 (${oldDate})！\n\n✅ 本次完成紀錄與工時已如實保留。\n🔄 [${recLabel}] 已自動為您建立下一次待辦步驟：${nextDate}`);
+                    render();
+                    showToast(`步驟「${s.text}」已完成本次 (${oldDate})！\n🔄 [${recLabel}] 已自動建立下一次待辦：${nextDate}`, 'success');
                     return;
                 }
                 saveData();
+                render();
             } else {
                 s.done = false;
                 delete s.completedDate;
                 saveData();
+                render();
             }
         }
 
@@ -4592,6 +5206,7 @@ function renderTimelineMatrix(container) {
             const isDone = s.done;
             const isRecurring = s.recurrence && s.recurrence !== 'none';
             const hasLinked = s.linkedThoughtId && thoughts.find(x => x.id === s.linkedThoughtId);
+            const stepFailStats = isRecurring ? calculateStepFailRate(parentGoal, s) : null;
 
             return `
                 <div class="flex items-center justify-between p-2 rounded-xl text-xs border transition-all ${
@@ -4608,6 +5223,7 @@ function renderTimelineMatrix(container) {
                     <div class="flex items-center gap-1.5 text-[10px] shrink-0 ml-2 flex-wrap">
                         ${s.stepDate ? `<span class="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-medium">📅 ${s.stepDate}</span>` : ''}
                         ${isRecurring ? `<span class="bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 px-1.5 py-0.5 rounded font-medium">🔄 ${getRecurrenceLabel(s.recurrence)}</span>` : ''}
+                        ${stepFailStats && stepFailStats.isHighFail && !isDone ? `<button type="button" onclick="openHabitDiagnosticModal(${parentGoal.id}, ${s.id})" class="text-[10px] font-bold bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded hover:bg-rose-100 transition-colors cursor-pointer flex items-center gap-0.5" title="近14天失敗率 ${stepFailStats.percent}%，點擊開啟診斷調整"><span>⚠️ 失敗率 ${stepFailStats.percent}%</span><span>💡</span></button>` : ''}
                         ${s.stepTime ? `<span class="bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded font-medium">⏱️ ${s.stepTime}</span>` : ''}
                         ${hasLinked ? `<span onclick="jumpToGoalCard(${s.linkedThoughtId})" class="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold cursor-pointer" title="點擊跳轉至拆解目標卡片">🌱 拆解目標 🔗</span>` : ''}
                     </div>
@@ -5856,6 +6472,7 @@ function render() {
     syncLinkedData();
     updateContainerWidth();
     renderWeeklyStatsPanel();
+    renderDailyRoutineHub(); // 【v5.3.13 今日習慣打卡專區】
 
     const container = document.getElementById('mainContentList');
     if (!container) return;
@@ -5895,5 +6512,8 @@ window.addEventListener('resize', () => {
     }, 300);
 });
 </script>
+
+    <!-- 輕量浮動通知容器 (Toast Container) -->
+    <div id="lsToastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
 </body>
 </html>
