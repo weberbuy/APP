@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.13-test (今日習慣打卡專區、一鍵批次完成、輕量通知與近14天失敗率>50%習慣健康診斷調整版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.14-test (跨模式跳轉雙軌返回機制：右下角懸浮回上一步、卡片直覺麵包屑、儲存並返回與捲動高度平滑還原版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -782,11 +782,20 @@
         <div id="mainContentList" class="space-y-6"></div>
     </div>
 
-    <!-- 懸浮回到頂部按鈕 (滾動超過 250px 時平滑浮現) -->
-    <button id="btnScrollToTop" type="button" onclick="scrollToPageTop()" class="fixed bottom-6 right-6 z-50 px-3.5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg transition-all duration-300 transform translate-y-16 opacity-0 pointer-events-none flex items-center justify-center gap-1.5 cursor-pointer select-none border border-indigo-400" title="回到頂部">
-        <span class="text-sm font-bold">▲</span>
-        <span class="text-xs font-bold">回頂部</span>
-    </button>
+    <!-- 懸浮快捷按鈕群 (回到頂部 & 【v5.3.14 跨模式返回上一步】) -->
+    <div id="floatingActionGroup" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2.5 pointer-events-none">
+        <!-- 跨模式返回上一步按鈕 (有跳轉來源時智慧浮現) -->
+        <button id="btnReturnToPrevious" type="button" onclick="returnToPreviousView()" class="pointer-events-auto px-4 py-2.5 rounded-2xl bg-slate-900/90 hover:bg-slate-900 dark:bg-indigo-600/90 dark:hover:bg-indigo-600 text-white shadow-xl transition-all duration-300 transform translate-y-8 opacity-0 pointer-events-none flex items-center justify-center gap-2 cursor-pointer select-none border border-slate-700 dark:border-indigo-400 backdrop-blur-xs hover:scale-105 active:scale-95 shadow-indigo-900/30" title="回到跳轉前的視圖與位置">
+            <span class="text-sm font-bold">↩️</span>
+            <span id="btnReturnToPreviousLabel" class="text-xs font-black">返回上一步</span>
+        </button>
+
+        <!-- 懸浮回到頂部按鈕 (滾動超過 250px 時平滑浮現) -->
+        <button id="btnScrollToTop" type="button" onclick="scrollToPageTop()" class="pointer-events-auto px-3.5 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg transition-all duration-300 transform translate-y-16 opacity-0 pointer-events-none flex items-center justify-center gap-1.5 cursor-pointer select-none border border-indigo-400 hover:scale-105 active:scale-95" title="回到頂部">
+            <span class="text-sm font-bold">▲</span>
+            <span class="text-xs font-bold">回頂部</span>
+        </button>
+    </div>
     <script>
 window.onerror = function(msg, url, line, col, error) {
 
@@ -1454,8 +1463,113 @@ async function checkAndAutoSyncFromPi() {
 }
 
 function jumpToCardsCategory(cat) {
+            recordNavigationReturnPoint();
             activeCategory = cat;
             setViewMode('cards');
+        }
+
+        // ============================================================
+        // 【v5.3.14 跨模式跳轉導航歷史與返回上一步核心】
+        // ============================================================
+
+        let navigationReturnState = null;
+
+        function recordNavigationReturnPoint(customLabel = '') {
+            // 僅在非看板模式 (總覽/Forteller/時間軸) 跳轉至看板時記錄來源
+            if (typeof viewMode !== 'undefined' && viewMode === 'cards') return;
+
+            let label = customLabel;
+            if (!label) {
+                if (viewMode === 'timeline') {
+                    label = '時間軸模式';
+                } else if (viewMode === 'overview') {
+                    if (typeof overviewSubMode !== 'undefined') {
+                        if (overviewSubMode === 'forteller') label = 'Forteller 模式';
+                        else if (overviewSubMode === 'mindmap') label = '心智圖模式';
+                        else if (overviewSubMode === 'matrix') label = '對照矩陣';
+                        else label = '總覽模式';
+                    } else {
+                        label = '總覽模式';
+                    }
+                } else {
+                    label = '上一頁';
+                }
+            }
+
+            navigationReturnState = {
+                viewMode: viewMode,
+                overviewSubMode: typeof overviewSubMode !== 'undefined' ? overviewSubMode : 'grid',
+                scrollY: (typeof window !== 'undefined') ? (window.scrollY || window.pageYOffset || 0) : 0,
+                activeCategory: typeof activeCategory !== 'undefined' ? activeCategory : '全部',
+                label: label,
+                timestamp: Date.now()
+            };
+
+            // 支援手機原生歷史返回 (Browser History API)
+            if (typeof history !== 'undefined' && history.pushState) {
+                try {
+                    history.pushState({ lsReturn: true }, '');
+                } catch(e) {}
+            }
+
+            updateReturnButtonUI();
+        }
+
+        function updateReturnButtonUI() {
+            const btn = document.getElementById('btnReturnToPrevious');
+            const labelEl = document.getElementById('btnReturnToPreviousLabel');
+            if (!btn) return;
+
+            if (navigationReturnState && viewMode === 'cards') {
+                if (labelEl) labelEl.textContent = `返回 ${navigationReturnState.label}`;
+                btn.classList.remove('translate-y-8', 'opacity-0', 'pointer-events-none');
+                btn.classList.add('translate-y-0', 'opacity-100');
+            } else {
+                btn.classList.add('translate-y-8', 'opacity-0', 'pointer-events-none');
+                btn.classList.remove('translate-y-0', 'opacity-100');
+            }
+        }
+
+        function returnToPreviousView() {
+            if (!navigationReturnState) return;
+
+            const state = navigationReturnState;
+            navigationReturnState = null;
+            updateReturnButtonUI();
+
+            // 還原模式與子模式
+            viewMode = state.viewMode;
+            if (state.overviewSubMode && typeof overviewSubMode !== 'undefined') {
+                overviewSubMode = state.overviewSubMode;
+            }
+            if (state.activeCategory && typeof activeCategory !== 'undefined') {
+                activeCategory = state.activeCategory;
+            }
+
+            // 重設編輯狀態
+            editingId = null;
+            editingStepIdKey = null;
+
+            // 重新切換並渲染目標視圖
+            setViewMode(state.viewMode);
+
+            // 平滑捲動回跳轉前的精確高度
+            setTimeout(() => {
+                if (typeof window !== 'undefined' && window.scrollTo) {
+                    window.scrollTo({ top: state.scrollY || 0, behavior: 'smooth' });
+                }
+            }, 80);
+
+            showToast(`↩️ 已返回至「${state.label}」！`, 'info');
+        }
+
+        // 手機原生手勢返回監聽 (popstate)
+        if (typeof window !== 'undefined') {
+            window.addEventListener('popstate', (e) => {
+                if (navigationReturnState && viewMode === 'cards') {
+                    returnToPreviousView();
+                }
+            });
         }
 
         function jumpToGoalCard(thoughtId) {
@@ -1468,6 +1582,7 @@ function jumpToCardsCategory(cat) {
                 localStorage.setItem('hide_completed_goals_cards', 'false');
             }
             editingId = null;
+            recordNavigationReturnPoint();
             editingStepIdKey = null;
             setViewMode('cards');
             setTimeout(() => {
@@ -1493,6 +1608,7 @@ function jumpToCardsCategory(cat) {
                 localStorage.setItem('hide_completed_goals_cards', 'false');
             }
             editingId = thoughtId;
+            recordNavigationReturnPoint();
             editingStepIdKey = null;
             setViewMode('cards');
             setTimeout(() => {
@@ -2248,7 +2364,11 @@ function updateContainerWidth() {
         function setCategory(cat) { document.getElementById('categoryInput').value = cat; }
 
         function setViewMode(mode) {
+            if (navigationReturnState && mode !== 'cards' && mode !== navigationReturnState.viewMode) {
+                navigationReturnState = null;
+            }
             viewMode = mode;
+            updateReturnButtonUI();
 
             const btnOverview = document.getElementById('btnViewOverview');
             const btnCards = document.getElementById('btnViewCards');
@@ -5402,6 +5522,7 @@ function renderTimelineMatrix(container) {
 
         function jumpToCardsViewWithBacklog() {
             activeCategory = '全部'; // 自動切換至「全部」領域分頁，確保所有冰存目標立即可見
+            recordNavigationReturnPoint();
             showBacklogCards = true;
             setViewMode('cards'); // 呼叫 setViewMode 正確切換最上方分頁高亮選取樣式
             setTimeout(() => {
@@ -6020,10 +6141,13 @@ const card = document.createElement('div');
                         return `
                             <li id="step-item-${thought.id}-${s.id}" class="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[11px] font-bold text-amber-800">✏️ 編輯步驟</span>
+                                    <span class="text-[11px] font-bold text-amber-800 dark:text-amber-300">✏️ 編輯步驟</span>
                                     <div class="flex gap-1">
-                                        <button onclick="cancelEditStep()" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded">取消</button>
-                                        <button onclick="saveEditStep(${thought.id}, ${s.id})" class="text-[10px] bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded shadow-sm">💾 儲存</button>
+                                        <button onclick="cancelEditStep()" class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 py-1 rounded cursor-pointer">取消</button>
+                                        <button onclick="saveEditStep(${thought.id}, ${s.id})" class="text-[10px] bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded shadow-sm cursor-pointer">💾 儲存</button>
+                                        ${navigationReturnState ? `
+                                            <button type="button" onclick="saveEditStep(${thought.id}, ${s.id}); returnToPreviousView();" class="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm cursor-pointer">💾 儲存並返回</button>
+                                        ` : ''}
                                     </div>
                                 </div>
                                 <input type="text" id="edit-step-text-${thought.id}-${s.id}" value="${s.text.replace(/"/g, '\&quot;')}" class="w-full px-2.5 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500">
@@ -6164,11 +6288,26 @@ const card = document.createElement('div');
                 if (isEdit) {
                     card.innerHTML = `
                         <div class="p-5 bg-amber-50/40 border-b border-amber-200/60 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">✏️ 正在編輯 #${index + 1}</span>
-                                <div class="flex gap-2">
-                                    <button onclick="cancelEdit()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg font-medium">取消</button>
-                                    <button onclick="saveEdit(${thought.id})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-lg font-medium shadow-sm">💾 儲存修改</button>
+                            ${navigationReturnState ? `
+                                <div class="p-2.5 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200 dark:border-indigo-800 flex items-center justify-between text-xs transition-all mb-2">
+                                    <span class="font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
+                                        <span>📍 來自【${navigationReturnState.label}】跳轉</span>
+                                    </span>
+                                    <button type="button" onclick="returnToPreviousView()" class="font-bold bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-700 transition-colors shadow-2xs cursor-pointer flex items-center gap-1">
+                                        <span>↩️ 點此返回原模式</span>
+                                    </button>
+                                </div>
+                            ` : ''}
+                            <div class="flex items-center justify-between flex-wrap gap-2">
+                                <span class="text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950 px-2.5 py-0.5 rounded-full">✏️ 正在編輯 #${index + 1}</span>
+                                <div class="flex gap-2 flex-wrap">
+                                    <button onclick="cancelEdit()" class="text-xs bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg font-medium cursor-pointer">取消</button>
+                                    <button onclick="saveEdit(${thought.id})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-lg font-medium shadow-sm cursor-pointer">💾 儲存修改</button>
+                                    ${navigationReturnState ? `
+                                        <button type="button" onclick="saveEdit(${thought.id}); returnToPreviousView();" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-lg font-bold shadow-sm transition-colors cursor-pointer flex items-center gap-1">
+                                            <span>💾 儲存並返回</span>
+                                        </button>
+                                    ` : ''}
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -6473,6 +6612,7 @@ function render() {
     updateContainerWidth();
     renderWeeklyStatsPanel();
     renderDailyRoutineHub(); // 【v5.3.13 今日習慣打卡專區】
+    updateReturnButtonUI(); // 【v5.3.14 更新返回按鈕狀態】
 
     const container = document.getElementById('mainContentList');
     if (!container) return;
