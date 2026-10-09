@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.11.12-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.12.0-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.11.12-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.12.0-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -473,10 +473,14 @@
     <div class="space-y-3.5">
       <!-- 7 Feature Modes Bar (Independent full-width row with elegant 7-col grid on PC / smooth scroll on mobile) -->
       <div class="bg-slate-200/80 dark:bg-slate-800/90 p-1.5 sm:p-2 rounded-2xl shadow-sm border border-slate-300/70 dark:border-slate-700/80">
-        <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar md:grid md:grid-cols-8 text-xs sm:text-sm">
+        <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar md:grid md:grid-cols-9 text-xs sm:text-sm">
           <button onclick="switchMode('map')" id="tabMap" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 active-tab shadow-sm bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold ring-1 ring-rose-400/40 whitespace-nowrap cursor-pointer">
             <span class="text-sm sm:text-base">🗺️</span>
             <span>冒險地圖</span>
+          </button>
+          <button onclick="switchMode('phonics')" id="tabPhonics" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer">
+            <span class="text-sm sm:text-base">🔤</span>
+            <span>子母音</span>
           </button>
           <button onclick="switchMode('card')" id="tabCard" class="w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer">
             <span class="text-sm sm:text-base">🐾</span>
@@ -771,6 +775,40 @@
 
       </div>
     </div>
+
+    <!-- ==================== MODE PHONICS: PHONICS & KK MASTER (自然發音與音標教室) ==================== -->
+    <section id="modePhonics" class="hidden space-y-5">
+      <!-- 1. Header Banner -->
+      <div class="bg-gradient-to-r from-rose-500 via-pink-500 to-indigo-600 rounded-3xl p-5 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🔤</span>
+            <h2 class="text-lg sm:text-xl font-black tracking-wide">子母音發音基礎教室</h2>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-xs">Phonics ＆ KK 雙軌</span>
+          </div>
+          <p class="text-xs text-white/80">自然發音字母拼讀 ✕ KK 音標精準嘴型要訣，奠定會考 1200 單字發音與拼字最強基本功喵！🐾</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="WordCheckingPhonics.startQuiz()" class="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-2xl text-xs font-black transition border border-white/30 flex items-center gap-1.5 cursor-pointer shadow-sm">
+            <span>🎧</span>
+            <span>聽音辨音測驗</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Minimal Pairs Listening Quiz Box (聽音辨音微測驗) -->
+      <div id="phonicsQuizBox"></div>
+
+      <!-- 3. Category Filter Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" id="phonicsCategoryButtons">
+        <!-- Rendered by WordCheckingPhonics.init() -->
+      </div>
+
+      <!-- 4. Interactive Phonics & KK Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="phonicsCardGrid">
+        <!-- Rendered by WordCheckingPhonics.init() -->
+      </div>
+    </section>
 
     <section id="modeCard" class="hidden space-y-4">
       <!-- Card Mode Header: Study Order Selector & Helper Notice -->
@@ -6838,7 +6876,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.11.12-test",
+        version: "2.12.0-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -7274,647 +7312,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
     // <<<<<<<<<< [MODULE END: 06_pi_sync.js] <<<<<<<<<<
-
-
-    // >>>>>>>>>> [MODULE START: 07_main_init.js] >>>>>>>>>>
-
-    document.addEventListener('DOMContentLoaded', () => {
-      try { initTheme(); } catch (e) { console.warn('initTheme error:', e); }
-      try {
-        syncStudyOrderUI(currentCardOrder);
-      } catch (e) {}
-      try {
-        const fc = document.getElementById('fishCount');
-        if (fc) fc.innerText = fishCount;
-      } catch (e) {}
-      try { initSpeechRecognition(); } catch (e) {}
-      try { initPiSyncUI(); } catch (e) {}
-      try { updateCatGrowthUI(); } catch (e) {}
-      try { updateCatGrowthMorph(currentCatLevel); } catch (e) {}
-      try { if (typeof loadCatWardrobe === 'function') loadCatWardrobe(); if (typeof renderCatAccessories === 'function') renderCatAccessories(); } catch (e) {}
-      try { if (typeof ScreenPet !== 'undefined') ScreenPet.init(); } catch (e) {}
-
-      // Initialize Adventure Map Mode with hooks
-      try {
-        if (window.WordCheckingAdventure) {
-          WordCheckingAdventure.initAdventureMap({
-            rawVocabList: RAW_VOCAB,
-            hooks: {
-              getFishCount: () => fishCount,
-              addFish: (n) => {
-                fishCount += n;
-                localStorage.setItem(FISH_STORAGE_KEY, fishCount);
-                const fc = document.getElementById('fishCount');
-                if (fc) fc.innerText = fishCount;
-                const wfc = document.getElementById('wardrobeFishCount');
-                if (wfc) wfc.innerText = fishCount;
-              },
-              addAffection: (n) => gainAffection(n),
-              playAudio: (word) => playVoiceText(word),
-              playCheerSound: () => playCatCheerSound(),
-              playMeowSound: () => playCatMeowSound(),
-              saySpeech: (text, tag) => sayCatSpeech(text, tag),
-              triggerSaveToPi: () => triggerAutoSaveToPi()
-            }
-          });
-          WordCheckingAdventure.renderAdventureMap();
-        }
-      } catch (e) {
-        console.warn('initAdventureMap error:', e);
-      }
-
-      // ALWAYS load current theme data from Web Server!
-      loadThemeData(currentThemeKey);
-      try { checkAndAutoSyncFromPi(true); } catch (e) {}
-
-      if (typeof isMimiHungry === 'function' && isMimiHungry()) {
-        const hungrySpeech = HUNGRY_CAT_SPEECHES[Math.floor(Math.random() * HUNGRY_CAT_SPEECHES.length)];
-        sayCatSpeech(hungrySpeech, "肚子扁扁想妳中 🐾");
-      }
-
-      // Keyboard shortcuts for Flashcard and Quiz / Spelling / Speaking Answered Navigation
-      document.addEventListener('keydown', (e) => {
-        const activeMode = getActiveMode();
-        if (activeMode === 'card') {
-          if (e.code === 'Space') {
-            e.preventDefault();
-            flipCard();
-          } else if (e.code === 'ArrowRight') {
-            nextCard();
-          } else if (e.code === 'ArrowLeft') {
-            prevCard();
-          }
-        } else if (e.code === 'Space') {
-          // If in Quiz mode and feedback is displayed -> jump to next question
-          if (activeMode === 'quiz') {
-            const fb = document.getElementById('quizFeedback');
-            if (fb && !fb.classList.contains('hidden')) {
-              e.preventDefault();
-              if (document.activeElement && typeof document.activeElement.blur === 'function') {
-                document.activeElement.blur();
-              }
-              nextQuizQuestion();
-            }
-          }
-          // If in Spelling mode and feedback is displayed -> jump to next question
-          else if (activeMode === 'spelling') {
-            const fb = document.getElementById('spellFeedback');
-            if (fb && !fb.classList.contains('hidden')) {
-              e.preventDefault();
-              if (document.activeElement && typeof document.activeElement.blur === 'function') {
-                document.activeElement.blur();
-              }
-              nextSpellQuestion();
-            }
-          }
-          // If in Speaking mode and feedback is displayed -> jump to next question (safely blur micBtn!)
-          else if (activeMode === 'speaking') {
-            const fb = document.getElementById('speakFeedback');
-            if (fb && !fb.classList.contains('hidden')) {
-              e.preventDefault();
-              e.stopPropagation();
-              if (document.activeElement && typeof document.activeElement.blur === 'function') {
-                document.activeElement.blur();
-              }
-              const micBtn = document.getElementById('micBtn');
-              if (micBtn && typeof micBtn.blur === 'function') {
-                micBtn.blur();
-              }
-              nextSpeakQuestion();
-            } else {
-              // Safety: If speaking is active but not answered yet, never let Space trigger focused micBtn!
-              const micBtn = document.getElementById('micBtn');
-              if (document.activeElement === micBtn) {
-                e.preventDefault();
-                micBtn.blur();
-              }
-            }
-          }
-        }
-      });
-    });
-
-    function getActiveMode() {
-      const modeMap = document.getElementById('modeMap');
-      if (modeMap && !modeMap.classList.contains('hidden')) return 'map';
-      if (!document.getElementById('modeCard').classList.contains('hidden')) return 'card';
-      if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
-      if (!document.getElementById('modeSpelling').classList.contains('hidden')) return 'spelling';
-      if (!document.getElementById('modeSpeaking').classList.contains('hidden')) return 'speaking';
-      if (!document.getElementById('modeExam').classList.contains('hidden')) return 'exam';
-      const mRain = document.getElementById('modeRain');
-      if (mRain && !mRain.classList.contains('hidden')) return 'rain';
-      return 'list';
-    }
-
-    function initTheme() {
-      const isDark = localStorage.getItem('theme') === 'dark' ||
-                     (!('theme' in localStorage) && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-
-      const toggleBtn = document.getElementById('themeToggle');
-      if (toggleBtn) {
-        toggleBtn.onclick = () => {
-          document.documentElement.classList.toggle('dark');
-          const darkActive = document.documentElement.classList.contains('dark');
-          localStorage.setItem('theme', darkActive ? 'dark' : 'light');
-        };
-      }
-    }
-
-    function onScopeChange() {
-      currentScope = document.getElementById('scopeFilter').value;
-      updateFilteredList();
-      filteredList = applyCardOrder(filteredList);
-      currentIndex = 0;
-      renderCurrentCard();
-      renderStats();
-      if (getActiveMode() === 'quiz') startNewQuiz();
-      if (getActiveMode() === 'spelling') startNewSpelling();
-      if (getActiveMode() === 'speaking') startNewSpeaking();
-      if (getActiveMode() === 'list') renderWordTable();
-    }
-
-    function syncStudyOrderUI(val) {
-      currentCardOrder = val || 'default';
-      localStorage.setItem('wordchecking_card_order', currentCardOrder);
-      const sel = document.getElementById('cardOrderSelect');
-      const topSel = document.getElementById('topStudyOrderSelect');
-      if (sel && sel.value !== currentCardOrder) sel.value = currentCardOrder;
-      if (topSel && topSel.value !== currentCardOrder) topSel.value = currentCardOrder;
-    }
-
-    function onCardOrderChange() {
-      const sel = document.getElementById('cardOrderSelect');
-      if (sel) syncStudyOrderUI(sel.value);
-      applyOrderAndRefreshActiveMode();
-    }
-
-    function onGlobalStudyOrderChange() {
-      const topSel = document.getElementById('topStudyOrderSelect');
-      if (topSel) syncStudyOrderUI(topSel.value);
-      applyOrderAndRefreshActiveMode();
-    }
-
-    function applyOrderAndRefreshActiveMode() {
-      // 1. Re-filter and sort list
-      updateFilteredList();
-
-      // 2. Card mode: immediately jump to the first matching card & render!
-      currentIndex = 0;
-      renderCurrentCard();
-
-      // 3. If in other modes, immediately refresh the current question!
-      const activeMode = getActiveMode();
-      if (activeMode === 'quiz') startNewQuiz();
-      else if (activeMode === 'spelling') startNewSpelling();
-      else if (activeMode === 'speaking') startNewSpeaking();
-
-      if (currentCardOrder === 'newFirst') {
-        sayCatSpeech("已切換為【✨ 優先練習新單字】！咪咪先把未背過的新單字排到第一順位～🐾", "學習順序");
-      } else if (currentCardOrder === 'newAndWeakFirst') {
-        sayCatSpeech("已切換為【🔥 優先練習新單字和待加強單字】！新單字與易錯單字排在最前線全力特訓～🐾", "學習順序");
-      } else {
-        sayCatSpeech("已恢復【預設順序】！依單字編號循序練習喵～🐾", "學習順序");
-      }
-    }
-
-    function applyCardOrder(list) {
-      if (!list || list.length <= 1) return list;
-      const order = currentCardOrder || 'default';
-      if (order === 'default') {
-        return [...list].sort((a, b) => (a.num || 0) - (b.num || 0));
-      }
-      if (order === 'newFirst') {
-        // 優先練習新單字：!userProgress[key] 排前面，其餘排後面；同等級內維持編號順序
-        return [...list].sort((a, b) => {
-          const aKey = a.word || a.num;
-          const bKey = b.word || b.num;
-          const aNew = !userProgress[aKey];
-          const bNew = !userProgress[bKey];
-          if (aNew && !bNew) return -1;
-          if (!aNew && bNew) return 1;
-          return (a.num || 0) - (b.num || 0);
-        });
-      }
-      if (order === 'newAndWeakFirst') {
-        // 優先練習新單字和待加強單字：
-        // 第一梯隊：新單字 (!st) 與 待加強 ('weak')
-        // 第二梯隊：初步熟悉 ('familiar')
-        // 第三梯隊：完全掌握 ('mastered')
-        const getPriority = (item) => {
-          const key = item.word || item.num;
-          const st = userProgress[key];
-          if (!st) return 1; // 新單字
-          if (st === 'weak') return 1; // 待加強
-          if (st === 'familiar') return 2; // 初步熟悉
-          if (st === 'mastered') return 3; // 完全掌握
-          return 1;
-        };
-        return [...list].sort((a, b) => {
-          const pA = getPriority(a);
-          const pB = getPriority(b);
-          if (pA !== pB) return pA - pB;
-          return (a.num || 0) - (b.num || 0);
-        });
-      }
-      return list;
-    }
-
-    function updateFilteredList() {
-      if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
-        filteredList = [];
-        return;
-      }
-
-      if (currentScope === 'all') {
-        filteredList = [...RAW_VOCAB];
-      } else if (currentScope === 'weak') {
-        filteredList = RAW_VOCAB.filter(x => userProgress[x.word || x.num] === 'weak');
-        if (filteredList.length === 0) {
-          alert('喵～目前沒有標記為「待加強」的單字！咪咪為您自動切換回全部單字。');
-          document.getElementById('scopeFilter').value = 'all';
-          currentScope = 'all';
-          filteredList = [...RAW_VOCAB];
-        }
-      } else if (currentScope === 'familiar') {
-        filteredList = RAW_VOCAB.filter(x => userProgress[x.word || x.num] === 'familiar');
-        if (filteredList.length === 0) {
-          alert('喵～目前沒有標記為「熟悉中」的單字！咪咪為您自動切換回全部單字。');
-          document.getElementById('scopeFilter').value = 'all';
-          currentScope = 'all';
-          filteredList = [...RAW_VOCAB];
-        }
-      } else if (currentThemeKey === 'numbers') {
-        if (currentScope === '1-12') {
-          filteredList = RAW_VOCAB.filter(x => x.num <= 12);
-        } else if (currentScope === '13-19') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 13 && x.num <= 19);
-        } else if (currentScope === '20-99') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 20 && x.num <= 99);
-        } else if (currentScope === 'tens') {
-          filteredList = RAW_VOCAB.filter(x => x.num % 10 === 0 && x.num >= 20 && x.num <= 90);
-        } else {
-          filteredList = [...RAW_VOCAB];
-        }
-      } else if (currentThemeKey === 'all1200') {
-        if (currentScope === '1-150') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 1 && x.num <= 150);
-        } else if (currentScope === '151-400') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 151 && x.num <= 400);
-        } else if (currentScope === '401-750') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 401 && x.num <= 750);
-        } else if (currentScope === '751-1050') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 751 && x.num <= 1050);
-        } else if (currentScope === '1051-1200') {
-          filteredList = RAW_VOCAB.filter(x => x.num >= 1051 && x.num <= 1200);
-        } else if (currentScope.startsWith('cat:')) {
-          const targetCat = currentScope.replace('cat:', '');
-          filteredList = RAW_VOCAB.filter(x => (
-            x.category === targetCat ||
-            (targetCat === '動物與寵物' && (x.category === '動物與昆蟲' || x.category === '動物與寵物')) ||
-            (targetCat === '常用動詞' && (x.category === '核心動詞' || x.category === '常用動詞')) ||
-            (targetCat === '形容詞與副詞' && (x.category === '修飾與語法詞' || x.category === '形容詞與副詞')) ||
-            (targetCat === '代名詞與文法詞' && (x.category === '代名詞與文法詞' || x.category === '修飾與語法詞'))
-          ));
-        } else {
-          filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
-        }
-        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
-      } else {
-        // Filter by category name
-        filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
-        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
-      }
-
-      // CRITICAL: Always apply user-selected study order to filteredList!
-      filteredList = applyCardOrder(filteredList);
-    }
-
-    function renderStats() {
-      let mastered = 0;
-      let familiar = 0;
-      let weak = 0;
-      const total = RAW_VOCAB.length;
-
-      RAW_VOCAB.forEach(item => {
-        const key = item.word || item.num;
-        const s = userProgress[key];
-        if (s === 'mastered') mastered++;
-        else if (s === 'familiar') familiar++;
-        else if (s === 'weak') weak++;
-      });
-
-      if (document.getElementById('statTotal')) document.getElementById('statTotal').innerText = total;
-      if (document.getElementById('statMastered')) document.getElementById('statMastered').innerText = mastered;
-      if (document.getElementById('statFamiliar')) document.getElementById('statFamiliar').innerText = familiar;
-      if (document.getElementById('statWeak')) document.getElementById('statWeak').innerText = weak;
-
-      const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
-      const pTextEl = document.getElementById('progressText');
-      if (pTextEl) {
-        pTextEl.innerText = `${pct}% (✨${mastered} | 🌱${familiar} / ${total})`;
-      }
-      if (document.getElementById('progressBarMastered')) {
-        document.getElementById('progressBarMastered').style.width = total > 0 ? `${(mastered / total) * 100}%` : '0%';
-      }
-      if (document.getElementById('progressBarFamiliar')) {
-        document.getElementById('progressBarFamiliar').style.width = total > 0 ? `${(familiar / total) * 100}%` : '0%';
-      }
-      if (document.getElementById('progressBarWeak')) {
-        document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
-      }
-
-      const catFavor = document.getElementById('catFavorText');
-      if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
-      else if (pct < 50) catFavor.innerText = "（友善踏踏貓 🐱）";
-      else if (pct < 80) catFavor.innerText = "（默契好學伴 ✨）";
-      else catFavor.innerText = "（滿分神喵喵 👑）";
-
-      if (quizStats.total > 0) {
-        const acc = Math.round((quizStats.correct / quizStats.total) * 100);
-        document.getElementById('statAccuracy').innerText = `${acc}%`;
-      } else {
-        document.getElementById('statAccuracy').innerText = '--%';
-      }
-
-      // ==================== SCOPE & WORD TABLE BREAKDOWN ====================
-      const targetList = (filteredList && filteredList.length > 0) ? filteredList : RAW_VOCAB;
-      const scopeTotal = targetList ? targetList.length : 0;
-      let scopeMastered = 0;
-      let scopeFamiliar = 0;
-      let scopeWeak = 0;
-      let scopeNew = 0;
-
-      if (targetList && targetList.length > 0) {
-        targetList.forEach(item => {
-          const key = item.word || item.num;
-          const s = userProgress[key];
-          if (s === 'mastered') scopeMastered++;
-          else if (s === 'familiar') scopeFamiliar++;
-          else if (s === 'weak') scopeWeak++;
-          else scopeNew++;
-        });
-      }
-
-      const sMasteredPct = scopeTotal > 0 ? Math.round((scopeMastered / scopeTotal) * 100) : 0;
-      const sFamiliarPct = scopeTotal > 0 ? Math.round((scopeFamiliar / scopeTotal) * 100) : 0;
-      const sWeakPct = scopeTotal > 0 ? Math.round((scopeWeak / scopeTotal) * 100) : 0;
-      const sNewPct = Math.max(0, 100 - sMasteredPct - sFamiliarPct - sWeakPct);
-
-      // Update Word Table Breakdown Card (Top of modeList)
-      const tTotal = document.getElementById('tableStatTotal');
-      const tM = document.getElementById('tableStatMastered');
-      const tMPct = document.getElementById('tableStatMasteredPct');
-      const tF = document.getElementById('tableStatFamiliar');
-      const tFPct = document.getElementById('tableStatFamiliarPct');
-      const tW = document.getElementById('tableStatWeak');
-      const tWPct = document.getElementById('tableStatWeakPct');
-      const tN = document.getElementById('tableStatNew');
-      const tNPct = document.getElementById('tableStatNewPct');
-
-      if (tTotal) tTotal.innerText = scopeTotal;
-      if (tM) tM.innerText = scopeMastered;
-      if (tMPct) tMPct.innerText = `${sMasteredPct}%`;
-      if (tF) tF.innerText = scopeFamiliar;
-      if (tFPct) tFPct.innerText = `${sFamiliarPct}%`;
-      if (tW) tW.innerText = scopeWeak;
-      if (tWPct) tWPct.innerText = `${sWeakPct}%`;
-      if (tN) tN.innerText = scopeNew;
-      if (tNPct) tNPct.innerText = `${sNewPct}%`;
-
-      const tBarM = document.getElementById('tableBarMastered');
-      const tBarF = document.getElementById('tableBarFamiliar');
-      const tBarW = document.getElementById('tableBarWeak');
-      const tBarN = document.getElementById('tableBarNew');
-
-      if (tBarM) tBarM.style.width = `${sMasteredPct}%`;
-      if (tBarF) tBarF.style.width = `${sFamiliarPct}%`;
-      if (tBarW) tBarW.style.width = `${sWeakPct}%`;
-      if (tBarN) tBarN.style.width = `${sNewPct}%`;
-
-      const scopeNameEl = document.getElementById('tableScopeName');
-      if (scopeNameEl) {
-        const scopeSelect = document.getElementById('scopeFilter');
-        const selectedOpt = scopeSelect && scopeSelect.selectedIndex >= 0 ? scopeSelect.options[scopeSelect.selectedIndex] : null;
-        scopeNameEl.innerText = selectedOpt ? selectedOpt.innerText : '全部單字';
-      }
-
-      updateCatGrowthUI();
-    }
-
-    // Flashcard Rendering
-    function renderCurrentCard() {
-      if (!filteredList || filteredList.length === 0) return;
-      const item = filteredList[currentIndex];
-
-      cardFlipped = false;
-      document.getElementById('flashcardInner').classList.remove('rotate-y-180');
-
-      document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
-      document.getElementById('cardCategory').innerText = item.category || '核心單字';
-
-      // Render mastery status badge on card
-      const itemKey = item.word || item.num;
-      const itemStatus = userProgress[itemKey];
-      const badgeEl = document.getElementById('cardStatusBadge');
-      if (badgeEl) {
-        badgeEl.classList.remove('hidden');
-        if (!itemStatus) {
-          badgeEl.className = 'px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold text-[10px] border border-indigo-200 dark:border-indigo-800';
-          badgeEl.innerText = '✨ 新單字';
-        } else if (itemStatus === 'weak') {
-          badgeEl.className = 'px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold text-[10px] border border-amber-200 dark:border-amber-800';
-          badgeEl.innerText = '🐾 待加強';
-        } else if (itemStatus === 'familiar') {
-          badgeEl.className = 'px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold text-[10px] border border-blue-200 dark:border-blue-800';
-          badgeEl.innerText = '🌱 初步熟悉';
-        } else if (itemStatus === 'mastered') {
-          badgeEl.className = 'px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-200 dark:border-emerald-800';
-          badgeEl.innerText = '✨ 完全掌握';
-        }
-      }
-
-      const digitEl = document.getElementById('cardDigit');
-      digitEl.innerText = item.chinese;
-      digitEl.className = item.chinese.length > 4
-        ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight"
-        : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
-
-      document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${escapeHtml(item.category || '核心單字')}</span>`;
-      document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
-      document.getElementById('cardEnglish').innerText = item.word;
-      document.getElementById('cardPhonetic').innerText = item.kk || '';
-
-      const noteBox = document.getElementById('cardNoteBox');
-      if (item.note) {
-        noteBox.classList.remove('hidden');
-        document.getElementById('cardNote').innerText = item.note;
-      } else {
-        noteBox.classList.add('hidden');
-      }
-
-      const exampleBox = document.getElementById('cardExampleBox');
-      if (item.example) {
-        exampleBox.classList.remove('hidden');
-        document.getElementById('cardExample').innerText = `例句：${item.example}`;
-      } else {
-        exampleBox.classList.add('hidden');
-      }
-
-      if (typeof updateAudioSourceBadge === 'function') {
-        updateAudioSourceBadge('idle');
-      }
-    }
-
-    function flipCard() {
-      cardFlipped = !cardFlipped;
-      const inner = document.getElementById('flashcardInner');
-      if (cardFlipped) {
-        inner.classList.add('rotate-y-180');
-        playVoiceCurrent(1.0);
-        sayCatSpeech(`翻面看拼寫囉！"${filteredList[currentIndex].word}"，記起來了嗎喵？🐾`, "專心看牌");
-      } else {
-        inner.classList.remove('rotate-y-180');
-      }
-    }
-
-    function nextCard() {
-      if (currentIndex < filteredList.length - 1) {
-        currentIndex++;
-      } else {
-        currentIndex = 0;
-      }
-      renderCurrentCard();
-    }
-
-    function prevCard() {
-      if (currentIndex > 0) {
-        currentIndex--;
-      } else {
-        currentIndex = filteredList.length - 1;
-      }
-      renderCurrentCard();
-    }
-
-    function markCurrent(isMastered) {
-      if (!filteredList || filteredList.length === 0) return;
-      const item = filteredList[currentIndex];
-      const key = item.word || item.num;
-      const theme = THEME_REGISTRY[currentThemeKey];
-
-      if (isMastered) {
-        if (userProgress[key] !== 'mastered') {
-          userProgress[key] = 'familiar';
-        }
-      } else {
-        userProgress[key] = 'weak';
-      }
-      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
-
-      if (isMastered) {
-        addFish();
-        playCatMeowSound();
-        if (userProgress[key] === 'mastered') {
-          sayCatSpeech(`太棒了！"${item.word}" 已經完全掌握！送妳 1 條小魚乾 🐟✨`, "開心歡呼");
-        } else {
-          sayCatSpeech(`太棒了！"${item.word}" 已初步熟悉！可到拼字練習挑戰完全掌握喵～🐟`, "開心歡呼");
-        }
-      } else {
-        sayCatSpeech(`沒關係！貓貓幫妳把 "${item.word}" 記在待加強名單，等等多看兩眼喵～🐾`, "貼心鼓勵");
-      }
-      renderStats();
-      gainAffection(2);
-      touchMimiInteraction();
-      updateCatGrowthUI();
-      triggerAutoSaveToPi();
-      nextCard();
-    }
-
-    // Note: playVoiceText and playVoiceCurrent are provided globally by 00_audio_engine.js with MP3 priority & fallback
-
-    // Mode Switching
-    function switchMode(mode) {
-      // 模式切換時，若有未同步進度，立即觸發一次保底同步
-      if (typeof flushPendingSyncToPi === 'function') {
-        flushPendingSyncToPi();
-      } else if (typeof triggerAutoSaveToPi === 'function') {
-        triggerAutoSaveToPi(true);
-      }
-      const modes = ['map', 'card', 'quiz', 'spelling', 'speaking', 'exam', 'list', 'rain'];
-      modes.forEach(m => {
-        const sec = document.getElementById('mode' + capitalize(m));
-        const tab = document.getElementById('tab' + capitalize(m));
-        if (sec && tab) {
-          if (m === mode) {
-            sec.classList.remove('hidden');
-            tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 active-tab shadow-sm bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold ring-1 ring-rose-400/40 whitespace-nowrap cursor-pointer";
-          } else {
-            sec.classList.add('hidden');
-            if (m === 'exam') {
-              tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-amber-700 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 hover:bg-amber-200/80 dark:hover:bg-amber-900/60 flex items-center justify-center space-x-1.5 font-semibold whitespace-nowrap cursor-pointer";
-            } else {
-              tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer";
-            }
-          }
-        }
-      });
-
-      if (mode === 'map') {
-        if (window.WordCheckingAdventure) {
-          WordCheckingAdventure.renderAdventureMap();
-        }
-        sayCatSpeech("冒險闖關地圖模式：沿著石板古道漫遊 5 大世界，挑戰 120 關贏取三星與寶箱吧喵！🐾");
-      }
-
-      if (mode === 'card') sayCatSpeech("翻翻卡片模式：看中文想英文，翻面看拼寫與例句喔！🐾");
-      if (mode === 'quiz') startNewQuiz();
-      if (mode === 'spelling') startNewSpelling();
-      if (mode === 'speaking') startNewSpeaking();
-      if (mode === 'exam') initExamSetup();
-      if (mode === 'list') renderWordTable();
-      if (mode === 'rain') {
-        // 點擊方塊雨後平滑捲動至遊戲視窗
-        const rainSec = document.getElementById('modeRain');
-        if (rainSec) {
-          rainSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        if (window.WordCheckingRain) window.WordCheckingRain.initWordRain();
-      } else {
-        if (window.WordCheckingRain) window.WordCheckingRain.stopWordRain();
-      }
-    }
-
-    function capitalize(s) {
-      return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-
-// Auto sync on tab visibility change, focus, and unload
-    window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        checkAndAutoSyncFromPi(true);
-      } else if (document.visibilityState === 'hidden') {
-        // 切換離開分頁或縮小視窗時，若有未同步進度，立即保底同步
-        if (typeof flushPendingSyncToPi === 'function') {
-          flushPendingSyncToPi();
-        }
-      }
-    });
-    window.addEventListener('beforeunload', () => {
-      if (typeof flushPendingSyncToPi === 'function') {
-        flushPendingSyncToPi();
-      }
-    });
-    window.addEventListener('focus', () => {
-      checkAndAutoSyncFromPi(true);
-    });
-
-
-    // <<<<<<<<<< [MODULE END: 07_main_init.js] <<<<<<<<<<
 
 
     // >>>>>>>>>> [MODULE START: 08_word_rain.js] >>>>>>>>>>
@@ -8798,6 +8195,1582 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
 
 
     // <<<<<<<<<< [MODULE END: 08_word_rain.js] <<<<<<<<<<
+
+
+    // >>>>>>>>>> [MODULE START: 09_phonics_master.js] >>>>>>>>>>
+
+// ============================================================================
+// 09_phonics_master.js - 自然發音 (Phonics) 與 KK 音標雙軌發音教室模組
+// ============================================================================
+
+(function(window) {
+  'use strict';
+
+  // 1. 完整子母音雙軌數據表 (Phonics 字母組合 + KK 音標 + 口型要訣 + 代表性會考例字)
+  const PHONICS_CATEGORIES = [
+    { key: 'all', label: '🌟 全部音素', icon: '✨' },
+    { key: 'shortVowels', label: '🍎 短母音', icon: '🅰️' },
+    { key: 'longVowels', label: '👑 長母音與雙母音', icon: '👑' },
+    { key: 'consonants', label: '🔔 單子音 (無聲/有聲)', icon: '🔔' },
+    { key: 'digraphs', label: '🧩 複合子音', icon: '🧩' }
+  ];
+
+  const PHONICS_DATA = [
+    // -------------------------------------------------------------
+    // 一、短母音 (Short Vowels)
+    // -------------------------------------------------------------
+    {
+      id: 'sv_a',
+      category: 'shortVowels',
+      symbol: 'a',
+      kk: '[æ]',
+      name: '蝴蝶音 / 扁唇短母音',
+      tip: '嘴巴張大（上下可容兩指），嘴角向兩邊拉平，舌尖抵住下齒齦，聲音短促清脆。',
+      soundText: 'a',
+      words: [
+        { word: 'cat', kk: '[kæt]', zh: '貓', highlight: 'a' },
+        { word: 'apple', kk: '[ˋæp!]', zh: '蘋果', highlight: 'a' },
+        { word: 'bag', kk: '[bæg]', zh: '提袋', highlight: 'a' },
+        { word: 'map', kk: '[mæp]', zh: '地圖', highlight: 'a' }
+      ]
+    },
+    {
+      id: 'sv_e',
+      category: 'shortVowels',
+      symbol: 'e',
+      kk: '[ɛ]',
+      name: '微笑短母音',
+      tip: '嘴巴微張約一指寬，嘴角放鬆微帶微笑，舌前部微微抬起，音調自然平穩。',
+      soundText: 'eh',
+      words: [
+        { word: 'bed', kk: '[bɛd]', zh: '床', highlight: 'e' },
+        { word: 'egg', kk: '[ɛg]', zh: '蛋', highlight: 'e' },
+        { word: 'pen', kk: '[pɛn]', zh: '原子筆', highlight: 'e' },
+        { word: 'red', kk: '[rɛd]', zh: '紅色', highlight: 'e' }
+      ]
+    },
+    {
+      id: 'sv_i',
+      category: 'shortVowels',
+      symbol: 'i',
+      kk: '[ɪ]',
+      name: '放鬆短母音',
+      tip: '嘴角放鬆微開，舌身放鬆微抬，快速發出介於「一」與「ㄝ」之間的短促音。',
+      soundText: 'ih',
+      words: [
+        { word: 'pig', kk: '[pɪg]', zh: '豬', highlight: 'i' },
+        { word: 'fish', kk: '[fɪʃ]', zh: '魚', highlight: 'i' },
+        { word: 'big', kk: '[bɪg]', zh: '大的', highlight: 'i' },
+        { word: 'sit', kk: '[sɪt]', zh: '坐下', highlight: 'i' }
+      ]
+    },
+    {
+      id: 'sv_o',
+      category: 'shortVowels',
+      symbol: 'o',
+      kk: '[ɑ]',
+      name: '大口短母音',
+      tip: '下巴垂直往下放鬆大開，舌頭放平在口腔底部，發出宏亮的「啊」音。',
+      soundText: 'ah',
+      words: [
+        { word: 'hot', kk: '[hɑt]', zh: '熱的', highlight: 'o' },
+        { word: 'dog', kk: '[dɑg]', zh: '狗', highlight: 'o' },
+        { word: 'box', kk: '[bɑks]', zh: '盒子', highlight: 'o' },
+        { word: 'fox', kk: '[fɑks]', zh: '狐狸', highlight: 'o' }
+      ]
+    },
+    {
+      id: 'sv_u',
+      category: 'shortVowels',
+      symbol: 'u',
+      kk: '[ʌ]',
+      name: '短促頓音 / 尖下巴音',
+      tip: '嘴型半開放鬆，下巴微開，舌身平放中央，短促有力地自喉部彈出「阿」音。',
+      soundText: 'uh',
+      words: [
+        { word: 'cup', kk: '[kʌp]', zh: '杯子', highlight: 'u' },
+        { word: 'sun', kk: '[sʌn]', zh: '太陽', highlight: 'u' },
+        { word: 'bus', kk: '[bʌs]', zh: '公車', highlight: 'u' },
+        { word: 'duck', kk: '[dʌk]', zh: '鴨子', highlight: 'u' }
+      ]
+    },
+    {
+      id: 'sv_schwa',
+      category: 'shortVowels',
+      symbol: 'a / o / u (非重音)',
+      kk: '[ə]',
+      name: '央母音 / 懶人音 (Schwa)',
+      tip: '英語中最常見的非重音母音！口腔、舌頭完全放鬆不用力，極輕微短促發聲。',
+      soundText: 'uh',
+      words: [
+        { word: 'banana', kk: '[bəˋnænə]', zh: '香蕉', highlight: 'a' },
+        { word: 'about', kk: '[əˋbaʊt]', zh: '關於', highlight: 'a' },
+        { word: 'sofa', kk: '[ˋsofə]', zh: '沙發', highlight: 'a' },
+        { word: 'lemon', kk: '[ˋlɛmən]', zh: '檸檬', highlight: 'o' }
+      ]
+    },
+
+    // -------------------------------------------------------------
+    // 二、長母音與雙母音 (Long Vowels & Diphthongs)
+    // -------------------------------------------------------------
+    {
+      id: 'lv_a',
+      category: 'longVowels',
+      symbol: 'a_e / ai / ay',
+      kk: '[e]',
+      name: '長母音 A (滑音 [eɪ])',
+      tip: '口形由半開平唇 [e] 自然滑向微閉 [ɪ]，嘴角向兩側拉開，聲音飽滿延伸。',
+      soundText: 'ay',
+      words: [
+        { word: 'cake', kk: '[kek]', zh: '蛋糕', highlight: 'a_e' },
+        { word: 'rain', kk: '[ren]', zh: '下雨', highlight: 'ai' },
+        { word: 'day', kk: '[de]', zh: '白天/日子', highlight: 'ay' },
+        { word: 'game', kk: '[gem]', zh: '遊戲', highlight: 'a_e' }
+      ]
+    },
+    {
+      id: 'lv_e',
+      category: 'longVowels',
+      symbol: 'ee / ea / e_e',
+      kk: '[i]',
+      name: '長母音 E (微笑長音)',
+      tip: '嘴角向兩旁拉至最緊呈現燦爛微笑狀，舌面前部貼近硬顎，發出清晰拉長的「衣」音。',
+      soundText: 'ee',
+      words: [
+        { word: 'bee', kk: '[bi]', zh: '蜜蜂', highlight: 'ee' },
+        { word: 'tea', kk: '[ti]', zh: '茶', highlight: 'ea' },
+        { word: 'tree', kk: '[tri]', zh: '樹木', highlight: 'ee' },
+        { word: 'meat', kk: '[mit]', zh: '肉類', highlight: 'ea' }
+      ]
+    },
+    {
+      id: 'lv_i',
+      category: 'longVowels',
+      symbol: 'i_e / igh / y',
+      kk: '[aɪ]',
+      name: '長母音 I (雙母音)',
+      tip: '嘴巴由大開 [ɑ] 迅速滑向扁唇微閉 [ɪ]，前長後短、聲音流暢過渡。',
+      soundText: 'eye',
+      words: [
+        { word: 'bike', kk: '[baɪk]', zh: '腳踏車', highlight: 'i_e' },
+        { word: 'fly', kk: '[flaɪ]', zh: '飛行', highlight: 'y' },
+        { word: 'light', kk: '[laɪt]', zh: '光線', highlight: 'igh' },
+        { word: 'time', kk: '[taɪm]', zh: '時間', highlight: 'i_e' }
+      ]
+    },
+    {
+      id: 'lv_o',
+      category: 'longVowels',
+      symbol: 'o_e / oa / ow',
+      kk: '[o]',
+      name: '長母音 O (圓唇滑音 [oʊ])',
+      tip: '雙唇由半圓 [o] 逐漸縮成小圓圈 [ʊ]，聲音圓潤飽滿。',
+      soundText: 'oh',
+      words: [
+        { word: 'nose', kk: '[noz]', zh: '鼻子', highlight: 'o_e' },
+        { word: 'boat', kk: '[bot]', zh: '小船', highlight: 'oa' },
+        { word: 'snow', kk: '[sno]', zh: '雪', highlight: 'ow' },
+        { word: 'home', kk: '[hom]', zh: '家', highlight: 'o_e' }
+      ]
+    },
+    {
+      id: 'lv_u',
+      category: 'longVowels',
+      symbol: 'u_e / ew',
+      kk: '[ju]',
+      name: '長母音 U',
+      tip: '由半母音 [j] 迅速滑向雙唇緊縮的圓唇長音 [u]，聽起來像「優～」。',
+      soundText: 'you',
+      words: [
+        { word: 'cute', kk: '[kjut]', zh: '可愛的', highlight: 'u_e' },
+        { word: 'new', kk: '[nju]', zh: '新的', highlight: 'ew' },
+        { word: 'music', kk: '[ˋmjuzɪk]', zh: '音樂', highlight: 'u' },
+        { word: 'few', kk: '[fju]', zh: '很少數', highlight: 'ew' }
+      ]
+    },
+    {
+      id: 'lv_oo_long',
+      category: 'longVowels',
+      symbol: 'oo (長音)',
+      kk: '[u]',
+      name: '長嗚音',
+      tip: '雙唇向前突出用力縮成小圓孔，舌後部高抬，發出深沉平穩的「屋～」長音。',
+      soundText: 'oo',
+      words: [
+        { word: 'moon', kk: '[mun]', zh: '月亮', highlight: 'oo' },
+        { word: 'food', kk: '[fud]', zh: '食物', highlight: 'oo' },
+        { word: 'zoo', kk: '[zu]', zh: '動物園', highlight: 'oo' },
+        { word: 'cool', kk: '[kul]', zh: '涼爽/酷', highlight: 'oo' }
+      ]
+    },
+    {
+      id: 'lv_oo_short',
+      category: 'longVowels',
+      symbol: 'oo (短音)',
+      kk: '[ʊ]',
+      name: '短圓唇音',
+      tip: '雙唇微圓微向前凸但保持放鬆，舌後部微抬，發出短促的「屋」音。',
+      soundText: 'uh',
+      words: [
+        { word: 'book', kk: '[bʊk]', zh: '書本', highlight: 'oo' },
+        { word: 'look', kk: '[lʊk]', zh: '看', highlight: 'oo' },
+        { word: 'foot', kk: '[fʊt]', zh: '腳', highlight: 'oo' },
+        { word: 'good', kk: '[gʊd]', zh: '好的', highlight: 'oo' }
+      ]
+    },
+    {
+      id: 'lv_ou_ow',
+      category: 'longVowels',
+      symbol: 'ou / ow',
+      kk: '[aʊ]',
+      name: '驚嘆雙母音 (嗷)',
+      tip: '嘴巴張大發 [ɑ]，隨後雙唇快速收圓滑向 [ʊ]，就像被捏一下喊出「嗷～」。',
+      soundText: 'ow',
+      words: [
+        { word: 'house', kk: '[haʊs]', zh: '房子', highlight: 'ou' },
+        { word: 'cow', kk: '[kaʊ]', zh: '母牛', highlight: 'ow' },
+        { word: 'mouse', kk: '[maʊs]', zh: '老鼠', highlight: 'ou' },
+        { word: 'brown', kk: '[braʊn]', zh: '棕色', highlight: 'ow' }
+      ]
+    },
+    {
+      id: 'lv_oi_oy',
+      category: 'longVowels',
+      symbol: 'oi / oy',
+      kk: '[ɔɪ]',
+      name: '雙母音 OI',
+      tip: '由圓唇的 [ɔ] 滑向嘴角拉平的 [ɪ]，口型由圓變扁。',
+      soundText: 'oy',
+      words: [
+        { word: 'boy', kk: '[bɔɪ]', zh: '男孩', highlight: 'oy' },
+        { word: 'toy', kk: '[tɔɪ]', zh: '玩具', highlight: 'oy' },
+        { word: 'coin', kk: '[kɔɪn]', zh: '硬幣', highlight: 'oi' },
+        { word: 'oil', kk: '[ɔɪl]', zh: '油', highlight: 'oi' }
+      ]
+    },
+    {
+      id: 'lv_ar',
+      category: 'longVowels',
+      symbol: 'ar',
+      kk: '[ɑr]',
+      name: '捲舌母音 AR',
+      tip: '嘴巴張大發 [ɑ]，發音同時舌尖迅速向上向後捲起，帶出飽滿捲舌音。',
+      soundText: 'ar',
+      words: [
+        { word: 'car', kk: '[kɑr]', zh: '汽車', highlight: 'ar' },
+        { word: 'star', kk: '[stɑr]', zh: '星星', highlight: 'ar' },
+        { word: 'park', kk: '[pɑrk]', zh: '公園', highlight: 'ar' },
+        { word: 'farm', kk: '[fɑrm]', zh: '農場', highlight: 'ar' }
+      ]
+    },
+    {
+      id: 'lv_er_ir_ur',
+      category: 'longVowels',
+      symbol: 'er / ir / ur',
+      kk: '[ɝ / ɚ]',
+      name: '中央捲舌母音',
+      tip: '雙唇微開，舌身平抬中央，舌尖向後捲起，聲帶強力振動發出持續捲舌音。',
+      soundText: 'er',
+      words: [
+        { word: 'bird', kk: '[bɝd]', zh: '鳥', highlight: 'ir' },
+        { word: 'girl', kk: '[gɝl]', zh: '女孩', highlight: 'ir' },
+        { word: 'nurse', kk: '[nɝs]', zh: '護士', highlight: 'ur' },
+        { word: 'teacher', kk: '[ˋtitʃɚ]', zh: '老師', highlight: 'er' }
+      ]
+    },
+
+    // -------------------------------------------------------------
+    // 三、單子音 (Single Consonants - 無聲 vs 有聲)
+    // -------------------------------------------------------------
+    {
+      id: 'c_pb',
+      category: 'consonants',
+      symbol: 'p / b',
+      kk: '[p] (無聲) / [b] (有聲)',
+      name: '雙唇爆破音',
+      tip: '雙唇緊閉阻擋氣流後突然爆破！[p] 僅送出強氣流聲帶不振動；[b] 聲帶強力振動。',
+      soundText: 'p, b',
+      words: [
+        { word: 'pig', kk: '[pɪg]', zh: '豬', highlight: 'p' },
+        { word: 'big', kk: '[bɪg]', zh: '大的', highlight: 'b' },
+        { word: 'pen', kk: '[pɛn]', zh: '筆', highlight: 'p' },
+        { word: 'bed', kk: '[bɛd]', zh: '床', highlight: 'b' }
+      ]
+    },
+    {
+      id: 'c_td',
+      category: 'consonants',
+      symbol: 't / d',
+      kk: '[t] (無聲) / [d] (有聲)',
+      name: '舌尖齒齦音',
+      tip: '舌尖緊貼上齒齦阻擋氣流後彈開！[t] 氣流彈出聲帶不振動；[d] 聲帶振動。',
+      soundText: 't, d',
+      words: [
+        { word: 'ten', kk: '[tɛn]', zh: '十', highlight: 't' },
+        { word: 'dog', kk: '[dɑg]', zh: '狗', highlight: 'd' },
+        { word: 'tea', kk: '[ti]', zh: '茶', highlight: 't' },
+        { word: 'desk', kk: '[dɛsk]', zh: '書桌', highlight: 'd' }
+      ]
+    },
+    {
+      id: 'c_kg',
+      category: 'consonants',
+      symbol: 'k / c / g',
+      kk: '[k] (無聲) / [g] (有聲)',
+      name: '舌根軟顎音',
+      tip: '舌後部緊貼軟顎形成阻礙後突然釋放！[k] 送氣不振帶；[g] 喉部聲帶重重振動。',
+      soundText: 'k, g',
+      words: [
+        { word: 'cat', kk: '[kæt]', zh: '貓', highlight: 'c' },
+        { word: 'girl', kk: '[gɝl]', zh: '女孩', highlight: 'g' },
+        { word: 'king', kk: '[kɪŋ]', zh: '國王', highlight: 'k' },
+        { word: 'game', kk: '[gem]', zh: '遊戲', highlight: 'g' }
+      ]
+    },
+    {
+      id: 'c_fv',
+      category: 'consonants',
+      symbol: 'f / v',
+      kk: '[f] (無聲) / [v] (有聲)',
+      name: '唇齒摩擦音',
+      tip: '上門牙輕觸下嘴唇內緣，氣流自齒縫擠出！[f] 呼氣無聲；[v] 聲帶強力嗡嗡震動。',
+      soundText: 'f, v',
+      words: [
+        { word: 'fish', kk: '[fɪʃ]', zh: '魚', highlight: 'f' },
+        { word: 'van', kk: '[væn]', zh: '廂型車', highlight: 'v' },
+        { word: 'fan', kk: '[fæn]', zh: '風扇', highlight: 'f' },
+        { word: 'five', kk: '[faɪv]', zh: '五', highlight: 'f, v' }
+      ]
+    },
+    {
+      id: 'c_sz',
+      category: 'consonants',
+      symbol: 's / z',
+      kk: '[s] (無聲) / [z] (有聲)',
+      name: '齒齦摩擦音 (嘶/滋)',
+      tip: '舌尖微貼近上齒齦留下狹縫，氣流摩擦逸出！[s] 發出嘶嘶聲；[z] 聲帶震動發出蜜蜂嗡鳴聲。',
+      soundText: 's, z',
+      words: [
+        { word: 'sun', kk: '[sʌn]', zh: '太陽', highlight: 's' },
+        { word: 'zoo', kk: '[zu]', zh: '動物園', highlight: 'z' },
+        { word: 'sit', kk: '[sɪt]', zh: '坐', highlight: 's' },
+        { word: 'zero', kk: '[ˋzɪro]', zh: '零', highlight: 'z' }
+      ]
+    },
+    {
+      id: 'c_mn_ng',
+      category: 'consonants',
+      symbol: 'm / n / ng',
+      kk: '[m] / [n] / [ŋ]',
+      name: '鼻音家族 (有聲)',
+      tip: '口腔閉合氣流自鼻腔共鳴逸出！[m] 閉雙唇；[n] 舌尖頂上齒齦；[ŋ] 舌後抵軟顎。',
+      soundText: 'm, n, ng',
+      words: [
+        { word: 'man', kk: '[mæn]', zh: '男人', highlight: 'm, n' },
+        { word: 'nose', kk: '[noz]', zh: '鼻子', highlight: 'n' },
+        { word: 'sing', kk: '[sɪŋ]', zh: '唱歌', highlight: 'ng' },
+        { word: 'ring', kk: '[rɪŋ]', zh: '戒指', highlight: 'ng' }
+      ]
+    },
+    {
+      id: 'c_lr',
+      category: 'consonants',
+      symbol: 'l / r',
+      kk: '[l] (邊音) / [r] (捲舌)',
+      name: '流音與捲舌',
+      tip: '[l] 舌尖緊頂上齒齦、氣流由兩側流出；[r] 舌尖向後捲但絕不可碰觸口腔上顎。',
+      soundText: 'l, r',
+      words: [
+        { word: 'leg', kk: '[lɛg]', zh: '腿', highlight: 'l' },
+        { word: 'red', kk: '[rɛd]', zh: '紅色', highlight: 'r' },
+        { word: 'light', kk: '[laɪt]', zh: '光線', highlight: 'l' },
+        { word: 'right', kk: '[raɪt]', zh: '正確的', highlight: 'r' }
+      ]
+    },
+    {
+      id: 'c_wyh',
+      category: 'consonants',
+      symbol: 'w / y / h',
+      kk: '[w] / [j] / [h]',
+      name: '半母音與喉氣音',
+      tip: '[w] 圓唇向前滑動；[y] [j] 舌前貼硬顎滑動；[h] 聲門放鬆直接吐出輕柔氣音。',
+      soundText: 'w, y, h',
+      words: [
+        { word: 'water', kk: '[ˋwɔtɚ]', zh: '水', highlight: 'w' },
+        { word: 'yes', kk: '[jɛs]', zh: '是的', highlight: 'y' },
+        { word: 'hat', kk: '[hæt]', zh: '帽子', highlight: 'h' },
+        { word: 'yellow', kk: '[ˋjɛlo]', zh: '黃色', highlight: 'y' }
+      ]
+    },
+
+    // -------------------------------------------------------------
+    // 四、複合子音 (Consonant Digraphs)
+    // -------------------------------------------------------------
+    {
+      id: 'dg_th_unvoiced',
+      category: 'digraphs',
+      symbol: 'th (無聲)',
+      kk: '[θ]',
+      name: '咬舌無聲音',
+      tip: '舌尖輕輕伸出上下門牙之間（咬舌），送出強烈氣流，聲帶完全不振動！',
+      soundText: 'th',
+      words: [
+        { word: 'think', kk: '[θɪŋk]', zh: '思考', highlight: 'th' },
+        { word: 'three', kk: '[θri]', zh: '三', highlight: 'th' },
+        { word: 'tooth', kk: '[tuθ]', zh: '牙齒', highlight: 'th' },
+        { word: 'thank', kk: '[θæŋk]', zh: '感謝', highlight: 'th' }
+      ]
+    },
+    {
+      id: 'dg_th_voiced',
+      category: 'digraphs',
+      symbol: 'th (有聲)',
+      kk: '[ð]',
+      name: '咬舌有聲音',
+      tip: '舌尖輕咬於上下門牙之間，用力吐氣並同時強力震動聲帶，發出嗡嗡震感。',
+      soundText: 'th',
+      words: [
+        { word: 'this', kk: '[ðɪs]', zh: '這個', highlight: 'th' },
+        { word: 'that', kk: '[ðæt]', zh: '那個', highlight: 'th' },
+        { word: 'father', kk: '[ˋfɑðɚ]', zh: '父親', highlight: 'th' },
+        { word: 'they', kk: '[ðe]', zh: '他們', highlight: 'th' }
+      ]
+    },
+    {
+      id: 'dg_sh',
+      category: 'digraphs',
+      symbol: 'sh',
+      kk: '[ʃ]',
+      name: '安靜噓音',
+      tip: '雙唇微向前突出成方圓形，舌身抬起，氣流從舌面凹槽噴出，就像示意別人安靜「噓～」。',
+      soundText: 'sh',
+      words: [
+        { word: 'ship', kk: '[ʃɪp]', zh: '船艦', highlight: 'sh' },
+        { word: 'fish', kk: '[fɪʃ]', zh: '魚', highlight: 'sh' },
+        { word: 'shop', kk: '[ʃɑp]', zh: '商店', highlight: 'sh' },
+        { word: 'shoe', kk: '[ʃu]', zh: '鞋子', highlight: 'sh' }
+      ]
+    },
+    {
+      id: 'dg_ch',
+      category: 'digraphs',
+      symbol: 'ch / tch',
+      kk: '[tʃ]',
+      name: '清脆破擦音 (七)',
+      tip: '舌尖緊貼上齒齦先阻擋氣流，然後瞬間分開讓氣流爆發擦出，類似清脆短促的「ㄑㄧ」。',
+      soundText: 'ch',
+      words: [
+        { word: 'chair', kk: '[tʃɛr]', zh: '椅子', highlight: 'ch' },
+        { word: 'lunch', kk: '[lʌntʃ]', zh: '午餐', highlight: 'ch' },
+        { word: 'chin', kk: '[tʃɪn]', zh: '下巴', highlight: 'ch' },
+        { word: 'watch', kk: '[wɑtʃ]', zh: '手錶', highlight: 'tch' }
+      ]
+    },
+    {
+      id: 'dg_wh_ph',
+      category: 'digraphs',
+      symbol: 'wh / ph',
+      kk: '[hw / w] ＆ [f]',
+      name: '特異複合音',
+      tip: 'wh 雙唇縮圓呼氣發 [w]；ph 固定念 [f]，上齒咬下唇送氣。',
+      soundText: 'wh, ph',
+      words: [
+        { word: 'white', kk: '[hwaɪt]', zh: '白色', highlight: 'wh' },
+        { word: 'whale', kk: '[hwel]', zh: '鯨魚', highlight: 'wh' },
+        { word: 'phone', kk: '[fon]', zh: '電話', highlight: 'ph' },
+        { word: 'photo', kk: '[ˋfoto]', zh: '照片', highlight: 'ph' }
+      ]
+    },
+    {
+      id: 'dg_ck',
+      category: 'digraphs',
+      symbol: 'ck',
+      kk: '[k]',
+      name: '短母音字尾結尾音',
+      tip: '通常緊接在短母音之後，舌根頂軟顎俐落中斷氣流，清脆結尾！',
+      soundText: 'k',
+      words: [
+        { word: 'duck', kk: '[dʌk]', zh: '鴨子', highlight: 'ck' },
+        { word: 'clock', kk: '[klɑk]', zh: '時鐘', highlight: 'ck' },
+        { word: 'black', kk: '[blæk]', zh: '黑色', highlight: 'ck' },
+        { word: 'rock', kk: '[rɑk]', zh: '岩石', highlight: 'ck' }
+      ]
+    }
+  ];
+
+  // 2. 常見易混淆辨音組 (Minimal Pairs - 聽音辨音精熟測驗題庫)
+  const MINIMAL_PAIRS_QUESTIONS = [
+    {
+      id: 'mp_1',
+      title: '短母音對決：[æ] vs [ɛ]',
+      desc: '蝴蝶音 [æ] 嘴巴要張大，微笑音 [ɛ] 嘴角向兩側微張！',
+      target: { word: 'bed', kk: '[bɛd]', zh: '床', symbol: 'e [ɛ]' },
+      foil: { word: 'bad', kk: '[bæd]', zh: '壞的', symbol: 'a [æ]' },
+      audioWord: 'bed'
+    },
+    {
+      id: 'mp_2',
+      title: '長短母音對決：[i] vs [ɪ]',
+      desc: '長音 [i] 微笑拉長，短音 [ɪ] 放鬆短促！',
+      target: { word: 'ship', kk: '[ʃɪp]', zh: '輪船', symbol: 'i [ɪ]' },
+      foil: { word: 'sheep', kk: '[ʃip]', zh: '綿羊', symbol: 'ee [i]' },
+      audioWord: 'ship'
+    },
+    {
+      id: 'mp_3',
+      title: '短母音對決：[ɑ] vs [ʌ]',
+      desc: '大口音 [ɑ] 下巴垂直大開，短頓音 [ʌ] 舌身平放短促！',
+      target: { word: 'cup', kk: '[kʌp]', zh: '杯子', symbol: 'u [ʌ]' },
+      foil: { word: 'cop', kk: '[kɑp]', zh: '警察', symbol: 'o [ɑ]' },
+      audioWord: 'cup'
+    },
+    {
+      id: 'mp_4',
+      title: '齒間音對決：[θ] (咬舌) vs [s] (齒齦)',
+      desc: '咬舌音 [θ] 舌尖一定要伸出牙齒外，[s] 舌尖留在牙齦後！',
+      target: { word: 'think', kk: '[θɪŋk]', zh: '思考', symbol: 'th [θ]' },
+      foil: { word: 'sink', kk: '[sɪŋk]', zh: '水槽/下沉', symbol: 's [s]' },
+      audioWord: 'think'
+    },
+    {
+      id: 'mp_5',
+      title: '唇齒音對決：[f] vs [v]',
+      desc: '兩者都要上牙咬下唇，[f] 氣音無聲，[v] 聲帶強力振動！',
+      target: { word: 'fan', kk: '[fæn]', zh: '風扇', symbol: 'f [f]' },
+      foil: { word: 'van', kk: '[væn]', zh: '廂型車', symbol: 'v [v]' },
+      audioWord: 'fan'
+    },
+    {
+      id: 'mp_6',
+      title: '雙唇音對決：[p] vs [b]',
+      desc: '[p] 是無聲爆破音，[b] 聲帶必須劇烈振動！',
+      target: { word: 'pig', kk: '[pɪg]', zh: '豬', symbol: 'p [p]' },
+      foil: { word: 'big', kk: '[bɪg]', zh: '大的', symbol: 'b [b]' },
+      audioWord: 'pig'
+    },
+    {
+      id: 'mp_7',
+      title: '邊音與捲舌：[l] vs [r]',
+      desc: '[l] 舌尖頂齒齦，[r] 舌尖向後捲起絕不碰上顎！',
+      target: { word: 'red', kk: '[rɛd]', zh: '紅色', highlight: 'r [r]' },
+      foil: { word: 'led', kk: '[lɛd]', zh: '帶領(過去式)', highlight: 'l [l]' },
+      audioWord: 'red'
+    },
+    {
+      id: 'mp_8',
+      title: '長短母音對決：[u] vs [ʊ]',
+      desc: '[u] 雙唇用力縮圓成小孔，[ʊ] 嘴唇放鬆微圓！',
+      target: { word: 'food', kk: '[fud]', zh: '食物', symbol: 'oo [u]' },
+      foil: { word: 'foot', kk: '[fʊt]', zh: '腳', symbol: 'oo [ʊ]' },
+      audioWord: 'food'
+    },
+    {
+      id: 'mp_9',
+      title: '長短母音對決：[e] vs [ɛ]',
+      desc: '長音 [e] 由 [e] 滑向 [ɪ]，短音 [ɛ] 維持定格！',
+      target: { word: 'cake', kk: '[kek]', zh: '蛋糕', symbol: 'a_e [e]' },
+      foil: { word: 'neck', kk: '[nɛk]', zh: '脖子', symbol: 'e [ɛ]' },
+      audioWord: 'cake'
+    },
+    {
+      id: 'mp_10',
+      title: '噓音與擦音：[ʃ] vs [s]',
+      desc: '[ʃ] 嘴唇微往前翹噓音，[s] 嘴角向兩側微張嘶音！',
+      target: { word: 'ship', kk: '[ʃɪp]', zh: '船', symbol: 'sh [ʃ]' },
+      foil: { word: 'sip', kk: '[sɪp]', zh: '啜飲', symbol: 's [s]' },
+      audioWord: 'ship'
+    }
+  ];
+
+  // 內部狀態變數
+  let currentCategory = 'all';
+  let activeQuizItem = null;
+  let quizAnswered = false;
+  let quizScore = 0;
+  let quizTotal = 0;
+  let bookmarkedSounds = new Set();
+
+  try {
+    const saved = localStorage.getItem('wordchecking_phonics_bookmarks');
+    if (saved) bookmarkedSounds = new Set(JSON.parse(saved));
+  } catch (e) {}
+
+  // ==========================================================================
+  // 核心功能：發音播放
+  // ==========================================================================
+  function playPhonicsAudio(text, rate = 0.9) {
+    if (typeof window.playVoiceText === 'function') {
+      window.playVoiceText(text, rate);
+    } else if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = rate;
+      window.speechSynthesis.speak(u);
+    }
+  }
+
+  // 播放例字發音
+  function playWordWithCat(word, zh) {
+    playPhonicsAudio(word, 0.9);
+    if (typeof window.sayCatSpeech === 'function') {
+      window.sayCatSpeech(`"${word}"（${zh}），仔細聽發音喔喵！🐾`, "例字發音");
+    }
+  }
+
+  // 點擊音標卡片
+  function playSoundCard(item) {
+    const speakText = item.words && item.words.length > 0 ? item.words[0].word : item.symbol;
+    playPhonicsAudio(speakText, 0.85);
+    if (typeof window.sayCatSpeech === 'function') {
+      window.sayCatSpeech(`自然發音【${item.symbol}】對應 KK 音標【${item.kk}】！${item.tip}喵～🐾`, "音素發音");
+    }
+  }
+
+  // 切換收藏標記
+  function toggleBookmark(id) {
+    if (bookmarkedSounds.has(id)) {
+      bookmarkedSounds.delete(id);
+    } else {
+      bookmarkedSounds.add(id);
+    }
+    try {
+      localStorage.setItem('wordchecking_phonics_bookmarks', JSON.stringify([...bookmarkedSounds]));
+    } catch (e) {}
+    renderPhonicsGrid();
+  }
+
+  // ==========================================================================
+  // UI 渲染：子母音卡片牆
+  // ==========================================================================
+  function renderPhonicsGrid() {
+    const grid = document.getElementById('phonicsCardGrid');
+    if (!grid) return;
+
+    const list = PHONICS_DATA.filter(item => {
+      if (currentCategory === 'all') return true;
+      if (currentCategory === 'bookmarks') return bookmarkedSounds.has(item.id);
+      return item.category === currentCategory;
+    });
+
+    if (list.length === 0) {
+      grid.innerHTML = `
+        <div class="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">
+          <span class="text-4xl block mb-2">🐾</span>
+          <p class="font-bold">目前分類沒有標記的音素喵～點擊卡片右上角星星即可加入待加強！</p>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = list.map(item => {
+      const isStarred = bookmarkedSounds.has(item.id);
+      return `
+        <div class="bg-white dark:bg-slate-800/90 rounded-2xl p-4 border ${isStarred ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-400/20' : 'border-slate-200 dark:border-slate-700/80'} shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+          <!-- Top Row: Phonics Symbol + KK Symbol -->
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div class="flex items-baseline gap-2">
+                <span class="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400 font-mono tracking-tight">${item.symbol}</span>
+                <span class="text-base sm:text-lg font-bold text-slate-600 dark:text-slate-300 font-serif bg-slate-100 dark:bg-slate-700/80 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-600">${item.kk}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="WordCheckingPhonics.toggleBookmark('${item.id}')" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer text-sm" title="${isStarred ? '取消標記' : '標記為待加強'}">
+                  ${isStarred ? '⭐' : '☆'}
+                </button>
+                <button onclick="WordCheckingPhonics.playSoundCard('${item.id}')" class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition cursor-pointer shadow-2xs" title="聆聽示範發音">
+                  <i class="fa-solid fa-volume-high text-sm"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="text-xs font-bold text-amber-700 dark:text-amber-400 mb-1.5 flex items-center gap-1">
+              <span>💡</span>
+              <span>${item.name}</span>
+            </div>
+
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3 bg-amber-50/50 dark:bg-slate-700/40 p-2 rounded-xl border border-amber-100/60 dark:border-slate-600/50">
+              ${item.tip}
+            </p>
+          </div>
+
+          <!-- Bottom Row: Example Words with Click-to-Speech -->
+          <div class="border-t border-slate-100 dark:border-slate-700/60 pt-2.5">
+            <div class="text-[11px] font-semibold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center justify-between">
+              <span>會考代表例字：</span>
+              <span class="text-[10px] text-rose-500 dark:text-rose-400">點擊單字聽發音 🔊</span>
+            </div>
+            <div class="grid grid-cols-2 gap-1.5">
+              ${item.words.map(w => `
+                <button onclick="WordCheckingPhonics.playWord('${w.word}', '${w.zh}')" class="text-left px-2 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-700/60 hover:bg-rose-50 dark:hover:bg-slate-600 hover:border-rose-300 border border-slate-100 dark:border-slate-600 transition flex items-center justify-between group/w cursor-pointer">
+                  <div class="truncate mr-1">
+                    <span class="text-xs font-black text-slate-800 dark:text-slate-100 group-hover/w:text-rose-600 dark:group-hover/w:text-rose-400">${w.word}</span>
+                    <span class="text-[10px] text-slate-400 dark:text-slate-400 block truncate">${w.zh}</span>
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-serif opacity-0 group-hover/w:opacity-100 transition">${w.kk}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ==========================================================================
+  // 核心功能：聽音辨音微測驗 (Minimal Pairs Quiz)
+  // ==========================================================================
+  function startPhonicsQuiz() {
+    quizAnswered = false;
+    // 隨機抽取一道易混淆對比題目
+    const item = MINIMAL_PAIRS_QUESTIONS[Math.floor(Math.random() * MINIMAL_PAIRS_QUESTIONS.length)];
+    activeQuizItem = item;
+
+    // 隨機決定播放 target 還是 foil
+    const isTarget = Math.random() < 0.5;
+    activeQuizItem.correctIsTarget = isTarget;
+    activeQuizItem.playbackWord = isTarget ? item.target.word : item.foil.word;
+    activeQuizItem.correctOption = isTarget ? item.target : item.foil;
+    activeQuizItem.wrongOption = isTarget ? item.foil : item.target;
+
+    const quizBox = document.getElementById('phonicsQuizBox');
+    if (!quizBox) return;
+
+    quizBox.innerHTML = `
+      <div class="bg-gradient-to-br from-indigo-50/80 via-white to-purple-50/80 dark:from-slate-800 dark:to-slate-800/90 rounded-3xl p-5 sm:p-6 border border-indigo-200 dark:border-indigo-900/50 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-indigo-100 dark:border-slate-700 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🎧</span>
+            <div>
+              <h3 class="font-black text-slate-800 dark:text-slate-100 text-base sm:text-lg">聽音辨音精熟測驗</h3>
+              <p class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">${item.title}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              得分：${quizScore} / ${quizTotal}
+            </span>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-slate-700/60 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-600">
+          💡 辨音重點：${item.desc}
+        </p>
+
+        <!-- Big Play Button -->
+        <div class="py-4 text-center">
+          <button onclick="WordCheckingPhonics.replayQuizAudio()" class="px-6 py-3.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-2xl font-black text-base shadow-lg shadow-indigo-500/25 transition transform hover:scale-105 active:scale-95 inline-flex items-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-volume-high text-xl"></i>
+            <span>再次聆聽發音</span>
+          </button>
+          <div class="text-xs text-slate-400 dark:text-slate-400 mt-2">仔細聽聽看咪咪唸的是哪一個單字？</div>
+        </div>
+
+        <!-- 2 Options Selection -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quizOptionsContainer">
+          <button onclick="WordCheckingPhonics.checkQuizAnswer(true)" class="p-4 rounded-2xl bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 hover:border-indigo-400 dark:hover:border-indigo-400 transition text-left cursor-pointer group shadow-2xs">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">${item.target.word}</span>
+              <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400 font-serif bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded-lg border border-indigo-200 dark:border-indigo-800">${item.target.kk}</span>
+            </div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">${item.target.zh}（${item.target.symbol || ''}）</div>
+          </button>
+
+          <button onclick="WordCheckingPhonics.checkQuizAnswer(false)" class="p-4 rounded-2xl bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 hover:border-indigo-400 dark:hover:border-indigo-400 transition text-left cursor-pointer group shadow-2xs">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">${item.foil.word}</span>
+              <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400 font-serif bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded-lg border border-indigo-200 dark:border-indigo-800">${item.foil.kk}</span>
+            </div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">${item.foil.zh}（${item.foil.symbol || ''}）</div>
+          </button>
+        </div>
+
+        <!-- Result Feedback Banner -->
+        <div id="quizFeedbackBox" class="hidden rounded-2xl p-4 transition-all"></div>
+      </div>
+    `;
+
+    // 自動播放第一次音訊
+    setTimeout(() => {
+      replayQuizAudio();
+    }, 300);
+  }
+
+  function replayQuizAudio() {
+    if (!activeQuizItem) return;
+    playPhonicsAudio(activeQuizItem.playbackWord, 0.85);
+  }
+
+  function checkQuizAnswer(selectedIsTarget) {
+    if (quizAnswered || !activeQuizItem) return;
+    quizAnswered = true;
+    quizTotal++;
+
+    const isCorrect = selectedIsTarget === activeQuizItem.correctIsTarget;
+    if (isCorrect) quizScore++;
+
+    const fbBox = document.getElementById('quizFeedbackBox');
+    if (!fbBox) return;
+
+    fbBox.classList.remove('hidden');
+    if (isCorrect) {
+      if (typeof window.addFish === 'function') window.addFish(1);
+      if (typeof window.playCatCheerSound === 'function') window.playCatCheerSound();
+      if (typeof window.sayCatSpeech === 'function') {
+        window.sayCatSpeech(`答對了喵！妳選的是【${activeQuizItem.correctOption.word}】${activeQuizItem.correctOption.kk}！耳朵真靈光，送妳 1 條小魚乾 🐟✨`, "聽音太神");
+      }
+      fbBox.className = "rounded-2xl p-4 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+      fbBox.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">🎉</span>
+          <div>
+            <div class="font-black text-sm sm:text-base">答對了！耳朵好靈敏！+1 魚乾 🐟</div>
+            <div class="text-xs text-emerald-700 dark:text-emerald-300">正確答案是「${activeQuizItem.correctOption.word}」${activeQuizItem.correctOption.kk}（${activeQuizItem.correctOption.zh}）</div>
+          </div>
+        </div>
+        <button onclick="WordCheckingPhonics.startQuiz()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition cursor-pointer self-end sm:self-center">
+          下一題 🐾
+        </button>
+      `;
+    } else {
+      if (typeof window.playCatMeowSound === 'function') window.playCatMeowSound();
+      if (typeof window.sayCatSpeech === 'function') {
+        window.sayCatSpeech(`差一點點！剛才播放的是【${activeQuizItem.correctOption.word}】${activeQuizItem.correctOption.kk}，按下方按鈕來對比兩者發音差別喵～🐾`, "再聽一次");
+      }
+      fbBox.className = "rounded-2xl p-4 bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+      fbBox.innerHTML = `
+        <div class="space-y-1">
+          <div class="font-black text-sm sm:text-base flex items-center gap-1.5">
+            <span>🐾</span>
+            <span>答錯了，沒關係！剛才播放的是「${activeQuizItem.correctOption.word}」${activeQuizItem.correctOption.kk}</span>
+          </div>
+          <div class="text-xs text-amber-700 dark:text-amber-300 flex items-center gap-2 pt-1">
+            <span>對比聽：</span>
+            <button onclick="WordCheckingPhonics.playPhonicsAudio('${activeQuizItem.correctOption.word}')" class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-700 border border-amber-300 text-xs font-bold text-amber-800 dark:text-amber-200 cursor-pointer">
+              🔊 ${activeQuizItem.correctOption.word} ${activeQuizItem.correctOption.kk}
+            </button>
+            <button onclick="WordCheckingPhonics.playPhonicsAudio('${activeQuizItem.wrongOption.word}')" class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-700 border border-amber-300 text-xs font-bold text-amber-800 dark:text-amber-200 cursor-pointer">
+              🔊 ${activeQuizItem.wrongOption.word} ${activeQuizItem.wrongOption.kk}
+            </button>
+          </div>
+        </div>
+        <button onclick="WordCheckingPhonics.startQuiz()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow-sm transition cursor-pointer self-end sm:self-center">
+          下一題 🐾
+        </button>
+      `;
+    }
+  }
+
+  // ==========================================================================
+  // 初始化與切換分類
+  // ==========================================================================
+  function setPhonicsCategory(cat) {
+    currentCategory = cat;
+    // 更新分類按鈕外觀
+    const btnContainer = document.getElementById('phonicsCategoryButtons');
+    if (btnContainer) {
+      const btns = btnContainer.querySelectorAll('button');
+      btns.forEach(b => {
+        if (b.dataset.cat === cat) {
+          b.className = "px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-rose-500 text-white shadow-xs transition-all cursor-pointer";
+        } else {
+          b.className = "px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition cursor-pointer";
+        }
+      });
+    }
+    renderPhonicsGrid();
+  }
+
+  function initPhonicsMode() {
+    renderCategoryButtons();
+    renderPhonicsGrid();
+    startPhonicsQuiz();
+  }
+
+  function renderCategoryButtons() {
+    const container = document.getElementById('phonicsCategoryButtons');
+    if (!container) return;
+    container.innerHTML = PHONICS_CATEGORIES.map(c => `
+      <button data-cat="${c.key}" onclick="WordCheckingPhonics.setCategory('${c.key}')" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${currentCategory === c.key ? 'bg-rose-500 text-white shadow-xs font-bold' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}">
+        <span>${c.icon}</span>
+        <span>${c.label}</span>
+      </button>
+    `).join('') + `
+      <button data-cat="bookmarks" onclick="WordCheckingPhonics.setCategory('bookmarks')" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${currentCategory === 'bookmarks' ? 'bg-amber-500 text-white shadow-xs font-bold' : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100'}">
+        <span>⭐</span>
+        <span>待加強音標</span>
+      </button>
+    `;
+  }
+
+  // 匯出公開 API 給全局
+  window.WordCheckingPhonics = {
+    init: initPhonicsMode,
+    setCategory: setPhonicsCategory,
+    playSoundCard: (id) => {
+      const item = PHONICS_DATA.find(x => x.id === id);
+      if (item) playSoundCard(item);
+    },
+    playWord: playWordWithCat,
+    playPhonicsAudio: playPhonicsAudio,
+    toggleBookmark: toggleBookmark,
+    startQuiz: startPhonicsQuiz,
+    replayQuizAudio: replayQuizAudio,
+    checkQuizAnswer: checkQuizAnswer
+  };
+
+})(window);
+
+
+    // <<<<<<<<<< [MODULE END: 09_phonics_master.js] <<<<<<<<<<
+
+
+    // >>>>>>>>>> [MODULE START: 07_main_init.js] >>>>>>>>>>
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try { initTheme(); } catch (e) { console.warn('initTheme error:', e); }
+      try {
+        syncStudyOrderUI(currentCardOrder);
+      } catch (e) {}
+      try {
+        const fc = document.getElementById('fishCount');
+        if (fc) fc.innerText = fishCount;
+      } catch (e) {}
+      try { initSpeechRecognition(); } catch (e) {}
+      try { initPiSyncUI(); } catch (e) {}
+      try { updateCatGrowthUI(); } catch (e) {}
+      try { updateCatGrowthMorph(currentCatLevel); } catch (e) {}
+      try { if (typeof loadCatWardrobe === 'function') loadCatWardrobe(); if (typeof renderCatAccessories === 'function') renderCatAccessories(); } catch (e) {}
+      try { if (typeof ScreenPet !== 'undefined') ScreenPet.init(); } catch (e) {}
+      try { if (window.WordCheckingPhonics) window.WordCheckingPhonics.init(); } catch (e) {}
+
+      // Initialize Adventure Map Mode with hooks
+      try {
+        if (window.WordCheckingAdventure) {
+          WordCheckingAdventure.initAdventureMap({
+            rawVocabList: RAW_VOCAB,
+            hooks: {
+              getFishCount: () => fishCount,
+              addFish: (n) => {
+                fishCount += n;
+                localStorage.setItem(FISH_STORAGE_KEY, fishCount);
+                const fc = document.getElementById('fishCount');
+                if (fc) fc.innerText = fishCount;
+                const wfc = document.getElementById('wardrobeFishCount');
+                if (wfc) wfc.innerText = fishCount;
+              },
+              addAffection: (n) => gainAffection(n),
+              playAudio: (word) => playVoiceText(word),
+              playCheerSound: () => playCatCheerSound(),
+              playMeowSound: () => playCatMeowSound(),
+              saySpeech: (text, tag) => sayCatSpeech(text, tag),
+              triggerSaveToPi: () => triggerAutoSaveToPi()
+            }
+          });
+          WordCheckingAdventure.renderAdventureMap();
+        }
+      } catch (e) {
+        console.warn('initAdventureMap error:', e);
+      }
+
+      // ALWAYS load current theme data from Web Server!
+      loadThemeData(currentThemeKey);
+      try { checkAndAutoSyncFromPi(true); } catch (e) {}
+
+      if (typeof isMimiHungry === 'function' && isMimiHungry()) {
+        const hungrySpeech = HUNGRY_CAT_SPEECHES[Math.floor(Math.random() * HUNGRY_CAT_SPEECHES.length)];
+        sayCatSpeech(hungrySpeech, "肚子扁扁想妳中 🐾");
+      }
+
+      // Keyboard shortcuts for Flashcard and Quiz / Spelling / Speaking Answered Navigation
+      document.addEventListener('keydown', (e) => {
+        const activeMode = getActiveMode();
+        if (activeMode === 'card') {
+          if (e.code === 'Space') {
+            e.preventDefault();
+            flipCard();
+          } else if (e.code === 'ArrowRight') {
+            nextCard();
+          } else if (e.code === 'ArrowLeft') {
+            prevCard();
+          }
+        } else if (e.code === 'Space') {
+          // If in Quiz mode and feedback is displayed -> jump to next question
+          if (activeMode === 'quiz') {
+            const fb = document.getElementById('quizFeedback');
+            if (fb && !fb.classList.contains('hidden')) {
+              e.preventDefault();
+              if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+              }
+              nextQuizQuestion();
+            }
+          }
+          // If in Spelling mode and feedback is displayed -> jump to next question
+          else if (activeMode === 'spelling') {
+            const fb = document.getElementById('spellFeedback');
+            if (fb && !fb.classList.contains('hidden')) {
+              e.preventDefault();
+              if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+              }
+              nextSpellQuestion();
+            }
+          }
+          // If in Speaking mode and feedback is displayed -> jump to next question (safely blur micBtn!)
+          else if (activeMode === 'speaking') {
+            const fb = document.getElementById('speakFeedback');
+            if (fb && !fb.classList.contains('hidden')) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+              }
+              const micBtn = document.getElementById('micBtn');
+              if (micBtn && typeof micBtn.blur === 'function') {
+                micBtn.blur();
+              }
+              nextSpeakQuestion();
+            } else {
+              // Safety: If speaking is active but not answered yet, never let Space trigger focused micBtn!
+              const micBtn = document.getElementById('micBtn');
+              if (document.activeElement === micBtn) {
+                e.preventDefault();
+                micBtn.blur();
+              }
+            }
+          }
+        }
+      });
+    });
+
+    function getActiveMode() {
+      const modeMap = document.getElementById('modeMap');
+      if (modeMap && !modeMap.classList.contains('hidden')) return 'map';
+      if (!document.getElementById('modeCard').classList.contains('hidden')) return 'card';
+      if (!document.getElementById('modeQuiz').classList.contains('hidden')) return 'quiz';
+      if (!document.getElementById('modeSpelling').classList.contains('hidden')) return 'spelling';
+      if (!document.getElementById('modeSpeaking').classList.contains('hidden')) return 'speaking';
+      if (!document.getElementById('modeExam').classList.contains('hidden')) return 'exam';
+      const mRain = document.getElementById('modeRain');
+      if (mRain && !mRain.classList.contains('hidden')) return 'rain';
+      return 'list';
+    }
+
+    function initTheme() {
+      const isDark = localStorage.getItem('theme') === 'dark' ||
+                     (!('theme' in localStorage) && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      const toggleBtn = document.getElementById('themeToggle');
+      if (toggleBtn) {
+        toggleBtn.onclick = () => {
+          document.documentElement.classList.toggle('dark');
+          const darkActive = document.documentElement.classList.contains('dark');
+          localStorage.setItem('theme', darkActive ? 'dark' : 'light');
+        };
+      }
+    }
+
+    function onScopeChange() {
+      currentScope = document.getElementById('scopeFilter').value;
+      updateFilteredList();
+      filteredList = applyCardOrder(filteredList);
+      currentIndex = 0;
+      renderCurrentCard();
+      renderStats();
+      if (getActiveMode() === 'quiz') startNewQuiz();
+      if (getActiveMode() === 'spelling') startNewSpelling();
+      if (getActiveMode() === 'speaking') startNewSpeaking();
+      if (getActiveMode() === 'list') renderWordTable();
+    }
+
+    function syncStudyOrderUI(val) {
+      currentCardOrder = val || 'default';
+      localStorage.setItem('wordchecking_card_order', currentCardOrder);
+      const sel = document.getElementById('cardOrderSelect');
+      const topSel = document.getElementById('topStudyOrderSelect');
+      if (sel && sel.value !== currentCardOrder) sel.value = currentCardOrder;
+      if (topSel && topSel.value !== currentCardOrder) topSel.value = currentCardOrder;
+    }
+
+    function onCardOrderChange() {
+      const sel = document.getElementById('cardOrderSelect');
+      if (sel) syncStudyOrderUI(sel.value);
+      applyOrderAndRefreshActiveMode();
+    }
+
+    function onGlobalStudyOrderChange() {
+      const topSel = document.getElementById('topStudyOrderSelect');
+      if (topSel) syncStudyOrderUI(topSel.value);
+      applyOrderAndRefreshActiveMode();
+    }
+
+    function applyOrderAndRefreshActiveMode() {
+      // 1. Re-filter and sort list
+      updateFilteredList();
+
+      // 2. Card mode: immediately jump to the first matching card & render!
+      currentIndex = 0;
+      renderCurrentCard();
+
+      // 3. If in other modes, immediately refresh the current question!
+      const activeMode = getActiveMode();
+      if (activeMode === 'quiz') startNewQuiz();
+      else if (activeMode === 'spelling') startNewSpelling();
+      else if (activeMode === 'speaking') startNewSpeaking();
+
+      if (currentCardOrder === 'newFirst') {
+        sayCatSpeech("已切換為【✨ 優先練習新單字】！咪咪先把未背過的新單字排到第一順位～🐾", "學習順序");
+      } else if (currentCardOrder === 'newAndWeakFirst') {
+        sayCatSpeech("已切換為【🔥 優先練習新單字和待加強單字】！新單字與易錯單字排在最前線全力特訓～🐾", "學習順序");
+      } else {
+        sayCatSpeech("已恢復【預設順序】！依單字編號循序練習喵～🐾", "學習順序");
+      }
+    }
+
+    function applyCardOrder(list) {
+      if (!list || list.length <= 1) return list;
+      const order = currentCardOrder || 'default';
+      if (order === 'default') {
+        return [...list].sort((a, b) => (a.num || 0) - (b.num || 0));
+      }
+      if (order === 'newFirst') {
+        // 優先練習新單字：!userProgress[key] 排前面，其餘排後面；同等級內維持編號順序
+        return [...list].sort((a, b) => {
+          const aKey = a.word || a.num;
+          const bKey = b.word || b.num;
+          const aNew = !userProgress[aKey];
+          const bNew = !userProgress[bKey];
+          if (aNew && !bNew) return -1;
+          if (!aNew && bNew) return 1;
+          return (a.num || 0) - (b.num || 0);
+        });
+      }
+      if (order === 'newAndWeakFirst') {
+        // 優先練習新單字和待加強單字：
+        // 第一梯隊：新單字 (!st) 與 待加強 ('weak')
+        // 第二梯隊：初步熟悉 ('familiar')
+        // 第三梯隊：完全掌握 ('mastered')
+        const getPriority = (item) => {
+          const key = item.word || item.num;
+          const st = userProgress[key];
+          if (!st) return 1; // 新單字
+          if (st === 'weak') return 1; // 待加強
+          if (st === 'familiar') return 2; // 初步熟悉
+          if (st === 'mastered') return 3; // 完全掌握
+          return 1;
+        };
+        return [...list].sort((a, b) => {
+          const pA = getPriority(a);
+          const pB = getPriority(b);
+          if (pA !== pB) return pA - pB;
+          return (a.num || 0) - (b.num || 0);
+        });
+      }
+      return list;
+    }
+
+    function updateFilteredList() {
+      if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
+        filteredList = [];
+        return;
+      }
+
+      if (currentScope === 'all') {
+        filteredList = [...RAW_VOCAB];
+      } else if (currentScope === 'weak') {
+        filteredList = RAW_VOCAB.filter(x => userProgress[x.word || x.num] === 'weak');
+        if (filteredList.length === 0) {
+          alert('喵～目前沒有標記為「待加強」的單字！咪咪為您自動切換回全部單字。');
+          document.getElementById('scopeFilter').value = 'all';
+          currentScope = 'all';
+          filteredList = [...RAW_VOCAB];
+        }
+      } else if (currentScope === 'familiar') {
+        filteredList = RAW_VOCAB.filter(x => userProgress[x.word || x.num] === 'familiar');
+        if (filteredList.length === 0) {
+          alert('喵～目前沒有標記為「熟悉中」的單字！咪咪為您自動切換回全部單字。');
+          document.getElementById('scopeFilter').value = 'all';
+          currentScope = 'all';
+          filteredList = [...RAW_VOCAB];
+        }
+      } else if (currentThemeKey === 'numbers') {
+        if (currentScope === '1-12') {
+          filteredList = RAW_VOCAB.filter(x => x.num <= 12);
+        } else if (currentScope === '13-19') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 13 && x.num <= 19);
+        } else if (currentScope === '20-99') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 20 && x.num <= 99);
+        } else if (currentScope === 'tens') {
+          filteredList = RAW_VOCAB.filter(x => x.num % 10 === 0 && x.num >= 20 && x.num <= 90);
+        } else {
+          filteredList = [...RAW_VOCAB];
+        }
+      } else if (currentThemeKey === 'all1200') {
+        if (currentScope === '1-150') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 1 && x.num <= 150);
+        } else if (currentScope === '151-400') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 151 && x.num <= 400);
+        } else if (currentScope === '401-750') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 401 && x.num <= 750);
+        } else if (currentScope === '751-1050') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 751 && x.num <= 1050);
+        } else if (currentScope === '1051-1200') {
+          filteredList = RAW_VOCAB.filter(x => x.num >= 1051 && x.num <= 1200);
+        } else if (currentScope.startsWith('cat:')) {
+          const targetCat = currentScope.replace('cat:', '');
+          filteredList = RAW_VOCAB.filter(x => (
+            x.category === targetCat ||
+            (targetCat === '動物與寵物' && (x.category === '動物與昆蟲' || x.category === '動物與寵物')) ||
+            (targetCat === '常用動詞' && (x.category === '核心動詞' || x.category === '常用動詞')) ||
+            (targetCat === '形容詞與副詞' && (x.category === '修飾與語法詞' || x.category === '形容詞與副詞')) ||
+            (targetCat === '代名詞與文法詞' && (x.category === '代名詞與文法詞' || x.category === '修飾與語法詞'))
+          ));
+        } else {
+          filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
+        }
+        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
+      } else {
+        // Filter by category name
+        filteredList = RAW_VOCAB.filter(x => x.category === currentScope);
+        if (filteredList.length === 0) filteredList = [...RAW_VOCAB];
+      }
+
+      // CRITICAL: Always apply user-selected study order to filteredList!
+      filteredList = applyCardOrder(filteredList);
+    }
+
+    function renderStats() {
+      let mastered = 0;
+      let familiar = 0;
+      let weak = 0;
+      const total = RAW_VOCAB.length;
+
+      RAW_VOCAB.forEach(item => {
+        const key = item.word || item.num;
+        const s = userProgress[key];
+        if (s === 'mastered') mastered++;
+        else if (s === 'familiar') familiar++;
+        else if (s === 'weak') weak++;
+      });
+
+      if (document.getElementById('statTotal')) document.getElementById('statTotal').innerText = total;
+      if (document.getElementById('statMastered')) document.getElementById('statMastered').innerText = mastered;
+      if (document.getElementById('statFamiliar')) document.getElementById('statFamiliar').innerText = familiar;
+      if (document.getElementById('statWeak')) document.getElementById('statWeak').innerText = weak;
+
+      const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
+      const pTextEl = document.getElementById('progressText');
+      if (pTextEl) {
+        pTextEl.innerText = `${pct}% (✨${mastered} | 🌱${familiar} / ${total})`;
+      }
+      if (document.getElementById('progressBarMastered')) {
+        document.getElementById('progressBarMastered').style.width = total > 0 ? `${(mastered / total) * 100}%` : '0%';
+      }
+      if (document.getElementById('progressBarFamiliar')) {
+        document.getElementById('progressBarFamiliar').style.width = total > 0 ? `${(familiar / total) * 100}%` : '0%';
+      }
+      if (document.getElementById('progressBarWeak')) {
+        document.getElementById('progressBarWeak').style.width = total > 0 ? `${(weak / total) * 100}%` : '0%';
+      }
+
+      const catFavor = document.getElementById('catFavorText');
+      if (pct < 20) catFavor.innerText = "（好奇小幼貓 🐾）";
+      else if (pct < 50) catFavor.innerText = "（友善踏踏貓 🐱）";
+      else if (pct < 80) catFavor.innerText = "（默契好學伴 ✨）";
+      else catFavor.innerText = "（滿分神喵喵 👑）";
+
+      if (quizStats.total > 0) {
+        const acc = Math.round((quizStats.correct / quizStats.total) * 100);
+        document.getElementById('statAccuracy').innerText = `${acc}%`;
+      } else {
+        document.getElementById('statAccuracy').innerText = '--%';
+      }
+
+      // ==================== SCOPE & WORD TABLE BREAKDOWN ====================
+      const targetList = (filteredList && filteredList.length > 0) ? filteredList : RAW_VOCAB;
+      const scopeTotal = targetList ? targetList.length : 0;
+      let scopeMastered = 0;
+      let scopeFamiliar = 0;
+      let scopeWeak = 0;
+      let scopeNew = 0;
+
+      if (targetList && targetList.length > 0) {
+        targetList.forEach(item => {
+          const key = item.word || item.num;
+          const s = userProgress[key];
+          if (s === 'mastered') scopeMastered++;
+          else if (s === 'familiar') scopeFamiliar++;
+          else if (s === 'weak') scopeWeak++;
+          else scopeNew++;
+        });
+      }
+
+      const sMasteredPct = scopeTotal > 0 ? Math.round((scopeMastered / scopeTotal) * 100) : 0;
+      const sFamiliarPct = scopeTotal > 0 ? Math.round((scopeFamiliar / scopeTotal) * 100) : 0;
+      const sWeakPct = scopeTotal > 0 ? Math.round((scopeWeak / scopeTotal) * 100) : 0;
+      const sNewPct = Math.max(0, 100 - sMasteredPct - sFamiliarPct - sWeakPct);
+
+      // Update Word Table Breakdown Card (Top of modeList)
+      const tTotal = document.getElementById('tableStatTotal');
+      const tM = document.getElementById('tableStatMastered');
+      const tMPct = document.getElementById('tableStatMasteredPct');
+      const tF = document.getElementById('tableStatFamiliar');
+      const tFPct = document.getElementById('tableStatFamiliarPct');
+      const tW = document.getElementById('tableStatWeak');
+      const tWPct = document.getElementById('tableStatWeakPct');
+      const tN = document.getElementById('tableStatNew');
+      const tNPct = document.getElementById('tableStatNewPct');
+
+      if (tTotal) tTotal.innerText = scopeTotal;
+      if (tM) tM.innerText = scopeMastered;
+      if (tMPct) tMPct.innerText = `${sMasteredPct}%`;
+      if (tF) tF.innerText = scopeFamiliar;
+      if (tFPct) tFPct.innerText = `${sFamiliarPct}%`;
+      if (tW) tW.innerText = scopeWeak;
+      if (tWPct) tWPct.innerText = `${sWeakPct}%`;
+      if (tN) tN.innerText = scopeNew;
+      if (tNPct) tNPct.innerText = `${sNewPct}%`;
+
+      const tBarM = document.getElementById('tableBarMastered');
+      const tBarF = document.getElementById('tableBarFamiliar');
+      const tBarW = document.getElementById('tableBarWeak');
+      const tBarN = document.getElementById('tableBarNew');
+
+      if (tBarM) tBarM.style.width = `${sMasteredPct}%`;
+      if (tBarF) tBarF.style.width = `${sFamiliarPct}%`;
+      if (tBarW) tBarW.style.width = `${sWeakPct}%`;
+      if (tBarN) tBarN.style.width = `${sNewPct}%`;
+
+      const scopeNameEl = document.getElementById('tableScopeName');
+      if (scopeNameEl) {
+        const scopeSelect = document.getElementById('scopeFilter');
+        const selectedOpt = scopeSelect && scopeSelect.selectedIndex >= 0 ? scopeSelect.options[scopeSelect.selectedIndex] : null;
+        scopeNameEl.innerText = selectedOpt ? selectedOpt.innerText : '全部單字';
+      }
+
+      updateCatGrowthUI();
+    }
+
+    // Flashcard Rendering
+    function renderCurrentCard() {
+      if (!filteredList || filteredList.length === 0) return;
+      const item = filteredList[currentIndex];
+
+      cardFlipped = false;
+      document.getElementById('flashcardInner').classList.remove('rotate-y-180');
+
+      document.getElementById('cardIndex').innerText = `${currentIndex + 1} / ${filteredList.length}`;
+      document.getElementById('cardCategory').innerText = item.category || '核心單字';
+
+      // Render mastery status badge on card
+      const itemKey = item.word || item.num;
+      const itemStatus = userProgress[itemKey];
+      const badgeEl = document.getElementById('cardStatusBadge');
+      if (badgeEl) {
+        badgeEl.classList.remove('hidden');
+        if (!itemStatus) {
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold text-[10px] border border-indigo-200 dark:border-indigo-800';
+          badgeEl.innerText = '✨ 新單字';
+        } else if (itemStatus === 'weak') {
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold text-[10px] border border-amber-200 dark:border-amber-800';
+          badgeEl.innerText = '🐾 待加強';
+        } else if (itemStatus === 'familiar') {
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold text-[10px] border border-blue-200 dark:border-blue-800';
+          badgeEl.innerText = '🌱 初步熟悉';
+        } else if (itemStatus === 'mastered') {
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-200 dark:border-emerald-800';
+          badgeEl.innerText = '✨ 完全掌握';
+        }
+      }
+
+      const digitEl = document.getElementById('cardDigit');
+      digitEl.innerText = item.chinese;
+      digitEl.className = item.chinese.length > 4
+        ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight"
+        : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
+
+      document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${escapeHtml(item.category || '核心單字')}</span>`;
+      document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
+      document.getElementById('cardEnglish').innerText = item.word;
+      document.getElementById('cardPhonetic').innerText = item.kk || '';
+
+      const noteBox = document.getElementById('cardNoteBox');
+      if (item.note) {
+        noteBox.classList.remove('hidden');
+        document.getElementById('cardNote').innerText = item.note;
+      } else {
+        noteBox.classList.add('hidden');
+      }
+
+      const exampleBox = document.getElementById('cardExampleBox');
+      if (item.example) {
+        exampleBox.classList.remove('hidden');
+        document.getElementById('cardExample').innerText = `例句：${item.example}`;
+      } else {
+        exampleBox.classList.add('hidden');
+      }
+
+      if (typeof updateAudioSourceBadge === 'function') {
+        updateAudioSourceBadge('idle');
+      }
+    }
+
+    function flipCard() {
+      cardFlipped = !cardFlipped;
+      const inner = document.getElementById('flashcardInner');
+      if (cardFlipped) {
+        inner.classList.add('rotate-y-180');
+        playVoiceCurrent(1.0);
+        sayCatSpeech(`翻面看拼寫囉！"${filteredList[currentIndex].word}"，記起來了嗎喵？🐾`, "專心看牌");
+      } else {
+        inner.classList.remove('rotate-y-180');
+      }
+    }
+
+    function nextCard() {
+      if (currentIndex < filteredList.length - 1) {
+        currentIndex++;
+      } else {
+        currentIndex = 0;
+      }
+      renderCurrentCard();
+    }
+
+    function prevCard() {
+      if (currentIndex > 0) {
+        currentIndex--;
+      } else {
+        currentIndex = filteredList.length - 1;
+      }
+      renderCurrentCard();
+    }
+
+    function markCurrent(isMastered) {
+      if (!filteredList || filteredList.length === 0) return;
+      const item = filteredList[currentIndex];
+      const key = item.word || item.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+
+      if (isMastered) {
+        if (userProgress[key] !== 'mastered') {
+          userProgress[key] = 'familiar';
+        }
+      } else {
+        userProgress[key] = 'weak';
+      }
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
+
+      if (isMastered) {
+        addFish();
+        playCatMeowSound();
+        if (userProgress[key] === 'mastered') {
+          sayCatSpeech(`太棒了！"${item.word}" 已經完全掌握！送妳 1 條小魚乾 🐟✨`, "開心歡呼");
+        } else {
+          sayCatSpeech(`太棒了！"${item.word}" 已初步熟悉！可到拼字練習挑戰完全掌握喵～🐟`, "開心歡呼");
+        }
+      } else {
+        sayCatSpeech(`沒關係！貓貓幫妳把 "${item.word}" 記在待加強名單，等等多看兩眼喵～🐾`, "貼心鼓勵");
+      }
+      renderStats();
+      gainAffection(2);
+      touchMimiInteraction();
+      updateCatGrowthUI();
+      triggerAutoSaveToPi();
+      nextCard();
+    }
+
+    // Note: playVoiceText and playVoiceCurrent are provided globally by 00_audio_engine.js with MP3 priority & fallback
+
+    // Mode Switching
+    function switchMode(mode) {
+      // 模式切換時，若有未同步進度，立即觸發一次保底同步
+      if (typeof flushPendingSyncToPi === 'function') {
+        flushPendingSyncToPi();
+      } else if (typeof triggerAutoSaveToPi === 'function') {
+        triggerAutoSaveToPi(true);
+      }
+      const modes = ['map', 'phonics', 'card', 'quiz', 'spelling', 'speaking', 'exam', 'list', 'rain'];
+      modes.forEach(m => {
+        const sec = document.getElementById('mode' + capitalize(m));
+        const tab = document.getElementById('tab' + capitalize(m));
+        if (sec && tab) {
+          if (m === mode) {
+            sec.classList.remove('hidden');
+            tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 active-tab shadow-sm bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 flex items-center justify-center space-x-1.5 font-bold ring-1 ring-rose-400/40 whitespace-nowrap cursor-pointer";
+          } else {
+            sec.classList.add('hidden');
+            if (m === 'exam') {
+              tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-amber-700 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 hover:bg-amber-200/80 dark:hover:bg-amber-900/60 flex items-center justify-center space-x-1.5 font-semibold whitespace-nowrap cursor-pointer";
+            } else {
+              tab.className = "w-full px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60 flex items-center justify-center space-x-1.5 font-medium whitespace-nowrap cursor-pointer";
+            }
+          }
+        }
+      });
+
+      if (mode === 'map') {
+        if (window.WordCheckingAdventure) {
+          WordCheckingAdventure.renderAdventureMap();
+        }
+        sayCatSpeech("冒險闖關地圖模式：沿著石板古道漫遊 5 大世界，挑戰 120 關贏取三星與寶箱吧喵！🐾");
+      }
+
+      if (mode === 'phonics') {
+        if (window.WordCheckingPhonics) {
+          window.WordCheckingPhonics.init();
+        }
+        sayCatSpeech("子母音發音教室：自然發音與 KK 音標雙軌對照，點擊卡片聽發音、練習聽音辨音微測驗吧喵！🐾");
+      }
+      if (mode === 'card') sayCatSpeech("翻翻卡片模式：看中文想英文，翻面看拼寫與例句喔！🐾");
+      if (mode === 'quiz') startNewQuiz();
+      if (mode === 'spelling') startNewSpelling();
+      if (mode === 'speaking') startNewSpeaking();
+      if (mode === 'exam') initExamSetup();
+      if (mode === 'list') renderWordTable();
+      if (mode === 'rain') {
+        // 點擊方塊雨後平滑捲動至遊戲視窗
+        const rainSec = document.getElementById('modeRain');
+        if (rainSec) {
+          rainSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        if (window.WordCheckingRain) window.WordCheckingRain.initWordRain();
+      } else {
+        if (window.WordCheckingRain) window.WordCheckingRain.stopWordRain();
+      }
+    }
+
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+// Auto sync on tab visibility change, focus, and unload
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkAndAutoSyncFromPi(true);
+      } else if (document.visibilityState === 'hidden') {
+        // 切換離開分頁或縮小視窗時，若有未同步進度，立即保底同步
+        if (typeof flushPendingSyncToPi === 'function') {
+          flushPendingSyncToPi();
+        }
+      }
+    });
+    window.addEventListener('beforeunload', () => {
+      if (typeof flushPendingSyncToPi === 'function') {
+        flushPendingSyncToPi();
+      }
+    });
+    window.addEventListener('focus', () => {
+      checkAndAutoSyncFromPi(true);
+    });
+
+
+    // <<<<<<<<<< [MODULE END: 07_main_init.js] <<<<<<<<<<
 
   </script>
 </body>
