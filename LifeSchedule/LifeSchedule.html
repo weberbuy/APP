@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.15-test (修復時間軸與各模式雙擊步驟跳轉編輯返回機制、步驟編輯麵包屑導航與儲存並返回強化版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.16-test (雙軌自動備份單軌死鎖解除、視窗關閉強制儲存保護、時間軸動態今天跨裝置跨日同步與偏好全量備份版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -854,10 +854,20 @@ let categoryOrder = [];
 try { categoryOrder = JSON.parse(localStorage.getItem('my_category_order')) || []; } catch(e) { categoryOrder = []; }
 let maxDailyHours = parseFloat(localStorage.getItem('my_max_daily_hours')) || 8;
 let maxWeeklyHours = parseFloat(localStorage.getItem('my_max_weekly_hours')) || 40;
+let storedTimelineMode = localStorage.getItem('my_timeline_start_mode'); // 'today' | 'custom' | 'all'
 let storedTimelineStart = localStorage.getItem('my_timeline_start_date');
 const todayObj = new Date();
 const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
-let timelineStartDate = (storedTimelineStart !== null) ? storedTimelineStart : todayStr;
+
+// 【v5.3.16 時間軸動態起始模式】：預設為 'today' (從今天開始，動態隨當前日期推移)
+let timelineStartMode = storedTimelineMode || (storedTimelineStart === '' ? 'all' : (storedTimelineStart && storedTimelineStart !== todayStr ? 'custom' : 'today'));
+let timelineStartDate = (storedTimelineStart !== null && storedTimelineStart !== undefined) ? storedTimelineStart : todayStr;
+
+function getEffectiveTimelineStartDate() {
+    if (timelineStartMode === 'all') return '';
+    if (timelineStartMode === 'today') return todayStr;
+    return timelineStartDate || todayStr;
+}
 
 // UI & Interaction State Variables
 
@@ -968,7 +978,12 @@ function getExportPayload() {
         blockedSlots,
         maxDailyHours,
         maxWeeklyHours,
-        timelineStartDate
+        timelineStartDate: getEffectiveTimelineStartDate(),
+        timelineStartMode, // 【v5.3.16 新增：動態起始模式】
+        fortellerSpan: (typeof getFortellerSpanSetting === 'function') ? getFortellerSpanSetting() : (localStorage.getItem('my_forteller_span') || 'auto'), // 【v5.3.16 新增】
+        fortellerStartMonth: (typeof getFortellerStartMonthSetting === 'function') ? getFortellerStartMonthSetting() : (localStorage.getItem('my_forteller_start_month') || 'prev_month'), // 【v5.3.16 新增】
+        hideCompletedGoalsCards: (typeof hideCompletedGoalsCards !== 'undefined') ? hideCompletedGoalsCards : (localStorage.getItem('hide_completed_goals_cards') !== 'false'), // 【v5.3.16 新增】
+        routineHubCollapsed: localStorage.getItem('ls_routine_hub_collapsed') === 'true' // 【v5.3.16 新增】
     };
 }
 
@@ -989,7 +1004,34 @@ function applyImportedData(backupData, fileName) {
     if (backupData.blockedSlots) { blockedSlots = backupData.blockedSlots; localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots)); }
     if (backupData.maxDailyHours) { maxDailyHours = backupData.maxDailyHours; localStorage.setItem('my_max_daily_hours', maxDailyHours); }
     if (backupData.maxWeeklyHours) { maxWeeklyHours = backupData.maxWeeklyHours; localStorage.setItem('my_max_weekly_hours', maxWeeklyHours); }
-    if (backupData.timelineStartDate !== undefined) { timelineStartDate = backupData.timelineStartDate; localStorage.setItem('my_timeline_start_date', timelineStartDate); }
+    
+    // 【v5.3.16 還原時間軸動態起始模式與日期】
+    if (backupData.timelineStartMode !== undefined) {
+        timelineStartMode = backupData.timelineStartMode;
+        localStorage.setItem('my_timeline_start_mode', timelineStartMode);
+    }
+    if (backupData.timelineStartDate !== undefined) {
+        timelineStartDate = (timelineStartMode === 'today') ? todayStr : backupData.timelineStartDate;
+        localStorage.setItem('my_timeline_start_date', timelineStartDate);
+    } else {
+        timelineStartDate = getEffectiveTimelineStartDate();
+    }
+
+    // 【v5.3.16 還原全系統跨裝置偏好設定】
+    if (backupData.fortellerSpan !== undefined) {
+        localStorage.setItem('my_forteller_span', backupData.fortellerSpan);
+    }
+    if (backupData.fortellerStartMonth !== undefined) {
+        localStorage.setItem('my_forteller_start_month', backupData.fortellerStartMonth);
+    }
+    if (backupData.hideCompletedGoalsCards !== undefined) {
+        hideCompletedGoalsCards = backupData.hideCompletedGoalsCards;
+        localStorage.setItem('hide_completed_goals_cards', String(hideCompletedGoalsCards));
+    }
+    if (backupData.routineHubCollapsed !== undefined) {
+        localStorage.setItem('ls_routine_hub_collapsed', String(backupData.routineHubCollapsed));
+    }
+
     syncLinkedData();
     localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
     if (fileName) {
@@ -1271,7 +1313,13 @@ function triggerAutoSaveToPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-    if (!piServerUrl || !piApiKey) {
+    const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
+    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const hasPi = Boolean(piServerUrl && piApiKey);
+    const hasGas = Boolean(gasUrl && gasKey);
+
+    // 【v5.3.16 解除單軌死鎖】：支援純 Google 雲端硬碟 (GAS) 或純樹莓派或雙軌自動備份
+    if (!hasPi && !hasGas) {
         updatePiSyncBadge('⚪ 未設定伺服器 (點擊設定)', 'bg-slate-100 text-slate-600 border-slate-200');
         return;
     }
@@ -1321,6 +1369,20 @@ async function performSilentAutoSave() {
     } catch (e) {
         updatePiSyncBadge('⚠️ 離線/儲存失敗', 'bg-rose-50 text-rose-700 border-rose-200');
     }
+}
+
+// 【v5.3.16 視窗關閉/切換立即強制結算保護】：防止 1.5s 防抖計時器因關閉分頁或切到手機被銷毀而丟失雲端備份
+function flushPendingAutoSave() {
+    if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = null;
+        performSilentAutoSave();
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', flushPendingAutoSave);
+    window.addEventListener('pagehide', flushPendingAutoSave);
 }
 async function exportToPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
@@ -2207,24 +2269,41 @@ function updateContainerWidth() {
         }
 
         function setTimelineStartToToday() {
+            timelineStartMode = 'today';
             timelineStartDate = todayStr;
-            localStorage.setItem('my_timeline_start_date', timelineStartDate);
+            localStorage.setItem('my_timeline_start_mode', 'today');
+            localStorage.setItem('my_timeline_start_date', todayStr);
             render();
             triggerAutoSaveToPi();
+            showToast('🌟 時間軸已切換為【動態從今天開始】(跨裝置與跨日自動同步！)', 'success');
         }
 
         function showAllTimelineHistory() {
+            timelineStartMode = 'all';
             timelineStartDate = '';
-            localStorage.setItem('my_timeline_start_date', timelineStartDate);
+            localStorage.setItem('my_timeline_start_mode', 'all');
+            localStorage.setItem('my_timeline_start_date', '');
             render();
             triggerAutoSaveToPi();
+            showToast('📜 時間軸已切換為【顯示全部歷史】', 'info');
         }
 
         function changeTimelineStartDate(val) {
-            timelineStartDate = val || '';
-            localStorage.setItem('my_timeline_start_date', timelineStartDate);
+            if (!val) {
+                showAllTimelineHistory();
+                return;
+            }
+            if (val === todayStr) {
+                setTimelineStartToToday();
+                return;
+            }
+            timelineStartMode = 'custom';
+            timelineStartDate = val;
+            localStorage.setItem('my_timeline_start_mode', 'custom');
+            localStorage.setItem('my_timeline_start_date', val);
             render();
             triggerAutoSaveToPi();
+            showToast(`📅 時間軸已設定起始日期為【${val}】`, 'info');
         }
 
         function toggleBlockPanel() { isBlockPanelOpen = !isBlockPanelOpen; render(); }
@@ -3816,8 +3895,8 @@ function renderTimelineMatrix(container) {
                             <input type="number" min="1" max="24" step="0.5" value="${maxDailyHours}" oninput="updateMaxDailyHours(this.value)" onchange="updateMaxDailyHours(this.value)" class="w-16 px-2 py-1 text-xs border border-slate-300 rounded-lg text-slate-800 font-bold bg-white text-center">
                             <span class="text-xs text-slate-500">小時</span>
                         </div>
-                        <button onclick="setTimelineStartToToday()" class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold px-3 py-1 rounded-lg border border-emerald-300 transition-colors">🌟 從今天開始</button>
-                        <button onclick="showAllTimelineHistory()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3 py-1 rounded-lg transition-colors">📜 顯示全部歷史</button>
+                        <button onclick="setTimelineStartToToday()" class="text-xs ${timelineStartMode === 'today' ? 'bg-emerald-600 text-white shadow-xs font-black' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold'} px-3 py-1 rounded-lg border border-emerald-300 transition-colors cursor-pointer" title="時間軸永遠隨當天動態推移 (跨裝置自動對齊)">🌟 從今天開始</button>
+                        <button onclick="showAllTimelineHistory()" class="text-xs ${timelineStartMode === 'all' ? 'bg-slate-700 text-white font-bold' : 'bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium'} px-3 py-1 rounded-lg transition-colors cursor-pointer">📜 顯示全部歷史</button>
                     </div>
                 </div>
             `;
