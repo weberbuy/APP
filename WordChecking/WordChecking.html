@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.12.0-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.12.1-test)</title>
   <!-- Tailwind CSS CDN for modern, clean UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -174,7 +174,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.12.0-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.12.1-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -6876,7 +6876,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.12.0-test",
+        version: "2.12.1-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -8796,6 +8796,286 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   } catch (e) {}
 
   // ==========================================================================
+  // 純音標單音音訊映射表與 Web Audio 頻譜合成器 (Pure Phoneme Engine)
+  // ==========================================================================
+  const PHONEME_AUDIO_MAP = {
+    'sv_a': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/71/Near-open_front_unrounded_vowel.ogg',
+      formant: { f1: 800, f2: 1750, f3: 2450 },
+      label: '[æ]'
+    },
+    'sv_e': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/71/Open-mid_front_unrounded_vowel.ogg',
+      formant: { f1: 550, f2: 1850, f3: 2500 },
+      label: '[ɛ]'
+    },
+    'sv_i': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Near-close_near-front_unrounded_vowel.ogg',
+      formant: { f1: 400, f2: 2000, f3: 2600 },
+      label: '[ɪ]'
+    },
+    'sv_o': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Open_back_unrounded_vowel.ogg',
+      formant: { f1: 750, f2: 1100, f3: 2400 },
+      label: '[ɑ]'
+    },
+    'sv_u': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Open-mid_back_unrounded_vowel.ogg',
+      formant: { f1: 650, f2: 1200, f3: 2500 },
+      label: '[ʌ]'
+    },
+    'sv_schwa': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Mid-central_vowel.ogg',
+      formant: { f1: 500, f2: 1500, f3: 2500 },
+      label: '[ə]'
+    },
+    'lv_a': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/Close-mid_front_unrounded_vowel.ogg',
+      formant: { f1: 450, f2: 2100, endF1: 400, endF2: 2200 },
+      label: '[e]'
+    },
+    'lv_e': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d4/Close_front_unrounded_vowel.ogg',
+      formant: { f1: 280, f2: 2300, f3: 2800 },
+      label: '[i]'
+    },
+    'lv_i': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Open_back_unrounded_vowel.ogg',
+      formant: { f1: 700, f2: 1200, endF1: 350, endF2: 2100 },
+      label: '[aɪ]'
+    },
+    'lv_o': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Close-mid_back_rounded_vowel.ogg',
+      formant: { f1: 450, f2: 900, endF1: 400, endF2: 800 },
+      label: '[o]'
+    },
+    'lv_u': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/Close_back_rounded_vowel.ogg',
+      formant: { f1: 300, f2: 1800, endF1: 300, endF2: 900 },
+      label: '[ju]'
+    },
+    'lv_oo_long': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/Close_back_rounded_vowel.ogg',
+      formant: { f1: 300, f2: 870, f3: 2300 },
+      label: '[u]'
+    },
+    'lv_oo_short': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Near-close_near-back_rounded_vowel.ogg',
+      formant: { f1: 450, f2: 1050, f3: 2300 },
+      label: '[ʊ]'
+    },
+    'lv_ou_ow': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Open_back_unrounded_vowel.ogg',
+      formant: { f1: 750, f2: 1150, endF1: 450, endF2: 850 },
+      label: '[aʊ]'
+    },
+    'lv_oi_oy': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Close-mid_back_rounded_vowel.ogg',
+      formant: { f1: 500, f2: 950, endF1: 350, endF2: 2100 },
+      label: '[ɔɪ]'
+    },
+    'lv_ar': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Open_back_unrounded_vowel.ogg',
+      formant: { f1: 700, f2: 1200, f3: 1700 },
+      label: '[ɑr]'
+    },
+    'lv_er_ir_ur': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Mid-central_vowel.ogg',
+      formant: { f1: 480, f2: 1350, f3: 1650 },
+      label: '[ɝ]'
+    },
+    'c_pb': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Voiceless_bilabial_plosive.ogg',
+      consonantType: 'plosive',
+      label: '[p] / [b]'
+    },
+    'c_td': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Voiceless_alveolar_plosive.ogg',
+      consonantType: 'plosive',
+      label: '[t] / [d]'
+    },
+    'c_kg': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Voiceless_velar_plosive.ogg',
+      consonantType: 'plosive',
+      label: '[k] / [g]'
+    },
+    'c_fv': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Voiceless_labiodental_fricative.ogg',
+      consonantType: 'fricative',
+      label: '[f] / [v]'
+    },
+    'c_sz': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Voiceless_alveolar_sibilant.ogg',
+      consonantType: 'sibilant',
+      label: '[s] / [z]'
+    },
+    'c_mn_ng': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Bilabial_nasal.ogg',
+      consonantType: 'nasal',
+      label: '[m] / [n] / [ŋ]'
+    },
+    'c_lr': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Alveolar_lateral_approximant.ogg',
+      consonantType: 'liquid',
+      label: '[l] / [r]'
+    },
+    'c_wyh': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/da/Voiceless_glottal_fricative.ogg',
+      consonantType: 'aspirate',
+      label: '[w] / [j] / [h]'
+    },
+    'dg_th_unvoiced': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/80/Voiceless_dental_fricative.ogg',
+      consonantType: 'fricative',
+      label: '[θ]'
+    },
+    'dg_th_voiced': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6a/Voiced_dental_fricative.ogg',
+      consonantType: 'fricative',
+      label: '[ð]'
+    },
+    'dg_sh': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Voiceless_postalveolar_fricative.ogg',
+      consonantType: 'fricative',
+      label: '[ʃ]'
+    },
+    'dg_ch': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Voiceless_palato-alveolar_affricate.ogg',
+      consonantType: 'affricate',
+      label: '[tʃ]'
+    },
+    'dg_wh_ph': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Voiced_labio-velar_approximant.ogg',
+      consonantType: 'approximant',
+      label: '[w] / [f]'
+    },
+    'dg_ck': {
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Voiceless_velar_plosive.ogg',
+      consonantType: 'plosive',
+      label: '[k]'
+    }
+  };
+
+  // Web Audio 母音共振峰合成 (Vowel Formant Synthesis Fallback)
+  function synthesizeVowelFormant(ctx, formant) {
+    try {
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(140, t); // 自然人聲基頻
+
+      const bp1 = ctx.createBiquadFilter();
+      bp1.type = 'bandpass';
+      bp1.frequency.setValueAtTime(formant.f1, t);
+      if (formant.endF1) bp1.frequency.exponentialRampToValueAtTime(formant.endF1, t + 0.32);
+      bp1.Q.setValueAtTime(7, t);
+
+      const bp2 = ctx.createBiquadFilter();
+      bp2.type = 'bandpass';
+      bp2.frequency.setValueAtTime(formant.f2, t);
+      if (formant.endF2) bp2.frequency.exponentialRampToValueAtTime(formant.endF2, t + 0.32);
+      bp2.Q.setValueAtTime(8, t);
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(0.22, t + 0.05);
+      gain.gain.setValueAtTime(0.22, t + 0.35);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+
+      osc.connect(bp1);
+      osc.connect(bp2);
+      bp1.connect(gain);
+      bp2.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.46);
+    } catch (e) {
+      console.warn("Vowel synthesis error:", e);
+    }
+  }
+
+  let activePhonemeAudio = null;
+
+  // 播放單純音標發音 (Pure Isolated Phoneme Sound)
+  function playPurePhoneme(id) {
+    const item = PHONICS_DATA.find(x => x.id === id);
+    if (!item) return;
+
+    if (activePhonemeAudio) {
+      try {
+        activePhonemeAudio.pause();
+        activePhonemeAudio.currentTime = 0;
+      } catch (e) {}
+      activePhonemeAudio = null;
+    }
+
+    const audioInfo = PHONEME_AUDIO_MAP[id];
+    let audioPlayed = false;
+
+    // 1. 優先嘗試播放純音素錄音檔 (Audio)
+    if (audioInfo && audioInfo.audioUrl) {
+      try {
+        const audio = new Audio(audioInfo.audioUrl);
+        activePhonemeAudio = audio;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            audioPlayed = true;
+          }).catch(() => {
+            triggerSynthesizerFallback(item, audioInfo);
+          });
+        }
+      } catch (e) {
+        triggerSynthesizerFallback(item, audioInfo);
+      }
+    } else {
+      triggerSynthesizerFallback(item, audioInfo);
+    }
+
+    if (typeof window.sayCatSpeech === 'function') {
+      window.sayCatSpeech(`這是單純的音標發音【${item.kk}】喵！${item.tip}～🐾`, "純音標單音");
+    }
+  }
+
+  function triggerSynthesizerFallback(item, audioInfo) {
+    if (audioInfo && audioInfo.formant && typeof window.getSharedAudioContext === 'function') {
+      try {
+        const ctx = window.getSharedAudioContext();
+        if (ctx) {
+          synthesizeVowelFormant(ctx, audioInfo.formant);
+          return;
+        }
+      } catch (e) {}
+    }
+    // 次級保底：若無音訊且無 Web Audio，使用音標音素輔助發音
+    if (item.soundText && typeof window.playVoiceText === 'function') {
+      window.playVoiceText(item.soundText, 0.85);
+    }
+  }
+
+  // 拼讀拆解練習 (先播放純音標單音，再播放完整例字拼讀)
+  function playPhonicsBlending(id) {
+    const item = PHONICS_DATA.find(x => x.id === id);
+    if (!item || !item.words || item.words.length === 0) return;
+    const targetWord = item.words[0].word;
+
+    // 先播放純單音標發音
+    playPurePhoneme(id);
+
+    // 間隔 700 毫秒後無縫銜接完整例字拼讀！
+    setTimeout(() => {
+      if (typeof window.playVoiceText === 'function') {
+        window.playVoiceText(targetWord, 0.9);
+      }
+    }, 700);
+
+    if (typeof window.sayCatSpeech === 'function') {
+      window.sayCatSpeech(`拼讀拆解示範：先發音標【${item.kk}】，再拼讀出單字「${targetWord}」喵！🐾`, "拼讀拆解");
+    }
+  }
+
+  // ==========================================================================
   // 核心功能：發音播放
   // ==========================================================================
   function playPhonicsAudio(text, rate = 0.9) {
@@ -8818,12 +9098,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
   }
 
-  // 點擊音標卡片
+  // 點擊音標卡片 (直接呼叫純音標單音播放)
   function playSoundCard(item) {
-    const speakText = item.words && item.words.length > 0 ? item.words[0].word : item.symbol;
-    playPhonicsAudio(speakText, 0.85);
-    if (typeof window.sayCatSpeech === 'function') {
-      window.sayCatSpeech(`自然發音【${item.symbol}】對應 KK 音標【${item.kk}】！${item.tip}喵～🐾`, "音素發音");
+    if (typeof item === 'string') {
+      playPurePhoneme(item);
+    } else if (item && item.id) {
+      playPurePhoneme(item.id);
     }
   }
 
@@ -8878,10 +9158,19 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
                 <button onclick="WordCheckingPhonics.toggleBookmark('${item.id}')" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer text-sm" title="${isStarred ? '取消標記' : '標記為待加強'}">
                   ${isStarred ? '⭐' : '☆'}
                 </button>
-                <button onclick="WordCheckingPhonics.playSoundCard('${item.id}')" class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition cursor-pointer shadow-2xs" title="聆聽示範發音">
-                  <i class="fa-solid fa-volume-high text-sm"></i>
-                </button>
               </div>
+            </div>
+
+            <!-- Dedicated Dual Action Bar: [🔊 聽純音標] & [🐾 拼讀拆解] -->
+            <div class="flex items-center gap-2 mb-2.5">
+              <button onclick="WordCheckingPhonics.playPurePhoneme('${item.id}')" class="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-xs shadow-xs transition transform active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer" title="只聽單純一個音標發音 (Isolated Sound)">
+                <i class="fa-solid fa-volume-high text-xs"></i>
+                <span>聽純音標 ${item.kk}</span>
+              </button>
+              <button onclick="WordCheckingPhonics.playBlending('${item.id}')" class="py-1.5 px-2.5 rounded-xl bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 dark:hover:bg-slate-600 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-slate-600 font-bold text-xs transition cursor-pointer flex items-center gap-1" title="先發音標再拼讀出單字">
+                <span>🐾</span>
+                <span>拼讀拆解</span>
+              </button>
             </div>
 
             <div class="text-xs font-bold text-amber-700 dark:text-amber-400 mb-1.5 flex items-center gap-1">
@@ -9107,9 +9396,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   window.WordCheckingPhonics = {
     init: initPhonicsMode,
     setCategory: setPhonicsCategory,
+    playPurePhoneme: playPurePhoneme,
+    playBlending: playPhonicsBlending,
     playSoundCard: (id) => {
-      const item = PHONICS_DATA.find(x => x.id === id);
-      if (item) playSoundCard(item);
+      playPurePhoneme(id);
     },
     playWord: playWordWithCat,
     playPhonicsAudio: playPhonicsAudio,
