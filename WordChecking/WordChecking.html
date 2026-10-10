@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.1-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.2-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.1-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.2-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -5325,6 +5325,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         document.getElementById('speakFeedbackTitle').innerText = '發音超清晰！辨識成功！ (+1 🐟)';
         document.getElementById('speakFeedbackDetail').innerText = `咪咪聽到了：${spokenText} (目標單字：${currentSpeakItem.word})`;
         sayCatSpeech(`好標準的英文發音！咪咪太喜歡了～魚乾送給妳 🐟🐾`);
+        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+          window.WordCheckingCruise.reportItemSuccess(currentSpeakItem.word);
+        }
       } else {
         userProgress[key] = 'weak';
         feedback.className = "p-4 rounded-2xl text-sm bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200";
@@ -5489,6 +5492,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         titleEl.innerText = "🎉 哇！滿分 100 分！太神了！";
         feedbackEl.innerText = "喵嗚嗚嗚！全部聽寫完全正確，連一個字母都沒拼錯！咪咪給妳滿分神喵皇冠，小魚乾滿載而歸～🐟✨";
         playCatMeowSound();
+        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+          window.WordCheckingCruise.completeCruise();
+        }
       } else if (score >= 80) {
         emojiEl.innerText = "😸";
         titleEl.innerText = "✨ 優秀！拿到了 " + score + " 分！";
@@ -5780,7 +5786,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.1-test",
+        version: "2.13.2-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -6546,6 +6552,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     rainState.score += points;
     rainState.clearedCount++;
     rainState.mimiEnergy = Math.min(100, rainState.mimiEnergy + 25);
+    if (window.WordCheckingCruise && window.WordCheckingCruise.isActive() && b && b.target) {
+      window.WordCheckingCruise.reportItemSuccess(b.target.word);
+    }
     if (typeof addFish === 'function') addFish(1, true); // 遊戲進行中暫緩即時上傳樹莓派
     rainState.hasPendingSync = true;
     playSound('clear');
@@ -7582,38 +7591,39 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       label: '[k]'
     }
   };
-  function synthesizeVowelFormant(ctx, formant) {
-    try {
-      const t = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(140, t); // 自然人聲基頻
-      const bp1 = ctx.createBiquadFilter();
-      bp1.type = 'bandpass';
-      bp1.frequency.setValueAtTime(formant.f1, t);
-      if (formant.endF1) bp1.frequency.exponentialRampToValueAtTime(formant.endF1, t + 0.32);
-      bp1.Q.setValueAtTime(7, t);
-      const bp2 = ctx.createBiquadFilter();
-      bp2.type = 'bandpass';
-      bp2.frequency.setValueAtTime(formant.f2, t);
-      if (formant.endF2) bp2.frequency.exponentialRampToValueAtTime(formant.endF2, t + 0.32);
-      bp2.Q.setValueAtTime(8, t);
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.22, t + 0.05);
-      gain.gain.setValueAtTime(0.22, t + 0.35);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
-      osc.connect(bp1);
-      osc.connect(bp2);
-      bp1.connect(gain);
-      bp2.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.46);
-    } catch (e) {
-      console.warn("Vowel synthesis error:", e);
-    }
-  }
+  const PURE_PHONEME_SOUNDS = {
+    'sv_a': 'short a',
+    'sv_e': 'eh',
+    'sv_i': 'short i',
+    'sv_o': 'ah',
+    'sv_u': 'uh',
+    'sv_schwa': 'uh',
+    'lv_a': 'ay',
+    'lv_e': 'ee',
+    'lv_i': 'eye',
+    'lv_o': 'oh',
+    'lv_u': 'you',
+    'lv_oo_long': 'oo',
+    'lv_oo_short': 'short oo',
+    'lv_ou_ow': 'ow',
+    'lv_oi_oy': 'oy',
+    'lv_ar': 'ar',
+    'lv_er_ir_ur': 'er',
+    'c_pb': 'p, b',
+    'c_td': 't, d',
+    'c_kg': 'k, g',
+    'c_fv': 'f, v',
+    'c_sz': 's, z',
+    'c_mn_ng': 'm, n, ng',
+    'c_lr': 'l, r',
+    'c_wyh': 'w, y, h',
+    'dg_th_unvoiced': 'unvoiced th',
+    'dg_th_voiced': 'voiced th',
+    'dg_sh': 'sh',
+    'dg_ch': 'ch',
+    'dg_wh_ph': 'wh, ph',
+    'dg_ck': 'k'
+  };
   let activePhonemeAudio = null;
   function playPurePhoneme(id) {
     const item = PHONICS_DATA.find(x => x.id === id);
@@ -7625,29 +7635,59 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       } catch (e) {}
       activePhonemeAudio = null;
     }
-    const anchorWord = (item.words && item.words.length > 0) ? item.words[0].word : item.symbol;
-    if (typeof window.playVoiceText === 'function') {
-      window.playVoiceText(anchorWord, 0.85);
-    } else if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(anchorWord);
-      u.lang = 'en-US';
-      u.rate = 0.85;
-      window.speechSynthesis.speak(u);
+    const phonemeSound = PURE_PHONEME_SOUNDS[id] || item.soundText || item.symbol;
+    const audioInfo = PHONEME_AUDIO_MAP[id];
+    const fallbackToSpeech = () => {
+      playPhonicsAudio(phonemeSound, 0.85);
+    };
+    if (audioInfo && audioInfo.audioUrl) {
+      try {
+        const mp3Url = audioInfo.audioUrl.replace('wikipedia/commons/', 'wikipedia/commons/transcoded/') + '/' + audioInfo.audioUrl.split('/').pop() + '.mp3';
+        const audio = new Audio(mp3Url);
+        activePhonemeAudio = audio;
+        let played = false;
+        audio.addEventListener('play', () => { played = true; });
+        audio.addEventListener('error', () => {
+          if (!played) {
+            const oggAudio = new Audio(audioInfo.audioUrl);
+            activePhonemeAudio = oggAudio;
+            oggAudio.play().catch(() => {
+              fallbackToSpeech();
+            });
+          }
+        });
+        const p = audio.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            const oggAudio = new Audio(audioInfo.audioUrl);
+            activePhonemeAudio = oggAudio;
+            oggAudio.play().catch(() => {
+              fallbackToSpeech();
+            });
+          });
+        }
+      } catch (e) {
+        fallbackToSpeech();
+      }
+    } else {
+      fallbackToSpeech();
     }
     if (typeof window.sayCatSpeech === 'function') {
-      window.sayCatSpeech(`音標【${item.kk}】自然發音【${item.symbol}】！例字如 "${anchorWord}"，${item.tip}喵～🐾`, "純音標單音");
+      window.sayCatSpeech(`音標【${item.kk}】自然發音【${item.symbol}】！發音要訣：${item.tip}喵～🐾`, "純音標單音");
     }
   }
   function playPhonicsBlending(id) {
     const item = PHONICS_DATA.find(x => x.id === id);
     if (!item || !item.words || item.words.length === 0) return;
     const targetWord = item.words[0].word;
-    if (typeof window.playVoiceText === 'function') {
-      window.playVoiceText(targetWord, 0.75);
-    }
+    playPurePhoneme(id);
+    setTimeout(() => {
+      if (typeof window.playVoiceText === 'function') {
+        window.playVoiceText(targetWord, 0.8);
+      }
+    }, 750);
     if (typeof window.sayCatSpeech === 'function') {
-      window.sayCatSpeech(`拼讀示範：字母【${item.symbol}】對應音標【${item.kk}】，慢速拼讀 "${targetWord}" 喵！🐾`, "拼讀拆解");
+      window.sayCatSpeech(`拼讀拆解示範：先聽音標【${item.kk}】，再拼讀出單字「${targetWord}」喵！🐾`, "拼讀拆解");
     }
   }
   function playPhonicsAudio(text, rate = 0.9) {
@@ -8160,6 +8200,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   function startNextStage(targetStageIndex) {
     const previewModal = document.getElementById('cruisePreviewModal');
     if (previewModal) previewModal.classList.add('hidden');
+    const vicModal = document.getElementById('cruiseVictoryModal');
+    if (vicModal) vicModal.classList.add('hidden');
     currentStageIndex = targetStageIndex;
     renderCruiseTopBar();
     stagePassedItems.clear();
@@ -8230,7 +8272,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           <h3 class="font-black text-lg text-slate-900 dark:text-white">第 ${stage.step} 關：${stage.name} 全對通關！</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">太厲害了！特訓單字全數過關，獲贈 3 條小魚乾 🐟</p>
         </div>
-        <button onclick="WordCheckingCruise.startNextStage(${currentStageIndex + 1})" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-black text-sm shadow-md shadow-emerald-500/25 transition transform hover:scale-105 active:scale-95 cursor-pointer">
+        <button onclick="WordCheckingCruise.startNextStage(${currentStageIndex + 1}); const m = document.getElementById('cruiseVictoryModal'); if (m) m.classList.add('hidden');" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-black text-sm shadow-md shadow-emerald-500/25 transition transform hover:scale-105 active:scale-95 cursor-pointer">
           前進第 ${nextStage.step} 關：${nextStage.name} ➔
         </button>
       </div>
@@ -8281,7 +8323,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           <span class="text-base text-rose-600 font-black">+20 條小魚乾 🐟</span>
           <span>＋ 黃金冠冕徽章 👑</span>
         </div>
-        <button onclick="WordCheckingCruise.closeCruiseAndReturn()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-black text-sm shadow-md shadow-amber-500/30 transition transform hover:scale-105 active:scale-95 cursor-pointer">
+        <button onclick="WordCheckingCruise.closeCruiseAndReturn(); const m = document.getElementById('cruiseVictoryModal'); if (m) m.classList.add('hidden');" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-black text-sm shadow-md shadow-amber-500/30 transition transform hover:scale-105 active:scale-95 cursor-pointer">
           返回單字總表 🐾
         </button>
       </div>
@@ -8315,6 +8357,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     launchCruiseFromTable: launchCruiseFromTable,
     startNextStage: startNextStage,
     reportItemSuccess: reportStageItemSuccess,
+    completeCruise: completeCruiseGoldenMastery,
     stopCruise: stopCruise,
     closeCruiseAndReturn: closeCruiseAndReturn,
     isActive: () => isCruiseActive,
