@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.17-test (今日習慣打卡逾期時間窗防護、結案目標過濾、智慧對齊今日防歷史重播與全部遞延強化版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.18-test (開頁同步閘門防舊資料回寫、上傳防縮水熔斷、雙軌自癒拉取強化版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -888,6 +888,8 @@ let piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
 let piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 let lastSyncedFileName = localStorage.getItem('pi_last_synced_file') || '';
 let autoSaveTimer = null;
+// 【v5.3.18 開頁同步閘門】：頁面載入時預設為 false，在雲端雙軌檢查拉取完成前全域鎖定自動儲存，杜絕舊設備舊快取回寫覆蓋雲端！
+let isInitialSyncCompleted = false;
 let hideCompletedGoalsCards = localStorage.getItem('hide_completed_goals_cards') !== 'false';
 let showCompletedStepsMap = {};
 let showAddStepFormMap = {};
@@ -1038,6 +1040,9 @@ function applyImportedData(backupData, fileName) {
         lastSyncedFileName = fileName;
         localStorage.setItem('pi_last_synced_file', fileName);
     }
+    // 【v5.3.18 記錄最新已知總步驟數】：作為防縮水熔斷基準
+    const totalStepsInImported = (thoughts || []).reduce((acc, t) => acc + (Array.isArray(t.steps) ? t.steps.length : 0), 0);
+    localStorage.setItem('ls_last_known_steps_count', String(totalStepsInImported));
     render();
     return true;
 }
@@ -1310,6 +1315,12 @@ async function savePiSettings() {
 }
 
 function triggerAutoSaveToPi() {
+    // 【v5.3.18 開頁同步閘門防禦】：若開頁之初尚未完成伺服器最新檔案檢查/拉取，嚴禁觸發自動儲存，保護雲端資料安全
+    if (!isInitialSyncCompleted) {
+        console.warn('[AutoSave Blocked] 開頁雲端同步檢查尚未完成，已攔截自動儲存，杜絕本機舊快取覆蓋雲端。');
+        return;
+    }
+
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -1328,6 +1339,9 @@ function triggerAutoSaveToPi() {
     autoSaveTimer = setTimeout(performSilentAutoSave, 1500);
 }
 async function performSilentAutoSave() {
+    // 【v5.3.18 開頁同步閘門防禦】
+    if (!isInitialSyncCompleted) return;
+
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -1337,6 +1351,15 @@ async function performSilentAutoSave() {
     const hasGas = Boolean(gasUrl && gasKey);
     if (!hasPi && !hasGas) return;
     if (thoughts.length === 0) return;
+
+    // 【v5.3.18 資料量防縮水熔斷機制】：防止載入不完整舊快取導致雲端資料庫遭截斷覆蓋
+    const currentStepsCount = thoughts.reduce((acc, t) => acc + (Array.isArray(t.steps) ? t.steps.length : 0), 0);
+    const lastKnownSteps = parseInt(localStorage.getItem('ls_last_known_steps_count') || '0', 10);
+    if (lastKnownSteps > 20 && currentStepsCount < lastKnownSteps * 0.7) {
+        console.warn(`[AutoSave Aborted] 偵測到資料異常大幅縮水：目前總步驟數 (${currentStepsCount}) 遠低於上次已知步驟數 (${lastKnownSteps}) 之 70%，已熔斷自動儲存！`);
+        updatePiSyncBadge('⚠️ 偵測到資料大幅縮水 (已暫停自動儲存)', 'bg-rose-100 text-rose-800 border-rose-300');
+        return;
+    }
 
     updatePiSyncBadge('⏳ 雙軌備份中...', 'bg-indigo-50 text-indigo-800 border-indigo-200 animate-pulse');
     const fileName = generateBackupFileName();
@@ -1354,14 +1377,17 @@ async function performSilentAutoSave() {
         if (piOk && gasOk) {
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
+            localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
             updatePiSyncBadge('🟢 雙軌已備份最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
         } else if (gasOk && !piOk) {
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
+            localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
             updatePiSyncBadge('🟡 雲端已備份 (樹莓派離線待復原)', 'bg-amber-100 text-amber-900 border-amber-300');
         } else if (piOk && !gasOk) {
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
+            localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
             updatePiSyncBadge('🟡 樹莓派已備份 (雲端離線)', 'bg-amber-100 text-amber-900 border-amber-300');
         } else {
             updatePiSyncBadge('⚠️ 雙軌備份失敗', 'bg-rose-100 text-rose-800 border-rose-200');
@@ -1373,6 +1399,9 @@ async function performSilentAutoSave() {
 
 // 【v5.3.16 視窗關閉/切換立即強制結算保護】：防止 1.5s 防抖計時器因關閉分頁或切到手機被銷毀而丟失雲端備份
 function flushPendingAutoSave() {
+    // 【v5.3.18 開頁同步閘門防禦】：若開頁初期尚未完成雲端同步拉取，視窗關閉/切換時嚴禁執行強制儲存
+    if (!isInitialSyncCompleted) return;
+
     if (autoSaveTimer) {
         clearTimeout(autoSaveTimer);
         autoSaveTimer = null;
@@ -1451,6 +1480,7 @@ async function checkAndAutoSyncFromPi() {
 
     if (!hasPi && !hasGas) {
         updatePiSyncBadge('⚪ 未設定伺服器 (點擊設定)', 'bg-slate-100 text-slate-600 border-slate-200');
+        isInitialSyncCompleted = true; // 無設定伺服器，解鎖本機自動儲存
         return;
     }
     updatePiSyncBadge('🔍 雙軌檢查同步中...', 'bg-indigo-50 text-indigo-700 border-indigo-200 animate-pulse');
@@ -1521,6 +1551,9 @@ async function checkAndAutoSyncFromPi() {
         }
     } catch (e) {
         updatePiSyncBadge('⚠️ 連線失敗 (點擊重試)', 'bg-rose-50 text-rose-700 border-rose-200');
+    } finally {
+        // 【v5.3.18 開頁同步鎖解除】：無論同步結果如何，均在完成伺服器探測/拉取後解鎖自動儲存
+        isInitialSyncCompleted = true;
     }
 }
 
@@ -2464,7 +2497,7 @@ function updateContainerWidth() {
                 else tabsSection.classList.add('hidden');
             }
             if (mode === 'timeline') {
-                autoCheckExpiredInTimeline();
+                // 【v5.3.18 消除開頁隱式寫入】：切換時間軸時不再自動呼叫 autoCheckExpiredInTimeline 靜默修改資料
             }
             render();
         }
