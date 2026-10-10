@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.3-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.4-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.3-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.4-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -660,9 +660,6 @@
         <button onclick="toggleCardFaceMode()" id="cardFaceModeToggleBtn" class="px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-slate-700 text-xs font-bold text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-slate-600 hover:bg-rose-100 transition cursor-pointer flex items-center gap-1 shadow-2xs">
           <span>🔀</span>
           <span id="cardFaceModeText">正面：英文先出 (預設)</span>
-        </button>
-        <button onclick="toggleCardBilingualVoice()" id="cardBilingualToggleBtn" class="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-slate-700 text-xs font-bold text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-slate-600 hover:bg-amber-100 transition cursor-pointer flex items-center gap-1 shadow-2xs" title="切換中英雙語發音或純英文發音">
-          <span id="cardBilingualBtnText">🔊 發音：中英雙語</span>
         </button>
         <select id="cardOrderSelect" onchange="onCardOrderChange()" class="bg-amber-50 dark:bg-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-xl border border-amber-200 dark:border-slate-600 focus:outline-none cursor-pointer shadow-2xs">
           <option value="default">預設順序（依單字編號）</option>
@@ -1893,20 +1890,17 @@ function playChineseCurrent(rate = 1.0) {
 }
 function playVoiceCurrent(rate = 1.0, options = {}) {
   let word = '';
-  let chinese = '';
   if (typeof filteredList !== 'undefined' && filteredList && filteredList.length > 0) {
     const idx = (typeof currentIndex !== 'undefined') ? currentIndex : 0;
-    if (filteredList[idx]) {
-      word = filteredList[idx].word || '';
-      chinese = filteredList[idx].chinese || '';
+    if (filteredList[idx] && filteredList[idx].word) {
+      word = filteredList[idx].word;
     }
   }
   if (!word && typeof window !== 'undefined' && typeof window.getStudyList === 'function') {
     const list = window.getStudyList();
     const idx = (typeof currentIndex !== 'undefined') ? currentIndex : 0;
-    if (list && list[idx]) {
-      word = list[idx].word || '';
-      chinese = list[idx].chinese || '';
+    if (list && list[idx] && list[idx].word) {
+      word = list[idx].word;
     }
   }
   if (!word && typeof document !== 'undefined') {
@@ -1923,8 +1917,6 @@ function playVoiceCurrent(rate = 1.0, options = {}) {
         }
       }
     }
-    const cEl = document.getElementById('cardChinese');
-    if (cEl && cEl.innerText) chinese = cEl.innerText.trim();
   }
   if (word) {
     if (typeof window !== 'undefined' && typeof window.playVoiceText === 'function') {
@@ -1932,16 +1924,6 @@ function playVoiceCurrent(rate = 1.0, options = {}) {
     } else {
       playVoiceText(word, rate);
     }
-    const isBilingual = (typeof window !== 'undefined' && typeof window.isCardBilingualActive === 'function')
-      ? window.isCardBilingualActive()
-      : (typeof window !== 'undefined' && window.cardBilingualVoice !== false);
-    if (chinese && isBilingual && options.chineseOnly !== true) {
-      setTimeout(() => {
-        playChineseText(chinese, 1.0);
-      }, 750);
-    }
-  } else if (chinese) {
-    playChineseText(chinese, 1.0);
   }
 }
 if (typeof window !== 'undefined') {
@@ -5855,7 +5837,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.3-test",
+        version: "2.13.4-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -7661,37 +7643,37 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
   };
   const PURE_PHONEME_SOUNDS = {
-    'sv_a': 'short a',
-    'sv_e': 'eh',
-    'sv_i': 'short i',
-    'sv_o': 'ah',
-    'sv_u': 'uh',
-    'sv_schwa': 'schwa, uh',
-    'lv_a': 'ay',
-    'lv_e': 'ee',
-    'lv_i': 'eye',
-    'lv_o': 'oh',
-    'lv_u': 'you',
-    'lv_oo_long': 'oo',
-    'lv_oo_short': 'short oo',
-    'lv_ou_ow': 'ow',
-    'lv_oi_oy': 'oy',
-    'lv_ar': 'ar',
-    'lv_er_ir_ur': 'er',
-    'c_pb': 'p, b',
-    'c_td': 't, d',
-    'c_kg': 'k, g',
-    'c_fv': 'f, v',
-    'c_sz': 's, z',
-    'c_mn_ng': 'm, n, ng',
-    'c_lr': 'l, r',
-    'c_wyh': 'w, y, h',
-    'dg_th_unvoiced': 'unvoiced th',
-    'dg_th_voiced': 'voiced th, the',
-    'dg_sh': 'sh',
-    'dg_ch': 'ch',
-    'dg_wh_ph': 'wh, ph',
-    'dg_ck': 'k'
+    'sv_a': 'ah',           // [æ] 蝴蝶音（優先播放純 [æ] 母音音檔，回退以自然短母音發聲，絕無 "short a" 說明詞）
+    'sv_e': 'eh',           // [ɛ] 微笑短母音純音
+    'sv_i': 'ih',           // [ɪ] 放鬆短母音純音
+    'sv_o': 'ah',           // [ɑ] 大口短母音純音
+    'sv_u': 'uh',           // [ʌ] 尖下巴短母音純音
+    'sv_schwa': 'uh',       // [ə] 央母音純音
+    'lv_a': 'ay',           // [e] / [eɪ] 長母音純音
+    'lv_e': 'ee',           // [i] 長母音純音
+    'lv_i': 'eye',          // [aɪ] 雙母音純音
+    'lv_o': 'oh',           // [o] 長母音純音
+    'lv_u': 'you',          // [ju] 長母音純音
+    'lv_oo_long': 'oo',     // [u] 長音純音
+    'lv_oo_short': 'uh',    // [ʊ] 短音純音 (絕無 "short oo" 說明詞)
+    'lv_ou_ow': 'ow',       // [aʊ] 雙母音純音
+    'lv_oi_oy': 'oy',       // [ɔɪ] 雙母音純音
+    'lv_ar': 'ar',          // [ɑr] 捲舌純音
+    'lv_er_ir_ur': 'er',    // [ɝ] 捲舌純音
+    'c_pb': 'p, b',         // [p] / [b] 雙唇純音
+    'c_td': 't, d',         // [t] / [d] 齒齦純音
+    'c_kg': 'k, g',         // [k] / [g] 軟顎純音
+    'c_fv': 'f, v',         // [f] / [v] 唇齒純音
+    'c_sz': 's, z',         // [s] / [z] 摩擦純音
+    'c_mn_ng': 'm, n, ng',  // [m] / [n] / [ŋ] 鼻音純音
+    'c_lr': 'l, r',         // [l] / [r] 流音捲舌純音
+    'c_wyh': 'w, y, h',     // [w] / [j] / [h] 半母音純音
+    'dg_th_unvoiced': 'th', // [θ] 純咬舌無聲氣音 (絕無 "unvoiced th" 說明詞)
+    'dg_th_voiced': 'the',  // [ð] 純咬舌濁摩擦單音 /ð/ (絕無 "大啊大" 與 "voiced th" 說明詞)
+    'dg_sh': 'sh',          // [ʃ] 噓音純音
+    'dg_ch': 'ch',          // [tʃ] 塞擦音純音
+    'dg_wh_ph': 'wh, ph',   // [hw/w], [f]
+    'dg_ck': 'k'            // [k]
   };
   let activePhonemeAudio = null;
   function playPurePhoneme(id) {
@@ -7705,7 +7687,24 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       activePhonemeAudio = null;
     }
     const phonemeSound = PURE_PHONEME_SOUNDS[id] || item.soundText || item.symbol;
-    playPhonicsAudio(phonemeSound, 0.85);
+    if (id === 'sv_a' && PHONEME_AUDIO_MAP['sv_a'] && PHONEME_AUDIO_MAP['sv_a'].audioUrl) {
+      try {
+        const audioUrl = PHONEME_AUDIO_MAP['sv_a'].audioUrl;
+        const mp3Url = audioUrl.replace('wikipedia/commons/', 'wikipedia/commons/transcoded/') + '/' + audioUrl.split('/').pop() + '.mp3';
+        const audio = new Audio(mp3Url);
+        activePhonemeAudio = audio;
+        const p = audio.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            playPhonicsAudio(phonemeSound, 0.85);
+          });
+        }
+      } catch (e) {
+        playPhonicsAudio(phonemeSound, 0.85);
+      }
+    } else {
+      playPhonicsAudio(phonemeSound, 0.85);
+    }
     if (typeof window.sayCatSpeech === 'function') {
       window.sayCatSpeech(`音標【${item.kk}】自然發音【${item.symbol}】！發音要訣：${item.tip}喵～🐾`, "純音標單音");
     }
@@ -8821,26 +8820,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
       updateCatGrowthUI();
     }
-    let cardBilingualVoice = localStorage.getItem('wordchecking_card_bilingual') !== 'false';
-    window.cardBilingualVoice = cardBilingualVoice;
-    window.isCardBilingualActive = () => cardBilingualVoice;
-    function toggleCardBilingualVoice() {
-      cardBilingualVoice = !cardBilingualVoice;
-      window.cardBilingualVoice = cardBilingualVoice;
-      localStorage.setItem('wordchecking_card_bilingual', String(cardBilingualVoice));
-      updateCardBilingualUI();
-      if (typeof sayCatSpeech === 'function') {
-        sayCatSpeech(cardBilingualVoice ? "翻轉卡片已開啟【中英雙語連播】！翻牌時英文＋中文同時發音喵～🐾" : "翻轉卡片已切換為【純英文發音】喵～🐾");
-      }
-    }
-    function updateCardBilingualUI() {
-      const btnText = document.getElementById('cardBilingualBtnText');
-      if (btnText) {
-        btnText.innerText = cardBilingualVoice ? "🔊 發音：中英雙語" : "🔊 發音：僅英文";
-      }
-    }
-    window.toggleCardBilingualVoice = toggleCardBilingualVoice;
-    window.updateCardBilingualUI = updateCardBilingualUI;
     let cardFaceMode = localStorage.getItem('wordchecking_card_face_mode') || 'enFirst';
     function toggleCardFaceMode() {
       cardFaceMode = (cardFaceMode === 'enFirst') ? 'zhFirst' : 'enFirst';
@@ -8858,7 +8837,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
     function renderCurrentCard() {
-      updateCardBilingualUI();
       if (!filteredList || filteredList.length === 0) return;
       const item = filteredList[currentIndex];
       cardFlipped = false;
@@ -8938,15 +8916,15 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const inner = document.getElementById('flashcardInner');
       if (cardFlipped) {
         inner.classList.add('rotate-y-180');
-        playVoiceCurrent(1.0);
-        if (filteredList && filteredList[currentIndex]) {
-          sayCatSpeech(`翻面看釋義囉！"${filteredList[currentIndex].word}"，記起來了嗎喵？🐾`, "專心看牌");
-          if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
-            window.WordCheckingCruise.reportItemSuccess(filteredList[currentIndex].word);
-          }
-        }
       } else {
         inner.classList.remove('rotate-y-180');
+      }
+      playVoiceCurrent(1.0);
+      if (filteredList && filteredList[currentIndex]) {
+        sayCatSpeech(`"${filteredList[currentIndex].word}"（${filteredList[currentIndex].chinese}），記起來了嗎喵？🐾`, "專心看牌");
+        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+          window.WordCheckingCruise.reportItemSuccess(filteredList[currentIndex].word);
+        }
       }
     }
     function nextCard() {
@@ -8956,6 +8934,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         currentIndex = 0;
       }
       renderCurrentCard();
+      playVoiceCurrent(1.0);
     }
     function prevCard() {
       if (currentIndex > 0) {
@@ -8964,6 +8943,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         currentIndex = filteredList.length - 1;
       }
       renderCurrentCard();
+      playVoiceCurrent(1.0);
     }
     function markCurrent(isMastered) {
       if (!filteredList || filteredList.length === 0) return;
