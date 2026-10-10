@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.16-test (雙軌自動備份單軌死鎖解除、視窗關閉強制儲存保護、時間軸動態今天跨裝置跨日同步與偏好全量備份版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.17-test (今日習慣打卡逾期時間窗防護、結案目標過濾、智慧對齊今日防歷史重播與全部遞延強化版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -3253,7 +3253,14 @@ function updateContainerWidth() {
             const overdueList = [];
             const completedTodayList = [];
 
+            // 【v5.3.17 新增】：計算逾期安全回溯基準日期 (7 天前)，過久歷史步驟不再拉入今日打卡區干擾
+            const overdueCutoffDate = new Date(todayObj.getTime() - 7 * 86400000);
+            const overdueCutoffStr = `${overdueCutoffDate.getFullYear()}-${String(overdueCutoffDate.getMonth() + 1).padStart(2, '0')}-${String(overdueCutoffDate.getDate()).padStart(2, '0')}`;
+
             thoughts.forEach(t => {
+                // 【v5.3.17 新增】：已達成的目標不再拉取日常循環步驟
+                if (t.goalDone) return;
+
                 (t.steps || []).forEach(s => {
                     if (!s.recurrence || s.recurrence === 'none') return;
                     const sDate = s.stepDate || '';
@@ -3261,7 +3268,8 @@ function updateContainerWidth() {
                     if (!s.done) {
                         if (sDate === todayStr || sDate === '') {
                             dueTodayList.push({ thought: t, step: s, stats });
-                        } else if (sDate < todayStr) {
+                        } else if (sDate < todayStr && sDate >= overdueCutoffStr) {
+                            // 僅納入最近 7 天內的逾期步驟
                             overdueList.push({ thought: t, step: s, stats });
                         }
                     } else if (s.completedDate === todayStr) {
@@ -3327,13 +3335,18 @@ function updateContainerWidth() {
             if (!isCollapsed) {
                 html += `<div class="mt-4 space-y-3.5">`;
 
-                // 1. 逾期未完成清單
+                // 1. 逾期未完成清單 (v5.3.17 加入「全部遞延至今日」快捷整理按鈕)
                 if (overdueList.length > 0) {
                     html += `
                         <div class="bg-rose-50/80 dark:bg-rose-950/30 p-3 rounded-xl border border-rose-200 dark:border-rose-900/60 space-y-2">
-                            <div class="text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center gap-1.5">
-                                <span>⚠️ 逾期未打卡 (${overdueList.length})</span>
-                                <span class="text-[10px] font-normal text-rose-600 dark:text-rose-400">可點擊補打卡，或遞延至今日</span>
+                            <div class="text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center justify-between gap-1.5 flex-wrap">
+                                <div class="flex items-center gap-1.5">
+                                    <span>⚠️ 逾期未打卡 (${overdueList.length})</span>
+                                    <span class="text-[10px] font-normal text-rose-600 dark:text-rose-400">近 7 天待補打卡，或遞延至今日</span>
+                                </div>
+                                <button type="button" onclick="batchSyncAllOverdueToToday()" class="text-[10px] font-bold text-rose-700 dark:text-rose-200 bg-white dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-300 dark:border-rose-700 px-2 py-0.5 rounded-lg shadow-2xs transition-colors cursor-pointer" title="一鍵將所有逾期習慣快速對齊至今日">
+                                    ⏭️ 全部遞延至今日
+                                </button>
                             </div>
                             <div class="space-y-1.5">
                                 ${overdueList.map(item => renderRoutineRow(item, true)).join('')}
@@ -3450,13 +3463,17 @@ function updateContainerWidth() {
         }
 
         function batchCompleteTodayRoutines() {
-            // 找出所有今日到期與逾期的循環步驟
+            // 找出所有今日到期與最近 7 天逾期的循環步驟
+            const overdueCutoffDate = new Date(todayObj.getTime() - 7 * 86400000);
+            const overdueCutoffStr = `${overdueCutoffDate.getFullYear()}-${String(overdueCutoffDate.getMonth() + 1).padStart(2, '0')}-${String(overdueCutoffDate.getDate()).padStart(2, '0')}`;
+
             const pendingItems = [];
             thoughts.forEach(t => {
+                if (t.goalDone) return; // 【v5.3.17 排除已結案目標】
                 (t.steps || []).forEach(s => {
                     if (!s.recurrence || s.recurrence === 'none' || s.done) return;
                     const sDate = s.stepDate || '';
-                    if (sDate === todayStr || sDate === '' || sDate < todayStr) {
+                    if (sDate === todayStr || sDate === '' || (sDate < todayStr && sDate >= overdueCutoffStr)) {
                         pendingItems.push({ thought: t, step: s });
                     }
                 });
@@ -3477,7 +3494,11 @@ function updateContainerWidth() {
                 s.completedDate = todayStr;
                 t.lastCompletedDate = todayStr;
                 const oldDate = s.stepDate || todayStr;
-                const nextDate = getNextRecurrenceDate(oldDate, s.recurrence);
+                let nextDate = getNextRecurrenceDate(oldDate, s.recurrence);
+                // 【v5.3.17 智慧對齊今日防歷史重播】：若原排程為逾期歷史日期，且加計週期後仍小於今日，自動以今日為基準重新起算下一個週期
+                if (nextDate < todayStr) {
+                    nextDate = getNextRecurrenceDate(todayStr, s.recurrence);
+                }
                 const alreadyHasNext = t.steps.some(x => x.text === s.text && x.stepDate === nextDate && !x.done);
                 if (!alreadyHasNext) {
                     t.steps.push({
@@ -3508,6 +3529,34 @@ function updateContainerWidth() {
             saveData();
             render();
             showToast(`已跳過過往紀錄，步驟「${s.text}」遞延至今日 (${todayStr}) 待辦！`, 'info');
+        }
+
+        // 【v5.3.17 新增】：一鍵將所有逾期習慣快速對齊至今日
+        function batchSyncAllOverdueToToday() {
+            const overdueCutoffDate = new Date(todayObj.getTime() - 7 * 86400000);
+            const overdueCutoffStr = `${overdueCutoffDate.getFullYear()}-${String(overdueCutoffDate.getMonth() + 1).padStart(2, '0')}-${String(overdueCutoffDate.getDate()).padStart(2, '0')}`;
+
+            let count = 0;
+            thoughts.forEach(t => {
+                if (t.goalDone) return;
+                (t.steps || []).forEach(s => {
+                    if (!s.recurrence || s.recurrence === 'none' || s.done) return;
+                    const sDate = s.stepDate || '';
+                    if (sDate < todayStr && sDate >= overdueCutoffStr) {
+                        s.stepDate = todayStr;
+                        count++;
+                    }
+                });
+            });
+
+            if (count === 0) {
+                showToast('目前沒有逾期習慣需要遞延！', 'info');
+                return;
+            }
+
+            saveData();
+            render();
+            showToast(`⏭️ 已將 ${count} 項逾期習慣全部遞延至今日 (${todayStr})！`, 'success');
         }
 
         let currentDiagnosticTarget = null;
@@ -3626,7 +3675,11 @@ function updateContainerWidth() {
                 t.lastCompletedDate = todayStr;
                 if (s.recurrence && s.recurrence !== 'none') {
                     const oldDate = s.stepDate || todayStr;
-                    const nextDate = getNextRecurrenceDate(oldDate, s.recurrence);
+                    let nextDate = getNextRecurrenceDate(oldDate, s.recurrence);
+                    // 【v5.3.17 智慧對齊今日防歷史重播】：若原排程為逾期歷史日期，且加計週期後仍小於今日，自動以今日為基準重新起算下一個週期
+                    if (nextDate < todayStr) {
+                        nextDate = getNextRecurrenceDate(todayStr, s.recurrence);
+                    }
                     const recLabel = getRecurrenceLabel(s.recurrence);
 
                     const alreadyHasNext = t.steps.some(x => x.text === s.text && x.stepDate === nextDate && !x.done);
