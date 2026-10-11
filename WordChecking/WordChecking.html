@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.7-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.8-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.7-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.8-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -5838,7 +5838,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.7-test",
+        version: "2.13.8-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -7550,7 +7550,39 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
     return list;
   }
+  const SUB_SYMBOLS_MAP = {
+    'c_pb': [{ symbol: '[p]', label: '無聲' }, { symbol: '[b]', label: '有聲' }],
+    'c_td': [{ symbol: '[t]', label: '無聲' }, { symbol: '[d]', label: '有聲' }],
+    'c_kg': [{ symbol: '[k]', label: '無聲' }, { symbol: '[g]', label: '有聲' }],
+    'c_fv': [{ symbol: '[f]', label: '無聲' }, { symbol: '[v]', label: '有聲' }],
+    'c_sz': [{ symbol: '[s]', label: '無聲' }, { symbol: '[z]', label: '有聲' }],
+    'c_mn_ng': [{ symbol: '[m]', label: '雙唇' }, { symbol: '[n]', label: '舌尖' }],
+    'c_lr': [{ symbol: '[l]', label: '流音' }, { symbol: '[r]', label: '捲舌' }],
+    'c_wyh': [{ symbol: '[w]', label: '雙唇' }, { symbol: '[j]', label: '硬顎' }]
+  };
   const PURE_PHONEME_SOUNDS = {
+    '[p]': 'puh',
+    '[b]': 'buh',
+    '[t]': 'tuh',
+    '[d]': 'duh',
+    '[k]': 'kuh',
+    '[g]': 'guh',
+    '[f]': 'f',
+    '[v]': 'v',
+    '[s]': 's',
+    '[z]': 'z',
+    '[m]': 'm',
+    '[n]': 'n',
+    '[ŋ]': 'ng',
+    '[l]': 'l',
+    '[r]': 'r',
+    '[w]': 'w',
+    '[j]': 'y',
+    '[h]': 'h',
+    '[θ]': 'th',
+    '[ð]': 'the',
+    '[ʃ]': 'sh',
+    '[tʃ]': 'ch',
     'sv_a': 'ah',           // [æ] 蝴蝶音（優先播放本地音檔，回退以自然短母音純音發聲）
     'sv_e': 'eh',           // [ɛ] 微笑短母音純音
     'sv_i': 'ih',           // [ɪ] 放鬆短母音純音
@@ -7584,7 +7616,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     'dg_ck': 'k'            // [k]
   };
   let activePhonemeAudio = null;
-  function playPurePhoneme(id) {
+  function playPurePhoneme(id, specificSymbol) {
     const item = PHONICS_DATA.find(x => x.id === id);
     if (!item) return;
     if (activePhonemeAudio) {
@@ -7594,8 +7626,15 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       } catch (e) {}
       activePhonemeAudio = null;
     }
-    const fallbackSound = PURE_PHONEME_SOUNDS[id] || item.soundText || item.symbol;
-    const filenames = LOCAL_PHONICS_MAP[id] || [];
+    let fallbackSound = PURE_PHONEME_SOUNDS[id] || item.soundText || item.symbol;
+    let filenames = LOCAL_PHONICS_MAP[id] ? [...LOCAL_PHONICS_MAP[id]] : [];
+    if (specificSymbol) {
+      const symFile = specificSymbol.endsWith('.mp3') ? specificSymbol : `${specificSymbol}.mp3`;
+      filenames = [symFile, ...filenames.filter(f => f !== symFile)];
+      if (PURE_PHONEME_SOUNDS[specificSymbol]) {
+        fallbackSound = PURE_PHONEME_SOUNDS[specificSymbol];
+      }
+    }
     const candidateDirs = getCandidatePhonicsDirs();
     let dirIdx = 0;
     let fileIdx = 0;
@@ -7644,7 +7683,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       playPhonicsAudio(fallbackSound, 0.85);
     }
     if (typeof window.sayCatSpeech === 'function') {
-      window.sayCatSpeech(`音標【${item.kk}】自然發音【${item.symbol}】！發音要訣：${item.tip}喵～🐾`, "純音標單音");
+      const displaySym = specificSymbol ? `${specificSymbol}` : item.kk;
+      window.sayCatSpeech(`音標【${displaySym}】自然發音【${item.symbol}】！發音要訣：${item.tip}喵～🐾`, "純音標單音");
     }
   }
   function playPhonicsBlending(id) {
@@ -7741,12 +7781,23 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
                 </button>
               </div>
             </div>
-            <div class="flex items-center gap-2 mb-2.5">
-              <button onclick="WordCheckingPhonics.playPurePhoneme('${item.id}')" class="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-xs shadow-xs transition transform active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer" title="只聽單純一個音標發音 (Isolated Sound)">
-                <i class="fa-solid fa-volume-high text-xs"></i>
-                <span>聽純音標 ${item.kk}</span>
-              </button>
-              <button onclick="WordCheckingPhonics.playBlending('${item.id}')" class="py-1.5 px-2.5 rounded-xl bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 dark:hover:bg-slate-600 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-slate-600 font-bold text-xs transition cursor-pointer flex items-center gap-1" title="先發音標再拼讀出單字">
+            <div class="flex items-center gap-1.5 mb-2.5">
+              ${SUB_SYMBOLS_MAP[item.id] ? `
+                <div class="flex items-center gap-1 flex-1">
+                  ${SUB_SYMBOLS_MAP[item.id].map(sym => `
+                    <button onclick="WordCheckingPhonics.playPurePhoneme('${item.id}', '${sym.symbol}')" class="flex-1 py-1.5 px-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-[11px] shadow-xs transition transform active:scale-95 flex items-center justify-center gap-1 cursor-pointer truncate" title="只聽純音標 ${sym.symbol} (${sym.label})">
+                      <i class="fa-solid fa-volume-high text-[10px]"></i>
+                      <span>${sym.symbol} ${sym.label}</span>
+                    </button>
+                  `).join('')}
+                </div>
+              ` : `
+                <button onclick="WordCheckingPhonics.playPurePhoneme('${item.id}')" class="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-xs shadow-xs transition transform active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer" title="只聽單純一個音標發音 (Isolated Sound)">
+                  <i class="fa-solid fa-volume-high text-xs"></i>
+                  <span>聽純音標 ${item.kk}</span>
+                </button>
+              `}
+              <button onclick="WordCheckingPhonics.playBlending('${item.id}')" class="py-1.5 px-2.5 rounded-xl bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 dark:hover:bg-slate-600 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-slate-600 font-bold text-xs transition cursor-pointer flex items-center gap-1 whitespace-nowrap" title="先發音標再拼讀出單字">
                 <span>🐾</span>
                 <span>拼讀拆解</span>
               </button>
@@ -7967,6 +8018,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   let cruiseBatch = []; // [{ word, chinese, pos, kk, example, note, num, isReview }]
   let selectedWordsSet = new Set();
   let stagePassedItems = new Set();
+  let isStageTransitioning = false;
+  let autoAdvanceTimer = null;
   function onWordCheckChange() {
     selectedWordsSet.clear();
     const boxes = document.querySelectorAll('.word-select-checkbox:checked');
@@ -8124,7 +8177,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
               <span class="font-black text-sm sm:text-base">全自動導航特訓中</span>
               <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-xs">第 ${stage.step} / 7 關：${stage.name}</span>
             </div>
-            <p class="text-[11px] text-white/80">${stage.desc}（特訓陣容：${cruiseBatch.length} 字）</p>
+            <p class="text-[11px] text-white/80">${stage.desc}（特訓陣容：${cruiseBatch.length} 字 ｜ 通關進度：${stagePassedItems.size}/${cruiseBatch.length} 字）</p>
           </div>
         </div>
         <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-1">
@@ -8216,6 +8269,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     `;
   }
   function startNextStage(targetStageIndex) {
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
+    isStageTransitioning = false;
     const previewModal = document.getElementById('cruisePreviewModal');
     if (previewModal) previewModal.classList.add('hidden');
     const vicModal = document.getElementById('cruiseVictoryModal');
@@ -8259,11 +8317,19 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   function reportStageItemSuccess(word) {
     if (!isCruiseActive) return;
     stagePassedItems.add(word);
-    if (stagePassedItems.size >= cruiseBatch.length) {
+    renderCruiseTopBar();
+    if (stagePassedItems.size >= cruiseBatch.length && !isStageTransitioning) {
       showStageVictoryModal();
     }
   }
+  function reportStageItemFailure(word) {
+    if (!isCruiseActive) return;
+    stagePassedItems.delete(word);
+    renderCruiseTopBar();
+  }
   function showStageVictoryModal() {
+    if (isStageTransitioning) return;
+    isStageTransitioning = true;
     const stage = CRUISE_STAGES[currentStageIndex];
     const isLastStage = currentStageIndex >= CRUISE_STAGES.length - 1;
     if (isLastStage) {
@@ -8281,23 +8347,35 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     modal.classList.remove('hidden');
     if (typeof playCatCheerSound === 'function') playCatCheerSound();
     if (typeof addFish === 'function') addFish(3);
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
     modal.innerHTML = `
-      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-emerald-300 dark:border-emerald-700 text-center space-y-4 animate-in fade-in zoom-in duration-200">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-emerald-300 dark:border-emerald-700 text-center space-y-4 animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
         <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-emerald-400 to-teal-500 flex items-center justify-center text-3xl shadow-lg shadow-emerald-400/20 animate-bounce">
           🎉
         </div>
         <div>
-          <h3 class="font-black text-lg text-slate-900 dark:text-white">第 ${stage.step} 關：${stage.name} 全對通關！</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">太厲害了！特訓單字全數過關，獲贈 3 條小魚乾 🐟</p>
+          <h3 class="font-black text-lg text-slate-900 dark:text-white">第 ${stage.step} 關：${stage.name} 通關！</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">太厲害了！本關單字全數過關，獲贈 3 條小魚乾 🐟</p>
         </div>
-        <button onclick="WordCheckingCruise.startNextStage(${currentStageIndex + 1}); const m = document.getElementById('cruiseVictoryModal'); if (m) m.classList.add('hidden');" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-black text-sm shadow-md shadow-emerald-500/25 transition transform hover:scale-105 active:scale-95 cursor-pointer">
-          前進第 ${nextStage.step} 關：${nextStage.name} ➔
-        </button>
+        <div class="space-y-2">
+          <button id="cruiseNextStageBtn" onclick="WordCheckingCruise.startNextStage(${currentStageIndex + 1});" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-black text-sm shadow-md shadow-emerald-500/25 transition transform hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center gap-1.5">
+            <span>前進第 ${nextStage.step} 關：${nextStage.name}</span>
+            <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">(自動前往...)</span>
+            <span>➔</span>
+          </button>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500">🚀 全自動導航模式將自動進入下一關，亦可點擊立即前往</p>
+        </div>
       </div>
     `;
     if (typeof sayCatSpeech === 'function') {
-      sayCatSpeech(`太棒了！第 ${stage.step} 關【${stage.name}】全對通關！送妳 3 條小魚乾，接著前進【${nextStage.name}】喵！🐾`, "通關大捷");
+      sayCatSpeech(`太棒了！第 ${stage.step} 關【${stage.name}】全對通關！送妳 3 條小魚乾，自動為妳前進【${nextStage.name}】喵！🐾`, "通關大捷");
     }
+    autoAdvanceTimer = setTimeout(() => {
+      startNextStage(currentStageIndex + 1);
+    }, 1800);
   }
   function completeCruiseGoldenMastery() {
     isCruiseActive = false;
@@ -8357,6 +8435,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     if (typeof switchMode === 'function') switchMode('list');
   }
   function stopCruise() {
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
+    isStageTransitioning = false;
     isCruiseActive = false;
     currentStageIndex = 0;
     stagePassedItems.clear();
@@ -8375,6 +8458,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     launchCruiseFromTable: launchCruiseFromTable,
     startNextStage: startNextStage,
     reportItemSuccess: reportStageItemSuccess,
+    reportItemFailure: reportStageItemFailure,
     completeCruise: completeCruiseGoldenMastery,
     stopCruise: stopCruise,
     closeCruiseAndReturn: closeCruiseAndReturn,
@@ -8860,9 +8944,6 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       playVoiceCurrent(1.0);
       if (filteredList && filteredList[currentIndex]) {
         sayCatSpeech(`"${filteredList[currentIndex].word}"（${filteredList[currentIndex].chinese}），記起來了嗎喵？🐾`, "專心看牌");
-        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
-          window.WordCheckingCruise.reportItemSuccess(filteredList[currentIndex].word);
-        }
       }
     }
     function nextCard() {
@@ -8912,6 +8993,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       touchMimiInteraction();
       updateCatGrowthUI();
       triggerAutoSaveToPi();
+      if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+        if (isMastered) {
+          window.WordCheckingCruise.reportItemSuccess(item.word);
+        } else {
+          window.WordCheckingCruise.reportItemFailure(item.word);
+        }
+      }
       nextCard();
     }
     function switchMode(mode) {
