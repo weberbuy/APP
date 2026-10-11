@@ -20,8 +20,8 @@ import subprocess
 VOICE = "en-US-JennyNeural"
 
 TARGET_DIRS = [
-    os.path.join("./WordChecking", "data", "audio")
-    os.path.join("./WordChecking", "data", "audio"),
+    os.path.join(".", "data", "audio"),
+    os.path.join(".", "WordChecking", "data", "audio")
 ]
 
 # 79 組段考字詞清單 (英文字詞與純淨發音文本)
