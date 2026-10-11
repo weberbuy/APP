@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.6-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.7-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.6-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.7-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1932,6 +1932,7 @@ if (typeof window !== 'undefined') {
   window.playChineseText = playChineseText;
   window.playChineseCurrent = playChineseCurrent;
   window.updateAudioSourceBadge = updateAudioSourceBadge;
+  window.getDetectedAudioBasePath = () => detectedAudioBasePath;
 }
     const THEME_REGISTRY = {
       all1200: {
@@ -5837,7 +5838,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.6-test",
+        version: "2.13.7-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -7518,14 +7519,37 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     'dg_wh_ph': ['[w_f].mp3', 'dg_wh_ph.mp3', 'wh_ph.mp3'],
     'dg_ck': ['[k_ck].mp3', 'dg_ck.mp3', 'ck.mp3']
   };
-  const CANDIDATE_PHONICS_DIRS = [
-    './data/phonics/',
-    './WordChecking/data/phonics/',
-    'data/phonics/',
-    'WordChecking/data/phonics/',
-    '../data/phonics/',
-    './data/audio/phonics/'
-  ];
+  let detectedPhonicsBasePath = null;
+  function getCandidatePhonicsDirs() {
+    const list = [];
+    if (detectedPhonicsBasePath) {
+      list.push(detectedPhonicsBasePath);
+    }
+    const baseAudioDir = (typeof window !== 'undefined' && typeof window.getDetectedAudioBasePath === 'function')
+      ? window.getDetectedAudioBasePath()
+      : null;
+    if (baseAudioDir) {
+      const p = baseAudioDir.endsWith('/') ? baseAudioDir + 'phonics/' : baseAudioDir + '/phonics/';
+      if (!list.includes(p)) list.push(p);
+    }
+    const priorityDirs = [
+      './data/audio/phonics/',
+      'data/audio/phonics/',
+      './WordChecking/data/audio/phonics/',
+      'WordChecking/data/audio/phonics/',
+      '../data/audio/phonics/',
+      '/APP/WordChecking/data/audio/phonics/',
+      './data/phonics/',
+      'data/phonics/',
+      './WordChecking/data/phonics/',
+      'WordChecking/data/phonics/',
+      '../data/phonics/'
+    ];
+    for (const d of priorityDirs) {
+      if (!list.includes(d)) list.push(d);
+    }
+    return list;
+  }
   const PURE_PHONEME_SOUNDS = {
     'sv_a': 'ah',           // [æ] 蝴蝶音（優先播放本地音檔，回退以自然短母音純音發聲）
     'sv_e': 'eh',           // [ɛ] 微笑短母音純音
@@ -7572,23 +7596,26 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
     const fallbackSound = PURE_PHONEME_SOUNDS[id] || item.soundText || item.symbol;
     const filenames = LOCAL_PHONICS_MAP[id] || [];
+    const candidateDirs = getCandidatePhonicsDirs();
     let dirIdx = 0;
     let fileIdx = 0;
     let localPlayed = false;
     function tryNextLocalAudio() {
-      if (dirIdx >= CANDIDATE_PHONICS_DIRS.length) {
+      if (dirIdx >= candidateDirs.length) {
         if (!localPlayed) {
           playPhonicsAudio(fallbackSound, 0.85);
         }
         return;
       }
-      const dir = CANDIDATE_PHONICS_DIRS[dirIdx];
+      const dir = candidateDirs[dirIdx];
       const fn = filenames[fileIdx] || `${id}.mp3`;
       const url = encodeURI(dir + fn);
       const audio = new Audio(url);
       activePhonemeAudio = audio;
-      const onFail = () => {
-        if (localPlayed) return;
+      let hasHandled = false;
+      const handleError = () => {
+        if (hasHandled || localPlayed) return;
+        hasHandled = true;
         fileIdx++;
         if (fileIdx >= filenames.length) {
           fileIdx = 0;
@@ -7596,15 +7623,19 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         }
         tryNextLocalAudio();
       };
-      audio.addEventListener('error', onFail);
+      audio.addEventListener('error', handleError);
       audio.addEventListener('play', () => {
+        hasHandled = true;
         localPlayed = true;
+        detectedPhonicsBasePath = dir;
       });
       const p = audio.play();
       if (p !== undefined) {
         p.then(() => {
+          hasHandled = true;
           localPlayed = true;
-        }).catch(onFail);
+          detectedPhonicsBasePath = dir;
+        }).catch(handleError);
       }
     }
     if (filenames.length > 0) {
