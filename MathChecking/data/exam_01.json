@@ -1,0 +1,40 @@
+{
+  "exam_id": "2026-10_math_01",
+  "exam_name": "一上第一次段考 (測試資料)",
+  "scope": "整數與數線、絕對值",
+  "questions": [
+    {
+      "id": "p1_q7",
+      "type": "multiple_choice",
+      "question_text": "7. 下列算式何者正確？ (A) 2^3 - (-2)^3 = 0  (B) 2^4 - (-2^4) = 0  (C) (-2)^3 - (-2^3) = 0  (D) (-2)^4 - (-2^4) = 0",
+      "correct_answer": "C",
+      "user_answer": "D",
+      "is_correct": false,
+      "explanation": "選項 (B) 括號內為 -2^4，計算為 16 - (-16) = 32 不等於 0。選項 (C) -8 - (-8) = 0，為唯一正解。",
+      "has_image": false,
+      "image_filename": ""
+    },
+    {
+      "id": "p1_q11",
+      "type": "multiple_choice",
+      "question_text": "11. 數線上有甲、乙、丙、丁四個點，其中哪一個點所代表的數，其絕對值最大？",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "絕對值最大即為距離原點 (0) 最遠。嚴格比對字體特徵，最左邊距離原點最遠的點是「乙」。",
+      "has_image": true,
+      "image_filename": "exam_01_q11.jpg"
+    },
+    {
+      "id": "p2_q2_2",
+      "type": "fill_in",
+      "question_text": "2.(2) B 點所代表的數的相反數為 ________。",
+      "correct_answer": "2又1/4",
+      "user_answer": "2又1/4",
+      "is_correct": true,
+      "explanation": "B點落在-2與-3之間，平分4等分，位於第1格，故為 -2又1/4。其相反數為 2又1/4。",
+      "has_image": true,
+      "image_filename": "exam_01_q2_2.jpg"
+    }
+  ]
+}
