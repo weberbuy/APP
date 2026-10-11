@@ -349,15 +349,8 @@ async def synthesize_single_edge_tts(text, out_path, phoneme=None):
         import edge_tts
 
     voice = "en-US-JennyNeural"
-    # 若有指定 IPA 國際音標，嘗試使用 SSML phoneme 標籤合成超純音素
-    if phoneme:
-        ssml_payload = f"<phoneme alphabet='ipa' ph='{phoneme}'>{text}</phoneme>"
-        try:
-            comm = edge_tts.Communicate(ssml_payload, voice, rate="-10%")
-            await comm.save(out_path)
-            return
-        except Exception:
-            pass  # 若 SSML 標籤在特定終端不支援，無縫降級為純文字
+    # 嚴禁傳入任何 SSML/XML 標籤 (如 <phoneme>)，否則 Edge-TTS 會將標籤逐字唸出！
+    # 一律使用經過調校之乾淨純音素文本 (如 buh, puh, thuh, fah)
     comm = edge_tts.Communicate(text, voice, rate="-10%")
     await comm.save(out_path)
 
@@ -459,4 +452,3 @@ async def run_pipeline():
 
 if __name__ == "__main__":
     asyncio.run(run_pipeline())
-
