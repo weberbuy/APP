@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.9-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.10-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.9-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.10-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -5114,8 +5114,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       if (!filteredList || filteredList.length === 0) return;
       sayCatSpeech("四選一測驗！找出最正確的英文單字，別掉進易錯陷阱喵～🐾");
       if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
-        const unpassed = (filteredList || []).filter(x => !window.WordCheckingCruise.isItemPassed(x.word));
-        currentQuizItem = unpassed.length > 0 ? unpassed[0] : filteredList[0];
+        const item = window.WordCheckingCruise.getNextItem();
+        currentQuizItem = item || filteredList[0];
+        window.WordCheckingCruise.recordAttempt(currentQuizItem.word);
       } else {
         const priorityPick = pickNextStudyItem(filteredList, 'quiz');
         if (priorityPick) {
@@ -5132,7 +5133,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const qEl = document.getElementById('quizQuestionDigit');
       qEl.innerText = currentQuizItem.chinese;
       qEl.className = currentQuizItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white" : "text-6xl font-black text-slate-900 dark:text-white font-mono";
-      document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
+            if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+        const stat = window.WordCheckingCruise.getItemStats(currentQuizItem.word);
+        const passedCount = window.WordCheckingCruise.getPassedCount();
+        const batchSize = (typeof filteredList !== 'undefined' && filteredList) ? filteredList.length : 5;
+        document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 ｜ 本字進度: ${stat.correct}/2 次 (通關: ${passedCount}/${batchSize})`;
+      } else {
+        document.getElementById('quizScoreText').innerText = `第 ${quizStats.total + 1} 題 (正確率: ${quizStats.total > 0 ? Math.round((quizStats.correct/quizStats.total)*100)+'%' : '--'})`;
+      }
       let options = [currentQuizItem];
       const pool = RAW_VOCAB.filter(x => x.word !== currentQuizItem.word);
       const learnedDistractors = pool.filter(x => {
@@ -5210,6 +5218,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         playVoiceText(currentQuizItem.word);
         sayCatSpeech(`答對了喵！妳選得真準，這題考點記起來了嗎？🐟`, "興奮呼嚕");
       } else {
+        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+          window.WordCheckingCruise.reportItemFailure(currentQuizItem.word);
+        }
         feedback.className = "mt-5 p-4 rounded-2xl text-sm bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200";
         document.getElementById('quizFeedbackIcon').innerHTML = '<i class="fa-solid fa-cat text-rose-500"></i>';
         document.getElementById('quizFeedbackTitle').innerText = '答錯囉！咪咪已幫妳收進加強本 🐾';
@@ -5229,8 +5240,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       sayCatSpeech("拼字挑戰：輸入完整的英文單字，字母要拼精準喔！🐾");
       if (!filteredList || filteredList.length === 0) return;
       if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
-        const unpassed = (filteredList || []).filter(x => !window.WordCheckingCruise.isItemPassed(x.word));
-        currentSpellItem = unpassed.length > 0 ? unpassed[0] : filteredList[0];
+        const item = window.WordCheckingCruise.getNextItem();
+        currentSpellItem = item || filteredList[0];
+        window.WordCheckingCruise.recordAttempt(currentSpellItem.word);
       } else {
         const prioritySpellPick = pickNextStudyItem(filteredList, 'spelling');
         if (prioritySpellPick) {
@@ -5294,6 +5306,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         playVoiceText(currentSpellItem.word);
         sayCatSpeech("好厲害的拼字實力！字母全對，貓貓好崇拜妳！🐟✨");
       } else {
+        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+          window.WordCheckingCruise.reportItemFailure(currentSpellItem.word);
+        }
         feedback.className = "mt-4 p-4 rounded-2xl text-sm bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200";
         document.getElementById('spellFeedbackIcon').innerHTML = '<i class="fa-solid fa-cat text-rose-500"></i>';
         document.getElementById('spellFeedbackTitle').innerText = '拼字有誤，請仔細比對：';
@@ -5351,8 +5366,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       document.getElementById('speakFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
       if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
-        const unpassed = (filteredList || []).filter(x => !window.WordCheckingCruise.isItemPassed(x.word));
-        currentSpeakItem = unpassed.length > 0 ? unpassed[0] : filteredList[0];
+        const item = window.WordCheckingCruise.getNextItem();
+        currentSpeakItem = item || filteredList[0];
+        window.WordCheckingCruise.recordAttempt(currentSpeakItem.word);
       } else {
         const prioritySpeakPick = pickNextStudyItem(filteredList, 'speaking');
         currentSpeakItem = prioritySpeakPick ? prioritySpeakPick : filteredList[Math.floor(Math.random() * filteredList.length)];
@@ -5396,6 +5412,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           window.WordCheckingCruise.reportItemSuccess(currentSpeakItem.word);
         }
       } else {
+        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+          window.WordCheckingCruise.reportItemFailure(currentSpeakItem.word);
+        }
         userProgress[key] = 'weak';
         feedback.className = "p-4 rounded-2xl text-sm bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200";
         document.getElementById('speakFeedbackIcon').innerHTML = '<i class="fa-solid fa-cat text-amber-500"></i>';
@@ -5853,7 +5872,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.9-test",
+        version: "2.13.10-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -8200,6 +8219,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   let cruiseBatch = []; // [{ word, chinese, pos, kk, example, note, num, isReview }]
   let selectedWordsSet = new Set();
   let stagePassedItems = new Set();
+  let stageItemStats = {}; // { [word]: { correct: 0, attempts: 0 } }
   let isStageTransitioning = false;
   let autoAdvanceTimer = null;
   function onWordCheckChange() {
@@ -8359,7 +8379,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
               <span class="font-black text-sm sm:text-base">全自動導航特訓中</span>
               <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-xs">第 ${stage.step} / 7 關：${stage.name}</span>
             </div>
-            <p class="text-[11px] text-white/80">${stage.desc}（特訓陣容：${cruiseBatch.length} 字 ｜ 通關進度：${stagePassedItems.size}/${cruiseBatch.length} 字）</p>
+            <p class="text-[11px] text-white/80">${stage.desc}（特訓陣容：${cruiseBatch.length} 字 ｜ 通關進度：${stagePassedItems.size}/${cruiseBatch.length} 字${stage.mode !== "card" ? "，每字 2~3 次精熟複習" : ""}）</p>
           </div>
         </div>
         <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-1">
@@ -8461,8 +8481,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     const vicModal = document.getElementById('cruiseVictoryModal');
     if (vicModal) vicModal.classList.add('hidden');
     currentStageIndex = targetStageIndex;
-    renderCruiseTopBar();
     stagePassedItems.clear();
+    stageItemStats = {};
+    if (cruiseBatch && cruiseBatch.length > 0) {
+      cruiseBatch.forEach(w => {
+        stageItemStats[w.word] = { correct: 0, attempts: 0 };
+      });
+    }
+    renderCruiseTopBar();
     const stage = CRUISE_STAGES[currentStageIndex];
     if (!stage) {
       completeCruiseGoldenMastery();
@@ -8497,17 +8523,61 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
   }
   function reportStageItemSuccess(word) {
-    if (!isCruiseActive) return;
-    stagePassedItems.add(word);
+    if (!isCruiseActive || !word) return;
+    if (!stageItemStats[word]) {
+      stageItemStats[word] = { correct: 0, attempts: 0 };
+    }
+    stageItemStats[word].correct++;
+    const stage = CRUISE_STAGES[currentStageIndex];
+    const targetCorrect = (stage && stage.mode === 'card') ? 1 : 2;
+    const maxAttempts = 3;
+    if (stageItemStats[word].correct >= targetCorrect || stageItemStats[word].attempts >= maxAttempts) {
+      stagePassedItems.add(word);
+    }
     renderCruiseTopBar();
     if (stagePassedItems.size >= cruiseBatch.length && !isStageTransitioning) {
       showStageVictoryModal();
     }
   }
   function reportStageItemFailure(word) {
-    if (!isCruiseActive) return;
-    stagePassedItems.delete(word);
+    if (!isCruiseActive || !word) return;
+    if (!stageItemStats[word]) {
+      stageItemStats[word] = { correct: 0, attempts: 0 };
+    }
+    const maxAttempts = 3;
+    if (stageItemStats[word].attempts >= maxAttempts) {
+      stagePassedItems.add(word);
+    } else {
+      stagePassedItems.delete(word);
+    }
     renderCruiseTopBar();
+    if (stagePassedItems.size >= cruiseBatch.length && !isStageTransitioning) {
+      showStageVictoryModal();
+    }
+  }
+  function recordItemAttempt(word) {
+    if (!isCruiseActive || !word) return;
+    if (!stageItemStats[word]) {
+      stageItemStats[word] = { correct: 0, attempts: 0 };
+    }
+    stageItemStats[word].attempts++;
+  }
+  function getItemStats(word) {
+    return stageItemStats[word] || { correct: 0, attempts: 0 };
+  }
+  function getNextCruiseItem() {
+    if (!isCruiseActive || !cruiseBatch || cruiseBatch.length === 0) return null;
+    const unpassed = cruiseBatch.filter(w => !stagePassedItems.has(w.word));
+    if (unpassed.length === 0) return cruiseBatch[0];
+    unpassed.sort((a, b) => {
+      const statA = stageItemStats[a.word] || { attempts: 0, correct: 0 };
+      const statB = stageItemStats[b.word] || { attempts: 0, correct: 0 };
+      if (statA.attempts !== statB.attempts) {
+        return statA.attempts - statB.attempts;
+      }
+      return cruiseBatch.indexOf(a) - cruiseBatch.indexOf(b);
+    });
+    return unpassed[0];
   }
   function showStageVictoryModal() {
     if (isStageTransitioning) return;
@@ -8625,6 +8695,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     isCruiseActive = false;
     currentStageIndex = 0;
     stagePassedItems.clear();
+    stageItemStats = {};
     renderCruiseTopBar();
     const previewModal = document.getElementById('cruisePreviewModal');
     if (previewModal) previewModal.classList.add('hidden');
@@ -8643,6 +8714,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     reportItemFailure: reportStageItemFailure,
     isItemPassed: (word) => stagePassedItems.has(word),
     getPassedCount: () => stagePassedItems.size,
+    getNextItem: getNextCruiseItem,
+    recordAttempt: recordItemAttempt,
+    getItemStats: getItemStats,
     completeCruise: completeCruiseGoldenMastery,
     stopCruise: stopCruise,
     closeCruiseAndReturn: closeCruiseAndReturn,
