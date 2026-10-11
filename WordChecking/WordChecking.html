@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.14-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.15-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.14-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.15-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -846,7 +846,7 @@
           <div class="text-xs text-slate-400">請跟著咪咪唸出這個數字的英文：</div>
           <div class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2 mb-1" id="speakEnglish">fourteen</div>
           <div class="text-sm font-mono text-slate-400" id="speakPhonetic">[ˋforˋtin]</div>
-          <div class="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">數字：<span id="speakDigit">14</span></div>
+          <div class="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1"><span id="speakDigitLabel">中文：</span><span id="speakDigit">14</span></div>
           <div class="mt-4 flex items-center justify-center space-x-3">
             <span onclick="if(currentSpeakItem) playVoiceText(currentSpeakItem.word);" class="audio-source-badge inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600 shadow-2xs cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-600 hover:text-rose-500 transition active:scale-95" title="點擊播放讀音">
               <span>🔊 待播放</span>
@@ -861,7 +861,12 @@
           <button id="micBtn" onclick="toggleSpeechRecognition()" onmouseup="this.blur()" tabindex="-1" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition transform active:scale-95">
             <i class="fa-solid fa-microphone text-2xl" id="micIcon"></i>
           </button>
-          <div class="text-xs text-slate-500 dark:text-slate-400 mt-3" id="micStatus">點擊麥克風後說出英文單字給咪咪聽 🐾</div>
+          <div class="flex flex-wrap items-center justify-center gap-2.5 mt-3">
+            <span class="text-xs text-slate-500 dark:text-slate-400" id="micStatus">點擊麥克風後說出英文單字給咪咪聽 🐾</span>
+            <button onclick="skipCurrentSpeaking()" class="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 dark:hover:bg-slate-600 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-slate-600 text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs" title="環境太吵或辨識困難？點此聽示範並直接過關">
+              <span>🐾 聽示範並略過</span>
+            </button>
+          </div>
         </div>
         <div id="speakFeedback" class="hidden mt-4 p-4 rounded-2xl text-sm border scroll-mt-6">
           <div class="flex items-start space-x-3">
@@ -5344,13 +5349,87 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function nextSpellQuestion() {
       startNewSpelling();
     }
+    let speakingAttemptTracker = {};
+    function getValidSpokenTargets(word, num) {
+      if (!word) return [];
+      const targets = new Set();
+      const raw = String(word).trim().toLowerCase();
+      const cleanPunct = raw.replace(/[?.!…,:;"']/g, '').trim();
+      if (cleanPunct) targets.add(cleanPunct);
+      if (cleanPunct.includes('(') && cleanPunct.includes(')')) {
+        const withoutParen = cleanPunct.replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim();
+        if (withoutParen) targets.add(withoutParen);
+        const withParenText = cleanPunct.replace(/[()]/g, '').replace(/\s+/g, ' ').trim();
+        if (withParenText) targets.add(withParenText);
+        const m = cleanPunct.match(/\(([^)]+)\)/);
+        if (m && m[1]) {
+          const insideParen = m[1].replace(/\s+/g, ' ').trim();
+          if (insideParen) targets.add(insideParen);
+        }
+      }
+      if (cleanPunct.includes('/')) {
+        cleanPunct.split('/').forEach(part => {
+          const p = part.trim();
+          if (p) targets.add(p);
+        });
+      }
+      if (num !== undefined && num !== null && num !== '') {
+        targets.add(String(num));
+      }
+      return Array.from(targets);
+    }
+    function getLevenshteinSimilarity(s1, s2) {
+      if (s1 === s2) return 1.0;
+      if (!s1 || !s2) return 0.0;
+      const l1 = s1.length, l2 = s2.length;
+      if (Math.abs(l1 - l2) > Math.max(l1, l2) * 0.4) return 0.0;
+      const d = [];
+      for (let i = 0; i <= l1; i++) d[i] = [i];
+      for (let j = 0; j <= l2; j++) d[0][j] = j;
+      for (let i = 1; i <= l1; i++) {
+        for (let j = 1; j <= l2; j++) {
+          const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+        }
+      }
+      const maxLen = Math.max(l1, l2);
+      return (maxLen - d[l1][l2]) / maxLen;
+    }
+    function checkSpeechMatch(spokenAlternatives, targetWord, num) {
+      const targets = getValidSpokenTargets(targetWord, num);
+      const alts = Array.isArray(spokenAlternatives) ? spokenAlternatives : [spokenAlternatives];
+      for (const alt of alts) {
+        if (!alt) continue;
+        const cleanAlt = String(alt).trim().toLowerCase().replace(/[?.!…,:;"']/g, '').trim();
+        const noSpaceAlt = cleanAlt.replace(/[\s-]/g, '');
+        for (const t of targets) {
+          const cleanT = t.toLowerCase().trim();
+          const noSpaceT = cleanT.replace(/[\s-]/g, '');
+          if (cleanAlt === cleanT) return { isMatch: true, matchedAlt: alt, matchedTarget: t, reason: 'exact' };
+          if (noSpaceAlt && noSpaceT && noSpaceAlt === noSpaceT) {
+            return { isMatch: true, matchedAlt: alt, matchedTarget: t, reason: 'nospace' };
+          }
+          if (cleanAlt + 's' === cleanT || cleanAlt === cleanT + 's' || cleanAlt + 'es' === cleanT || cleanAlt === cleanT + 'es') {
+            return { isMatch: true, matchedAlt: alt, matchedTarget: t, reason: 'plural' };
+          }
+          if (cleanT.includes(' ') && (cleanAlt.includes(cleanT) || cleanT.includes(cleanAlt)) && Math.abs(cleanAlt.length - cleanT.length) <= 4) {
+            return { isMatch: true, matchedAlt: alt, matchedTarget: t, reason: 'phrase' };
+          }
+          const sim = getLevenshteinSimilarity(noSpaceAlt, noSpaceT);
+          if (sim >= 0.8) {
+            return { isMatch: true, matchedAlt: alt, matchedTarget: t, similarity: sim, reason: 'fuzzy' };
+          }
+        }
+      }
+      return { isMatch: false, primarySpoken: alts[0] || '', targets };
+    }
     function initSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
         recognition = new SpeechRecognition();
         recognition.lang = 'en-US';
         recognition.interimResults = false;
-        recognition.maxAlternatives = 3;
+        recognition.maxAlternatives = 5;
         recognition.onstart = () => {
           isRecording = true;
           document.getElementById('micBtn').className = "w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/40 transition animate-pulse";
@@ -5358,8 +5437,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           sayCatSpeech("我在聽喔！請大聲清晰唸出來喵～👂");
         };
         recognition.onresult = (event) => {
-          const transcript = event.results[0][0].transcript.trim().toLowerCase();
-          handleSpeechResult(transcript);
+          const alternatives = [];
+          if (event.results && event.results[0]) {
+            for (let i = 0; i < event.results[0].length; i++) {
+              alternatives.push(event.results[0][i].transcript.trim().toLowerCase());
+            }
+          }
+          handleSpeechResult(alternatives.length > 0 ? alternatives : ['']);
         };
         recognition.onerror = (event) => {
           stopRecordingUI();
@@ -5400,14 +5484,23 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
       document.getElementById('speakEnglish').innerText = currentSpeakItem.word;
       document.getElementById('speakPhonetic').innerText = currentSpeakItem.kk || '';
-      document.getElementById('speakDigit').innerText = currentSpeakItem.chinese;
+      const speakZh = currentSpeakItem.chinese || currentSpeakItem.zh || '';
+      document.getElementById('speakDigit').innerText = speakZh;
+      const digitLabel = document.getElementById('speakDigitLabel');
+      if (digitLabel) digitLabel.innerText = (currentThemeKey === 'numbers') ? '數字：' : '中文：';
       document.getElementById('micStatus').innerText = "點擊麥克風後說出英文單字給咪咪聽 🐾";
       sayCatSpeech(`來跟著我練習唸 "${currentSpeakItem.word}"，按下麥克風開口吧！🐾`);
     }
-    function handleSpeechResult(spokenText) {
-      const target = currentSpeakItem.word.toLowerCase().replace(/-/g, ' ');
-      const cleanSpoken = spokenText.toLowerCase().replace(/-/g, ' ');
-      const isMatch = (cleanSpoken === target || cleanSpoken === String(currentSpeakItem.num));
+    let autoAdvanceTimer = null;
+    function handleSpeechResult(spokenAlternatives) {
+      if (!currentSpeakItem) return;
+      const wordKey = currentSpeakItem.word;
+      if (!speakingAttemptTracker[wordKey]) speakingAttemptTracker[wordKey] = 0;
+      speakingAttemptTracker[wordKey]++;
+      const attemptCount = speakingAttemptTracker[wordKey];
+      const matchRes = checkSpeechMatch(spokenAlternatives, currentSpeakItem.word, currentSpeakItem.num);
+      const isMatch = matchRes.isMatch;
+      const primarySpoken = Array.isArray(spokenAlternatives) ? (spokenAlternatives[0] || '') : String(spokenAlternatives);
       const feedback = document.getElementById('speakFeedback');
       feedback.classList.remove('hidden');
       setTimeout(() => {
@@ -5424,18 +5517,40 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
       const key = currentSpeakItem.word || currentSpeakItem.num;
       const theme = THEME_REGISTRY[currentThemeKey];
+      if (autoAdvanceTimer) {
+        clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
       if (isMatch) {
+        speakingAttemptTracker[wordKey] = 0;
         if (userProgress[key] !== 'mastered') userProgress[key] = 'familiar';
         addFish();
         playCatMeowSound();
         feedback.className = "p-4 rounded-2xl text-sm bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200";
         document.getElementById('speakFeedbackIcon').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
         document.getElementById('speakFeedbackTitle').innerText = '發音超清晰！辨識成功！ (+1 🐟)';
-        document.getElementById('speakFeedbackDetail').innerText = `咪咪聽到了：${spokenText} (目標單字：${currentSpeakItem.word})`;
+        document.getElementById('speakFeedbackDetail').innerText = `咪咪聽到了：「${matchRes.matchedAlt}」 (符合目標：「${currentSpeakItem.word}」)`;
         sayCatSpeech(`好標準的英文發音！咪咪太喜歡了～魚乾送給妳 🐟🐾`);
         if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
           window.WordCheckingCruise.reportItemSuccess(currentSpeakItem.word);
         }
+      } else if (attemptCount >= 3) {
+        speakingAttemptTracker[wordKey] = 0;
+        userProgress[key] = 'weak';
+        addFish(1); // 贈送努力開口獎勵
+        feedback.className = "p-4 rounded-2xl text-sm bg-indigo-50 dark:bg-indigo-950/40 border-2 border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-200";
+        document.getElementById('speakFeedbackIcon').innerHTML = '<i class="fa-solid fa-heart text-rose-500"></i>';
+        document.getElementById('speakFeedbackTitle').innerText = '✨ 貓貓感受到你的努力了！有開口練習就是最棒的！(+1 🐟)';
+        document.getElementById('speakFeedbackDetail').innerText = `已用心連續開口練習 ${attemptCount} 次！咪咪為你自動通關，並貼心標記為「待加強」，稍後再複習即可喵～🐾 (目標單字：${currentSpeakItem.word})`;
+        sayCatSpeech(`太棒了！有大聲開口練習最重要！咪咪送你勇氣小魚乾，我們先前進下一題喵～🐾`, "熱烈鼓勵");
+        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+          window.WordCheckingCruise.reportItemSuccess(currentSpeakItem.word, true);
+        }
+        autoAdvanceTimer = setTimeout(() => {
+          if (typeof getActiveMode === 'function' && getActiveMode() === 'speaking') {
+            nextSpeakQuestion();
+          }
+        }, 2500);
       } else {
         if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
           window.WordCheckingCruise.reportItemFailure(currentSpeakItem.word);
@@ -5443,12 +5558,39 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         userProgress[key] = 'weak';
         feedback.className = "p-4 rounded-2xl text-sm bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200";
         document.getElementById('speakFeedbackIcon').innerHTML = '<i class="fa-solid fa-cat text-amber-500"></i>';
-        document.getElementById('speakFeedbackTitle').innerText = '咪咪聽到的稍有不同，可以再試一次：';
-        document.getElementById('speakFeedbackDetail').innerText = `咪咪聽到的是：「${spokenText}」，正確目標是：「${currentSpeakItem.word}」`;
-        sayCatSpeech(`放慢速度再唸一次看看，咪咪相信妳可以唸得很好的喵～🐾`);
+        document.getElementById('speakFeedbackTitle').innerText = `咪咪聽到的稍有不同 (已練習 ${attemptCount}/3 次)：`;
+        document.getElementById('speakFeedbackDetail').innerText = `咪咪聽到的是：「${primarySpoken}」，正確目標是：「${currentSpeakItem.word}」。再試 ${3 - attemptCount} 次會自動通關喔！`;
+        sayCatSpeech(`放慢速度再唸一次看看，或者點擊【聽示範並略過】也可以喵～🐾`);
       }
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       renderStats();
+    }
+    function skipCurrentSpeaking() {
+      if (!currentSpeakItem) return;
+      const key = currentSpeakItem.word || currentSpeakItem.num;
+      const theme = THEME_REGISTRY[currentThemeKey];
+      if (typeof playVoiceText === 'function') {
+        playVoiceText(currentSpeakItem.word);
+      }
+      userProgress[key] = 'weak';
+      localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
+      renderStats();
+      if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+        window.WordCheckingCruise.reportItemSuccess(currentSpeakItem.word, true);
+      }
+      sayCatSpeech(`先聽咪咪示範發音：「${currentSpeakItem.word}」，我們繼續前進下一題喵～🐾`, "溫柔示範");
+      setTimeout(() => {
+        nextSpeakQuestion();
+      }, 800);
+    }
+    if (typeof window !== 'undefined') {
+      window.skipCurrentSpeaking = skipCurrentSpeaking;
+      window.checkSpeechMatch = checkSpeechMatch;
+      window.getValidSpokenTargets = getValidSpokenTargets;
+      window.startNewSpeaking = startNewSpeaking;
+      window.handleSpeechResult = handleSpeechResult;
+      window.getCurrentSpeakItem = () => currentSpeakItem;
+      window.setCurrentSpeakItem = (it) => { currentSpeakItem = it; };
     }
     function nextSpeakQuestion() {
       startNewSpeaking();
@@ -5897,7 +6039,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.14-test",
+        version: "2.13.15-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -8547,16 +8689,18 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
   }
-  function reportStageItemSuccess(word) {
+  function reportStageItemSuccess(word, isForcedPass = false) {
     if (!isCruiseActive || !word) return;
     if (!stageItemStats[word]) {
       stageItemStats[word] = { correct: 0, attempts: 0 };
     }
-    stageItemStats[word].correct++;
+    if (!isForcedPass) {
+      stageItemStats[word].correct++;
+    }
     const stage = CRUISE_STAGES[currentStageIndex];
     const targetCorrect = (stage && stage.mode === 'card') ? 1 : 2;
     const maxAttempts = 3;
-    if (stageItemStats[word].correct >= targetCorrect || stageItemStats[word].attempts >= maxAttempts) {
+    if (isForcedPass || stageItemStats[word].correct >= targetCorrect || stageItemStats[word].attempts >= maxAttempts) {
       stagePassedItems.add(word);
     }
     renderCruiseTopBar();
