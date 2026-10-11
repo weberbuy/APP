@@ -6,7 +6,7 @@ WordChecking 100% 自主音標音檔離線生成腳本 (generate_phonics_audio.p
 功能：
 1. 自動生成國中會考 1200 單字系統「自然發音與 KK 音標」全套 31 組標準音素 MP3 音檔。
 2. 採用高音質真人神經語音（Microsoft Edge-TTS），100% 乾淨無外部版權問題。
-3. 產出檔案自動歸檔至專案目錄：./data/phonics/
+3. 產出檔案自動歸檔至專案目錄：./WordChecking/data/audio/phonics/
 4. 同時建立標準符號檔名（如 [æ].mp3、[ð].mp3）與英數檔名（如 sv_a.mp3、th_voiced.mp3）。
 """
 
@@ -53,7 +53,7 @@ PHONICS_ITEMS = [
     {"id": "dg_ck", "symbol": "[k_ck]", "ascii": "dg_ck", "text": "k", "desc": "字尾 [k]"}
 ]
 
-OUT_DIR = os.path.join("./WordChecking", "data", "phonics")
+OUT_DIR = os.path.join("./WordChecking", "data",, "audio" "phonics")
 
 async def generate_with_edge_tts():
     try:
