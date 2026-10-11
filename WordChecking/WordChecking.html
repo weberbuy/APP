@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.8-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.9-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.8-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.9-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -5113,15 +5113,20 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       document.getElementById('quizFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
       sayCatSpeech("四選一測驗！找出最正確的英文單字，別掉進易錯陷阱喵～🐾");
-      const priorityPick = pickNextStudyItem(filteredList, 'quiz');
-      if (priorityPick) {
-        currentQuizItem = priorityPick;
+      if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+        const unpassed = (filteredList || []).filter(x => !window.WordCheckingCruise.isItemPassed(x.word));
+        currentQuizItem = unpassed.length > 0 ? unpassed[0] : filteredList[0];
       } else {
-        const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
-        if (weakItems.length > 0 && Math.random() < 0.6) {
-          currentQuizItem = weakItems[Math.floor(Math.random() * weakItems.length)];
+        const priorityPick = pickNextStudyItem(filteredList, 'quiz');
+        if (priorityPick) {
+          currentQuizItem = priorityPick;
         } else {
-          currentQuizItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+          const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
+          if (weakItems.length > 0 && Math.random() < 0.6) {
+            currentQuizItem = weakItems[Math.floor(Math.random() * weakItems.length)];
+          } else {
+            currentQuizItem = filteredList[Math.floor(Math.random() * filteredList.length)];
+          }
         }
       }
       const qEl = document.getElementById('quizQuestionDigit');
@@ -5223,10 +5228,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       document.getElementById('spellInput').focus();
       sayCatSpeech("拼字挑戰：輸入完整的英文單字，字母要拼精準喔！🐾");
       if (!filteredList || filteredList.length === 0) return;
-      const prioritySpellPick = pickNextStudyItem(filteredList, 'spelling');
-      if (prioritySpellPick) {
-        currentSpellItem = prioritySpellPick;
+      if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+        const unpassed = (filteredList || []).filter(x => !window.WordCheckingCruise.isItemPassed(x.word));
+        currentSpellItem = unpassed.length > 0 ? unpassed[0] : filteredList[0];
       } else {
+        const prioritySpellPick = pickNextStudyItem(filteredList, 'spelling');
+        if (prioritySpellPick) {
+          currentSpellItem = prioritySpellPick;
+        } else {
         const familiarItems = filteredList.filter(x => userProgress[x.word || x.num] === 'familiar');
         const weakItems = filteredList.filter(x => userProgress[x.word || x.num] === 'weak');
         if (weakItems.length > 0 && Math.random() < 0.6) {
@@ -5237,6 +5246,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           currentSpellItem = filteredList[Math.floor(Math.random() * filteredList.length)];
         }
       }
+    }
       const sEl = document.getElementById('spellDigit');
       sEl.innerText = currentSpellItem.chinese;
       sEl.className = currentSpellItem.chinese.length > 4 ? "text-4xl font-black text-slate-900 dark:text-white my-3" : "text-6xl font-black text-slate-900 dark:text-white font-mono my-3";
@@ -5340,8 +5350,13 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function startNewSpeaking() {
       document.getElementById('speakFeedback').classList.add('hidden');
       if (!filteredList || filteredList.length === 0) return;
-      const prioritySpeakPick = pickNextStudyItem(filteredList, 'speaking');
-      currentSpeakItem = prioritySpeakPick ? prioritySpeakPick : filteredList[Math.floor(Math.random() * filteredList.length)];
+      if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+        const unpassed = (filteredList || []).filter(x => !window.WordCheckingCruise.isItemPassed(x.word));
+        currentSpeakItem = unpassed.length > 0 ? unpassed[0] : filteredList[0];
+      } else {
+        const prioritySpeakPick = pickNextStudyItem(filteredList, 'speaking');
+        currentSpeakItem = prioritySpeakPick ? prioritySpeakPick : filteredList[Math.floor(Math.random() * filteredList.length)];
+      }
       document.getElementById('speakEnglish').innerText = currentSpeakItem.word;
       document.getElementById('speakPhonetic').innerText = currentSpeakItem.kk || '';
       document.getElementById('speakDigit').innerText = currentSpeakItem.chinese;
@@ -5838,7 +5853,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.8-test",
+        version: "2.13.9-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -7184,123 +7199,273 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       ]
     },
     {
-      id: 'c_pb',
+      id: 'c_p',
       category: 'consonants',
-      symbol: 'p / b',
-      kk: '[p] (無聲) / [b] (有聲)',
-      name: '雙唇爆破音',
-      tip: '雙唇緊閉阻擋氣流後突然爆破！[p] 僅送出強氣流聲帶不振動；[b] 聲帶強力振動。',
-      soundText: 'p, b',
+      symbol: 'p',
+      kk: '[p]',
+      name: '雙唇無聲爆破音',
+      tip: '雙唇緊閉阻擋氣流後突然爆破！僅送出強烈氣流，聲帶完全不振動。',
+      soundText: 'puh',
       words: [
         { word: 'pig', kk: '[pɪg]', zh: '豬', highlight: 'p' },
-        { word: 'big', kk: '[bɪg]', zh: '大的', highlight: 'b' },
-        { word: 'pen', kk: '[pɛn]', zh: '筆', highlight: 'p' },
-        { word: 'bed', kk: '[bɛd]', zh: '床', highlight: 'b' }
+        { word: 'pen', kk: '[pɛn]', zh: '原子筆', highlight: 'p' },
+        { word: 'pet', kk: '[pɛt]', zh: '寵物', highlight: 'p' },
+        { word: 'cup', kk: '[kʌp]', zh: '杯子', highlight: 'p' }
       ]
     },
     {
-      id: 'c_td',
+      id: 'c_b',
       category: 'consonants',
-      symbol: 't / d',
-      kk: '[t] (無聲) / [d] (有聲)',
-      name: '舌尖齒齦音',
-      tip: '舌尖緊貼上齒齦阻擋氣流後彈開！[t] 氣流彈出聲帶不振動；[d] 聲帶振動。',
-      soundText: 't, d',
+      symbol: 'b',
+      kk: '[b]',
+      name: '雙唇有聲爆破音',
+      tip: '雙唇緊閉阻擋氣流後突然彈開，聲帶強力振動發出濁音。',
+      soundText: 'buh',
+      words: [
+        { word: 'big', kk: '[bɪg]', zh: '大的', highlight: 'b' },
+        { word: 'bed', kk: '[bɛd]', zh: '床', highlight: 'b' },
+        { word: 'bag', kk: '[bæg]', zh: '提袋', highlight: 'b' },
+        { word: 'bus', kk: '[bʌs]', zh: '公車', highlight: 'b' }
+      ]
+    },
+    {
+      id: 'c_t',
+      category: 'consonants',
+      symbol: 't',
+      kk: '[t]',
+      name: '舌尖無聲爆破音',
+      tip: '舌尖緊貼上齒齦阻擋氣流後彈開，氣流彈出，聲帶不振動。',
+      soundText: 'tuh',
       words: [
         { word: 'ten', kk: '[tɛn]', zh: '十', highlight: 't' },
-        { word: 'dog', kk: '[dɑg]', zh: '狗', highlight: 'd' },
         { word: 'tea', kk: '[ti]', zh: '茶', highlight: 't' },
-        { word: 'desk', kk: '[dɛsk]', zh: '書桌', highlight: 'd' }
+        { word: 'top', kk: '[tɑp]', zh: '頂端', highlight: 't' },
+        { word: 'cat', kk: '[kæt]', zh: '貓', highlight: 't' }
       ]
     },
     {
-      id: 'c_kg',
+      id: 'c_d',
       category: 'consonants',
-      symbol: 'k / c / g',
-      kk: '[k] (無聲) / [g] (有聲)',
-      name: '舌根軟顎音',
-      tip: '舌後部緊貼軟顎形成阻礙後突然釋放！[k] 送氣不振帶；[g] 喉部聲帶重重振動。',
-      soundText: 'k, g',
+      symbol: 'd',
+      kk: '[d]',
+      name: '舌尖有聲爆破音',
+      tip: '舌尖緊貼上齒齦阻擋氣流後彈開，聲帶強力振動發出濁音。',
+      soundText: 'duh',
+      words: [
+        { word: 'dog', kk: '[dɑg]', zh: '狗', highlight: 'd' },
+        { word: 'desk', kk: '[dɛsk]', zh: '書桌', highlight: 'd' },
+        { word: 'red', kk: '[rɛd]', zh: '紅色', highlight: 'd' },
+        { word: 'dad', kk: '[dæd]', zh: '爸爸', highlight: 'd' }
+      ]
+    },
+    {
+      id: 'c_k',
+      category: 'consonants',
+      symbol: 'k / c',
+      kk: '[k]',
+      name: '舌根無聲爆破音',
+      tip: '舌後部緊貼軟顎形成阻礙後突然釋放！送氣爆破，聲帶不振動。',
+      soundText: 'kuh',
       words: [
         { word: 'cat', kk: '[kæt]', zh: '貓', highlight: 'c' },
-        { word: 'girl', kk: '[gɝl]', zh: '女孩', highlight: 'g' },
         { word: 'king', kk: '[kɪŋ]', zh: '國王', highlight: 'k' },
-        { word: 'game', kk: '[gem]', zh: '遊戲', highlight: 'g' }
+        { word: 'cup', kk: '[kʌp]', zh: '杯子', highlight: 'c' },
+        { word: 'duck', kk: '[dʌk]', zh: '鴨子', highlight: 'ck' }
       ]
     },
     {
-      id: 'c_fv',
+      id: 'c_g',
       category: 'consonants',
-      symbol: 'f / v',
-      kk: '[f] (無聲) / [v] (有聲)',
-      name: '唇齒摩擦音',
-      tip: '上門牙輕觸下嘴唇內緣，氣流自齒縫擠出！[f] 呼氣無聲；[v] 聲帶強力嗡嗡震動。',
-      soundText: 'f, v',
+      symbol: 'g',
+      kk: '[g]',
+      name: '舌根有聲爆破音',
+      tip: '舌後部緊貼軟顎阻礙氣流後彈開，喉部聲帶重重振動發聲。',
+      soundText: 'guh',
+      words: [
+        { word: 'girl', kk: '[gɝl]', zh: '女孩', highlight: 'g' },
+        { word: 'game', kk: '[gem]', zh: '遊戲', highlight: 'g' },
+        { word: 'big', kk: '[bɪg]', zh: '大的', highlight: 'g' },
+        { word: 'pig', kk: '[pɪg]', zh: '豬', highlight: 'g' }
+      ]
+    },
+    {
+      id: 'c_f',
+      category: 'consonants',
+      symbol: 'f',
+      kk: '[f]',
+      name: '唇齒無聲摩擦音',
+      tip: '上門牙輕觸下嘴唇內緣，氣流自齒縫擠出！呼氣摩擦，聲帶不振動。',
+      soundText: 'f',
       words: [
         { word: 'fish', kk: '[fɪʃ]', zh: '魚', highlight: 'f' },
-        { word: 'van', kk: '[væn]', zh: '廂型車', highlight: 'v' },
         { word: 'fan', kk: '[fæn]', zh: '風扇', highlight: 'f' },
-        { word: 'five', kk: '[faɪv]', zh: '五', highlight: 'f, v' }
+        { word: 'fox', kk: '[fɑks]', zh: '狐狸', highlight: 'f' },
+        { word: 'fat', kk: '[fæt]', zh: '胖的', highlight: 'f' }
       ]
     },
     {
-      id: 'c_sz',
+      id: 'c_v',
       category: 'consonants',
-      symbol: 's / z',
-      kk: '[s] (無聲) / [z] (有聲)',
-      name: '齒齦摩擦音 (嘶/滋)',
-      tip: '舌尖微貼近上齒齦留下狹縫，氣流摩擦逸出！[s] 發出嘶嘶聲；[z] 聲帶震動發出蜜蜂嗡鳴聲。',
-      soundText: 's, z',
+      symbol: 'v',
+      kk: '[v]',
+      name: '唇齒有聲摩擦音',
+      tip: '上門牙輕觸下嘴唇內緣，氣流自齒縫擠出並同時強力震動聲帶。',
+      soundText: 'v',
+      words: [
+        { word: 'van', kk: '[væn]', zh: '廂型車', highlight: 'v' },
+        { word: 'five', kk: '[faɪv]', zh: '五', highlight: 'v' },
+        { word: 'vest', kk: '[vɛst]', zh: '背心', highlight: 'v' },
+        { word: 'vet', kk: '[vɛt]', zh: '獸醫', highlight: 'v' }
+      ]
+    },
+    {
+      id: 'c_s',
+      category: 'consonants',
+      symbol: 's',
+      kk: '[s]',
+      name: '齒齦無聲摩擦音',
+      tip: '舌尖微貼近上齒齦留下狹縫，氣流摩擦逸出發出嘶嘶聲，聲帶不振動。',
+      soundText: 's',
       words: [
         { word: 'sun', kk: '[sʌn]', zh: '太陽', highlight: 's' },
-        { word: 'zoo', kk: '[zu]', zh: '動物園', highlight: 'z' },
-        { word: 'sit', kk: '[sɪt]', zh: '坐', highlight: 's' },
-        { word: 'zero', kk: '[ˋzɪro]', zh: '零', highlight: 'z' }
+        { word: 'sit', kk: '[sɪt]', zh: '坐下', highlight: 's' },
+        { word: 'six', kk: '[sɪks]', zh: '六', highlight: 's' },
+        { word: 'bus', kk: '[bʌs]', zh: '公車', highlight: 's' }
       ]
     },
     {
-      id: 'c_mn_ng',
+      id: 'c_z',
       category: 'consonants',
-      symbol: 'm / n / ng',
-      kk: '[m] / [n] / [ŋ]',
-      name: '鼻音家族 (有聲)',
-      tip: '口腔閉合氣流自鼻腔共鳴逸出！[m] 閉雙唇；[n] 舌尖頂上齒齦；[ŋ] 舌後抵軟顎。',
-      soundText: 'm, n, ng',
+      symbol: 'z',
+      kk: '[z]',
+      name: '齒齦有聲摩擦音',
+      tip: '舌尖微貼近上齒齦，氣流摩擦並強力震動聲帶，發出蜜蜂嗡鳴聲。',
+      soundText: 'z',
       words: [
-        { word: 'man', kk: '[mæn]', zh: '男人', highlight: 'm, n' },
-        { word: 'nose', kk: '[noz]', zh: '鼻子', highlight: 'n' },
-        { word: 'sing', kk: '[sɪŋ]', zh: '唱歌', highlight: 'ng' },
-        { word: 'ring', kk: '[rɪŋ]', zh: '戒指', highlight: 'ng' }
+        { word: 'zoo', kk: '[zu]', zh: '動物園', highlight: 'z' },
+        { word: 'zero', kk: '[ˋzɪro]', zh: '零', highlight: 'z' },
+        { word: 'zip', kk: '[zɪp]', zh: '拉鍊', highlight: 'z' },
+        { word: 'size', kk: '[saɪz]', zh: '尺寸', highlight: 'z' }
       ]
     },
     {
-      id: 'c_lr',
+      id: 'c_m',
       category: 'consonants',
-      symbol: 'l / r',
-      kk: '[l] (邊音) / [r] (捲舌)',
-      name: '流音與捲舌',
-      tip: '[l] 舌尖緊頂上齒齦、氣流由兩側流出；[r] 舌尖向後捲但絕不可碰觸口腔上顎。',
-      soundText: 'l, r',
+      symbol: 'm',
+      kk: '[m]',
+      name: '雙唇鼻音',
+      tip: '雙唇緊閉，軟顎下垂，氣流自鼻腔共鳴逸出，聲帶振動。',
+      soundText: 'm',
+      words: [
+        { word: 'map', kk: '[mæp]', zh: '地圖', highlight: 'm' },
+        { word: 'man', kk: '[mæn]', zh: '男人', highlight: 'm' },
+        { word: 'mom', kk: '[mɑm]', zh: '媽媽', highlight: 'm' },
+        { word: 'milk', kk: '[mɪlk]', zh: '牛奶', highlight: 'm' }
+      ]
+    },
+    {
+      id: 'c_n',
+      category: 'consonants',
+      symbol: 'n',
+      kk: '[n]',
+      name: '舌尖齒齦鼻音',
+      tip: '舌尖緊貼上齒齦，氣流完全自鼻腔震動逸出，聲帶振動。',
+      soundText: 'n',
+      words: [
+        { word: 'nose', kk: '[noz]', zh: '鼻子', highlight: 'n' },
+        { word: 'net', kk: '[nɛt]', zh: '網子', highlight: 'n' },
+        { word: 'nut', kk: '[nʌt]', zh: '堅果', highlight: 'n' },
+        { word: 'sun', kk: '[sʌn]', zh: '太陽', highlight: 'n' }
+      ]
+    },
+    {
+      id: 'c_ng',
+      category: 'consonants',
+      symbol: 'ng',
+      kk: '[ŋ]',
+      name: '軟顎鼻音',
+      tip: '舌後部緊貼軟顎阻斷口腔，氣流由鼻腔共鳴發出「嗯/昂」鼻音。',
+      soundText: 'ng',
+      words: [
+        { word: 'sing', kk: '[sɪŋ]', zh: '唱歌', highlight: 'ng' },
+        { word: 'ring', kk: '[rɪŋ]', zh: '戒指', highlight: 'ng' },
+        { word: 'king', kk: '[kɪŋ]', zh: '國王', highlight: 'ng' },
+        { word: 'song', kk: '[sɔŋ]', zh: '歌曲', highlight: 'ng' }
+      ]
+    },
+    {
+      id: 'c_l',
+      category: 'consonants',
+      symbol: 'l',
+      kk: '[l]',
+      name: '舌邊齒齦流音',
+      tip: '舌尖緊頂上齒齦，聲帶振動，氣流由舌頭兩側流出。',
+      soundText: 'ull',
       words: [
         { word: 'leg', kk: '[lɛg]', zh: '腿', highlight: 'l' },
-        { word: 'red', kk: '[rɛd]', zh: '紅色', highlight: 'r' },
         { word: 'light', kk: '[laɪt]', zh: '光線', highlight: 'l' },
-        { word: 'right', kk: '[raɪt]', zh: '正確的', highlight: 'r' }
+        { word: 'lip', kk: '[lɪp]', zh: '嘴唇', highlight: 'l' },
+        { word: 'bell', kk: '[bɛl]', zh: '鈴鐺', highlight: 'll' }
       ]
     },
     {
-      id: 'c_wyh',
+      id: 'c_r',
       category: 'consonants',
-      symbol: 'w / y / h',
-      kk: '[w] / [j] / [h]',
-      name: '半母音與喉氣音',
-      tip: '[w] 圓唇向前滑動；[y] [j] 舌前貼硬顎滑動；[h] 聲門放鬆直接吐出輕柔氣音。',
-      soundText: 'w, y, h',
+      symbol: 'r',
+      kk: '[r]',
+      name: '齒齦捲舌音',
+      tip: '舌尖向後捲起但絕不可碰觸上顎，雙唇微圓突出，聲帶振動。',
+      soundText: 'err',
+      words: [
+        { word: 'red', kk: '[rɛd]', zh: '紅色', highlight: 'r' },
+        { word: 'right', kk: '[raɪt]', zh: '正確的', highlight: 'r' },
+        { word: 'run', kk: '[rʌn]', zh: '跑步', highlight: 'r' },
+        { word: 'car', kk: '[kɑr]', zh: '汽車', highlight: 'r' }
+      ]
+    },
+    {
+      id: 'c_w',
+      category: 'consonants',
+      symbol: 'w',
+      kk: '[w]',
+      name: '雙唇軟顎半母音',
+      tip: '雙唇收圓突出如吹哨狀，舌後部抬高，迅速滑向後面的母音。',
+      soundText: 'wuh',
       words: [
         { word: 'water', kk: '[ˋwɔtɚ]', zh: '水', highlight: 'w' },
+        { word: 'win', kk: '[wɪn]', zh: '贏得', highlight: 'w' },
+        { word: 'wet', kk: '[wɛt]', zh: '濕的', highlight: 'w' },
+        { word: 'cow', kk: '[kaʊ]', zh: '母牛', highlight: 'w' }
+      ]
+    },
+    {
+      id: 'c_y',
+      category: 'consonants',
+      symbol: 'y',
+      kk: '[j]',
+      name: '硬顎半母音',
+      tip: '舌前部抬向硬顎如發短[i]，隨後迅速滑向後面的母音。',
+      soundText: 'yuh',
+      words: [
         { word: 'yes', kk: '[jɛs]', zh: '是的', highlight: 'y' },
+        { word: 'yellow', kk: '[ˋjɛlo]', zh: '黃色', highlight: 'y' },
+        { word: 'yet', kk: '[jɛt]', zh: '尚未', highlight: 'y' },
+        { word: 'you', kk: '[ju]', zh: '你', highlight: 'y' }
+      ]
+    },
+    {
+      id: 'c_h',
+      category: 'consonants',
+      symbol: 'h',
+      kk: '[h]',
+      name: '聲門無聲過渡音',
+      tip: '嘴巴張開成後面母音口型，氣流不受阻礙直接自聲門呼出。',
+      soundText: 'huh',
+      words: [
         { word: 'hat', kk: '[hæt]', zh: '帽子', highlight: 'h' },
-        { word: 'yellow', kk: '[ˋjɛlo]', zh: '黃色', highlight: 'y' }
+        { word: 'hot', kk: '[hɑt]', zh: '熱的', highlight: 'h' },
+        { word: 'hen', kk: '[hɛn]', zh: '母雞', highlight: 'h' },
+        { word: 'hop', kk: '[hɑp]', zh: '跳躍', highlight: 'h' }
       ]
     },
     {
@@ -7487,37 +7652,55 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     if (saved) bookmarkedSounds = new Set(JSON.parse(saved));
   } catch (e) {}
   const LOCAL_PHONICS_MAP = {
-    'sv_a': ['[æ].mp3', 'sv_a.mp3', 'ae.mp3'],
-    'sv_e': ['[ɛ].mp3', 'sv_e.mp3', 'eh.mp3'],
-    'sv_i': ['[ɪ].mp3', 'sv_i.mp3', 'ih.mp3'],
-    'sv_o': ['[ɑ].mp3', 'sv_o.mp3', 'ah.mp3'],
-    'sv_u': ['[ʌ].mp3', 'sv_u.mp3', 'uh.mp3'],
+    'sv_a': ['[æ].mp3', 'sv_a.mp3'],
+    'sv_e': ['[ɛ].mp3', 'sv_e.mp3'],
+    'sv_i': ['[ɪ].mp3', 'sv_i.mp3'],
+    'sv_o': ['[ɑ].mp3', 'sv_o.mp3'],
+    'sv_u': ['[ʌ].mp3', 'sv_u.mp3'],
     'sv_schwa': ['[ə].mp3', 'sv_schwa.mp3'],
-    'lv_a': ['[e].mp3', 'lv_a.mp3', 'ay.mp3'],
-    'lv_e': ['[i].mp3', 'lv_e.mp3', 'ee.mp3'],
-    'lv_i': ['[aɪ].mp3', 'lv_i.mp3', 'eye.mp3'],
-    'lv_o': ['[o].mp3', 'lv_o.mp3', 'oh.mp3'],
-    'lv_u': ['[ju].mp3', 'lv_u.mp3', 'you.mp3'],
-    'lv_oo_long': ['[u].mp3', 'lv_oo_long.mp3', 'oo.mp3'],
+    'lv_a': ['[e].mp3', 'lv_a.mp3'],
+    'lv_e': ['[i].mp3', 'lv_e.mp3'],
+    'lv_i': ['[aɪ].mp3', 'lv_i.mp3'],
+    'lv_o': ['[o].mp3', 'lv_o.mp3'],
+    'lv_u': ['[ju].mp3', 'lv_u.mp3'],
+    'lv_oo_long': ['[u].mp3', 'lv_oo_long.mp3'],
     'lv_oo_short': ['[ʊ].mp3', 'lv_oo_short.mp3'],
-    'lv_ou_ow': ['[aʊ].mp3', 'lv_ou_ow.mp3', 'ow.mp3'],
-    'lv_oi_oy': ['[ɔɪ].mp3', 'lv_oi_oy.mp3', 'oy.mp3'],
-    'lv_ar': ['[ɑr].mp3', 'lv_ar.mp3', 'ar.mp3'],
-    'lv_er_ir_ur': ['[ɝ].mp3', 'lv_er_ir_ur.mp3', 'er.mp3'],
-    'c_pb': ['[p].mp3', 'c_pb.mp3', 'p_b.mp3'],
-    'c_td': ['[t].mp3', 'c_td.mp3', 't_d.mp3'],
-    'c_kg': ['[k].mp3', 'c_kg.mp3', 'k_g.mp3'],
-    'c_fv': ['[f].mp3', 'c_fv.mp3', 'f_v.mp3'],
-    'c_sz': ['[s].mp3', 'c_sz.mp3', 's_z.mp3'],
-    'c_mn_ng': ['[m].mp3', 'c_mn_ng.mp3'],
-    'c_lr': ['[l].mp3', 'c_lr.mp3'],
-    'c_wyh': ['[w].mp3', 'c_wyh.mp3'],
-    'dg_th_unvoiced': ['[θ].mp3', 'dg_th_unvoiced.mp3', 'th_unvoiced.mp3'],
-    'dg_th_voiced': ['[ð].mp3', 'dg_th_voiced.mp3', 'th_voiced.mp3'],
-    'dg_sh': ['[ʃ].mp3', 'dg_sh.mp3', 'sh.mp3'],
-    'dg_ch': ['[tʃ].mp3', 'dg_ch.mp3', 'ch.mp3'],
-    'dg_wh_ph': ['[w_f].mp3', 'dg_wh_ph.mp3', 'wh_ph.mp3'],
-    'dg_ck': ['[k_ck].mp3', 'dg_ck.mp3', 'ck.mp3']
+    'lv_ou_ow': ['[aʊ].mp3', 'lv_ou_ow.mp3'],
+    'lv_oi_oy': ['[ɔɪ].mp3', 'lv_oi_oy.mp3'],
+    'lv_ar': ['[ɑr].mp3', 'lv_ar.mp3'],
+    'lv_er_ir_ur': ['[ɝ].mp3', 'lv_er_ir_ur.mp3'],
+    'c_p': ['[p].mp3', 'c_p.mp3', 'p.mp3'],
+    'c_b': ['[b].mp3', 'c_b.mp3', 'b.mp3'],
+    'c_t': ['[t].mp3', 'c_t.mp3', 't.mp3'],
+    'c_d': ['[d].mp3', 'c_d.mp3', 'd.mp3'],
+    'c_k': ['[k].mp3', 'c_k.mp3', 'k.mp3'],
+    'c_g': ['[g].mp3', 'c_g.mp3', 'g.mp3'],
+    'c_f': ['[f].mp3', 'c_f.mp3', 'f.mp3'],
+    'c_v': ['[v].mp3', 'c_v.mp3', 'v.mp3'],
+    'c_s': ['[s].mp3', 'c_s.mp3', 's.mp3'],
+    'c_z': ['[z].mp3', 'c_z.mp3', 'z.mp3'],
+    'c_m': ['[m].mp3', 'c_m.mp3', 'm.mp3'],
+    'c_n': ['[n].mp3', 'c_n.mp3', 'n.mp3'],
+    'c_ng': ['[ŋ].mp3', 'c_ng.mp3', 'ng.mp3'],
+    'c_l': ['[l].mp3', 'c_l.mp3', 'l.mp3'],
+    'c_r': ['[r].mp3', 'c_r.mp3', 'r.mp3'],
+    'c_w': ['[w].mp3', 'c_w.mp3', 'w.mp3'],
+    'c_y': ['[j].mp3', 'c_y.mp3', 'y.mp3'],
+    'c_h': ['[h].mp3', 'c_h.mp3', 'h.mp3'],
+    'dg_th_unvoiced': ['[θ].mp3', 'dg_th_unvoiced.mp3'],
+    'dg_th_voiced': ['[ð].mp3', 'dg_th_voiced.mp3'],
+    'dg_sh': ['[ʃ].mp3', 'dg_sh.mp3'],
+    'dg_ch': ['[tʃ].mp3', 'dg_ch.mp3'],
+    'dg_wh_ph': ['[w_f].mp3', 'dg_wh_ph.mp3'],
+    'dg_ck': ['[k_ck].mp3', 'dg_ck.mp3'],
+    'c_pb': ['[p].mp3', '[b].mp3'],
+    'c_td': ['[t].mp3', '[d].mp3'],
+    'c_kg': ['[k].mp3', '[g].mp3'],
+    'c_fv': ['[f].mp3', '[v].mp3'],
+    'c_sz': ['[s].mp3', '[z].mp3'],
+    'c_mn_ng': ['[m].mp3', '[n].mp3', '[ŋ].mp3'],
+    'c_lr': ['[l].mp3', '[r].mp3'],
+    'c_wyh': ['[w].mp3', '[j].mp3', '[h].mp3']
   };
   let detectedPhonicsBasePath = null;
   function getCandidatePhonicsDirs() {
@@ -7550,17 +7733,25 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
     return list;
   }
-  const SUB_SYMBOLS_MAP = {
-    'c_pb': [{ symbol: '[p]', label: '無聲' }, { symbol: '[b]', label: '有聲' }],
-    'c_td': [{ symbol: '[t]', label: '無聲' }, { symbol: '[d]', label: '有聲' }],
-    'c_kg': [{ symbol: '[k]', label: '無聲' }, { symbol: '[g]', label: '有聲' }],
-    'c_fv': [{ symbol: '[f]', label: '無聲' }, { symbol: '[v]', label: '有聲' }],
-    'c_sz': [{ symbol: '[s]', label: '無聲' }, { symbol: '[z]', label: '有聲' }],
-    'c_mn_ng': [{ symbol: '[m]', label: '雙唇' }, { symbol: '[n]', label: '舌尖' }],
-    'c_lr': [{ symbol: '[l]', label: '流音' }, { symbol: '[r]', label: '捲舌' }],
-    'c_wyh': [{ symbol: '[w]', label: '雙唇' }, { symbol: '[j]', label: '硬顎' }]
-  };
   const PURE_PHONEME_SOUNDS = {
+    'c_p': 'puh',
+    'c_b': 'buh',
+    'c_t': 'tuh',
+    'c_d': 'duh',
+    'c_k': 'kuh',
+    'c_g': 'guh',
+    'c_f': 'f',
+    'c_v': 'v',
+    'c_s': 's',
+    'c_z': 'z',
+    'c_m': 'm',
+    'c_n': 'n',
+    'c_ng': 'ng',
+    'c_l': 'ull',
+    'c_r': 'err',
+    'c_w': 'wuh',
+    'c_y': 'yuh',
+    'c_h': 'huh',
     '[p]': 'puh',
     '[b]': 'buh',
     '[t]': 'tuh',
@@ -7781,22 +7972,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
                 </button>
               </div>
             </div>
-            <div class="flex items-center gap-1.5 mb-2.5">
-              ${SUB_SYMBOLS_MAP[item.id] ? `
-                <div class="flex items-center gap-1 flex-1">
-                  ${SUB_SYMBOLS_MAP[item.id].map(sym => `
-                    <button onclick="WordCheckingPhonics.playPurePhoneme('${item.id}', '${sym.symbol}')" class="flex-1 py-1.5 px-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-[11px] shadow-xs transition transform active:scale-95 flex items-center justify-center gap-1 cursor-pointer truncate" title="只聽純音標 ${sym.symbol} (${sym.label})">
-                      <i class="fa-solid fa-volume-high text-[10px]"></i>
-                      <span>${sym.symbol} ${sym.label}</span>
-                    </button>
-                  `).join('')}
-                </div>
-              ` : `
-                <button onclick="WordCheckingPhonics.playPurePhoneme('${item.id}')" class="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-xs shadow-xs transition transform active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer" title="只聽單純一個音標發音 (Isolated Sound)">
-                  <i class="fa-solid fa-volume-high text-xs"></i>
-                  <span>聽純音標 ${item.kk}</span>
-                </button>
-              `}
+            <div class="flex items-center gap-2 mb-2.5">
+              <button onclick="WordCheckingPhonics.playPurePhoneme('${item.id}')" class="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-xs shadow-xs transition transform active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer" title="只聽單純一個音標發音 (Isolated Sound)">
+                <i class="fa-solid fa-volume-high text-xs"></i>
+                <span>聽純音標 ${item.kk}</span>
+              </button>
               <button onclick="WordCheckingPhonics.playBlending('${item.id}')" class="py-1.5 px-2.5 rounded-xl bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 dark:hover:bg-slate-600 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-slate-600 font-bold text-xs transition cursor-pointer flex items-center gap-1 whitespace-nowrap" title="先發音標再拼讀出單字">
                 <span>🐾</span>
                 <span>拼讀拆解</span>
@@ -7831,7 +8011,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       `;
     }).join('');
   }
-  function startPhonicsQuiz() {
+  function startPhonicsQuiz(autoPlay = false) {
     quizAnswered = false;
     const item = MINIMAL_PAIRS_QUESTIONS[Math.floor(Math.random() * MINIMAL_PAIRS_QUESTIONS.length)];
     activeQuizItem = item;
@@ -7887,9 +8067,11 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         <div id="phonicsQuizFeedbackBox" class="hidden rounded-2xl p-4 transition-all"></div>
       </div>
     `;
-    setTimeout(() => {
-      replayQuizAudio();
-    }, 300);
+    if (autoPlay) {
+      setTimeout(() => {
+        replayQuizAudio();
+      }, 300);
+    }
   }
   function replayQuizAudio() {
     if (!activeQuizItem) return;
@@ -7919,7 +8101,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
             <div class="text-xs text-emerald-700 dark:text-emerald-300">正確答案是「${activeQuizItem.correctOption.word}」${activeQuizItem.correctOption.kk}（${activeQuizItem.correctOption.zh}）</div>
           </div>
         </div>
-        <button onclick="WordCheckingPhonics.startQuiz()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition cursor-pointer self-end sm:self-center">
+        <button onclick="WordCheckingPhonics.startQuiz(true)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition cursor-pointer self-end sm:self-center">
           下一題 🐾
         </button>
       `;
@@ -7945,7 +8127,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
             </button>
           </div>
         </div>
-        <button onclick="WordCheckingPhonics.startQuiz()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow-sm transition cursor-pointer self-end sm:self-center">
+        <button onclick="WordCheckingPhonics.startQuiz(true)" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow-sm transition cursor-pointer self-end sm:self-center">
           下一題 🐾
         </button>
       `;
@@ -7997,7 +8179,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     playWord: playWordWithCat,
     playPhonicsAudio: playPhonicsAudio,
     toggleBookmark: toggleBookmark,
-    startQuiz: startPhonicsQuiz,
+    startQuiz: (play = true) => startPhonicsQuiz(play),
     replayQuizAudio: replayQuizAudio,
     checkQuizAnswer: checkQuizAnswer
   };
@@ -8459,6 +8641,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     startNextStage: startNextStage,
     reportItemSuccess: reportStageItemSuccess,
     reportItemFailure: reportStageItemFailure,
+    isItemPassed: (word) => stagePassedItems.has(word),
+    getPassedCount: () => stagePassedItems.size,
     completeCruise: completeCruiseGoldenMastery,
     stopCruise: stopCruise,
     closeCruiseAndReturn: closeCruiseAndReturn,
