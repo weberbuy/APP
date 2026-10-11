@@ -136,174 +136,211 @@ PHONICS_ITEMS = [
         "tts_text": "er",
         "wiki_url": None
     },
-    # 獨立單子音 (Consonants) - 獨立音素，絕不朗讀 "P, B" 等字母名
+    # 獨立單子音 (Consonants) - 採用微軟 Jenny 神經純音，絕不使用維基學術 [a-C-a] 夾心音，絕不朗讀字母名
     {
         "id": "c_p", "symbol": "[p]", "ascii": "c_p",
-        "desc": "雙唇無聲爆破音 [p] (純送氣)",
+        "desc": "雙唇無聲爆破音 [p] (純送氣氣音)",
         "tts_text": "puh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Voiceless_bilabial_plosive.ogg"
+        "phoneme": "p",
+        "wiki_url": None
     },
     {
         "id": "c_b", "symbol": "[b]", "ascii": "c_b",
-        "desc": "雙唇有聲爆破音 [b] (純濁音)",
+        "desc": "雙唇有聲爆破音 [b] (純濁音爆破)",
         "tts_text": "buh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Voiced_bilabial_plosive.ogg"
+        "phoneme": "b",
+        "wiki_url": None
     },
     {
         "id": "c_t", "symbol": "[t]", "ascii": "c_t",
-        "desc": "舌尖無聲爆破音 [t]",
+        "desc": "舌尖無聲爆破音 [t] (舌尖彈動)",
         "tts_text": "tuh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Voiceless_alveolar_plosive.ogg"
+        "phoneme": "t",
+        "wiki_url": None
     },
     {
         "id": "c_d", "symbol": "[d]", "ascii": "c_d",
-        "desc": "舌尖有聲爆破音 [d]",
+        "desc": "舌尖有聲爆破音 [d] (舌尖濁音)",
         "tts_text": "duh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/0/01/Voiced_alveolar_plosive.ogg"
+        "phoneme": "d",
+        "wiki_url": None
     },
     {
         "id": "c_k", "symbol": "[k]", "ascii": "c_k",
-        "desc": "舌根無聲爆破音 [k]",
+        "desc": "舌根無聲爆破音 [k] (舌根送氣)",
         "tts_text": "kuh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Voiceless_velar_plosive.ogg"
+        "phoneme": "k",
+        "wiki_url": None
     },
     {
         "id": "c_g", "symbol": "[g]", "ascii": "c_g",
-        "desc": "舌根有聲爆破音 [g]",
+        "desc": "舌根有聲爆破音 [g] (舌根濁音)",
         "tts_text": "guh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Voiced_velar_plosive.ogg"
+        "phoneme": "ɡ",
+        "wiki_url": None
     },
     {
         "id": "c_f", "symbol": "[f]", "ascii": "c_f",
-        "desc": "唇齒無聲摩擦音 [f]",
+        "desc": "唇齒無聲摩擦音 [f] (齒唇吹氣)",
         "tts_text": "ff",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/3/33/Voiceless_labiodental_fricative.ogg"
+        "phoneme": "f",
+        "wiki_url": None
     },
     {
         "id": "c_v", "symbol": "[v]", "ascii": "c_v",
-        "desc": "唇齒有聲摩擦音 [v]",
+        "desc": "唇齒有聲摩擦音 [v] (齒唇震動)",
         "tts_text": "vv",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/8/85/Voiced_labiodental_fricative.ogg"
+        "phoneme": "v",
+        "wiki_url": None
     },
     {
         "id": "c_s", "symbol": "[s]", "ascii": "c_s",
-        "desc": "齒齦無聲摩擦音 [s]",
+        "desc": "齒齦無聲摩擦音 [s] (氣音嘶嘶)",
         "tts_text": "ss",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Voiceless_alveolar_sibilant.ogg"
+        "phoneme": "s",
+        "wiki_url": None
     },
     {
         "id": "c_z", "symbol": "[z]", "ascii": "c_z",
-        "desc": "齒齦有聲摩擦音 [z]",
+        "desc": "齒齦有聲摩擦音 [z] (聲帶蜂鳴)",
         "tts_text": "zz",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Voiced_alveolar_sibilant.ogg"
+        "phoneme": "z",
+        "wiki_url": None
     },
     {
         "id": "c_m", "symbol": "[m]", "ascii": "c_m",
-        "desc": "雙唇鼻音 [m]",
+        "desc": "雙唇鼻音 [m] (閉唇哼音)",
         "tts_text": "mm",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Bilabial_nasal.ogg"
+        "phoneme": "m",
+        "wiki_url": None
     },
     {
         "id": "c_n", "symbol": "[n]", "ascii": "c_n",
-        "desc": "舌尖鼻音 [n]",
+        "desc": "舌尖鼻音 [n] (抵顎哼音)",
         "tts_text": "nn",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Alveolar_nasal.ogg"
+        "phoneme": "n",
+        "wiki_url": None
     },
     {
         "id": "c_ng", "symbol": "[ŋ]", "ascii": "c_ng",
-        "desc": "軟顎鼻音 [ŋ]",
+        "desc": "軟顎鼻音 [ŋ] (鼻腔共鳴)",
         "tts_text": "ng",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Velar_nasal.ogg"
+        "phoneme": "ŋ",
+        "wiki_url": None
     },
     {
         "id": "c_l", "symbol": "[l]", "ascii": "c_l",
         "desc": "舌邊齒齦流音 [l]",
         "tts_text": "ull",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Alveolar_lateral_approximant.ogg"
+        "phoneme": "l",
+        "wiki_url": None
     },
     {
         "id": "c_r", "symbol": "[r]", "ascii": "c_r",
         "desc": "齒齦捲舌音 [r]",
         "tts_text": "err",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Alveolar_approximant.ogg"
+        "phoneme": "ɹ",
+        "wiki_url": None
     },
     {
         "id": "c_w", "symbol": "[w]", "ascii": "c_w",
         "desc": "雙唇軟顎半母音 [w]",
         "tts_text": "wuh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Voiced_labio-velar_approximant.ogg"
+        "phoneme": "w",
+        "wiki_url": None
     },
     {
         "id": "c_y", "symbol": "[j]", "ascii": "c_y",
         "desc": "硬顎半母音 [j]",
         "tts_text": "yuh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Palatal_approximant.ogg"
+        "phoneme": "j",
+        "wiki_url": None
     },
     {
         "id": "c_h", "symbol": "[h]", "ascii": "c_h",
-        "desc": "聲門無聲過渡音 [h]",
+        "desc": "聲門無聲過渡音 [h] (輕嘆吹氣)",
         "tts_text": "huh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/d/da/Voiceless_glottal_fricative.ogg"
+        "phoneme": "h",
+        "wiki_url": None
     },
-    # 複合子音 (Digraphs)
+    # 複合子音 (Digraphs) - 絕不使用維基 [aða] (大阿大) 或單字 the，純濁音直出
     {
         "id": "dg_th_unvoiced", "symbol": "[θ]", "ascii": "dg_th_unvoiced",
         "desc": "齒間無聲摩擦音 [θ] (咬舌吹氣)",
         "tts_text": "th",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/8/80/Voiceless_dental_fricative.ogg"
+        "phoneme": "θ",
+        "wiki_url": None
     },
     {
         "id": "dg_th_voiced", "symbol": "[ð]", "ascii": "dg_th_voiced",
-        "desc": "齒間有聲摩擦音 [ð] (咬舌濁音)",
-        "tts_text": "the",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Voiced_dental_fricative.ogg"
+        "desc": "齒間有聲摩擦音 [ð] (純咬舌濁音，絕無大阿大)",
+        "tts_text": "thuh",
+        "phoneme": "ð",
+        "wiki_url": None
     },
     {
         "id": "dg_sh", "symbol": "[ʃ]", "ascii": "dg_sh",
-        "desc": "後齒齦無聲摩擦音 [ʃ] (噓音)",
+        "desc": "後齒齦無聲摩擦音 [ʃ] (安靜噓音)",
         "tts_text": "sh",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Voiceless_postalveolar_fricative.ogg"
+        "phoneme": "ʃ",
+        "wiki_url": None
     },
     {
         "id": "dg_ch", "symbol": "[tʃ]", "ascii": "dg_ch",
         "desc": "後齒齦無聲塞擦音 [tʃ]",
         "tts_text": "ch",
-        "wiki_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Voiceless_postalveolar_affricate.ogg"
+        "phoneme": "tʃ",
+        "wiki_url": None
     },
     {
         "id": "dg_wh_ph", "symbol": "[w_f]", "ascii": "dg_wh_ph",
         "desc": "複合音 [w] / [f]",
-        "tts_text": "wh, ph",
+        "tts_text": "wuh, ff",
+        "phoneme": None,
         "wiki_url": None
     },
     {
         "id": "dg_ck", "symbol": "[k_ck]", "ascii": "dg_ck",
         "desc": "字尾 [k]",
-        "tts_text": "k",
+        "tts_text": "kuh",
+        "phoneme": "k",
         "wiki_url": None
     }
 ]
 
-PRIMARY_DIR = os.path.join("./WordChecking", "data", "audio", "phonics")
-SECONDARY_DIR = os.path.join("./WordChecking", "data", "phonics")
+# 自動支援多種部署路徑：
+# 1. 直接位於 WordChecking/ 專案目錄
+# 2. 位於 APP/ 倉庫根目錄
+TARGET_DIRS = [
+    os.path.join(os.path.dirname(__file__), "WordChecking", "data", "audio", "phonics"),
+    os.path.join(os.path.dirname(__file__), "data", "audio", "phonics"),
+    os.path.join(os.path.dirname(__file__), "WordChecking", "data", "phonics"),
+    os.path.join(os.path.dirname(__file__), "data", "phonics")
+]
+PRIMARY_DIR = TARGET_DIRS[1]
 
 def ensure_dirs():
-    os.makedirs(PRIMARY_DIR, exist_ok=True)
-    os.makedirs(SECONDARY_DIR, exist_ok=True)
+    for d in TARGET_DIRS:
+        os.makedirs(d, exist_ok=True)
 
 def copy_to_both_locations(primary_path, symbol, ascii_name):
-    alias_primary = os.path.join(PRIMARY_DIR, f"{ascii_name}.mp3")
-    sec_primary = os.path.join(SECONDARY_DIR, f"{symbol}.mp3")
-    sec_alias = os.path.join(SECONDARY_DIR, f"{ascii_name}.mp3")
-
     with open(primary_path, "rb") as f:
         data = f.read()
 
-    with open(alias_primary, "wb") as f: f.write(data)
-    with open(sec_primary, "wb") as f: f.write(data)
-    with open(sec_alias, "wb") as f: f.write(data)
+    # 乾淨單字母檔名 (如 [p].mp3 -> p.mp3)
+    clean_letter = symbol.strip('[]')
+    
+    for d in TARGET_DIRS:
+        os.makedirs(d, exist_ok=True)
+        # 1. 符號檔名: [p].mp3
+        with open(os.path.join(d, f"{symbol}.mp3"), "wb") as f: f.write(data)
+        # 2. ascii 別名: c_p.mp3
+        with open(os.path.join(d, f"{ascii_name}.mp3"), "wb") as f: f.write(data)
+        # 3. 純字母檔名: p.mp3
+        if clean_letter and clean_letter != symbol:
+            with open(os.path.join(d, f"{clean_letter}.mp3"), "wb") as f: f.write(data)
 
-async def synthesize_single_edge_tts(text, out_path):
+async def synthesize_single_edge_tts(text, out_path, phoneme=None):
     try:
         import edge_tts
     except ImportError:
@@ -312,6 +349,15 @@ async def synthesize_single_edge_tts(text, out_path):
         import edge_tts
 
     voice = "en-US-JennyNeural"
+    # 若有指定 IPA 國際音標，嘗試使用 SSML phoneme 標籤合成超純音素
+    if phoneme:
+        ssml_payload = f"<phoneme alphabet='ipa' ph='{phoneme}'>{text}</phoneme>"
+        try:
+            comm = edge_tts.Communicate(ssml_payload, voice, rate="-10%")
+            await comm.save(out_path)
+            return
+        except Exception:
+            pass  # 若 SSML 標籤在特定終端不支援，無縫降級為純文字
     comm = edge_tts.Communicate(text, voice, rate="-10%")
     await comm.save(out_path)
 
@@ -392,8 +438,9 @@ async def run_pipeline():
 
             # 使用優化後的音素文本進行神經語音合成
             tts_text = item["tts_text"]
+            phoneme = item.get("phoneme")
             try:
-                await synthesize_single_edge_tts(tts_text, out_path)
+                await synthesize_single_edge_tts(tts_text, out_path, phoneme=phoneme)
                 downloaded = True
                 method_label = "Edge-TTS 神經純音"
             except Exception as ex:
@@ -412,3 +459,4 @@ async def run_pipeline():
 
 if __name__ == "__main__":
     asyncio.run(run_pipeline())
+
