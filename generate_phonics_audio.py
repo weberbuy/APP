@@ -53,7 +53,7 @@ PHONICS_ITEMS = [
     {"id": "dg_ck", "symbol": "[k_ck]", "ascii": "dg_ck", "text": "k", "desc": "字尾 [k]"}
 ]
 
-OUT_DIR = os.path.join(os.path.dirname(__file__), "data", "phonics")
+OUT_DIR = os.path.join("./WordChecking", "data", "phonics")
 
 async def generate_with_edge_tts():
     try:
