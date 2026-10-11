@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.13-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.14-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.13-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.14-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1776,21 +1776,23 @@ function playVoiceText(word, rate = 1.0) {
     fallbackTriggered = true;
     updateAudioSourceBadge('tts', 'Web Speech API');
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.resume();
-        const utterance = new SpeechSynthesisUtterance(cleanWord);
-        utterance.lang = 'en-US';
-        utterance.rate = rate || 1.0;
-        const voices = window.speechSynthesis.getVoices();
-        if (voices && voices.length > 0) {
-          const enVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US' || v.lang.startsWith('en'));
-          if (enVoice) utterance.voice = enVoice;
+      setTimeout(() => {
+        try {
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.resume();
+          const utterance = new SpeechSynthesisUtterance(cleanWord);
+          utterance.lang = 'en-US';
+          utterance.rate = rate || 1.0;
+          const voices = window.speechSynthesis.getVoices();
+          if (voices && voices.length > 0) {
+            const enVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US' || (v.lang && v.lang.startsWith('en')));
+            if (enVoice) utterance.voice = enVoice;
+          }
+          window.speechSynthesis.speak(utterance);
+        } catch (err) {
+          console.warn('SpeechSynthesis fallback error:', err);
         }
-        window.speechSynthesis.speak(utterance);
-      } catch (err) {
-        console.warn('SpeechSynthesis fallback error:', err);
-      }
+      }, 15);
     }
   };
   let fallbackTriggered = false;
@@ -5895,7 +5897,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.13-test",
+        version: "2.13.14-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -9192,20 +9194,22 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           subPhoneticEl.innerText = `${item.pos ? '(' + item.pos + ') ' : ''}${item.kk || ''}`;
         }
         if (hintEl) hintEl.innerText = "🐾 點擊卡片翻面看中文釋義與例句";
+        const zhVal = item.chinese || item.zh || '';
         document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${escapeHtml(item.category || '核心單字')}</span>`;
-        document.getElementById('cardBackDigit').innerText = `#${item.num}`;
-        document.getElementById('cardEnglish').innerText = item.chinese;
+        document.getElementById('cardBackDigit').innerText = `#${item.num || (currentIndex + 1)}`;
+        document.getElementById('cardEnglish').innerText = zhVal;
         document.getElementById('cardEnglish').className = "text-4xl sm:text-5xl font-extrabold text-rose-600 dark:text-rose-400 tracking-wide";
         document.getElementById('cardPhonetic').innerText = `${item.word} ${item.kk || ''}`;
       } else {
-        digitEl.innerText = item.chinese;
-        digitEl.className = item.chinese.length > 4
+        const zhVal = item.chinese || item.zh || '';
+        digitEl.innerText = zhVal;
+        digitEl.className = zhVal.length > 4
           ? "text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight"
           : "text-6xl sm:text-7xl font-black text-slate-900 dark:text-white font-mono tracking-tight";
         if (subPhoneticEl) subPhoneticEl.classList.add('hidden');
         if (hintEl) hintEl.innerText = "🐾 點擊卡片翻面看拼字";
         document.getElementById('cardBackCategory').innerHTML = `<span>🐾</span><span>${escapeHtml(item.category || '核心單字')}</span>`;
-        document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num}` : `#${item.num}`;
+        document.getElementById('cardBackDigit').innerText = item.pos ? `${item.pos} #${item.num || (currentIndex + 1)}` : `#${item.num || (currentIndex + 1)}`;
         document.getElementById('cardEnglish').innerText = item.word;
         document.getElementById('cardEnglish').className = "text-4xl sm:text-5xl font-extrabold text-rose-600 dark:text-rose-400 tracking-wide";
         document.getElementById('cardPhonetic').innerText = item.kk || '';
@@ -9218,9 +9222,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         noteBox.classList.add('hidden');
       }
       const exampleBox = document.getElementById('cardExampleBox');
-      if (item.example) {
+      const exVal = item.example || item.sentence || '';
+      if (exVal) {
         exampleBox.classList.remove('hidden');
-        document.getElementById('cardExample').innerText = `例句：${item.example}`;
+        document.getElementById('cardExample').innerText = `例句：${exVal}`;
       } else {
         exampleBox.classList.add('hidden');
       }
@@ -9238,7 +9243,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
       playVoiceCurrent(1.0);
       if (filteredList && filteredList[currentIndex]) {
-        sayCatSpeech(`"${filteredList[currentIndex].word}"（${filteredList[currentIndex].chinese}），記起來了嗎喵？🐾`, "專心看牌");
+        const curItem = filteredList[currentIndex];
+        const curZh = curItem.chinese || curItem.zh || '';
+        sayCatSpeech(`"${curItem.word}"（${curZh}），記起來了嗎喵？🐾`, "專心看牌");
       }
     }
     function nextCard() {
