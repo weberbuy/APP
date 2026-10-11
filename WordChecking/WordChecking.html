@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.4-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.6-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.4-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.6-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -5837,7 +5837,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.4-test",
+        version: "2.13.6-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -7485,165 +7485,49 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     const saved = localStorage.getItem('wordchecking_phonics_bookmarks');
     if (saved) bookmarkedSounds = new Set(JSON.parse(saved));
   } catch (e) {}
-  const PHONEME_AUDIO_MAP = {
-    'sv_a': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/71/Near-open_front_unrounded_vowel.ogg',
-      formant: { f1: 800, f2: 1750, f3: 2450 },
-      label: '[æ]'
-    },
-    'sv_e': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/71/Open-mid_front_unrounded_vowel.ogg',
-      formant: { f1: 550, f2: 1850, f3: 2500 },
-      label: '[ɛ]'
-    },
-    'sv_i': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Near-close_near-front_unrounded_vowel.ogg',
-      formant: { f1: 400, f2: 2000, f3: 2600 },
-      label: '[ɪ]'
-    },
-    'sv_o': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Open_back_unrounded_vowel.ogg',
-      formant: { f1: 750, f2: 1100, f3: 2400 },
-      label: '[ɑ]'
-    },
-    'sv_u': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Open-mid_back_unrounded_vowel.ogg',
-      formant: { f1: 650, f2: 1200, f3: 2500 },
-      label: '[ʌ]'
-    },
-    'sv_schwa': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Mid-central_vowel.ogg',
-      formant: { f1: 500, f2: 1500, f3: 2500 },
-      label: '[ə]'
-    },
-    'lv_a': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/Close-mid_front_unrounded_vowel.ogg',
-      formant: { f1: 450, f2: 2100, endF1: 400, endF2: 2200 },
-      label: '[e]'
-    },
-    'lv_e': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d4/Close_front_unrounded_vowel.ogg',
-      formant: { f1: 280, f2: 2300, f3: 2800 },
-      label: '[i]'
-    },
-    'lv_i': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Open_back_unrounded_vowel.ogg',
-      formant: { f1: 700, f2: 1200, endF1: 350, endF2: 2100 },
-      label: '[aɪ]'
-    },
-    'lv_o': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Close-mid_back_rounded_vowel.ogg',
-      formant: { f1: 450, f2: 900, endF1: 400, endF2: 800 },
-      label: '[o]'
-    },
-    'lv_u': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/Close_back_rounded_vowel.ogg',
-      formant: { f1: 300, f2: 1800, endF1: 300, endF2: 900 },
-      label: '[ju]'
-    },
-    'lv_oo_long': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/Close_back_rounded_vowel.ogg',
-      formant: { f1: 300, f2: 870, f3: 2300 },
-      label: '[u]'
-    },
-    'lv_oo_short': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Near-close_near-back_rounded_vowel.ogg',
-      formant: { f1: 450, f2: 1050, f3: 2300 },
-      label: '[ʊ]'
-    },
-    'lv_ou_ow': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Open_back_unrounded_vowel.ogg',
-      formant: { f1: 750, f2: 1150, endF1: 450, endF2: 850 },
-      label: '[aʊ]'
-    },
-    'lv_oi_oy': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Close-mid_back_rounded_vowel.ogg',
-      formant: { f1: 500, f2: 950, endF1: 350, endF2: 2100 },
-      label: '[ɔɪ]'
-    },
-    'lv_ar': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Open_back_unrounded_vowel.ogg',
-      formant: { f1: 700, f2: 1200, f3: 1700 },
-      label: '[ɑr]'
-    },
-    'lv_er_ir_ur': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Mid-central_vowel.ogg',
-      formant: { f1: 480, f2: 1350, f3: 1650 },
-      label: '[ɝ]'
-    },
-    'c_pb': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Voiceless_bilabial_plosive.ogg',
-      consonantType: 'plosive',
-      label: '[p] / [b]'
-    },
-    'c_td': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Voiceless_alveolar_plosive.ogg',
-      consonantType: 'plosive',
-      label: '[t] / [d]'
-    },
-    'c_kg': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Voiceless_velar_plosive.ogg',
-      consonantType: 'plosive',
-      label: '[k] / [g]'
-    },
-    'c_fv': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Voiceless_labiodental_fricative.ogg',
-      consonantType: 'fricative',
-      label: '[f] / [v]'
-    },
-    'c_sz': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Voiceless_alveolar_sibilant.ogg',
-      consonantType: 'sibilant',
-      label: '[s] / [z]'
-    },
-    'c_mn_ng': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Bilabial_nasal.ogg',
-      consonantType: 'nasal',
-      label: '[m] / [n] / [ŋ]'
-    },
-    'c_lr': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Alveolar_lateral_approximant.ogg',
-      consonantType: 'liquid',
-      label: '[l] / [r]'
-    },
-    'c_wyh': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/da/Voiceless_glottal_fricative.ogg',
-      consonantType: 'aspirate',
-      label: '[w] / [j] / [h]'
-    },
-    'dg_th_unvoiced': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/80/Voiceless_dental_fricative.ogg',
-      consonantType: 'fricative',
-      label: '[θ]'
-    },
-    'dg_th_voiced': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6a/Voiced_dental_fricative.ogg',
-      consonantType: 'fricative',
-      label: '[ð]'
-    },
-    'dg_sh': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Voiceless_postalveolar_fricative.ogg',
-      consonantType: 'fricative',
-      label: '[ʃ]'
-    },
-    'dg_ch': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Voiceless_palato-alveolar_affricate.ogg',
-      consonantType: 'affricate',
-      label: '[tʃ]'
-    },
-    'dg_wh_ph': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Voiced_labio-velar_approximant.ogg',
-      consonantType: 'approximant',
-      label: '[w] / [f]'
-    },
-    'dg_ck': {
-      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Voiceless_velar_plosive.ogg',
-      consonantType: 'plosive',
-      label: '[k]'
-    }
+  const LOCAL_PHONICS_MAP = {
+    'sv_a': ['[æ].mp3', 'sv_a.mp3', 'ae.mp3'],
+    'sv_e': ['[ɛ].mp3', 'sv_e.mp3', 'eh.mp3'],
+    'sv_i': ['[ɪ].mp3', 'sv_i.mp3', 'ih.mp3'],
+    'sv_o': ['[ɑ].mp3', 'sv_o.mp3', 'ah.mp3'],
+    'sv_u': ['[ʌ].mp3', 'sv_u.mp3', 'uh.mp3'],
+    'sv_schwa': ['[ə].mp3', 'sv_schwa.mp3'],
+    'lv_a': ['[e].mp3', 'lv_a.mp3', 'ay.mp3'],
+    'lv_e': ['[i].mp3', 'lv_e.mp3', 'ee.mp3'],
+    'lv_i': ['[aɪ].mp3', 'lv_i.mp3', 'eye.mp3'],
+    'lv_o': ['[o].mp3', 'lv_o.mp3', 'oh.mp3'],
+    'lv_u': ['[ju].mp3', 'lv_u.mp3', 'you.mp3'],
+    'lv_oo_long': ['[u].mp3', 'lv_oo_long.mp3', 'oo.mp3'],
+    'lv_oo_short': ['[ʊ].mp3', 'lv_oo_short.mp3'],
+    'lv_ou_ow': ['[aʊ].mp3', 'lv_ou_ow.mp3', 'ow.mp3'],
+    'lv_oi_oy': ['[ɔɪ].mp3', 'lv_oi_oy.mp3', 'oy.mp3'],
+    'lv_ar': ['[ɑr].mp3', 'lv_ar.mp3', 'ar.mp3'],
+    'lv_er_ir_ur': ['[ɝ].mp3', 'lv_er_ir_ur.mp3', 'er.mp3'],
+    'c_pb': ['[p].mp3', 'c_pb.mp3', 'p_b.mp3'],
+    'c_td': ['[t].mp3', 'c_td.mp3', 't_d.mp3'],
+    'c_kg': ['[k].mp3', 'c_kg.mp3', 'k_g.mp3'],
+    'c_fv': ['[f].mp3', 'c_fv.mp3', 'f_v.mp3'],
+    'c_sz': ['[s].mp3', 'c_sz.mp3', 's_z.mp3'],
+    'c_mn_ng': ['[m].mp3', 'c_mn_ng.mp3'],
+    'c_lr': ['[l].mp3', 'c_lr.mp3'],
+    'c_wyh': ['[w].mp3', 'c_wyh.mp3'],
+    'dg_th_unvoiced': ['[θ].mp3', 'dg_th_unvoiced.mp3', 'th_unvoiced.mp3'],
+    'dg_th_voiced': ['[ð].mp3', 'dg_th_voiced.mp3', 'th_voiced.mp3'],
+    'dg_sh': ['[ʃ].mp3', 'dg_sh.mp3', 'sh.mp3'],
+    'dg_ch': ['[tʃ].mp3', 'dg_ch.mp3', 'ch.mp3'],
+    'dg_wh_ph': ['[w_f].mp3', 'dg_wh_ph.mp3', 'wh_ph.mp3'],
+    'dg_ck': ['[k_ck].mp3', 'dg_ck.mp3', 'ck.mp3']
   };
+  const CANDIDATE_PHONICS_DIRS = [
+    './data/phonics/',
+    './WordChecking/data/phonics/',
+    'data/phonics/',
+    'WordChecking/data/phonics/',
+    '../data/phonics/',
+    './data/audio/phonics/'
+  ];
   const PURE_PHONEME_SOUNDS = {
-    'sv_a': 'ah',           // [æ] 蝴蝶音（優先播放純 [æ] 母音音檔，回退以自然短母音發聲，絕無 "short a" 說明詞）
+    'sv_a': 'ah',           // [æ] 蝴蝶音（優先播放本地音檔，回退以自然短母音純音發聲）
     'sv_e': 'eh',           // [ɛ] 微笑短母音純音
     'sv_i': 'ih',           // [ɪ] 放鬆短母音純音
     'sv_o': 'ah',           // [ɑ] 大口短母音純音
@@ -7655,7 +7539,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     'lv_o': 'oh',           // [o] 長母音純音
     'lv_u': 'you',          // [ju] 長母音純音
     'lv_oo_long': 'oo',     // [u] 長音純音
-    'lv_oo_short': 'uh',    // [ʊ] 短音純音 (絕無 "short oo" 說明詞)
+    'lv_oo_short': 'uh',    // [ʊ] 短音純音
     'lv_ou_ow': 'ow',       // [aʊ] 雙母音純音
     'lv_oi_oy': 'oy',       // [ɔɪ] 雙母音純音
     'lv_ar': 'ar',          // [ɑr] 捲舌純音
@@ -7668,8 +7552,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     'c_mn_ng': 'm, n, ng',  // [m] / [n] / [ŋ] 鼻音純音
     'c_lr': 'l, r',         // [l] / [r] 流音捲舌純音
     'c_wyh': 'w, y, h',     // [w] / [j] / [h] 半母音純音
-    'dg_th_unvoiced': 'th', // [θ] 純咬舌無聲氣音 (絕無 "unvoiced th" 說明詞)
-    'dg_th_voiced': 'the',  // [ð] 純咬舌濁摩擦單音 /ð/ (絕無 "大啊大" 與 "voiced th" 說明詞)
+    'dg_th_unvoiced': 'th', // [θ] 純咬舌無聲氣音
+    'dg_th_voiced': 'the',  // [ð] 純咬舌濁摩擦單音 /ð/
     'dg_sh': 'sh',          // [ʃ] 噓音純音
     'dg_ch': 'ch',          // [tʃ] 塞擦音純音
     'dg_wh_ph': 'wh, ph',   // [hw/w], [f]
@@ -7686,24 +7570,47 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       } catch (e) {}
       activePhonemeAudio = null;
     }
-    const phonemeSound = PURE_PHONEME_SOUNDS[id] || item.soundText || item.symbol;
-    if (id === 'sv_a' && PHONEME_AUDIO_MAP['sv_a'] && PHONEME_AUDIO_MAP['sv_a'].audioUrl) {
-      try {
-        const audioUrl = PHONEME_AUDIO_MAP['sv_a'].audioUrl;
-        const mp3Url = audioUrl.replace('wikipedia/commons/', 'wikipedia/commons/transcoded/') + '/' + audioUrl.split('/').pop() + '.mp3';
-        const audio = new Audio(mp3Url);
-        activePhonemeAudio = audio;
-        const p = audio.play();
-        if (p !== undefined) {
-          p.catch(() => {
-            playPhonicsAudio(phonemeSound, 0.85);
-          });
+    const fallbackSound = PURE_PHONEME_SOUNDS[id] || item.soundText || item.symbol;
+    const filenames = LOCAL_PHONICS_MAP[id] || [];
+    let dirIdx = 0;
+    let fileIdx = 0;
+    let localPlayed = false;
+    function tryNextLocalAudio() {
+      if (dirIdx >= CANDIDATE_PHONICS_DIRS.length) {
+        if (!localPlayed) {
+          playPhonicsAudio(fallbackSound, 0.85);
         }
-      } catch (e) {
-        playPhonicsAudio(phonemeSound, 0.85);
+        return;
       }
+      const dir = CANDIDATE_PHONICS_DIRS[dirIdx];
+      const fn = filenames[fileIdx] || `${id}.mp3`;
+      const url = encodeURI(dir + fn);
+      const audio = new Audio(url);
+      activePhonemeAudio = audio;
+      const onFail = () => {
+        if (localPlayed) return;
+        fileIdx++;
+        if (fileIdx >= filenames.length) {
+          fileIdx = 0;
+          dirIdx++;
+        }
+        tryNextLocalAudio();
+      };
+      audio.addEventListener('error', onFail);
+      audio.addEventListener('play', () => {
+        localPlayed = true;
+      });
+      const p = audio.play();
+      if (p !== undefined) {
+        p.then(() => {
+          localPlayed = true;
+        }).catch(onFail);
+      }
+    }
+    if (filenames.length > 0) {
+      tryNextLocalAudio();
     } else {
-      playPhonicsAudio(phonemeSound, 0.85);
+      playPhonicsAudio(fallbackSound, 0.85);
     }
     if (typeof window.sayCatSpeech === 'function') {
       window.sayCatSpeech(`音標【${item.kk}】自然發音【${item.symbol}】！發音要訣：${item.tip}喵～🐾`, "純音標單音");
