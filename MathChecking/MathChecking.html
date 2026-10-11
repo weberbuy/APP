@@ -25,7 +25,7 @@
 
     <script>
         // 1. 讀取 JSON 檔案 (請確認 data/exam_01.json 路徑正確)
-        fetch('../data/exam_01.json')
+        fetch('data/exam_01.json')
             .then(response => response.json())
             .then(data => {
                 document.getElementById('exam-title').innerText = `${data.exam_name} (${data.scope})`;
@@ -46,7 +46,9 @@
                 const badgeText = q.is_correct ? '答對' : '答錯需複習';
                 
                 // 處理圖形
-                const imgHtml = q.has_image ? `<img src="../data/picture/${q.image_filename}" class="q-image" alt="題目附圖">` : '';
+                // 原本是： const imgHtml = q.has_image ? `<img src="../data/picture/${q.image_filename}" class="q-image" alt="題目附圖">` : '';
+                // 請修改為：
+                const imgHtml = q.has_image ? `<img src="data/picture/${q.image_filename}" class="q-image" alt="題目附圖">` : '';
 
                 // 卡片 HTML 結構
                 card.innerHTML = `
