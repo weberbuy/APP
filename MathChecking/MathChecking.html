@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathChecking 錯題本</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; max-width: 800px; margin: auto; }
+        .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .question-title { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 10px; }
+        .q-image { max-width: 100%; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; color: white; margin-bottom: 10px;}
+        .badge-wrong { background-color: #e74c3c; }
+        .badge-correct { background-color: #2ecc71; }
+        .btn { background-color: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        .btn:hover { background-color: #2980b9; }
+        .explanation-box { background-color: #e8f4f8; padding: 15px; border-radius: 5px; margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>MathChecking 數學題庫系統</h1>
+    <h3 id="exam-title">載入中...</h3>
+    <div id="quiz-container"></div>
+
+    <script>
+        // 1. 讀取 JSON 檔案 (請確認 data/exam_01.json 路徑正確)
+        fetch('../data/exam_01.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('exam-title').innerText = `${data.exam_name} (${data.scope})`;
+                renderQuestions(data.questions);
+            })
+            .catch(error => console.error('Error loading JSON:', error));
+
+        // 2. 渲染題目
+        function renderQuestions(questions) {
+            const container = document.getElementById('quiz-container');
+            
+            questions.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                // 標籤 (對或錯)
+                const badgeClass = q.is_correct ? 'badge-correct' : 'badge-wrong';
+                const badgeText = q.is_correct ? '答對' : '答錯需複習';
+                
+                // 處理圖形
+                const imgHtml = q.has_image ? `<img src="../data/picture/${q.image_filename}" class="q-image" alt="題目附圖">` : '';
+
+                // 卡片 HTML 結構
+                card.innerHTML = `
+                    <span class="status-badge ${badgeClass}">${badgeText}</span>
+                    <div class="question-title">${q.question_text}</div>
+                    ${imgHtml}
+                    <br><br>
+                    <button class="btn" onclick="toggleExplanation('${q.id}')">顯示解答與解析</button>
+                    
+                    <div id="exp-${q.id}" class="explanation-box">
+                        <strong>正確答案：</strong> ${q.correct_answer} <br>
+                        <strong>當時作答：</strong> ${q.user_answer} <br>
+                        <strong>AI 盲算解析：</strong> ${q.explanation}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 3. 按鈕切換解答顯示
+        function toggleExplanation(id) {
+            const expBox = document.getElementById(`exp-${id}`);
+            if (expBox.style.display === "none" || expBox.style.display === "") {
+                expBox.style.display = "block";
+            } else {
+                expBox.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
