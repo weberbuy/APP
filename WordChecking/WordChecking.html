@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.10-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.13-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.10-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.13-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -437,6 +437,7 @@
             </label>
             <select id="themeSelect" onchange="onThemeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-900 dark:text-amber-100 focus:outline-none cursor-pointer">
               <option value="all1200" class="dark:bg-slate-800 dark:text-slate-100">📚 全集篇：國中會考 1200 單字全集</option>
+              <option value="grade7_1st_exam" class="dark:bg-slate-800 dark:text-slate-100">🎯 段考篇：七年級一上第一次段考 (Get Ready ~ L2)</option>
               <option value="numbers" class="dark:bg-slate-800 dark:text-slate-100">🔢 專題篇：1-100 基礎數字</option>
               <option value="family" class="dark:bg-slate-800 dark:text-slate-100">👨‍👩‍👧‍👦 專題篇：人物與家庭親屬</option>
             </select>
@@ -1935,6 +1936,22 @@ if (typeof window !== 'undefined') {
   window.getDetectedAudioBasePath = () => detectedAudioBasePath;
 }
     const THEME_REGISTRY = {
+      grade7_1st_exam: {
+        id: "grade7_1st_exam",
+        name: "七年級一上第一次段考 (Get Ready ~ L2)",
+        url: "./data/vocab-grade7-exam1.json",
+        fallbackUrl: "./vocab-grade7-exam1.json",
+        storageKey: "wordchecking_progress_grade7_exam1_v1",
+        catIntro: "段考衝刺篇：七年級一上第一次段考（Get Ready、L1 家庭學校、L2 動物特徵，共 79 字）！滿分衝刺喵～🐾",
+        scopes: [
+          { value: "all", label: "全部段考範圍 (Get Ready + L1 + L2 共 79 字)" },
+          { value: "get_ready", label: "🌱 Get Ready 入門暖身 (4字)" },
+          { value: "lesson1", label: "👨‍👩‍👧 Lesson 1 家庭、親屬與學校 (37字)" },
+          { value: "lesson2", label: "🐯 Lesson 2 動物、生肖與特徵 (38字)" },
+          { value: "familiar", label: "🌱 貓貓熟悉待掌握清單" },
+          { value: "weak", label: "★ 貓貓待加強清單" }
+        ]
+      },
       all1200: {
         id: "all1200",
         name: "國中會考 1200 單字全集",
@@ -2003,6 +2020,7 @@ if (typeof window !== 'undefined') {
         ]
       }
     };
+    if (typeof window !== "undefined") window.THEME_REGISTRY = THEME_REGISTRY;
     let currentThemeKey = localStorage.getItem('wordchecking_current_theme') || 'all1200';
     let RAW_VOCAB = [];
     let currentScope = 'all';
@@ -2066,7 +2084,12 @@ if (typeof window !== 'undefined') {
       currentScope = 'all';
       scopeSel.value = 'all';
     }
+    if (typeof window !== "undefined") {
+      window.loadThemeData = loadThemeData;
+      window.getRawVocab = () => RAW_VOCAB;
+    }
     async function loadThemeData(themeKey) {
+      currentThemeKey = themeKey;
       const theme = THEME_REGISTRY[themeKey];
       if (!theme) return;
       sayCatSpeech(`喵～正在載入【${theme.name}】資料庫...🐾`, "準備中");
@@ -5872,7 +5895,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.10-test",
+        version: "2.13.13-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -7759,15 +7782,15 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     'c_d': 'duh',
     'c_k': 'kuh',
     'c_g': 'guh',
-    'c_f': 'f',
-    'c_v': 'v',
-    'c_s': 's',
-    'c_z': 'z',
-    'c_m': 'm',
-    'c_n': 'n',
-    'c_ng': 'ng',
-    'c_l': 'ull',
-    'c_r': 'err',
+    'c_f': 'fah',
+    'c_v': 'vuh',
+    'c_s': 'sah',
+    'c_z': 'zuh',
+    'c_m': 'muh',
+    'c_n': 'nuh',
+    'c_ng': 'ung',
+    'c_l': 'luh',
+    'c_r': 'ruh',
     'c_w': 'wuh',
     'c_y': 'yuh',
     'c_h': 'huh',
@@ -7777,53 +7800,45 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     '[d]': 'duh',
     '[k]': 'kuh',
     '[g]': 'guh',
-    '[f]': 'f',
-    '[v]': 'v',
-    '[s]': 's',
-    '[z]': 'z',
-    '[m]': 'm',
-    '[n]': 'n',
-    '[ŋ]': 'ng',
-    '[l]': 'l',
-    '[r]': 'r',
-    '[w]': 'w',
-    '[j]': 'y',
-    '[h]': 'h',
+    '[f]': 'fah',
+    '[v]': 'vuh',
+    '[s]': 'sah',
+    '[z]': 'zuh',
+    '[m]': 'muh',
+    '[n]': 'nuh',
+    '[ŋ]': 'ung',
+    '[l]': 'luh',
+    '[r]': 'ruh',
+    '[w]': 'wuh',
+    '[j]': 'yuh',
+    '[h]': 'huh',
     '[θ]': 'th',
-    '[ð]': 'the',
+    '[ð]': 'thuh',
     '[ʃ]': 'sh',
     '[tʃ]': 'ch',
-    'sv_a': 'ah',           // [æ] 蝴蝶音（優先播放本地音檔，回退以自然短母音純音發聲）
-    'sv_e': 'eh',           // [ɛ] 微笑短母音純音
-    'sv_i': 'ih',           // [ɪ] 放鬆短母音純音
-    'sv_o': 'ah',           // [ɑ] 大口短母音純音
-    'sv_u': 'uh',           // [ʌ] 尖下巴短母音純音
-    'sv_schwa': 'uh',       // [ə] 央母音純音
-    'lv_a': 'ay',           // [e] / [eɪ] 長母音純音
-    'lv_e': 'ee',           // [i] 長母音純音
-    'lv_i': 'eye',          // [aɪ] 雙母音純音
-    'lv_o': 'oh',           // [o] 長母音純音
-    'lv_u': 'you',          // [ju] 長母音純音
-    'lv_oo_long': 'oo',     // [u] 長音純音
-    'lv_oo_short': 'uh',    // [ʊ] 短音純音
-    'lv_ou_ow': 'ow',       // [aʊ] 雙母音純音
-    'lv_oi_oy': 'oy',       // [ɔɪ] 雙母音純音
-    'lv_ar': 'ar',          // [ɑr] 捲舌純音
-    'lv_er_ir_ur': 'er',    // [ɝ] 捲舌純音
-    'c_pb': 'p, b',         // [p] / [b] 雙唇純音
-    'c_td': 't, d',         // [t] / [d] 齒齦純音
-    'c_kg': 'k, g',         // [k] / [g] 軟顎純音
-    'c_fv': 'f, v',         // [f] / [v] 唇齒純音
-    'c_sz': 's, z',         // [s] / [z] 摩擦純音
-    'c_mn_ng': 'm, n, ng',  // [m] / [n] / [ŋ] 鼻音純音
-    'c_lr': 'l, r',         // [l] / [r] 流音捲舌純音
-    'c_wyh': 'w, y, h',     // [w] / [j] / [h] 半母音純音
-    'dg_th_unvoiced': 'th', // [θ] 純咬舌無聲氣音
-    'dg_th_voiced': 'the',  // [ð] 純咬舌濁摩擦單音 /ð/
-    'dg_sh': 'sh',          // [ʃ] 噓音純音
-    'dg_ch': 'ch',          // [tʃ] 塞擦音純音
-    'dg_wh_ph': 'wh, ph',   // [hw/w], [f]
-    'dg_ck': 'k'            // [k]
+    'dg_th_unvoiced': 'th',
+    'dg_th_voiced': 'thuh', // 純濁齒擦音擬音，杜絕 "the" (大阿大)
+    'dg_sh': 'sh',
+    'dg_ch': 'ch',
+    'dg_wh_ph': 'wuh',
+    'dg_ck': 'kuh',
+    'sv_a': 'ah',           // [æ]
+    'sv_e': 'eh',           // [ɛ]
+    'sv_i': 'ih',           // [ɪ]
+    'sv_o': 'ah',           // [ɑ]
+    'sv_u': 'uh',           // [ʌ]
+    'sv_schwa': 'uh',       // [ə]
+    'lv_a': 'ay',           // [e]
+    'lv_e': 'ee',           // [i]
+    'lv_i': 'eye',          // [aɪ]
+    'lv_o': 'oh',           // [o]
+    'lv_u': 'you',          // [ju]
+    'lv_oo_long': 'oo',     // [u]
+    'lv_oo_short': 'uh',    // [ʊ]
+    'lv_ou_ow': 'ow',       // [aʊ]
+    'lv_oi_oy': 'oy',       // [ɔɪ]
+    'lv_ar': 'ar',          // [ɑr]
+    'lv_er_ir_ur': 'er'     // [ɝ]
   };
   let activePhonemeAudio = null;
   function playPurePhoneme(id, specificSymbol) {
@@ -7852,6 +7867,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function tryNextLocalAudio() {
       if (dirIdx >= candidateDirs.length) {
         if (!localPlayed) {
+          console.warn(`[Phonics Audio] 本地 MP3 音檔 ${filenames[0]} 未找到 (404)，已啟動 Web Speech 語音合成備援 (${fallbackSound})`);
+          if (typeof window.sayCatSpeech === 'function') {
+            window.sayCatSpeech(`音標【${displaySym}】本地 MP3 尚未部署，貓貓先以語音合成示範喵～🐾（請在 GitHub 產生並上傳 MP3）`, "語音備援");
+          }
           playPhonicsAudio(fallbackSound, 0.85);
         }
         return;
@@ -7877,6 +7896,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         hasHandled = true;
         localPlayed = true;
         detectedPhonicsBasePath = dir;
+        console.log(`[Phonics Audio] 成功播放本地 MP3 原音: ${url}`);
+        if (typeof window.sayCatSpeech === 'function') {
+          window.sayCatSpeech(`音標【${displaySym}】本地 MP3 原音播放！發音要訣：${item.tip}喵～🐾`, "純音標原音");
+        }
       });
       const p = audio.play();
       if (p !== undefined) {
@@ -8940,6 +8963,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
       return list;
     }
+    if (typeof window !== "undefined") {
+      window.updateFilteredList = updateFilteredList;
+      window.setScope = (sc) => { currentScope = sc; };
+    }
     function updateFilteredList() {
       if (!RAW_VOCAB || RAW_VOCAB.length === 0) {
         filteredList = [];
@@ -8961,6 +8988,16 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           alert('喵～目前沒有標記為「熟悉中」的單字！咪咪為您自動切換回全部單字。');
           document.getElementById('scopeFilter').value = 'all';
           currentScope = 'all';
+          filteredList = [...RAW_VOCAB];
+        }
+      } else if (currentThemeKey === 'grade7_1st_exam') {
+        if (currentScope === 'get_ready') {
+          filteredList = RAW_VOCAB.filter(x => x.scope === 'get_ready' || x.category === 'Get Ready');
+        } else if (currentScope === 'lesson1') {
+          filteredList = RAW_VOCAB.filter(x => x.scope === 'lesson1' || x.category === 'Lesson 1');
+        } else if (currentScope === 'lesson2') {
+          filteredList = RAW_VOCAB.filter(x => x.scope === 'lesson2' || x.category === 'Lesson 2');
+        } else {
           filteredList = [...RAW_VOCAB];
         }
       } else if (currentThemeKey === 'numbers') {
