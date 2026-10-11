@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨速度自適應與防遮擋優化版 (v2.13.15-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 方塊雨符號智慧清洗與標點平滑通關版 (v2.13.16-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.15-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.16-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1132,6 +1132,9 @@
               <div id="rainFinalMaxCombo" class="text-lg font-black text-rose-400 font-mono">0</div>
             </div>
           </div>
+          <button id="rainCruiseResumeBtn" onclick="WordCheckingCruise.startNextStage()" class="hidden w-full max-w-xs py-2.5 mb-2 bg-gradient-to-r from-amber-400 to-rose-500 hover:from-amber-500 hover:to-rose-600 text-white font-bold rounded-xl text-xs transition shadow-md cursor-pointer">
+            🐾 推進自動導航下一關 ⏩
+          </button>
           <div class="flex gap-2 w-full max-w-xs">
             <button onclick="WordCheckingRain.startWordRain()" class="flex-1 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-xl text-xs transition shadow-md cursor-pointer">
               再戰一次 🎮
@@ -5298,15 +5301,20 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       hintBox.classList.toggle('hidden');
       if (!hintBox.classList.contains('hidden') && currentSpellItem) {
         const target = currentSpellItem.word;
-        const masked = target.split('').map(c => (c === '-' ? '-' : '_')).join(' ');
-        hintBox.innerText = `🐾 咪咪給提示：${masked} (共 ${target.replace(/-/g,'').length} 字母)`;
+        const validTargets = (typeof getValidSpokenTargets === 'function') ? getValidSpokenTargets(target) : [target];
+        const hintTarget = validTargets[0] || target;
+        const masked = hintTarget.split('').map(c => (c === '-' ? '-' : c === ' ' ? ' ' : '_')).join(' ');
+        hintBox.innerText = `🐾 咪咪給提示：${masked} (共 ${hintTarget.replace(/[-\s]/g,'').length} 字母)`;
       }
     }
     function checkSpelling(e) {
       e.preventDefault();
       const inputVal = document.getElementById('spellInput').value.trim().toLowerCase();
       const target = currentSpellItem.word.toLowerCase();
-      const isCorrect = (inputVal === target);
+      const validTargets = (typeof getValidSpokenTargets === 'function') 
+        ? getValidSpokenTargets(currentSpellItem.word, currentSpellItem.num)
+        : [target];
+      const isCorrect = (inputVal === target) || validTargets.includes(inputVal);
       document.getElementById('spellInput').disabled = true;
       if (document.activeElement && typeof document.activeElement.blur === 'function') {
         document.activeElement.blur();
@@ -5675,7 +5683,12 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       const inputVal = document.getElementById('examInput').value.trim();
       const cleanInput = inputVal.toLowerCase().replace(/\\s+/g, '-');
       const cleanTarget = current.word.toLowerCase();
-      const isCorrect = (cleanInput === cleanTarget);
+      const validTargets = (typeof getValidSpokenTargets === "function")
+        ? getValidSpokenTargets(current.word, current.num)
+        : [cleanTarget];
+      const isCorrect = (cleanInput === cleanTarget) ||
+        (inputVal.toLowerCase() === cleanTarget) ||
+        validTargets.includes(inputVal.toLowerCase());
       examResults.push({
         num: current.num,
         chinese: current.chinese,
@@ -6039,7 +6052,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.15-test",
+        version: "2.13.16-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -6447,6 +6460,18 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     lastFrameTime: 0,
     animFrameId: null
   };
+  function sanitizeRainWord(rawWord) {
+    if (!rawWord) return '';
+    let s = String(rawWord).trim().toLowerCase();
+    s = s.replace(/\(s\)/gi, 's');
+    s = s.replace(/\([^)]*\)/g, '').trim();
+    if (s.includes('/')) {
+      s = s.split('/')[0].trim();
+    }
+    s = s.replace(/[?.!…,:;"~]/g, '').trim();
+    s = s.replace(/\s+/g, ' ').trim();
+    return s;
+  }
   let bgmTimer = null;
   let bgmStep = 0;
   let isBgmEnabled = (localStorage.getItem('wordchecking_rain_bgm') !== 'false');
@@ -6647,6 +6672,10 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     let list = [];
     if (typeof filteredList !== 'undefined' && Array.isArray(filteredList) && filteredList.length > 0) {
       list = filteredList;
+    } else if (typeof window !== 'undefined' && Array.isArray(window.filteredList) && window.filteredList.length > 0) {
+      list = window.filteredList;
+    } else if (typeof window !== 'undefined' && typeof window.getStudyList === 'function' && window.getStudyList() && window.getStudyList().length > 0) {
+      list = window.getStudyList();
     } else if (typeof RAW_VOCAB !== 'undefined' && Array.isArray(RAW_VOCAB) && RAW_VOCAB.length > 0) {
       list = RAW_VOCAB;
     } else if (typeof globalThis !== 'undefined' && Array.isArray(globalThis.RAW_VOCAB) && globalThis.RAW_VOCAB.length > 0) {
@@ -6656,9 +6685,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
     if (!list || list.length === 0) return;
     const target = list[Math.floor(Math.random() * list.length)];
-    const wordClean = (target.word || '').trim().toLowerCase();
+    const wordClean = sanitizeRainWord(target.word);
     let options = [target];
-    const pool = list.filter(x => (x.word || '').trim().toLowerCase() !== wordClean);
+    const pool = list.filter(x => x !== target && sanitizeRainWord(x.word) !== wordClean);
     const learnedDistractors = pool.filter(x => {
       const st = (typeof userProgress !== 'undefined' && userProgress) ? userProgress[x.word || x.num] : null;
       return st === 'mastered' || st === 'familiar';
@@ -6725,14 +6754,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
     const optionsHtml = b.options.map((opt, idx) => {
-      const optClean = (opt.word || '').trim().toLowerCase();
-      const isTarget = (optClean === b.wordClean);
+      const optClean = sanitizeRainWord(opt.word);
+      const isTarget = (opt === b.target) || (optClean === b.wordClean);
       const isMatchingPrefix = optClean.startsWith(b.typed) && b.typed.length > 0;
       let badgeStyle = "bg-slate-800/90 text-slate-300 border-slate-700";
       if (isMatchingPrefix && isTarget) {
         badgeStyle = "bg-emerald-950/90 text-emerald-300 border-emerald-500 animate-pulse";
       }
-      return `<button onclick="WordCheckingRain.handleOptionClick('${optClean}')" class="px-2.5 py-1 rounded-xl border text-xs font-mono font-bold transition ${badgeStyle}">
+      return `<button onclick="WordCheckingRain.handleOptionClick(${idx})" class="px-2.5 py-1 rounded-xl border text-xs font-mono font-bold transition ${badgeStyle}">
         <span class="text-amber-400 font-sans mr-1">${['A', 'B', 'C', 'D'][idx]}</span>${opt.word}
       </button>`;
     }).join('');
@@ -6833,7 +6862,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     if (!b) return;
     rainState.combo = 0;
     rainState.stackedBlocks.unshift({
-      word: b.wordClean,
+      word: b.target.word || b.wordClean,
       chinese: b.target.chinese || b.target.zh || ''
     });
     if (typeof userProgress !== 'undefined' && typeof THEME_REGISTRY !== 'undefined' && typeof currentThemeKey !== 'undefined') {
@@ -6843,6 +6872,9 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       localStorage.setItem(theme.storageKey, JSON.stringify(userProgress));
       if (typeof renderStats === 'function') renderStats();
       rainState.hasPendingSync = true; // 標記待同步
+    }
+    if (window.WordCheckingCruise && window.WordCheckingCruise.isActive() && b && b.target) {
+      window.WordCheckingCruise.reportItemFailure(b.target.word);
     }
     renderStackedBlocks();
     updateRainDashboardUI();
@@ -6865,6 +6897,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       document.getElementById('rainFinalScore').innerText = rainState.score;
       document.getElementById('rainFinalCleared').innerText = rainState.clearedCount;
       document.getElementById('rainFinalMaxCombo').innerText = rainState.maxCombo;
+      const cruiseBtn = document.getElementById('rainCruiseResumeBtn');
+      if (cruiseBtn) {
+        if (window.WordCheckingCruise && window.WordCheckingCruise.isActive()) {
+          cruiseBtn.classList.remove('hidden');
+        } else {
+          cruiseBtn.classList.add('hidden');
+        }
+      }
       modal.classList.remove('hidden');
     }
     if (typeof sayCatSpeech === 'function') {
@@ -6924,15 +6964,37 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         if (b.typed.length === b.wordClean.length) {
           handleWordEliminated();
         }
+      } else if (expectedChar === 's' && b.wordClean[b.typed.length + 1] === ' ') {
+        b.typed += 's ';
+        renderActiveRainBlock();
+        if (b.typed.length === b.wordClean.length) {
+          handleWordEliminated();
+        }
       } else if (rainState.mimiEnergy >= 100) {
         useMimiClawSkill();
       }
       return;
     }
-    if (e.key && e.key.length === 1 && /[a-zA-Z\.\'\-]/.test(e.key)) {
+    if (['1', '2', '3', '4'].includes(e.key) && expectedChar !== e.key) {
+      e.preventDefault();
+      handleOptionClick(parseInt(e.key, 10) - 1);
+      return;
+    }
+    if (e.key && /[?.!…,:;"~()]/.test(e.key) && expectedChar !== e.key) {
+      return;
+    }
+    if (e.key && e.key.length === 1 && /[a-zA-Z0-9\.\'\-]/.test(e.key)) {
       const keyLower = e.key.toLowerCase();
       if (expectedChar === ' ' && b.wordClean[b.typed.length + 1] === keyLower) {
         b.typed += ' ' + keyLower;
+        renderActiveRainBlock();
+        if (b.typed.length === b.wordClean.length) {
+          handleWordEliminated();
+        }
+        return;
+      }
+      if (expectedChar === '-' && keyLower !== '-' && b.wordClean[b.typed.length + 1] === keyLower) {
+        b.typed += '-' + keyLower;
         renderActiveRainBlock();
         if (b.typed.length === b.wordClean.length) {
           handleWordEliminated();
@@ -6970,10 +7032,21 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
       }
     }
   }
-  function handleOptionClick(optWord) {
+  function handleOptionClick(optParam) {
     if (!rainState.isRunning || rainState.isPaused || !rainState.activeBlock) return;
     const b = rainState.activeBlock;
-    if (optWord === b.wordClean) {
+    let chosen = null;
+    if (typeof optParam === 'number') {
+      chosen = b.options[optParam];
+    } else if (typeof optParam === 'string') {
+      const s = sanitizeRainWord(optParam);
+      chosen = b.options.find(o => sanitizeRainWord(o.word) === s || (o.word || '').trim().toLowerCase() === optParam.trim().toLowerCase());
+    }
+    if (!chosen) return;
+    const isMatch = (chosen === b.target) ||
+      (sanitizeRainWord(chosen.word) === b.wordClean) ||
+      ((chosen.word || '').trim().toLowerCase() === (b.target.word || '').trim().toLowerCase());
+    if (isMatch) {
       b.typed = b.wordClean;
       renderActiveRainBlock();
       handleWordEliminated();
@@ -7098,6 +7171,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     },
     handleOptionClick,
     handleRainKeydown,
+    sanitizeRainWord,
     get isRunning() { return rainState.isRunning; },
     get isPaused() { return rainState.isPaused; },
     get activeBlock() { return rainState.activeBlock; },
