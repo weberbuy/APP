@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 方塊雨符號智慧清洗與標點平滑通關版 (v2.13.16-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 全套擴充43款華麗換裝與等級分池盲盒版 (v2.13.17-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.16-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.17-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -2428,6 +2428,16 @@ if (typeof window !== 'undefined') {
         updateCatGrowthUI();
       }
     }
+    function updateFeverBadge() {
+      const feverBadge = document.getElementById('feverBadge');
+      const feverCount = document.getElementById('feverCount');
+      if (feverRemainingQuestions > 0) {
+        if (feverBadge) feverBadge.classList.remove('hidden');
+        if (feverCount) feverCount.innerText = feverRemainingQuestions;
+      } else {
+        if (feverBadge) feverBadge.classList.add('hidden');
+      }
+    }
     function triggerFeverTime() {
       feverRemainingQuestions = 10;
       catAffection = 100;
@@ -3142,7 +3152,11 @@ if (typeof window !== 'undefined') {
     </g>
   </g>
 </g>`,
-        aura_rainbow: `<g id="acc_aura_rainbow"><path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" /></g>`
+        aura_rainbow: `<g id="acc_aura_rainbow"><path d="M 12,45 A 50,50 0 0,1 108,45" stroke="#f43f5e" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 15,43 A 47,47 0 0,1 105,43" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 18,41 A 44,44 0 0,1 102,41" stroke="#10b981" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 21,39 A 41,41 0 0,1 99,39" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.6" /><path d="M 24,37 A 38,38 0 0,1 96,37" stroke="#8b5cf6" stroke-width="2.5" fill="none" opacity="0.6" /></g>`,
+        aura_bubbles: `<!-- 🫧 夢幻彩虹泡泡雨 -->
+<g id="acc_aura_bubbles" pointer-events="none"><circle cx="20" cy="45" r="5" fill="#38bdf8" opacity="0.35" stroke="#38bdf8" stroke-width="0.8" /><ellipse cx="18.5" cy="43.5" rx="1.5" ry="0.9" fill="#ffffff" opacity="0.8" /><circle cx="98" cy="38" r="6" fill="#ec4899" opacity="0.3" stroke="#f472b6" stroke-width="0.8" /><ellipse cx="96" cy="36" rx="1.8" ry="1.1" fill="#ffffff" opacity="0.8" /><circle cx="15" cy="85" r="6.5" fill="#a855f7" opacity="0.3" stroke="#c084fc" stroke-width="0.8" /><ellipse cx="13" cy="83" rx="2" ry="1.2" fill="#ffffff" opacity="0.8" /><circle cx="104" cy="80" r="5.5" fill="#38bdf8" opacity="0.35" stroke="#38bdf8" stroke-width="0.8" /><ellipse cx="102" cy="78" rx="1.6" ry="1" fill="#ffffff" opacity="0.8" /><circle cx="25" cy="115" r="4" fill="#22c55e" opacity="0.3" stroke="#4ade80" stroke-width="0.7" /><circle cx="95" cy="112" r="4.5" fill="#fbbf24" opacity="0.3" stroke="#facc15" stroke-width="0.7" /></g>`,
+        aura_butterflies: `<!-- 🦋 幻光藍蝶飛舞 -->
+<g id="acc_aura_butterflies" pointer-events="none"><g transform="translate(18, 50) rotate(-20)"><ellipse cx="-3" cy="-2" rx="3.5" ry="2.2" fill="#38bdf8" opacity="0.85" /><ellipse cx="3" cy="-2" rx="3.5" ry="2.2" fill="#38bdf8" opacity="0.85" /><ellipse cx="-2" cy="2" rx="2.5" ry="1.6" fill="#60a5fa" opacity="0.75" /><ellipse cx="2" cy="2" rx="2.5" ry="1.6" fill="#60a5fa" opacity="0.75" /><line x1="0" y1="-3" x2="0" y2="4" stroke="#1e3a8a" stroke-width="0.7" /></g><g transform="translate(98, 45) rotate(25)"><ellipse cx="-3" cy="-2" rx="4" ry="2.5" fill="#818cf8" opacity="0.85" /><ellipse cx="3" cy="-2" rx="4" ry="2.5" fill="#818cf8" opacity="0.85" /><ellipse cx="-2" cy="2" rx="2.8" ry="1.8" fill="#a78bfa" opacity="0.75" /><ellipse cx="2" cy="2" rx="2.8" ry="1.8" fill="#a78bfa" opacity="0.75" /><line x1="0" y1="-3" x2="0" y2="4" stroke="#312e81" stroke-width="0.7" /></g><g transform="translate(16, 95) rotate(15)"><ellipse cx="-2.5" cy="-1.8" rx="3" ry="1.8" fill="#38bdf8" opacity="0.85" /><ellipse cx="2.5" cy="-1.8" rx="3" ry="1.8" fill="#38bdf8" opacity="0.85" /><ellipse cx="-1.8" cy="1.6" rx="2" ry="1.3" fill="#60a5fa" opacity="0.75" /><ellipse cx="1.8" cy="1.6" rx="2" ry="1.3" fill="#60a5fa" opacity="0.75" /></g></g>`
       },
       head: {
         head_none: "",
@@ -3217,7 +3231,13 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
     <circle cx="10" cy="1" r="1.6" fill="#ffffff" />
     <circle cx="20" cy="-6" r="2" fill="#10b981" stroke="#ffffff" stroke-width="0.5" />
   </g>
-</g>`
+</g>`,
+        head_rabbit: `<!-- 🐰 萌兔毛絨長耳 -->
+<g id="acc_head_rabbit"><ellipse cx="44" cy="10" rx="4.5" ry="14" transform="rotate(-10 44 10)" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.8" /><ellipse cx="44" cy="10" rx="2.5" ry="10" transform="rotate(-10 44 10)" fill="#fbcfe8" /><ellipse cx="76" cy="10" rx="4.5" ry="14" transform="rotate(10 76 10)" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.8" /><ellipse cx="76" cy="10" rx="2.5" ry="10" transform="rotate(10 76 10)" fill="#fbcfe8" /></g>`,
+        head_flower_tiara: `<!-- 🧚‍♀️ 晶透精靈花冠 -->
+<g id="acc_head_flower_tiara"><path d="M 38,32 Q 60,26 82,32" stroke="#4ade80" stroke-width="2" fill="none" stroke-linecap="round" /><circle cx="48" cy="28" r="3.2" fill="#f472b6" /><circle cx="48" cy="28" r="1.2" fill="#fef08a" /><circle cx="60" cy="26" r="3.8" fill="#ec4899" /><circle cx="60" cy="26" r="1.4" fill="#ffffff" /><circle cx="72" cy="28" r="3.2" fill="#f472b6" /><circle cx="72" cy="28" r="1.2" fill="#fef08a" /><circle cx="42" cy="30" r="1.5" fill="#38bdf8" opacity="0.8" /><circle cx="78" cy="30" r="1.5" fill="#38bdf8" opacity="0.8" /></g>`,
+        head_cupcake: `<!-- 🧁 草莓奶油蛋糕帽 -->
+<g id="acc_head_cupcake" transform="translate(68, 22) rotate(12)"><path d="M -8,2 L 8,2 L 6,10 L -6,10 Z" fill="#93c5fd" stroke="#3b82f6" stroke-width="0.6" /><path d="M -9,2 Q 0,-6 9,2 Q 0,-3 -9,2" fill="#fdf2f8" stroke="#f472b6" stroke-width="0.6" /><circle cx="0" cy="-4" r="2.2" fill="#ef4444" /><line x1="0" y1="-6" x2="2" y2="-9" stroke="#15803d" stroke-width="0.8" stroke-linecap="round" /></g>`
       },
       face: {
         face_none: "",
@@ -3275,7 +3295,13 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
   </g>
 </g>`,
         face_glasses: `<g id="acc_face_glasses"><circle cx="46" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" /><circle cx="74" cy="52" r="9.5" fill="none" stroke="#78350f" stroke-width="2.2" /><path d="M 55.5,52 Q 60,48.5 64.5,52" stroke="#78350f" stroke-width="2.2" fill="none" /><line x1="36.5" y1="51" x2="26" y2="48" stroke="#78350f" stroke-width="1.8" /><line x1="83.5" y1="51" x2="94" y2="48" stroke="#78350f" stroke-width="1.8" /></g>`,
-        face_sunglasses: `<g id="acc_face_sunglasses"><path d="M 34,46 L 56,46 L 54,58 Q 45,63 36,58 Z" fill="#0f172a" /><path d="M 64,46 L 86,46 L 84,58 Q 75,63 66,58 Z" fill="#0f172a" /><line x1="56" y1="48" x2="64" y2="48" stroke="#0f172a" stroke-width="3" /><line x1="34" y1="48" x2="25" y2="46" stroke="#0f172a" stroke-width="2.2" /><line x1="86" y1="48" x2="95" y2="46" stroke="#0f172a" stroke-width="2.2" /><path d="M 37,48 L 46,48 L 40,55 Z" fill="#ffffff" opacity="0.35" /><path d="M 67,48 L 76,48 L 70,55 Z" fill="#ffffff" opacity="0.35" /></g>`
+        face_sunglasses: `<g id="acc_face_sunglasses"><path d="M 34,46 L 56,46 L 54,58 Q 45,63 36,58 Z" fill="#0f172a" /><path d="M 64,46 L 86,46 L 84,58 Q 75,63 66,58 Z" fill="#0f172a" /><line x1="56" y1="48" x2="64" y2="48" stroke="#0f172a" stroke-width="3" /><line x1="34" y1="48" x2="25" y2="46" stroke="#0f172a" stroke-width="2.2" /><line x1="86" y1="48" x2="95" y2="46" stroke="#0f172a" stroke-width="2.2" /><path d="M 37,48 L 46,48 L 40,55 Z" fill="#ffffff" opacity="0.35" /><path d="M 67,48 L 76,48 L 70,55 Z" fill="#ffffff" opacity="0.35" /></g>`,
+        face_strawberry: `<!-- 🍓 俏皮草莓小鼻貼 -->
+<g id="acc_face_strawberry"><rect x="51" y="53" width="18" height="5" rx="2.5" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.6" /><circle cx="60" cy="55.5" r="1.8" fill="#ef4444" /><polygon points="60,53.8 59,54.8 61,54.8" fill="#22c55e" /><circle cx="54" cy="55.5" r="0.4" fill="#ec4899" /><circle cx="66" cy="55.5" r="0.4" fill="#ec4899" /></g>`,
+        face_star_sparkle: `<!-- ⭐ 星芒閃爍貼紙 -->
+<g id="acc_face_star_sparkle"><path d="M 40,56 L 41,53 L 42,56 L 45,57 L 42,58 L 41,61 L 40,58 L 37,57 Z" fill="#facc15" stroke="#ca8a04" stroke-width="0.4" /><circle cx="36" cy="62" r="0.9" fill="#38bdf8" /><path d="M 80,56 L 81,53 L 82,56 L 85,57 L 82,58 L 81,61 L 80,58 L 77,57 Z" fill="#facc15" stroke="#ca8a04" stroke-width="0.4" /><circle cx="84" cy="62" r="0.9" fill="#38bdf8" /></g>`,
+        face_masquerade: `<!-- 🎭 華麗金紋面具 -->
+<g id="acc_face_masquerade"><path d="M 36,46 Q 60,40 84,46 Q 88,54 82,55 Q 74,56 68,52 Q 60,54 52,52 Q 46,56 38,55 Q 32,54 36,46 Z" fill="#581c87" stroke="#fbbf24" stroke-width="1.2" opacity="0.95" /><ellipse cx="48" cy="49" rx="5.5" ry="3.5" fill="#ffffff" opacity="0.2" stroke="#fde047" stroke-width="0.6" /><ellipse cx="72" cy="49" rx="5.5" ry="3.5" fill="#ffffff" opacity="0.2" stroke="#fde047" stroke-width="0.6" /><circle cx="60" cy="45" r="1.5" fill="#fbbf24" /></g>`
       },
       neck: {
         neck_none: "",
@@ -3312,7 +3338,13 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
   </g>
 </g>`,
         neck_bowtie: `<g id="acc_neck_bowtie"><polygon points="60,78 48,71 48,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" /><polygon points="60,78 72,71 72,85" fill="#1e3a8a" stroke="#172554" stroke-width="1" /><ellipse cx="60" cy="78" rx="3.5" ry="3.5" fill="#2563eb" /></g>`,
-        neck_medal: `<g id="acc_neck_medal"><path d="M 52,74 L 60,82 L 68,74" stroke="#2563eb" stroke-width="3" fill="none" /><circle cx="60" cy="86" r="6.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" /><text x="60" y="89" text-anchor="middle" font-size="7" font-weight="900" fill="#78350f">1</text></g>`
+        neck_medal: `<g id="acc_neck_medal"><path d="M 52,74 L 60,82 L 68,74" stroke="#2563eb" stroke-width="3" fill="none" /><circle cx="60" cy="86" r="6.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" /><text x="60" y="89" text-anchor="middle" font-size="7" font-weight="900" fill="#78350f">1</text></g>`,
+        neck_strawberry: `<!-- 🍓 草莓甜心項圈 -->
+<g id="acc_neck_strawberry"><path d="M 43,69 Q 60,74 77,69" stroke="#ef4444" stroke-width="2.6" fill="none" stroke-linecap="round" /><circle cx="60" cy="73" r="1.5" fill="#fbbf24" /><path d="M 57,75 Q 60,80 63,75 Q 64,72 60,72 Q 56,72 57,75 Z" fill="#dc2626" stroke="#b91c1c" stroke-width="0.5" /><polygon points="60,72 58.5,70.5 61.5,70.5" fill="#16a34a" /><circle cx="59" cy="74" r="0.3" fill="#fef08a" /><circle cx="61" cy="75" r="0.3" fill="#fef08a" /></g>`,
+        neck_lace: `<!-- 🎀 夢幻蕾絲荷葉領 -->
+<g id="acc_neck_lace"><path d="M 41,69 Q 45,74 50,71 Q 55,75 60,72 Q 65,75 70,71 Q 75,74 79,69 C 76,76 60,77 41,69 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.8" /><path d="M 43,69 Q 60,73 77,69" stroke="#f472b6" stroke-width="1.2" fill="none" /><circle cx="60" cy="72" r="1.4" fill="#f43f5e" /></g>`,
+        neck_sapphire: `<!-- 💎 星辰藍寶石項圈 -->
+<g id="acc_neck_sapphire"><path d="M 44,69 Q 60,75 76,69" stroke="#fbbf24" stroke-width="1.6" fill="none" stroke-dasharray="2 1" /><polygon points="60,73 63.5,76.5 60,81 56.5,76.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.7" /><polygon points="60,74 62,76.5 60,79.5 58,76.5" fill="#60a5fa" /><circle cx="59.5" cy="76" r="0.6" fill="#ffffff" /></g>`
       },
       outfit: {
         outfit_none: "",
@@ -3381,7 +3413,11 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       <circle cx="59.3" cy="87.3" r="0.7" fill="#ffffff" />
     </g>
   </g>
-</g>`
+</g>`,
+        outfit_kimono: `<!-- 👘 和風櫻花祭浴衣 -->
+<g id="acc_outfit_kimono"><path d="M 40,71 L 32,88 L 44,98 L 76,98 L 88,88 L 80,71 Z" fill="#fbcfe8" stroke="#ec4899" stroke-width="1" /><path d="M 46,71 L 63,88 L 57,88 L 42,73 Z" fill="#ffffff" opacity="0.8" /><path d="M 74,71 L 57,88 L 63,88 L 78,73 Z" fill="#f472b6" /><rect x="42" y="84" width="36" height="8" rx="1.5" fill="#7c3aed" stroke="#6d28d9" stroke-width="0.8" /><line x1="43" y1="88" x2="77" y2="88" stroke="#fbbf24" stroke-width="1" /><circle cx="60" cy="88" r="2.2" fill="#fbbf24" /><circle cx="60" cy="88" r="1" fill="#dc2626" /><circle cx="48" cy="95" r="1" fill="#ec4899" /><circle cx="72" cy="95" r="1" fill="#ec4899" /></g>`,
+        outfit_princess: `<!-- 👑 星空璀璨公主裙 -->
+<g id="acc_outfit_princess"><path d="M 42,71 C 48,72 72,72 78,71 L 82,86 L 38,86 Z" fill="#1e1b4b" stroke="#4338ca" stroke-width="1" /><path d="M 36,86 Q 60,89 84,86 L 98,111 Q 60,114 22,111 Z" fill="#312e81" stroke="#4338ca" stroke-width="1" /><path d="M 30,104 Q 60,107 90,104 Q 60,113 30,104 Z" fill="#6366f1" opacity="0.5" /><path d="M 23,111 Q 60,114 97,111" stroke="#facc15" stroke-width="1.4" fill="none" stroke-dasharray="3 2" /><rect x="40" y="85" width="40" height="3" fill="#fbbf24" /><circle cx="45" cy="96" r="0.9" fill="#fde047" /><circle cx="75" cy="98" r="0.9" fill="#fde047" /><circle cx="60" cy="102" r="1.2" fill="#ffffff" /></g>`
       },
       hand: {
         hand_none: "",
@@ -3544,7 +3580,13 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
   </g>
 </g>`,
         hand_wand: `<!-- 🪄 傳奇星月魔法杖: 比照 🪄 emoji 金星魔杖與四散星芒 -->
-<g id="acc_hand_wand" transform="translate(76, 90) rotate(22)"><g filter="drop-shadow(0 2px 4px rgba(0,0,0,0.25))"><line x1="0" y1="2" x2="0" y2="30" stroke="#475569" stroke-width="2.8" stroke-linecap="round" /><line x1="0" y1="2" x2="0" y2="10" stroke="#facc15" stroke-width="3" stroke-linecap="round" /><polygon points="0,-9 2.5,-3 8.5,-3 4,1 6,7 0,3.5 -6,7 -4,1 -8.5,-3 -2.5,-3" fill="#facc15" stroke="#ca8a04" stroke-width="0.8" /><polygon points="0,-7 1.8,-2.5 6,-2.5 3,0.5 4.5,5 0,2.5 -4.5,5 -3,0.5 -6,-2.5 -1.8,-2.5" fill="#fef08a" /><circle cx="0" cy="0" r="1.5" fill="#ffffff" /><circle cx="-7" cy="-8" r="1" fill="#facc15" opacity="0.9" /><circle cx="7" cy="-7" r="1.2" fill="#facc15" opacity="0.9" /><circle cx="9" cy="4" r="0.8" fill="#fde047" opacity="0.8" /><circle cx="-6" cy="6" r="0.8" fill="#fde047" opacity="0.8" /></g></g>`
+<g id="acc_hand_wand" transform="translate(76, 90) rotate(22)"><g filter="drop-shadow(0 2px 4px rgba(0,0,0,0.25))"><line x1="0" y1="2" x2="0" y2="30" stroke="#475569" stroke-width="2.8" stroke-linecap="round" /><line x1="0" y1="2" x2="0" y2="10" stroke="#facc15" stroke-width="3" stroke-linecap="round" /><polygon points="0,-9 2.5,-3 8.5,-3 4,1 6,7 0,3.5 -6,7 -4,1 -8.5,-3 -2.5,-3" fill="#facc15" stroke="#ca8a04" stroke-width="0.8" /><polygon points="0,-7 1.8,-2.5 6,-2.5 3,0.5 4.5,5 0,2.5 -4.5,5 -3,0.5 -6,-2.5 -1.8,-2.5" fill="#fef08a" /><circle cx="0" cy="0" r="1.5" fill="#ffffff" /><circle cx="-7" cy="-8" r="1" fill="#facc15" opacity="0.9" /><circle cx="7" cy="-7" r="1.2" fill="#facc15" opacity="0.9" /><circle cx="9" cy="4" r="0.8" fill="#fde047" opacity="0.8" /><circle cx="-6" cy="6" r="0.8" fill="#fde047" opacity="0.8" /></g></g>`,
+        hand_boba: `<!-- 🧋 貓爪波霸珍珠奶茶 -->
+<g id="acc_hand_boba" transform="translate(36, 88)"><path d="M -5,0 L 5,0 L 4,14 L -4,14 Z" fill="#fde68a" stroke="#d97706" stroke-width="0.8" /><rect x="-6" y="-2" width="12" height="3" rx="1.5" fill="#f472b6" stroke="#db2777" stroke-width="0.6" /><line x1="0" y1="-2" x2="2" y2="-9" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" /><circle cx="-1.5" cy="10" r="1.2" fill="#451a03" /><circle cx="1.5" cy="10.5" r="1.2" fill="#451a03" /><circle cx="-0.5" cy="7.5" r="1.1" fill="#451a03" /><circle cx="2" cy="7" r="1.1" fill="#451a03" /></g>`,
+        hand_lollipop: `<!-- 🍭 彩虹旋轉大棒棒糖 -->
+<g id="acc_hand_lollipop" transform="translate(35, 87) rotate(-15)"><line x1="0" y1="2" x2="0" y2="20" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" /><circle cx="0" cy="0" r="7" fill="#f43f5e" stroke="#e11d48" stroke-width="0.8" /><path d="M 0,-6 A 6,6 0 0,1 6,0 A 4,4 0 0,1 2,4 A 2,2 0 0,1 0,2" stroke="#facc15" stroke-width="1.5" fill="none" /><path d="M 0,6 A 6,6 0 0,1 -6,0 A 4,4 0 0,1 -2,-4" stroke="#38bdf8" stroke-width="1.5" fill="none" /></g>`,
+        hand_teddy: `<!-- 🧸 軟萌泰迪小熊布偶 -->
+<g id="acc_hand_teddy" transform="translate(34, 91)"><circle cx="0" cy="4" r="5.5" fill="#b45309" stroke="#78350f" stroke-width="0.7" /><circle cx="0" cy="-2" r="4.2" fill="#b45309" stroke="#78350f" stroke-width="0.7" /><circle cx="-3.5" cy="-5" r="1.6" fill="#b45309" /><circle cx="-3.5" cy="-5" r="0.9" fill="#fde68a" /><circle cx="3.5" cy="-5" r="1.6" fill="#b45309" /><circle cx="3.5" cy="-5" r="0.9" fill="#fde68a" /><ellipse cx="0" cy="-1.5" rx="2" ry="1.4" fill="#fde68a" /><circle cx="0" cy="-2" r="0.7" fill="#451a03" /><circle cx="-1.4" cy="-3" r="0.6" fill="#451a03" /><circle cx="1.4" cy="-3" r="0.6" fill="#451a03" /><circle cx="0" cy="2" r="0.9" fill="#ef4444" /></g>`
       }
     };
     const WARDROBE_CATALOG = {
@@ -3552,45 +3594,61 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
         { id: 'head_none', name: '無飾品', icon: '🚫', desc: '純真自然小貓樣貌', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'head_sakura', name: '🌸 櫻花小花飾', icon: '🌸', desc: '【Lv.1 免費】粉嫩櫻花初春氣息', unlockType: 'level', price: 0, reqLevel: 1 },
         { id: 'head_ribbon', name: '🎀 萌萌蝴蝶結', icon: '🎀', desc: '俏皮可愛的大粉紅蝴蝶結', unlockType: 'fish', price: 15, reqLevel: 1 },
+        { id: 'head_rabbit', name: '🐰 萌兔毛絨長耳', icon: '🐰', desc: '軟萌雪白長兔耳，蹦蹦跳跳超可愛', unlockType: 'fish', price: 20, reqLevel: 1 },
         { id: 'head_cap', name: '🧢 活力運動帽', icon: '🧢', desc: '反戴潮流街頭風棒球帽', unlockType: 'fish', price: 30, reqLevel: 2 },
+        { id: 'head_flower_tiara', name: '🧚‍♀️ 晶透精靈花冠', icon: '🧚‍♀️', desc: '翠綠藤蔓綴以晨露粉花，宛如森之妖精', unlockType: 'fish', price: 35, reqLevel: 2 },
         { id: 'head_grad', name: '🎓 學霸博士帽', icon: '🎓', desc: '【Lv.3 免費】掌握400字學霸象徵！', unlockType: 'level', price: 0, reqLevel: 3 },
-        { id: 'head_ranger', name: '🏹 冒險獵鷹羽毛帽', icon: '🏹', desc: '【Lv.4 免費】750字英勇旅伴專屬勳章！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'head_cupcake', name: '🧁 草莓奶油蛋糕帽', icon: '🧁', desc: '頭頂甜點小蛋糕與紅櫻桃，甜蜜派對風', unlockType: 'fish', price: 45, reqLevel: 3 },
         { id: 'head_wizard', name: '🧙 魔法巫師帽', icon: '🧙', desc: '蘊藏強大魔力的神秘巫師帽', unlockType: 'fish', price: 60, reqLevel: 3 },
+        { id: 'head_ranger', name: '🏹 冒險獵鷹羽毛帽', icon: '🏹', desc: '【Lv.4 免費】750字英勇旅伴專屬勳章！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'head_crown', name: '👑 傳奇璀璨皇冠', icon: '👑', desc: '【Lv.5 免費】1200會考傳奇守護神至高榮耀！', unlockType: 'level', price: 0, reqLevel: 5 }
       ],
       face: [
         { id: 'face_none', name: '無飾品', icon: '🚫', desc: '清秀乾淨的小臉龐', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'face_blush', name: '✨ 星光微醺腮紅', icon: '✨', desc: '【Lv.1 免費】臉頰閃爍害羞星芒', unlockType: 'level', price: 0, reqLevel: 1 },
+        { id: 'face_strawberry', name: '🍓 俏皮草莓小鼻貼', icon: '🍓', desc: '鼻樑上的粉嫩草莓小創可貼，元氣滿滿', unlockType: 'fish', price: 15, reqLevel: 1 },
         { id: 'face_glasses', name: '👓 知性圓圓眼鏡', icon: '👓', desc: '智慧加倍，背單字超專注！', unlockType: 'fish', price: 25, reqLevel: 2 },
-        { id: 'face_sunglasses', name: '🕶️ 酷黑潮流墨鏡', icon: '🕶️', desc: '街頭酷帥潮流，回頭率百分百', unlockType: 'fish', price: 40, reqLevel: 3 }
+        { id: 'face_star_sparkle', name: '⭐ 星芒閃爍貼紙', icon: '⭐', desc: '雙眼下方點綴耀眼金星，眨眼都在放電', unlockType: 'fish', price: 25, reqLevel: 2 },
+        { id: 'face_sunglasses', name: '🕶️ 酷黑潮流墨鏡', icon: '🕶️', desc: '街頭酷帥潮流，回頭率百分百', unlockType: 'fish', price: 40, reqLevel: 3 },
+        { id: 'face_masquerade', name: '🎭 華麗金紋面具', icon: '🎭', desc: '紫金神秘假面眼罩，高雅宮廷舞會焦點', unlockType: 'fish', price: 50, reqLevel: 4 }
       ],
       neck: [
         { id: 'neck_none', name: '無飾品', icon: '🚫', desc: '輕便舒適無束縛', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'neck_bell', name: '🔔 招財黃金鈴鐺', icon: '🔔', desc: '【Lv.1 免費】走動叮噹作響帶來好運', unlockType: 'level', price: 0, reqLevel: 1 },
+        { id: 'neck_strawberry', name: '🍓 草莓甜心項圈', icon: '🍓', desc: '鮮紅項圈墜著紅潤草莓，走動一晃一晃', unlockType: 'fish', price: 20, reqLevel: 1 },
         { id: 'neck_scarf', name: '🧣 暖冬經典圍巾', icon: '🧣', desc: '冬日最溫暖厚實的紅色圍巾', unlockType: 'fish', price: 25, reqLevel: 2 },
+        { id: 'neck_lace', name: '🎀 夢幻蕾絲荷葉領', icon: '🎀', desc: '雪白法式荷葉邊滾蕾絲，洋娃娃精緻感', unlockType: 'fish', price: 30, reqLevel: 2 },
         { id: 'neck_bowtie', name: '👔 英倫貴族領結', icon: '👔', desc: '優雅俐落的小紳士風格領結', unlockType: 'fish', price: 35, reqLevel: 3 },
+        { id: 'neck_sapphire', name: '💎 星辰藍寶石項圈', icon: '💎', desc: '金鏈鑲嵌深邃璀璨星藍寶石，貴氣非凡', unlockType: 'fish', price: 45, reqLevel: 3 },
         { id: 'neck_medal', name: '🥇 會考榮譽金牌', icon: '🥇', desc: '【Lv.5 免費】征服1200單字最高榮譽勳章！', unlockType: 'level', price: 0, reqLevel: 5 }
       ],
       outfit: [
         { id: 'outfit_none', name: '自然毛皮', icon: '🚫', desc: '柔軟三花貓毛皮與白襪肉球', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'outfit_backpack', name: '🎒 探險雙肩包', icon: '🎒', desc: '【Lv.2 免費】背起小書包探索單字世界！', unlockType: 'level', price: 0, reqLevel: 2 },
-        { id: 'outfit_cloak', name: '🧥 英勇冒險披風', icon: '🧥', desc: '【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'outfit_sailor', name: '⚓ 可愛水手制服', icon: '⚓', desc: '日系海軍領水手服，青春活力', unlockType: 'fish', price: 70, reqLevel: 2 },
-        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '身軀公主洋裝與泡泡袖，腰下展開三層蛋糕荷葉蓬蓬裙！', unlockType: 'fish', price: 80, reqLevel: 3 }
+        { id: 'outfit_kimono', name: '👘 和風櫻花祭浴衣', icon: '👘', desc: '粉櫻和服搭配典雅紫腰帶，浪漫夏日祭典', unlockType: 'fish', price: 65, reqLevel: 2 },
+        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '身軀公主洋裝與泡泡袖，腰下展開三層蛋糕荷葉蓬蓬裙！', unlockType: 'fish', price: 80, reqLevel: 3 },
+        { id: 'outfit_cloak', name: '🧥 英勇冒險披風', icon: '🧥', desc: '【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！', unlockType: 'level', price: 0, reqLevel: 4 },
+        { id: 'outfit_princess', name: '👑 星空璀璨公主裙', icon: '👑', desc: '午夜深藍星河長裙與金星流蘇，至尊公主風', unlockType: 'fish', price: 85, reqLevel: 4 }
       ],
       hand: [
         { id: 'hand_none', name: '雙手空空', icon: '🚫', desc: '隨時準備擊掌或摸摸肉球', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'hand_fishbone', name: '🐟 脆脆魚骨點心', icon: '🐟', desc: '現烤出爐的香脆金黃烤魚，熱氣騰騰一口口啃光！', unlockType: 'fish', price: 20, reqLevel: 1 },
-        { id: 'hand_book', name: '📘 智慧英文字典', icon: '📘', desc: '【Lv.3 免費】隨身攜帶會考必備英文字典！', unlockType: 'level', price: 0, reqLevel: 3 },
+        { id: 'hand_boba', name: '🧋 貓爪波霸珍珠奶茶', icon: '🧋', desc: '黑糖厚奶波霸珍珠，手搖杯吸管大口吸', unlockType: 'fish', price: 25, reqLevel: 1 },
         { id: 'hand_icecream', name: '🍦 貓爪草莓甜筒', icon: '🍦', desc: '嘴裡咬著草莓甜筒，冰淇淋滴滴答答吃光光！', unlockType: 'fish', price: 35, reqLevel: 2 },
+        { id: 'hand_lollipop', name: '🍭 彩虹旋轉大棒棒糖', icon: '🍭', desc: '七彩螺旋波浪糖，咬一口甜入心坎', unlockType: 'fish', price: 30, reqLevel: 2 },
+        { id: 'hand_book', name: '📘 智慧英文字典', icon: '📘', desc: '【Lv.3 免費】隨身攜帶會考必備英文字典！', unlockType: 'level', price: 0, reqLevel: 3 },
+        { id: 'hand_teddy', name: '🧸 軟萌泰迪小熊布偶', icon: '🧸', desc: '軟綿綿的棕色泰迪熊，抱在懷裡超安心', unlockType: 'fish', price: 45, reqLevel: 3 },
         { id: 'hand_wand', name: '🪄 傳奇星月魔法杖', icon: '🪄', desc: '【Lv.5 免費】揮動星星法杖，單字通通滿分！', unlockType: 'level', price: 0, reqLevel: 5 }
       ],
       aura: [
         { id: 'aura_none', name: '無特效', icon: '🚫', desc: '回歸純粹的貓咪氛圍', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '周圍閃爍璀璨的金色呼吸光芒', unlockType: 'fish', price: 40, reqLevel: 2 },
+        { id: 'aura_bubbles', name: '🫧 夢幻彩虹泡泡雨', icon: '🫧', desc: '身旁漂浮折射七彩虹光的晶瑩泡泡', unlockType: 'fish', price: 45, reqLevel: 2 },
         { id: 'aura_sakura', name: '🌸 飛舞落櫻花瓣', icon: '🌸', desc: '浪漫櫻花瓣在身邊翩翩起舞', unlockType: 'fish', price: 50, reqLevel: 3 },
-        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】雙倍身長星空大天使羽翼，三層次羽毛展翅高飛！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'aura_fish', name: '🐟 游動小魚乾群', icon: '🐟', desc: '小魚乾環繞身旁，貓咪的天堂！', unlockType: 'fish', price: 65, reqLevel: 3 },
+        { id: 'aura_butterflies', name: '🦋 幻光藍蝶飛舞', icon: '🦋', desc: '發光的魔幻蔚藍彩蝶在身邊環繞起舞', unlockType: 'fish', price: 60, reqLevel: 3 },
+        { id: 'aura_wings', name: '🪽 英勇天使羽翼', icon: '🪽', desc: '【Lv.4 免費】雙倍身長星空大天使羽翼，三層次羽毛展翅高飛！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'aura_rainbow', name: '🌈 傳奇幸運彩虹', icon: '🌈', desc: '【Lv.5 免費】1200字會考傳奇守護神七彩光暈！', unlockType: 'level', price: 0, reqLevel: 5 }
       ]
     };
@@ -3621,7 +3679,23 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       aura_sakura: "喵～花瓣飄飄好浪漫喔，一邊賞花一邊背單字最幸福了～🌸",
       aura_wings: "展開兩倍身長星空大天使羽翼！如夢幻之翼般展翅翱翔，守護著會考全滿分喵！🪽🌟",
       aura_fish: "好多小魚乾在身邊游來游去！天啊～這是貓咪的天堂喵！🐟🐟🐟",
-      aura_rainbow: "喵嗚～！七彩祥雲彩虹光芒！我是守護會考的傳奇神獸咪咪！🌈👑"
+      aura_rainbow: "喵嗚～！七彩祥雲彩虹光芒！我是守護會考的傳奇神獸咪咪！🌈👑",
+      head_rabbit: "喵哈哈～戴上萌兔長長耳朵，我有沒有跳得跟小白兔一樣快呀？🐰🐾",
+      head_flower_tiara: "呼嚕嚕～晶透的花冠散發著森林清香，咪咪是守護綠意的小仙子喵！🧚‍♀️🌸",
+      head_cupcake: "頂著草莓奶油蛋糕帽～甜滋滋的派對氣氛！背單字就像吃點心一樣開心喵！🧁🍓",
+      face_strawberry: "臉頰貼了小草莓貼布～俏皮又可愛！背錯單字也不要氣餒，貼一貼就精神百倍喵！🍓✨",
+      face_star_sparkle: "閃亮亮的小星星貼紙！每次我眨眨眼，都會發射滿分幸運光波給妳喔！⭐✨",
+      face_masquerade: "（輕輕遮臉）猜猜我是誰？我是充滿神秘魔法的假面貓俠喵！🎭✨",
+      neck_strawberry: "胸前掛著紅通通的小草莓項圈，走起路來一晃一晃的好可愛喵！🍓❤️",
+      neck_lace: "哇～雪白夢幻的蕾絲荷葉領！像洋娃娃一樣精緻高雅，貓貓好喜歡！🎀🤍",
+      neck_sapphire: "晶瑩剔透的深藍星辰寶石！閃耀著知性與專注的光芒，會考高分勢在必得喵！💎🌟",
+      outfit_kimono: "穿上優雅粉紅和風櫻花祭浴衣～邁著小碎步一起去逛祭典吃烤魚喵！👘🌸",
+      outfit_princess: "換上星空璀璨公主裙！午夜藍的裙擺綴滿星辰微光，今晚咪咪就是最美的公主殿下喵！👑✨",
+      hand_boba: "吸一口甜甜的珍珠奶茶～波霸珍珠ＱＱ彈彈，背單字更有嚼勁了喵！🧋😋",
+      hand_lollipop: "舔一口彩虹旋轉大棒棒糖～甜入心坎！今天也要開開心心拿滿分喵！🍭🌈",
+      hand_teddy: "抱著毛茸茸的泰迪小熊布偶～軟綿綿好安心，跟著小熊一起陪妳背單字喵！🧸🤎",
+      aura_bubbles: "啵啵啵～身邊漂浮著七彩泡泡雨！輕輕一碰就會化成幸運星光喔！🫧🌈",
+      aura_butterflies: "微光的幻蝶在身邊翩翩起舞～好夢幻的魔幻仙境，祝福女孩考試順利過關喵！🦋✨"
     };
     let currentWardrobeTab = 'head';
     let catWardrobe = {
@@ -3951,6 +4025,39 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
             太棒了！
           </button>
         `;
+      } else if (data.status === 'CURRENT_TIER_MAXED') {
+        iconEl.innerHTML = '⭐';
+        iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-rose-400 to-pink-500 flex items-center justify-center text-3xl shadow-lg shadow-rose-400/20 cat-hop';
+        titleEl.innerText = `🎉 Lv.${data.catLevel} 造型全數解鎖！`;
+        titleEl.className = 'font-black text-lg text-rose-500 dark:text-rose-400 pt-2';
+        subEl.innerText = `成功消耗 20 條小魚乾（剩餘：${data.remainingFish} 條）`;
+        bodyEl.innerHTML = `
+          <div class="text-sm text-slate-700 dark:text-slate-200 space-y-2.5">
+            <div class="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs leading-relaxed text-rose-900 dark:text-rose-200">
+              🐾 <b>太厲害了！</b>目前貓咪 Lv.${data.catLevel} 可抽取的造型已經被妳全部收集完畢囉！
+              <br>只要多背單字、手寫拼字與測驗，將貓咪升級到 <b>Lv.${data.nextReqLevel}</b>，就能開啟下一階段的華麗盲盒抽獎池喵！✨
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-rose-100 dark:border-slate-600">
+                <span class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <span class="text-base">🔥</span> 狂熱雙倍時段加油
+                </span>
+                <span class="font-black text-amber-600 dark:text-amber-400">+10 題雙倍魚乾</span>
+              </div>
+              <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-rose-100 dark:border-slate-600">
+                <span class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <span class="text-base">💖</span> 咪咪親密度獎勵
+                </span>
+                <span class="font-black text-rose-500">+30% 親密度</span>
+              </div>
+            </div>
+          </div>
+        `;
+        actionsEl.innerHTML = `
+          <button onclick="closeGachaModal()" class="w-full py-2.5 bg-gradient-to-r from-amber-400 to-rose-500 hover:from-amber-500 hover:to-rose-600 text-white font-bold rounded-xl text-sm transition shadow-xs cursor-pointer">
+            好棒！繼續背單字升級到 Lv.${data.nextReqLevel} 🐾
+          </button>
+        `;
       } else if (data.status === 'ALL_UNLOCKED') {
         iconEl.innerHTML = '👑';
         iconEl.className = 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-purple-500/20';
@@ -3996,11 +4103,16 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
         });
         return;
       }
+      const catLevel = (typeof currentCatLevel !== 'undefined') ? currentCatLevel : 1;
       let candidates = [];
+      let allLockedItems = [];
       Object.keys(WARDROBE_CATALOG).forEach(catKey => {
         WARDROBE_CATALOG[catKey].forEach(item => {
           if (!catWardrobe.unlocked.includes(item.id)) {
-            candidates.push({ slot: catKey, ...item });
+            allLockedItems.push(item);
+            if (catLevel >= (item.reqLevel || 1)) {
+              candidates.push({ slot: catKey, ...item });
+            }
           }
         });
       });
@@ -4024,12 +4136,25 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
           item: prize,
           remainingFish: fishCount
         });
+      } else if (allLockedItems.length > 0) {
+        const nextReqLevel = Math.min(...allLockedItems.map(it => it.reqLevel || 1));
+        feverRemainingQuestions += 10;
+        localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
+        updateFeverBadge();
+        gainAffection(30);
+        sayCatSpeech(`🎁 太厲害了！Lv.${catLevel} 可抽造型已全數收集！努力背單字升到 Lv.${nextReqLevel} 就能解鎖更高階抽獎池喵！🐾🔥`, "分級集齊");
+        openGachaModal({
+          status: 'CURRENT_TIER_MAXED',
+          catLevel: catLevel,
+          nextReqLevel: nextReqLevel,
+          remainingFish: fishCount
+        });
       } else {
         feverRemainingQuestions += 15;
         localStorage.setItem('wordchecking_fever_remaining_v1', feverRemainingQuestions);
         updateFeverBadge();
         gainAffection(50);
-        sayCatSpeech(`🎁 妳已經解鎖了所有造型！盲盒獎勵轉化為「15 題狂熱雙倍小魚乾時段」與 +50% 親密度喵！🔥✨`, "全造型傳奇");
+        sayCatSpeech(`🎁 太震撼了！全圖鑑 43 款造型全部集齊！盲盒獎勵轉化為「15 題狂熱雙倍時段」與 +50% 親密度喵！🔥✨`, "全造型傳奇");
         openGachaModal({
           status: 'ALL_UNLOCKED',
           remainingFish: fishCount
@@ -4098,15 +4223,24 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
                 <span>🔒</span> Lv.${item.reqLevel} 里程碑解鎖
               </div>`;
           } else if (item.unlockType === 'fish') {
+            const catLvl = (typeof currentCatLevel !== 'undefined') ? currentCatLevel : 1;
+            const isLevelLocked = (catLvl < (item.reqLevel || 1));
             const canAfford = fishCount >= item.price;
-            actionBtnHtml = `
-              <button onclick="unlockAccessoryWithFish('${tabKey}', '${item.id}', ${item.price})" class="w-full mt-2 py-1 px-2 text-xs font-bold rounded-xl ${
-                canAfford
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs cursor-pointer'
-                  : 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-              } transition flex items-center justify-center gap-1" ${canAfford ? '' : 'disabled'}>
-                <span>🐟</span> 兌換 (${item.price}魚)
-              </button>`;
+            if (isLevelLocked) {
+              actionBtnHtml = `
+                <div class="w-full mt-2 py-1 px-2 text-[11px] font-bold rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-400 text-center flex items-center justify-center gap-1" title="需先升級至 Lv.${item.reqLevel} 才能在商店兌換或於盲盒抽取">
+                  <span>🔒</span> Lv.${item.reqLevel} 解鎖 (${item.price}魚)
+                </div>`;
+            } else {
+              actionBtnHtml = `
+                <button onclick="unlockAccessoryWithFish('${tabKey}', '${item.id}', ${item.price})" class="w-full mt-2 py-1 px-2 text-xs font-bold rounded-xl ${
+                  canAfford
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs cursor-pointer'
+                    : 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+                } transition flex items-center justify-center gap-1" ${canAfford ? '' : 'disabled'}>
+                  <span>🐟</span> 兌換 (${item.price}魚)
+                </button>`;
+            }
           }
         }
         card.innerHTML = `
@@ -4144,6 +4278,13 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       renderWardrobeItems(currentWardrobeTab);
     }
     function unlockAccessoryWithFish(category, itemId, price) {
+      const catLvl = (typeof currentCatLevel !== 'undefined') ? currentCatLevel : 1;
+      const catalogList = WARDROBE_CATALOG[category] || [];
+      const item = catalogList.find(x => x.id === itemId);
+      if (item && catLvl < (item.reqLevel || 1)) {
+        alert(`這件造型需要貓咪達到 Lv.${item.reqLevel} 才能購買或於盲盒抽取喔！快去背單字升級吧喵～🐾`);
+        return;
+      }
       if (fishCount < price) {
         alert(`小魚乾不足喔！需要 ${price} 條小魚乾，多背背單字做測驗就能獲得囉喵～🐟`);
         return;
@@ -6052,7 +6193,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.16-test",
+        version: "2.13.17-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
