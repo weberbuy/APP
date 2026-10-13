@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.3.18-test (開頁同步閘門防舊資料回寫、上傳防縮水熔斷、雙軌自癒拉取強化版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.0-test (Forteller 吸頂月度財務收支條、自訂被動/主動收支管理、一鍵複製上月、今日專區結算提醒版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -890,6 +890,101 @@ let lastSyncedFileName = localStorage.getItem('pi_last_synced_file') || '';
 let autoSaveTimer = null;
 // 【v5.3.18 開頁同步閘門】：頁面載入時預設為 false，在雲端雙軌檢查拉取完成前全域鎖定自動儲存，杜絕舊設備舊快取回寫覆蓋雲端！
 let isInitialSyncCompleted = false;
+
+// ============================================================
+// 【v5.4.0 月度財務收支與被動收入管理系統 (Monthly Financials)】
+// ============================================================
+const defaultFinancialTemplates = {
+    active: ['本業薪資', '獎金/其他收入'],
+    passive: ['債券配息', 'ETF配息', '其他被動收益'],
+    expenses: ['房貸/房租', '生活飲食', '水電瓦斯規費', '休閒/其他開銷']
+};
+
+let financialTemplates = defaultFinancialTemplates;
+try {
+    const savedT = localStorage.getItem('my_financial_templates');
+    if (savedT) financialTemplates = JSON.parse(savedT);
+} catch (e) { financialTemplates = defaultFinancialTemplates; }
+
+let monthlyFinancials = {};
+try {
+    const savedF = localStorage.getItem('my_monthly_financials');
+    if (savedF) monthlyFinancials = JSON.parse(savedF);
+} catch (e) { monthlyFinancials = {}; }
+
+let fortellerShowFinancials = localStorage.getItem('forteller_show_financials') !== 'false';
+
+function saveMonthlyFinancials() {
+    localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials));
+    localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates));
+    localStorage.setItem('forteller_show_financials', String(fortellerShowFinancials));
+    saveData();
+}
+
+function toggleFortellerFinancials() {
+    fortellerShowFinancials = !fortellerShowFinancials;
+    localStorage.setItem('forteller_show_financials', String(fortellerShowFinancials));
+    render();
+    showToast(fortellerShowFinancials ? '💰 已展開 Forteller 各月收支概況' : '💰 已收折 Forteller 各月收支概況', 'info');
+}
+
+function getMonthlyFinanceSummary(mKey) {
+    const data = monthlyFinancials[mKey];
+    if (!data) return null;
+    const activeTotal = (data.active || []).reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+    const passiveTotal = (data.passive || []).reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+    const expensesTotal = (data.expenses || []).reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+    const netSavings = (activeTotal + passiveTotal) - expensesTotal;
+    const hasData = (data.active && data.active.length > 0) || (data.passive && data.passive.length > 0) || (data.expenses && data.expenses.length > 0);
+    const coveragePercent = expensesTotal > 0 ? Math.round((passiveTotal / expensesTotal) * 100) : 0;
+    return {
+        activeTotal,
+        passiveTotal,
+        expensesTotal,
+        netSavings,
+        coveragePercent,
+        hasData
+    };
+}
+
+function formatMoneyCompact(num) {
+    if (!num || isNaN(num)) return '0';
+    if (Math.abs(num) >= 10000) {
+        const w = (num / 10000).toFixed(1).replace(/\.0$/, '');
+        return `${w}w`;
+    } else if (Math.abs(num) >= 1000) {
+        const k = (num / 1000).toFixed(1).replace(/\.0$/, '');
+        return `${k}k`;
+    }
+    return String(Math.round(num));
+}
+
+function renderFortellerHeaderFinanceBadge(mKey) {
+    const summary = getMonthlyFinanceSummary(mKey);
+    if (!summary || !summary.hasData) {
+        return `
+            <div onclick="openMonthlyFinanceModal('${mKey}', event)" class="mt-1 inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200/70 dark:bg-slate-750 text-slate-500 dark:text-slate-400 hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-slate-700 cursor-pointer transition-all border border-transparent hover:border-indigo-300" title="點擊設定 ${mKey} 收支與被動收入">
+                <span>➕ 記帳</span>
+            </div>
+        `;
+    }
+    const { activeTotal, passiveTotal, expensesTotal, netSavings } = summary;
+    const netColor = netSavings >= 0 ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 border-emerald-200 dark:border-emerald-800' : 'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/70 border-rose-200 dark:border-rose-800';
+    const netSign = netSavings >= 0 ? '+' : '';
+    
+    return `
+        <div onclick="openMonthlyFinanceModal('${mKey}', event)" class="mt-1 flex flex-col items-center gap-0.5 p-1 rounded-lg bg-white/95 dark:bg-slate-800/95 border border-slate-200 dark:border-slate-700 shadow-2xs hover:border-indigo-400 hover:shadow-xs cursor-pointer transition-all text-[10px] leading-tight select-none" title="點擊檢視/編輯 ${mKey} 收支細項明細">
+            <div class="flex items-center gap-1 text-[9px] font-mono font-bold flex-wrap justify-center">
+                <span class="text-blue-600 dark:text-blue-400" title="主動收入: $${activeTotal.toLocaleString()}">🟢${formatMoneyCompact(activeTotal)}</span>
+                <span class="text-purple-600 dark:text-purple-400" title="被動收入: $${passiveTotal.toLocaleString()}">🔵${formatMoneyCompact(passiveTotal)}</span>
+                <span class="text-rose-600 dark:text-rose-400" title="總支出: $${expensesTotal.toLocaleString()}">🔴${formatMoneyCompact(expensesTotal)}</span>
+            </div>
+            <div class="px-1.5 py-0.2 rounded-full border text-[9px] font-mono font-black ${netColor}" title="淨結餘 / 現金流: $${netSavings.toLocaleString()}">
+                結餘: ${netSign}${formatMoneyCompact(netSavings)}
+            </div>
+        </div>
+    `;
+}
 let hideCompletedGoalsCards = localStorage.getItem('hide_completed_goals_cards') !== 'false';
 let showCompletedStepsMap = {};
 let showAddStepFormMap = {};
@@ -981,11 +1076,15 @@ function getExportPayload() {
         maxDailyHours,
         maxWeeklyHours,
         timelineStartDate: getEffectiveTimelineStartDate(),
-        timelineStartMode, // 【v5.3.16 新增：動態起始模式】
-        fortellerSpan: (typeof getFortellerSpanSetting === 'function') ? getFortellerSpanSetting() : (localStorage.getItem('my_forteller_span') || 'auto'), // 【v5.3.16 新增】
-        fortellerStartMonth: (typeof getFortellerStartMonthSetting === 'function') ? getFortellerStartMonthSetting() : (localStorage.getItem('my_forteller_start_month') || 'prev_month'), // 【v5.3.16 新增】
-        hideCompletedGoalsCards: (typeof hideCompletedGoalsCards !== 'undefined') ? hideCompletedGoalsCards : (localStorage.getItem('hide_completed_goals_cards') !== 'false'), // 【v5.3.16 新增】
-        routineHubCollapsed: localStorage.getItem('ls_routine_hub_collapsed') === 'true' // 【v5.3.16 新增】
+        timelineStartMode,
+        fortellerSpan: (typeof getFortellerSpanSetting === 'function') ? getFortellerSpanSetting() : (localStorage.getItem('my_forteller_span') || 'auto'),
+        fortellerStartMonth: (typeof getFortellerStartMonthSetting === 'function') ? getFortellerStartMonthSetting() : (localStorage.getItem('my_forteller_start_month') || 'prev_month'),
+        hideCompletedGoalsCards: (typeof hideCompletedGoalsCards !== 'undefined') ? hideCompletedGoalsCards : (localStorage.getItem('hide_completed_goals_cards') !== 'false'),
+        routineHubCollapsed: localStorage.getItem('ls_routine_hub_collapsed') === 'true',
+        // 【v5.4.0 新增】：月度財務收支與範本全量備份
+        monthlyFinancials: monthlyFinancials,
+        financialTemplates: financialTemplates,
+        fortellerShowFinancials: fortellerShowFinancials
     };
 }
 
@@ -1032,6 +1131,20 @@ function applyImportedData(backupData, fileName) {
     }
     if (backupData.routineHubCollapsed !== undefined) {
         localStorage.setItem('ls_routine_hub_collapsed', String(backupData.routineHubCollapsed));
+    }
+
+    // 【v5.4.0 還原月度財務數據與範本】
+    if (backupData.monthlyFinancials !== undefined) {
+        monthlyFinancials = backupData.monthlyFinancials;
+        try { localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials)); } catch(e) {}
+    }
+    if (backupData.financialTemplates !== undefined) {
+        financialTemplates = backupData.financialTemplates;
+        try { localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates)); } catch(e) {}
+    }
+    if (backupData.fortellerShowFinancials !== undefined) {
+        fortellerShowFinancials = backupData.fortellerShowFinancials;
+        try { localStorage.setItem('forteller_show_financials', String(fortellerShowFinancials)); } catch(e) {}
     }
 
     syncLinkedData();
@@ -3365,8 +3478,41 @@ function updateContainerWidth() {
                     </div>
             `;
 
+            // 【v5.4.0 每月財務結算提醒】：檢查當月是否需要提醒記帳
+            const currentFinMonthKey = todayStr ? todayStr.slice(0, 7).replace('-', '/') : '2026/10';
+            const currentMonthFinData = monthlyFinancials[currentFinMonthKey];
+            const finReminderDay = (currentMonthFinData && currentMonthFinData.reminderDay) || 5;
+            const isFinKeyed = currentMonthFinData && currentMonthFinData.hasData;
+            const currentDayNumber = todayObj.getDate();
+            const shouldShowFinReminder = (currentDayNumber >= finReminderDay && !isFinKeyed);
+
             if (!isCollapsed) {
                 html += `<div class="mt-4 space-y-3.5">`;
+
+                // 0. 【v5.4.0 月度財務結算提醒卡片】
+                if (shouldShowFinReminder) {
+                    html += `
+                        <div class="p-3 rounded-2xl bg-gradient-to-r from-amber-50/90 via-orange-50/80 to-amber-50/90 dark:from-amber-950/40 dark:via-orange-950/30 dark:to-amber-950/40 border border-amber-300/80 dark:border-amber-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-xl select-none">💰</span>
+                                <div>
+                                    <div class="text-xs font-black text-amber-950 dark:text-amber-200 flex items-center gap-1.5 flex-wrap">
+                                        <span>【${currentFinMonthKey}】月度收支與被動收入待結算</span>
+                                        <span class="text-[10px] font-bold px-2 py-0.2 rounded-full bg-amber-200/80 text-amber-900 dark:bg-amber-900/80 dark:text-amber-200 font-mono">每月 ${finReminderDay} 號提醒</span>
+                                    </div>
+                                    <div class="text-[11px] text-amber-800/80 dark:text-amber-400 mt-0.5">
+                                        即時掌握本月主動/被動收入與日常支出，支撐各領域目標穩健推進
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                <button type="button" onclick="openMonthlyFinanceModal('${currentFinMonthKey}')" class="text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1">
+                                    <span>📝 立即 Key in</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
 
                 // 1. 逾期未完成清單 (v5.3.17 加入「全部遞延至今日」快捷整理按鈕)
                 if (overdueList.length > 0) {
@@ -4996,6 +5142,12 @@ function renderTimelineMatrix(container) {
                                 <span>🌐</span>
                                 <span>${fortellerShowAllDomains ? '全領域已展開' : '僅顯示有目標領域'}</span>
                             </button>
+
+                            <!-- 【v5.4.0 月度財務收支顯示切換按鈕】 -->
+                            <button type="button" onclick="toggleFortellerFinancials()" class="px-2.5 py-1 rounded-xl transition-all cursor-pointer border text-xs font-bold flex items-center gap-1 shadow-2xs ${fortellerShowFinancials ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-slate-800'}" title="在各月份表頭下方切換顯示主動收入、被動收入、支出與結餘微型條">
+                                <span>💰</span>
+                                <span>${fortellerShowFinancials ? '財務概況已展開' : '財務概況已收折'}</span>
+                            </button>
                         </div>
 
                         <!-- 中間與右側：目標卡片篩選、領域篩選與色彩符號圖例 -->
@@ -5116,8 +5268,9 @@ function renderTimelineMatrix(container) {
                                             if (col.type === 'month') {
                                                 const isCurrent = (col.monthKey === currentMonthKey);
                                                 return `
-                                                    <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px]">
-                                                        ${col.monthKey}${isCurrent ? ' (當月)' : ''}
+                                                    <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
+                                                        <div>${col.monthKey}${isCurrent ? ' (當月)' : ''}</div>
+                                                        ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(col.monthKey) : ''}
                                                     </th>
                                                 `;
                                             } else {
@@ -5132,8 +5285,9 @@ function renderTimelineMatrix(container) {
                                         ${monthCols.map(mKey => {
                                             const isCurrent = (mKey === currentMonthKey);
                                             return `
-                                                <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px]">
-                                                    ${mKey}${isCurrent ? ' (當月)' : ''}
+                                                <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
+                                                    <div>${mKey}${isCurrent ? ' (當月)' : ''}</div>
+                                                    ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(mKey) : ''}
                                                 </th>
                                             `;
                                         }).join('')}
@@ -6817,6 +6971,202 @@ window.addEventListener('focus', () => {
     checkAndAutoSyncFromPi();
 });
 
+
+// ============================================================
+// 【v5.4.0 月度財務管理控制器邏輯 (Monthly Finance Controller)】
+// ============================================================
+let currentEditingFinanceMonthKey = null;
+let currentEditingFinanceData = null;
+
+function openMonthlyFinanceModal(mKey, e) {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+    currentEditingFinanceMonthKey = mKey || (todayStr ? todayStr.slice(0, 7).replace('-', '/') : '2026/10');
+    
+    // 如果當月已有資料，載入深拷貝；若無，以預設範本初始化
+    const existing = monthlyFinancials[currentEditingFinanceMonthKey];
+    if (existing) {
+        currentEditingFinanceData = JSON.parse(JSON.stringify(existing));
+    } else {
+        currentEditingFinanceData = {
+            active: (financialTemplates.active || []).map(name => ({ name, amount: 0 })),
+            passive: (financialTemplates.passive || []).map(name => ({ name, amount: 0 })),
+            expenses: (financialTemplates.expenses || []).map(name => ({ name, amount: 0 })),
+            reminderDay: 5,
+            note: ''
+        };
+    }
+    if (!currentEditingFinanceData.reminderDay) currentEditingFinanceData.reminderDay = 5;
+
+    const titleEl = document.getElementById('finModalMonthTitle');
+    if (titleEl) titleEl.textContent = currentEditingFinanceMonthKey;
+
+    const dayEl = document.getElementById('finModalReminderDay');
+    if (dayEl) dayEl.value = currentEditingFinanceData.reminderDay;
+
+    const noteEl = document.getElementById('finModalNote');
+    if (noteEl) noteEl.value = currentEditingFinanceData.note || '';
+
+    renderFinanceModalLists();
+    recalcFinanceModalSummary();
+
+    const modal = document.getElementById('monthlyFinanceModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeMonthlyFinanceModal() {
+    const modal = document.getElementById('monthlyFinanceModal');
+    if (modal) modal.classList.add('hidden');
+    currentEditingFinanceMonthKey = null;
+    currentEditingFinanceData = null;
+}
+
+function renderFinanceModalLists() {
+    if (!currentEditingFinanceData) return;
+    ['passive', 'active', 'expenses'].forEach(type => {
+        const container = document.getElementById(`fin${type.charAt(0).toUpperCase() + type.slice(1)}List`);
+        if (!container) return;
+        const list = currentEditingFinanceData[type] || [];
+        if (list.length === 0) {
+            container.innerHTML = `<div class="text-[11px] text-slate-400 italic py-1">尚未建立項目</div>`;
+            return;
+        }
+        container.innerHTML = list.map((item, idx) => `
+            <div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-2xs">
+                <input type="text" value="${escapeAttr(item.name || '')}" oninput="updateFinanceRow('${type}', ${idx}, 'name', this.value)" placeholder="項目名稱" class="flex-1 px-2 py-1 text-xs border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white font-medium">
+                <div class="flex items-center gap-1 w-32 shrink-0">
+                    <span class="text-xs text-slate-400 font-mono">$</span>
+                    <input type="number" step="100" min="0" value="${item.amount || ''}" oninput="updateFinanceRow('${type}', ${idx}, 'amount', this.value)" placeholder="0" class="w-full px-2 py-1 text-xs font-mono font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-right">
+                </div>
+                <button type="button" onclick="deleteFinanceRow('${type}', ${idx})" class="text-slate-400 hover:text-rose-500 px-1.5 py-0.5 text-xs font-bold cursor-pointer" title="刪除項目">✕</button>
+            </div>
+        `).join('');
+    });
+}
+
+function updateFinanceRow(type, idx, field, val) {
+    if (!currentEditingFinanceData || !currentEditingFinanceData[type] || !currentEditingFinanceData[type][idx]) return;
+    if (field === 'amount') {
+        currentEditingFinanceData[type][idx].amount = parseFloat(val) || 0;
+    } else {
+        currentEditingFinanceData[type][idx].name = val;
+    }
+    recalcFinanceModalSummary();
+}
+
+function addFinanceRow(type) {
+    if (!currentEditingFinanceData) return;
+    if (!currentEditingFinanceData[type]) currentEditingFinanceData[type] = [];
+    currentEditingFinanceData[type].push({ name: '新項目', amount: 0 });
+    renderFinanceModalLists();
+    recalcFinanceModalSummary();
+}
+
+function deleteFinanceRow(type, idx) {
+    if (!currentEditingFinanceData || !currentEditingFinanceData[type]) return;
+    currentEditingFinanceData[type].splice(idx, 1);
+    renderFinanceModalLists();
+    recalcFinanceModalSummary();
+}
+
+function recalcFinanceModalSummary() {
+    if (!currentEditingFinanceData) return;
+    const actSub = (currentEditingFinanceData.active || []).reduce((s, x) => s + (parseFloat(x.amount) || 0), 0);
+    const pasSub = (currentEditingFinanceData.passive || []).reduce((s, x) => s + (parseFloat(x.amount) || 0), 0);
+    const expSub = (currentEditingFinanceData.expenses || []).reduce((s, x) => s + (parseFloat(x.amount) || 0), 0);
+    const totalInc = actSub + pasSub;
+    const net = totalInc - expSub;
+    const cov = expSub > 0 ? Math.round((pasSub / expSub) * 100) : 0;
+
+    const elAct = document.getElementById('finActiveSubtotal');
+    if (elAct) elAct.textContent = `$${actSub.toLocaleString()}`;
+
+    const elPas = document.getElementById('finPassiveSubtotal');
+    if (elPas) elPas.textContent = `$${pasSub.toLocaleString()}`;
+
+    const elExp = document.getElementById('finExpensesSubtotal');
+    if (elExp) elExp.textContent = `$${expSub.toLocaleString()}`;
+
+    const elTotInc = document.getElementById('finModalTotalIncome');
+    if (elTotInc) elTotInc.textContent = `$${totalInc.toLocaleString()}`;
+
+    const elTotExp = document.getElementById('finModalTotalExpense');
+    if (elTotExp) elTotExp.textContent = `$${expSub.toLocaleString()}`;
+
+    const elNet = document.getElementById('finModalNetSavings');
+    if (elNet) {
+        elNet.textContent = `${net >= 0 ? '+' : ''}$${net.toLocaleString()}`;
+        elNet.className = `font-black text-sm ${net >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+    }
+
+    const elCov = document.getElementById('finModalCoverage');
+    if (elCov) elCov.textContent = `${cov}%`;
+}
+
+function copyPreviousMonthFinanceData() {
+    if (!currentEditingFinanceMonthKey) return;
+    const prevKey = getRelativeMonthKey(currentEditingFinanceMonthKey, -1);
+    const prevData = monthlyFinancials[prevKey];
+    if (!prevData) {
+        showToast(`找不到上個月 (${prevKey}) 的財務記錄！`, 'info');
+        return;
+    }
+    if (typeof confirm !== 'undefined' && !confirm(`確定要將上月 (${prevKey}) 的各項金額與項目完整複製至本月 (${currentEditingFinanceMonthKey}) 嗎？`)) {
+        return;
+    }
+    currentEditingFinanceData.active = JSON.parse(JSON.stringify(prevData.active || []));
+    currentEditingFinanceData.passive = JSON.parse(JSON.stringify(prevData.passive || []));
+    currentEditingFinanceData.expenses = JSON.parse(JSON.stringify(prevData.expenses || []));
+    if (prevData.reminderDay) currentEditingFinanceData.reminderDay = prevData.reminderDay;
+    const rEl = document.getElementById('finModalReminderDay');
+    if (rEl) rEl.value = currentEditingFinanceData.reminderDay;
+
+    renderFinanceModalLists();
+    recalcFinanceModalSummary();
+    showToast(`⚡ 已成功帶入上月 (${prevKey}) 的財務收支數據！`, 'success');
+}
+
+function clearCurrentMonthFinance() {
+    if (!currentEditingFinanceMonthKey) return;
+    if (typeof confirm !== 'undefined' && !confirm(`確定要清空 ${currentEditingFinanceMonthKey} 本月的所有收支數據嗎？`)) {
+        return;
+    }
+    delete monthlyFinancials[currentEditingFinanceMonthKey];
+    saveMonthlyFinancials();
+    closeMonthlyFinanceModal();
+    render();
+    showToast(`已清空 ${currentEditingFinanceMonthKey} 的收支數據。`, 'info');
+}
+
+function saveMonthlyFinanceModal() {
+    if (!currentEditingFinanceMonthKey || !currentEditingFinanceData) return;
+    const rInput = document.getElementById('finModalReminderDay');
+    currentEditingFinanceData.reminderDay = rInput ? (parseInt(rInput.value, 10) || 5) : 5;
+    
+    const nInput = document.getElementById('finModalNote');
+    currentEditingFinanceData.note = nInput ? (nInput.value || '').trim() : '';
+
+    // 標記是否有實際填寫資料
+    const actSub = (currentEditingFinanceData.active || []).reduce((s, x) => s + (parseFloat(x.amount) || 0), 0);
+    const pasSub = (currentEditingFinanceData.passive || []).reduce((s, x) => s + (parseFloat(x.amount) || 0), 0);
+    const expSub = (currentEditingFinanceData.expenses || []).reduce((s, x) => s + (parseFloat(x.amount) || 0), 0);
+    currentEditingFinanceData.hasData = (actSub > 0 || pasSub > 0 || expSub > 0);
+
+    monthlyFinancials[currentEditingFinanceMonthKey] = currentEditingFinanceData;
+
+    // 將新加入的項目名稱同步回全域範本，便於後續月份自動帶入
+    ['active', 'passive', 'expenses'].forEach(type => {
+        const itemNames = (currentEditingFinanceData[type] || []).map(x => (x.name || '').trim()).filter(Boolean);
+        itemNames.forEach(n => {
+            if (!financialTemplates[type].includes(n)) financialTemplates[type].push(n);
+        });
+    });
+
+    saveMonthlyFinancials();
+    closeMonthlyFinanceModal();
+    render();
+    showToast(`✅ ${currentEditingFinanceMonthKey} 財務收支數據已成功儲存！`, 'success');
+}
+
 // 【v5.3.10 視窗縮放自動重繪】：若處於自動適配模式，螢幕寬度改變自動更新可視月份量
 let _fortellerResizeTimer = null;
 window.addEventListener('resize', () => {
@@ -6828,6 +7178,114 @@ window.addEventListener('resize', () => {
     }, 300);
 });
 </script>
+
+
+    <!-- 【v5.4.0 月度財務收支管理彈窗】 (Monthly Finance Management Modal) -->
+    <div id="monthlyFinanceModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-3 sm:p-4 z-50 hidden max-h-[96vh] overflow-y-auto">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+            <!-- 彈窗頁首 -->
+            <div class="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-700 pb-3 shrink-0">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <span class="text-2xl select-none">💰</span>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                            <span id="finModalMonthTitle">2026/10</span>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">月度收支與被動收入管理</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">自訂各項被動/主動收入與固定開銷，數據儲存於該月份並同步至推演盤</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeMonthlyFinanceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg p-1 cursor-pointer">✕</button>
+            </div>
+
+            <!-- 工具列：複製上月數據 & 提醒日設定 -->
+            <div class="flex items-center justify-between gap-2 flex-wrap bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs shrink-0">
+                <button type="button" onclick="copyPreviousMonthFinanceData()" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-800 transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                    <span>⚡ 一鍵帶入上月數據</span>
+                </button>
+                <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-slate-600 dark:text-slate-300">🔔 每月結算提醒：每月</span>
+                    <input type="number" id="finModalReminderDay" min="1" max="31" class="w-12 px-1.5 py-0.5 text-center text-xs font-bold border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-800 dark:text-white" value="5">
+                    <span class="font-bold text-slate-600 dark:text-slate-300">號</span>
+                </div>
+            </div>
+
+            <!-- 可捲動內容區 (三大收支板塊) -->
+            <div class="space-y-4 overflow-y-auto grow pr-1">
+                <!-- 1. 🔵 被動收入區塊 -->
+                <div class="bg-purple-50/50 dark:bg-purple-950/20 p-3.5 rounded-2xl border border-purple-200/80 dark:border-purple-900/60 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 font-black text-xs sm:text-sm text-purple-900 dark:text-purple-300">
+                            <span>🔵 被動收入 (Passive)</span>
+                            <span id="finPassiveSubtotal" class="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full">$0</span>
+                        </div>
+                        <button type="button" onclick="addFinanceRow('passive')" class="text-[11px] font-bold text-purple-700 dark:text-purple-300 bg-white dark:bg-slate-800 hover:bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-300 dark:border-purple-700 shadow-2xs transition-colors cursor-pointer">
+                            ➕ 新增被動項目
+                        </button>
+                    </div>
+                    <div id="finPassiveList" class="space-y-1.5"></div>
+                </div>
+
+                <!-- 2. 🟢 主動收入區塊 -->
+                <div class="bg-blue-50/50 dark:bg-blue-950/20 p-3.5 rounded-2xl border border-blue-200/80 dark:border-blue-900/60 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 font-black text-xs sm:text-sm text-blue-900 dark:text-blue-300">
+                            <span>🟢 主動收入 (Active)</span>
+                            <span id="finActiveSubtotal" class="text-xs font-mono font-bold text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded-full">$0</span>
+                        </div>
+                        <button type="button" onclick="addFinanceRow('active')" class="text-[11px] font-bold text-blue-700 dark:text-blue-300 bg-white dark:bg-slate-800 hover:bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-300 dark:border-blue-700 shadow-2xs transition-colors cursor-pointer">
+                            ➕ 新增主動項目
+                        </button>
+                    </div>
+                    <div id="finActiveList" class="space-y-1.5"></div>
+                </div>
+
+                <!-- 3. 🔴 支出項目區塊 -->
+                <div class="bg-rose-50/50 dark:bg-rose-950/20 p-3.5 rounded-2xl border border-rose-200/80 dark:border-rose-900/60 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 font-black text-xs sm:text-sm text-rose-900 dark:text-rose-300">
+                            <span>🔴 總體支出 (Expenses)</span>
+                            <span id="finExpensesSubtotal" class="text-xs font-mono font-bold text-rose-700 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/60 px-2 py-0.5 rounded-full">$0</span>
+                        </div>
+                        <button type="button" onclick="addFinanceRow('expenses')" class="text-[11px] font-bold text-rose-700 dark:text-rose-300 bg-white dark:bg-slate-800 hover:bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-300 dark:border-rose-700 shadow-2xs transition-colors cursor-pointer">
+                            ➕ 新增支出項目
+                        </button>
+                    </div>
+                    <div id="finExpensesList" class="space-y-1.5"></div>
+                </div>
+
+                <!-- 4. 📝 本月財務戰略備忘 -->
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300">📝 本月財務備忘與規劃筆記：</label>
+                    <textarea id="finModalNote" rows="2" placeholder="備註本月特殊收支 (如：牌照稅、出國旅遊、投資加碼)..." class="w-full px-3 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"></textarea>
+                </div>
+            </div>
+
+            <!-- 即時總計與財務自由指標卡 -->
+            <div class="p-3 bg-gradient-to-r from-slate-100 via-indigo-50/50 to-slate-100 dark:from-slate-900 dark:via-indigo-950/40 dark:to-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 flex-wrap shrink-0">
+                <div class="flex items-center gap-3 text-xs font-mono font-bold flex-wrap">
+                    <span class="text-slate-600 dark:text-slate-300">總收入: <span id="finModalTotalIncome" class="text-indigo-600 dark:text-indigo-400 font-black">$0</span></span>
+                    <span class="text-slate-400">|</span>
+                    <span class="text-slate-600 dark:text-slate-300">總支出: <span id="finModalTotalExpense" class="text-rose-600 dark:text-rose-400 font-black">$0</span></span>
+                    <span class="text-slate-400">|</span>
+                    <span class="text-slate-700 dark:text-slate-200">淨結餘: <span id="finModalNetSavings" class="font-black text-sm text-emerald-600">+$0</span></span>
+                </div>
+                <div class="flex items-center gap-1.5 text-[11px] font-bold">
+                    <span class="text-slate-500 dark:text-slate-400">🎯 被動收入覆蓋率:</span>
+                    <span id="finModalCoverage" class="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-mono font-black">0%</span>
+                </div>
+            </div>
+
+            <!-- 彈窗頁尾動作列 -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2 shrink-0">
+                <button type="button" onclick="clearCurrentMonthFinance()" class="text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-bold px-2 py-1 cursor-pointer">清空本月</button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeMonthlyFinanceModal()" class="text-xs bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3.5 py-1.5 rounded-xl font-bold transition-colors cursor-pointer">取消</button>
+                    <button type="button" onclick="saveMonthlyFinanceModal()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-xl font-bold shadow-xs hover:shadow transition-all cursor-pointer">💾 儲存本月收支</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 輕量浮動通知容器 (Toast Container) -->
     <div id="lsToastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
