@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 草莓項圈與全套項鍊視覺座標精準重構版 (v2.13.18-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 超萌小貓兔耳包頭套實裝版 (v2.13.19-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.18-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.19-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -3232,6 +3232,30 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
     <circle cx="20" cy="-6" r="2" fill="#10b981" stroke="#ffffff" stroke-width="0.5" />
   </g>
 </g>`,
+        head_bunny_hood: `<!-- 🐰 軟萌兔耳包頭套: 全包覆雪白毛絨帽圈，烘托圓滾滾大福臉與立體蓬鬆長兔耳 -->
+<g id="acc_head_bunny_hood" filter="drop-shadow(0 3px 6px rgba(0,0,0,0.18))">
+  <g style="transform-origin: 38px 26px;">
+    <path d="M 26,24 C 20,10 32,-4 44,-2 C 50,4 48,16 46,24 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
+    <path d="M 30,20 C 26,11 34,2 41,3 C 44,7 43,15 42,20 Z" fill="#fbcfe8" opacity="0.9" />
+    <path d="M 32,18 C 30,12 35,6 39,7 C 41,10 40,15 39,18 Z" fill="#f472b6" opacity="0.35" />
+  </g>
+  <g style="transform-origin: 82px 26px;">
+    <path d="M 74,24 C 72,16 70,4 76,-2 C 88,-4 100,10 94,24 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
+    <path d="M 78,20 C 77,15 76,7 79,3 C 86,2 94,11 90,20 Z" fill="#fbcfe8" opacity="0.9" />
+    <path d="M 81,18 C 80,15 79,10 81,7 C 85,6 90,12 88,18 Z" fill="#f472b6" opacity="0.35" />
+  </g>
+  <path fill-rule="evenodd" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"
+        d="M 60,18 C 28,18 16,32 18,54 C 20,76 34,84 60,84 C 86,84 100,76 102,54 C 104,32 92,18 60,18 Z
+           M 60,29 C 76,29 86,40 85,55 C 84,69 74,75 60,75 C 46,75 36,69 35,55 C 34,40 44,29 60,29 Z" />
+  <path d="M 48,24 Q 60,21 72,24" stroke="#f8fafc" stroke-width="3" fill="none" stroke-linecap="round" />
+  <circle cx="22" cy="52" r="3.5" fill="#f8fafc" opacity="0.8" />
+  <circle cx="98" cy="52" r="3.5" fill="#f8fafc" opacity="0.8" />
+  <g transform="translate(60, 25)">
+    <path d="M 0,-3.5 L 0.8,-1 L 3.5,0 L 0.8,1 L 0,3.5 L -0.8,1 L -3.5,0 L -0.8,-1 Z" fill="#facc15" />
+    <circle cx="0" cy="0" r="0.8" fill="#ffffff" />
+    <circle cx="5" cy="-1.5" r="0.6" fill="#fde047" />
+  </g>
+</g>`,
         head_rabbit: `<!-- 🐰 萌兔毛絨長耳 -->
 <g id="acc_head_rabbit"><ellipse cx="44" cy="10" rx="4.5" ry="14" transform="rotate(-10 44 10)" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.8" /><ellipse cx="44" cy="10" rx="2.5" ry="10" transform="rotate(-10 44 10)" fill="#fbcfe8" /><ellipse cx="76" cy="10" rx="4.5" ry="14" transform="rotate(10 76 10)" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.8" /><ellipse cx="76" cy="10" rx="2.5" ry="10" transform="rotate(10 76 10)" fill="#fbcfe8" /></g>`,
         head_flower_tiara: `<!-- 🧚‍♀️ 晶透精靈花冠 -->
@@ -3622,6 +3646,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
         { id: 'head_none', name: '無飾品', icon: '🚫', desc: '純真自然小貓樣貌', unlockType: 'free', price: 0, reqLevel: 1 },
         { id: 'head_sakura', name: '🌸 櫻花小花飾', icon: '🌸', desc: '【Lv.1 免費】粉嫩櫻花初春氣息', unlockType: 'level', price: 0, reqLevel: 1 },
         { id: 'head_ribbon', name: '🎀 萌萌蝴蝶結', icon: '🎀', desc: '俏皮可愛的大粉紅蝴蝶結', unlockType: 'fish', price: 15, reqLevel: 1 },
+        { id: 'head_bunny_hood', name: '🐰 軟萌兔耳包頭套', icon: '🐰', desc: '全包覆雪白毛絨兔耳帽，圓滾滾大福臉超治癒', unlockType: 'fish', price: 25, reqLevel: 1 },
         { id: 'head_rabbit', name: '🐰 萌兔毛絨長耳', icon: '🐰', desc: '軟萌雪白長兔耳，蹦蹦跳跳超可愛', unlockType: 'fish', price: 20, reqLevel: 1 },
         { id: 'head_cap', name: '🧢 活力運動帽', icon: '🧢', desc: '反戴潮流街頭風棒球帽', unlockType: 'fish', price: 30, reqLevel: 2 },
         { id: 'head_flower_tiara', name: '🧚‍♀️ 晶透精靈花冠', icon: '🧚‍♀️', desc: '翠綠藤蔓綴以晨露粉花，宛如森之妖精', unlockType: 'fish', price: 35, reqLevel: 2 },
@@ -3681,6 +3706,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       ]
     };
     const ACCESSORY_REACTIONS = {
+      head_bunny_hood: "喵嗚～套上軟綿綿的兔耳包頭帽！咪咪的臉蛋變得圓滾滾的像雪白大福一樣，是不是超萌呀？🐰🐾💖",
       head_sakura: "喵～耳朵邊夾了小櫻花，有沒有像花仙子一樣漂亮呀？🌸🐾",
       head_ribbon: "喵嗚～大粉紅蝴蝶結！我今天就是全天下最可愛的小貓！🎀💖",
       head_cap: "喵！棒球帽反戴超帥氣，今天背單字我也要全力打出全壘打！⚾🧢",
@@ -6221,7 +6247,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.18-test",
+        version: "2.13.19-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
