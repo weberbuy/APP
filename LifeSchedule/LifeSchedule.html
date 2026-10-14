@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.1-test (時間軸待排定區納入逾期未完成重排、Forteller 短跨度遠期接力目標分離防擠壓版)</span>
+<span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.2-test (時間軸跨日自動對齊今日、逾期重排全模式常駐與高對比徽章優化版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -859,9 +859,12 @@ let storedTimelineStart = localStorage.getItem('my_timeline_start_date');
 const todayObj = new Date();
 const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 
-// 【v5.3.16 時間軸動態起始模式】：預設為 'today' (從今天開始，動態隨當前日期推移)
-let timelineStartMode = storedTimelineMode || (storedTimelineStart === '' ? 'all' : (storedTimelineStart && storedTimelineStart !== todayStr ? 'custom' : 'today'));
-let timelineStartDate = (storedTimelineStart !== null && storedTimelineStart !== undefined) ? storedTimelineStart : todayStr;
+// 【v5.4.2 時間軸動態起始模式跨日自動對齊】：預設為 'today'，且當模式為 'today' 時強制對齊當日 todayStr，徹底消除跨日快取殘留舊日期問題
+let timelineStartMode = storedTimelineMode || (storedTimelineStart === '' ? 'all' : 'today');
+let timelineStartDate = (timelineStartMode === 'today') ? todayStr : (timelineStartMode === 'all' ? '' : (storedTimelineStart || todayStr));
+if (timelineStartMode === 'today' && storedTimelineStart !== todayStr) {
+    try { localStorage.setItem('my_timeline_start_date', todayStr); } catch(e) {}
+}
 
 function getEffectiveTimelineStartDate() {
     if (timelineStartMode === 'all') return '';
@@ -4103,13 +4106,18 @@ function renderTimelineMatrix(container) {
                 if (Array.isArray(t.steps)) { t.steps.forEach(s => { if (s.stepDate) datesSet.add(s.stepDate); }); }
             });
 
-            let sortedDates = Array.from(datesSet).sort();
-            if (timelineStartDate) {
-                sortedDates = sortedDates.filter(d => d >= timelineStartDate);
+            const effectiveTimelineStart = getEffectiveTimelineStartDate();
+            if (timelineStartMode === 'today' && timelineStartDate !== todayStr) {
+                timelineStartDate = todayStr;
             }
 
-            // 【v5.4.1 待排定區升級】：同時納入「未指定日期」以及「早於時間軸起點 (已被下方表格過濾隱藏的逾期項目)」，支援重新拖曳安排
-            const effectiveStart = timelineStartDate || '';
+            let sortedDates = Array.from(datesSet).sort();
+            if (effectiveTimelineStart) {
+                sortedDates = sortedDates.filter(d => d >= effectiveTimelineStart);
+            }
+
+            // 【v5.4.2 待排定與逾期重排升級】：逾期判定全面對齊真實今日 (todayStr)，無論時間軸為從今天開始或全部歷史，早於今日之未完成目標與步驟皆自動浮現供拖曳重排
+            const overdueCutoff = (effectiveTimelineStart && effectiveTimelineStart > todayStr) ? effectiveTimelineStart : todayStr;
             const undatedGoals = [];
             const overdueGoals = [];
 
@@ -4118,7 +4126,7 @@ function renderTimelineMatrix(container) {
                 const dt = t.targetDate;
                 if (!dt || dt === '未指定日期') {
                     undatedGoals.push(t);
-                } else if (effectiveStart && dt < effectiveStart) {
+                } else if (dt < overdueCutoff) {
                     overdueGoals.push(t);
                 }
             });
@@ -4132,7 +4140,7 @@ function renderTimelineMatrix(container) {
                     const dt = s.stepDate;
                     if (!dt) {
                         undatedSteps.push({ thought: t, step: s });
-                    } else if (effectiveStart && dt < effectiveStart) {
+                    } else if (dt < overdueCutoff) {
                         overdueSteps.push({ thought: t, step: s });
                     }
                 });
@@ -4223,27 +4231,27 @@ function renderTimelineMatrix(container) {
             if (totalReschedulable === 0) {
                 unscheduledHtml += `<span class="text-xs text-slate-400 italic">所有目標與步驟皆已完成日期排程且無逾期項目！</span>`;
             } else {
-                // 1. 逾期目標 (紅/粉色卡片，標記原定日期)
+                // 1. 逾期目標 (紅/粉色卡片，高對比實心紅底白字標記原定日期)
                 overdueGoals.forEach(g => {
                     unscheduledHtml += `
-                        <div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})" class="p-2 bg-rose-50 border border-rose-300 rounded-lg text-rose-950 text-xs font-bold shadow-sm cursor-grab flex items-center gap-1.5" title="原定預期：${g.targetDate}，可拖曳至下方日期重新排定">
+                        <div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})" class="p-2 bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 rounded-lg text-rose-950 dark:text-rose-200 text-xs font-bold shadow-sm cursor-grab flex items-center gap-1.5" title="原定預期：${g.targetDate}，可拖曳至下方日期重新排定">
                             <span>🎯 [${escapeHtml(g.category || '目標')}] ${escapeHtml(g.goal || g.text)}</span>
-                            <span class="text-[10px] font-mono font-bold bg-rose-200/80 text-rose-800 px-1 py-0.2 rounded shrink-0">⚠️ 逾期 ${g.targetDate.slice(5)}</span>
+                            <span class="text-[10px] font-mono font-extrabold bg-rose-600 text-white px-1.5 py-0.5 rounded shadow-2xs shrink-0">⚠️ 逾期 ${g.targetDate.slice(5)}</span>
                         </div>
                     `;
                 });
-                // 2. 逾期步驟 (琥珀色卡片，標記原定日期)
+                // 2. 逾期步驟 (琥珀色卡片，高對比實心紅底白字標記原定日期，徹底解決黃底黃字看不清問題)
                 overdueSteps.forEach(item => {
                     unscheduledHtml += `
-                        <div draggable="true" ondragstart="handleDragStart(event, 'step', ${item.thought.id}, ${item.step.id})" ondblclick="jumpToStepEdit(${item.thought.id}, ${item.step.id})" class="p-2 bg-amber-50 border border-amber-300 rounded-lg text-amber-950 text-xs font-bold shadow-sm cursor-grab flex items-center gap-1.5" title="原定預期：${item.step.stepDate}，可拖曳至下方日期重新排定">
+                        <div draggable="true" ondragstart="handleDragStart(event, 'step', ${item.thought.id}, ${item.step.id})" ondblclick="jumpToStepEdit(${item.thought.id}, ${item.step.id})" class="p-2 bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700 rounded-lg text-slate-900 dark:text-slate-100 text-xs font-bold shadow-sm cursor-grab flex items-center gap-1.5" title="原定預期：${item.step.stepDate}，可拖曳至下方日期重新排定">
                             <span>📋 [${escapeHtml(item.thought.category || '步驟')}] ${escapeHtml(item.step.text)}</span>
-                            <span class="text-[10px] font-mono font-bold bg-amber-200/80 text-amber-900 px-1 py-0.2 rounded shrink-0">⚠️ 逾期 ${item.step.stepDate.slice(5)}</span>
+                            <span class="text-[10px] font-mono font-extrabold bg-rose-600 text-white px-1.5 py-0.5 rounded shadow-2xs shrink-0">⚠️ 逾期 ${item.step.stepDate.slice(5)}</span>
                         </div>
                     `;
                 });
                 // 3. 未排定目標
                 undatedGoals.forEach(g => {
-                    unscheduledHtml += `<div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})" class="p-2 bg-amber-100 border border-amber-300 rounded-lg text-amber-950 text-xs font-bold shadow-sm cursor-grab">🎯 [${escapeHtml(g.category || '目標')}] ${escapeHtml(g.goal || g.text)}</div>`;
+                    unscheduledHtml += `<div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})" class="p-2 bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 rounded-lg text-amber-950 dark:text-amber-200 text-xs font-bold shadow-sm cursor-grab">🎯 [${escapeHtml(g.category || '目標')}] ${escapeHtml(g.goal || g.text)}</div>`;
                 });
                 // 4. 未排定步驟
                 undatedSteps.forEach(item => {
