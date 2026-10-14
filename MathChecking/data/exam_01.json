@@ -1,29 +1,223 @@
 {
   "exam_id": "2026-10_math_01",
-  "exam_name": "一上第一次段考 (測試資料)",
-  "scope": "整數與數線、絕對值",
+  "exam_name": "一上第一次段考",
+  "scope": "整數與數線、絕對值、科學記號",
+  "source_images": {
+    "page_1": "data/picture/exam_01_p1.jpg",
+    "page_2": "data/picture/exam_01_p2.jpg"
+  },
   "questions": [
+    {
+      "id": "p1_q1",
+      "type": "multiple_choice",
+      "question_text": "1. 某地上午5點的溫度是...",
+      "correct_answer": "D",
+      "user_answer": "C",
+      "is_correct": false,
+      "explanation": "正午12點為基準0，下午2點記為+6（每小時+3）。上午5點為前7小時，(-7)*3 = -21。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q2",
+      "type": "multiple_choice",
+      "question_text": "2. 絕對值不大於乙數的整數有5個，則乙數為...",
+      "correct_answer": "D",
+      "user_answer": "A",
+      "is_correct": false,
+      "explanation": "|x| <= 乙，整數有5個包含正負與0，公式 2*乙 + 1 = 5 故 乙 = 2。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q3",
+      "type": "multiple_choice",
+      "question_text": "3. 若甲數的相反數是...",
+      "correct_answer": "A",
+      "user_answer": "A",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q4",
+      "type": "multiple_choice",
+      "question_text": "4. 甲*3 = 乙*(-4) = 丙*(-7)，且乙為負數，則甲、乙、丙大小關係...",
+      "correct_answer": "C",
+      "user_answer": "B",
+      "is_correct": false,
+      "explanation": "乘積為正，推得甲>0，丙<0。比較負數乙與丙得 |乙| > |丙|，故乙 < 丙，排序為 甲 > 丙 > 乙。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q5",
+      "type": "multiple_choice",
+      "question_text": "5. 下列何者計算結果最大？",
+      "correct_answer": "A",
+      "user_answer": "A",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q6",
+      "type": "multiple_choice",
+      "question_text": "6. 數線上 A、B 兩點...",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
+    },
     {
       "id": "p1_q7",
       "type": "multiple_choice",
-      "question_text": "7. 下列算式何者正確？ (A) 2^3 - (-2)^3 = 0  (B) 2^4 - (-2^4) = 0  (C) (-2)^3 - (-2^3) = 0  (D) (-2)^4 - (-2^4) = 0",
+      "question_text": "7. 下列算式何者正確？ (A) 2^3 - (-2)^3 = 0 (B) 2^4 - (-2^4) = 0 (C) (-2)^3 - (-2^3) = 0 (D) (-2)^4 - (-2^4) = 0",
       "correct_answer": "C",
       "user_answer": "D",
       "is_correct": false,
-      "explanation": "選項 (B) 括號內為 -2^4，計算為 16 - (-16) = 32 不等於 0。選項 (C) -8 - (-8) = 0，為唯一正解。",
-      "has_image": false,
-      "image_filename": ""
+      "explanation": "(B) 16 - (-16) = 32 不等於 0。(C) -8 - (-8) = 0 為正確答案。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q8",
+      "type": "multiple_choice",
+      "question_text": "8. 若 a < 0 且 |a| > |-3|...",
+      "correct_answer": "A",
+      "user_answer": "A",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q9",
+      "type": "multiple_choice",
+      "question_text": "9. 計算 (-1) + (-2) - (-3) + (-4)... 的結果",
+      "correct_answer": "C",
+      "user_answer": "C",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q10",
+      "type": "multiple_choice",
+      "question_text": "10. 下列敘述何者錯誤？",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
     },
     {
       "id": "p1_q11",
       "type": "multiple_choice",
-      "question_text": "11. 數線上有甲、乙、丙、丁四個點，其中哪一個點所代表的數，其絕對值最大？",
+      "question_text": "11. 如圖，數線上有甲、乙、丙、丁四個點，其中哪一個點所代表的數，其絕對值最大？",
       "correct_answer": "B",
       "user_answer": "B",
       "is_correct": true,
-      "explanation": "絕對值最大即為距離原點 (0) 最遠。嚴格比對字體特徵，最左邊距離原點最遠的點是「乙」。",
+      "explanation": "反序列標籤確認，最左側距離原點最遠的點是「乙」。",
       "has_image": true,
-      "image_filename": "exam_01_q11.jpg"
+      "page_ref": "page_1",
+      "css_crop_style": "object-fit: none; object-position: 0px -400px; width: 100%; height: 150px;"
+    },
+    {
+      "id": "p1_q12",
+      "type": "multiple_choice",
+      "question_text": "12. 下列關於相反數的敘述何者正確？",
+      "correct_answer": "D",
+      "user_answer": "D",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q13",
+      "type": "multiple_choice",
+      "question_text": "13. 五百萬分之一用科學記號表示為...",
+      "correct_answer": "C",
+      "user_answer": "A",
+      "is_correct": false,
+      "explanation": "1 / 5000000 = 1 / (5*10^6) = 0.2 * 10^-6 = 2 * 10^-7。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q14",
+      "type": "multiple_choice",
+      "question_text": "14. 1.5公分在500比例尺下...",
+      "correct_answer": "B",
+      "user_answer": "A",
+      "is_correct": false,
+      "explanation": "1.5 / 500 = 1.5 / (5*10^2) = 0.3 * 10^-2 = 3 * 10^-3 公分。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q15",
+      "type": "multiple_choice",
+      "question_text": "15. 將 4.125 化為最簡分數後...",
+      "correct_answer": "B",
+      "user_answer": "D",
+      "is_correct": false,
+      "explanation": "4.125 = 4 125/1000 = 4 1/8，分母為8，至少平分8等分。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q16",
+      "type": "multiple_choice",
+      "question_text": "16. 計算 (-2)^3 * [3 - (-2)^2] 之值為何？",
+      "correct_answer": "A",
+      "user_answer": "A",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q17",
+      "type": "multiple_choice",
+      "question_text": "17. 若 a 為負整數，則下列哪一個數最大？",
+      "correct_answer": "A",
+      "user_answer": "A",
+      "is_correct": true,
+      "explanation": "盲算相符，計算正確。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q18",
+      "type": "multiple_choice",
+      "question_text": "18. 下列各式何者錯誤？",
+      "correct_answer": "C",
+      "user_answer": "A",
+      "is_correct": false,
+      "explanation": "(C) -(a-b) 展開應為 -a+b，題目誤印為 -a-b。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_4",
+      "type": "fill_in",
+      "question_text": "一、填充題 (4) 計算 -3^2 之值為 ________。",
+      "correct_answer": "-9",
+      "user_answer": "-6",
+      "is_correct": false,
+      "explanation": "-3^2 代表 -(3*3) = -9。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_6",
+      "type": "fill_in",
+      "question_text": "一、填充題 (6) 計算 120 ÷ [(-2) × 3 - 4] 之值為 ________。",
+      "correct_answer": "-12",
+      "user_answer": "-60",
+      "is_correct": false,
+      "explanation": "120 ÷ [-6 - 4] = 120 ÷ (-10) = -12。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_8",
+      "type": "fill_in",
+      "question_text": "一、填充題 (8) 計算 18 ÷ (-3^2) - |8 × (-3) - 11| 之值為 ________。",
+      "correct_answer": "-37",
+      "user_answer": "32",
+      "is_correct": false,
+      "explanation": "18 ÷ (-9) - |-24 - 11| = -2 - 35 = -37。",
+      "has_image": false
     },
     {
       "id": "p2_q2_2",
@@ -32,9 +226,22 @@
       "correct_answer": "2又1/4",
       "user_answer": "2又1/4",
       "is_correct": true,
-      "explanation": "B點落在-2與-3之間，平分4等分，位於第1格，故為 -2又1/4。其相反數為 2又1/4。",
+      "explanation": "經空間座標錨定，B點在-2與-3之間4等分的第1格，實際為 -2又1/4，相反數為 2又1/4。",
       "has_image": true,
-      "image_filename": "exam_01_q2_2.jpg"
+      "page_ref": "page_2",
+      "css_crop_style": "object-fit: none; object-position: 0px -150px; width: 100%; height: 120px;"
+    },
+    {
+      "id": "p2_q2_3",
+      "type": "fill_in",
+      "question_text": "2.(3) A 點與 C 點的距離為 ________。",
+      "correct_answer": "3又2/3",
+      "user_answer": "3又2/3",
+      "is_correct": true,
+      "explanation": "強制去脈絡化隔離，C點精準壓在整數 -1 上，A點為 2又2/3，距離為 3又2/3。",
+      "has_image": true,
+      "page_ref": "page_2",
+      "css_crop_style": "object-fit: none; object-position: 0px -150px; width: 100%; height: 120px;"
     }
   ]
 }
