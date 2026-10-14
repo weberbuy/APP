@@ -6751,37 +6751,68 @@ function removeChatLoading() {
 }
 
 
+let _geminiWorkingModel = (typeof localStorage !== 'undefined' && localStorage.getItem('gemini_preferred_model')) || null;
+
 async function invokeGeminiAPI() {
     const rawKey = localStorage.getItem('gemini_api_key');
     if (!rawKey || !rawKey.trim()) return;
     const apiKey = rawKey.trim();
     appendChatLoading();
-    try {
-        const u = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + encodeURIComponent(apiKey);
-        const response = await fetch(u, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'x-goog-api-key': apiKey
-            },
-            body: JSON.stringify({ contents: aiChatContext })
-        });
-        removeChatLoading();
-        if (response.ok) {
-            const data = await response.json();
-            const aiText = data.candidates[0].content.parts[0].text;
-            aiChatContext.push({ role: "model", parts: [{ text: aiText }] });
-            appendChatMessage('model', aiText);
-        } else {
-            const err = await response.json();
-            appendChatMessage('model', `[API 錯誤] ${err.error?.message || '連線失敗'}`);
-        }
-    } catch (error) {
-        removeChatLoading();
-        appendChatMessage('model', `[網路錯誤] 請檢查連線或 API Key 是否正確。`);
-    }
-}
 
+    // 智能多版本模型候選鏈 (支援 2.5-flash, 2.0-flash, 1.5-flash-latest, 1.5-flash)
+    const candidateModels = [
+        _geminiWorkingModel,
+        'gemini-2.5-flash',
+        'gemini-2.0-flash',
+        'gemini-1.5-flash-latest',
+        'gemini-1.5-flash'
+    ].filter(Boolean);
+    const uniqueCandidates = [...new Set(candidateModels)];
+
+    let lastErrorMsg = '';
+    for (const model of uniqueCandidates) {
+        try {
+            const u = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const response = await fetch(u, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': apiKey
+                },
+                body: JSON.stringify({ contents: aiChatContext })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                aiChatContext.push({ role: "model", parts: [{ text: aiText }] });
+                removeChatLoading();
+                appendChatMessage("model", aiText);
+                _geminiWorkingModel = model;
+                localStorage.setItem('gemini_preferred_model', model);
+                return;
+            } else {
+                const err = await response.json();
+                lastErrorMsg = err.error?.message || `HTTP ${response.status}`;
+                // 若遇 404 (模型版本更迭或未開放)，無縫嘗試下一個候選模型
+                if (response.status === 404 || lastErrorMsg.includes("not found")) {
+                    console.warn(`[Gemini API] 模型 ${model} 回傳 404，自動切換至下一備用模型...`);
+                    continue;
+                } else {
+                    removeChatLoading();
+                    appendChatMessage("model", `[API 錯誤] ${lastErrorMsg}`);
+                    return;
+                }
+            }
+        } catch (error) {
+            lastErrorMsg = "網路連線異常，請檢查網路狀態。";
+            break;
+        }
+    }
+
+    removeChatLoading();
+    appendChatMessage("model", `[API 錯誤] ${lastErrorMsg || "所有候選模型連線失敗，請檢查 API 金鑰與可用權限。"}`);
+}
 
 function sendAiMessage() {
     const inputEl = document.getElementById('aiChatInput');
