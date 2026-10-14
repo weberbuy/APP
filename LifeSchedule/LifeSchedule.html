@@ -271,7 +271,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.0-test (Forteller 吸頂月度財務收支條、自訂被動/主動收支管理、一鍵複製上月、今日專區結算提醒版)</span>
+                    <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.1-test (時間軸待排定區納入逾期未完成重排、Forteller 短跨度遠期接力目標分離防擠壓版)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -4108,9 +4108,37 @@ function renderTimelineMatrix(container) {
                 sortedDates = sortedDates.filter(d => d >= timelineStartDate);
             }
 
-            const undatedGoals = thoughts.filter(t => (!t.targetDate || t.targetDate === '未指定日期') && !t.goalDone);
+            // 【v5.4.1 待排定區升級】：同時納入「未指定日期」以及「早於時間軸起點 (已被下方表格過濾隱藏的逾期項目)」，支援重新拖曳安排
+            const effectiveStart = timelineStartDate || '';
+            const undatedGoals = [];
+            const overdueGoals = [];
+
+            thoughts.forEach(t => {
+                if (t.goalDone) return;
+                const dt = t.targetDate;
+                if (!dt || dt === '未指定日期') {
+                    undatedGoals.push(t);
+                } else if (effectiveStart && dt < effectiveStart) {
+                    overdueGoals.push(t);
+                }
+            });
+
             const undatedSteps = [];
-            thoughts.forEach(t => { if (Array.isArray(t.steps)) { t.steps.forEach(s => { if (!s.stepDate && !s.done) undatedSteps.push({ thought: t, step: s }); }); } });
+            const overdueSteps = [];
+
+            thoughts.forEach(t => {
+                (t.steps || []).forEach(s => {
+                    if (s.done) return;
+                    const dt = s.stepDate;
+                    if (!dt) {
+                        undatedSteps.push({ thought: t, step: s });
+                    } else if (effectiveStart && dt < effectiveStart) {
+                        overdueSteps.push({ thought: t, step: s });
+                    }
+                });
+            });
+
+            const totalReschedulable = undatedGoals.length + overdueGoals.length + undatedSteps.length + overdueSteps.length;
 
             const wrapper = document.createElement('div');
             wrapper.className = "bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4 w-full";
@@ -4174,20 +4202,52 @@ function renderTimelineMatrix(container) {
             let unscheduledHtml = `
                 <div ondragover="handleDragOver(event)" ondrop="handleDrop(event, '__unscheduled__')"
                     class="bg-slate-100/90 p-3.5 rounded-xl border-2 border-dashed border-slate-300 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-800">📌 待排定/未指定日期的目標與步驟 (${undatedGoals.length + undatedSteps.length})</span>
-                        <span class="text-[11px] text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded font-bold">💡 提示：拖拉至下方日期即可完成排程</span>
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-bold text-slate-800">📌 待排定與逾期重新安排事項 (${totalReschedulable})</span>
+                            ${overdueGoals.length + overdueSteps.length > 0 ? `
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200">
+                                    ⚠️ 逾期未完成 ${overdueGoals.length + overdueSteps.length} 項
+                                </span>
+                            ` : ''}
+                            ${undatedGoals.length + undatedSteps.length > 0 ? `
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
+                                    未排定 ${undatedGoals.length + undatedSteps.length} 項
+                                </span>
+                            ` : ''}
+                        </div>
+                        <span class="text-[11px] text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded font-bold">💡 提示：拖拉卡片至下方日期即可完成排程</span>
                     </div>
                     <div class="flex flex-wrap gap-2 pt-1">
             `;
-            if (undatedGoals.length === 0 && undatedSteps.length === 0) {
-                unscheduledHtml += `<span class="text-xs text-slate-400 italic">所有目標與步驟皆已完成日期排程！</span>`;
+            if (totalReschedulable === 0) {
+                unscheduledHtml += `<span class="text-xs text-slate-400 italic">所有目標與步驟皆已完成日期排程且無逾期項目！</span>`;
             } else {
-                undatedGoals.forEach(g => {
-                    unscheduledHtml += `<div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})" class="p-2 bg-amber-100 border border-amber-300 rounded-lg text-amber-950 text-xs font-bold shadow-sm cursor-grab">🎯 [${g.category}] ${g.goal || g.text}</div>`;
+                // 1. 逾期目標 (紅/粉色卡片，標記原定日期)
+                overdueGoals.forEach(g => {
+                    unscheduledHtml += `
+                        <div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})" class="p-2 bg-rose-50 border border-rose-300 rounded-lg text-rose-950 text-xs font-bold shadow-sm cursor-grab flex items-center gap-1.5" title="原定預期：${g.targetDate}，可拖曳至下方日期重新排定">
+                            <span>🎯 [${escapeHtml(g.category || '目標')}] ${escapeHtml(g.goal || g.text)}</span>
+                            <span class="text-[10px] font-mono font-bold bg-rose-200/80 text-rose-800 px-1 py-0.2 rounded shrink-0">⚠️ 逾期 ${g.targetDate.slice(5)}</span>
+                        </div>
+                    `;
                 });
+                // 2. 逾期步驟 (琥珀色卡片，標記原定日期)
+                overdueSteps.forEach(item => {
+                    unscheduledHtml += `
+                        <div draggable="true" ondragstart="handleDragStart(event, 'step', ${item.thought.id}, ${item.step.id})" ondblclick="jumpToStepEdit(${item.thought.id}, ${item.step.id})" class="p-2 bg-amber-50 border border-amber-300 rounded-lg text-amber-950 text-xs font-bold shadow-sm cursor-grab flex items-center gap-1.5" title="原定預期：${item.step.stepDate}，可拖曳至下方日期重新排定">
+                            <span>📋 [${escapeHtml(item.thought.category || '步驟')}] ${escapeHtml(item.step.text)}</span>
+                            <span class="text-[10px] font-mono font-bold bg-amber-200/80 text-amber-900 px-1 py-0.2 rounded shrink-0">⚠️ 逾期 ${item.step.stepDate.slice(5)}</span>
+                        </div>
+                    `;
+                });
+                // 3. 未排定目標
+                undatedGoals.forEach(g => {
+                    unscheduledHtml += `<div draggable="true" ondragstart="handleDragStart(event, 'goal', ${g.id}, null)" ondblclick="jumpToGoalEdit(${g.id})" class="p-2 bg-amber-100 border border-amber-300 rounded-lg text-amber-950 text-xs font-bold shadow-sm cursor-grab">🎯 [${escapeHtml(g.category || '目標')}] ${escapeHtml(g.goal || g.text)}</div>`;
+                });
+                // 4. 未排定步驟
                 undatedSteps.forEach(item => {
-                    unscheduledHtml += `<div draggable="true" ondragstart="handleDragStart(event, 'step', ${item.thought.id}, ${item.step.id})" ondblclick="jumpToStepEdit(${item.thought.id}, ${item.step.id})" class="p-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-xs font-bold shadow-sm cursor-grab">📋 [${item.thought.category}] ${item.step.text}</div>`;
+                    unscheduledHtml += `<div draggable="true" ondragstart="handleDragStart(event, 'step', ${item.thought.id}, ${item.step.id})" ondblclick="jumpToStepEdit(${item.thought.id}, ${item.step.id})" class="p-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-xs font-bold shadow-sm cursor-grab">📋 [${escapeHtml(item.thought.category || '步驟')}] ${escapeHtml(item.step.text)}</div>`;
                 });
             }
             unscheduledHtml += `</div></div>`;
@@ -4764,19 +4824,7 @@ function renderTimelineMatrix(container) {
                 }
             } catch(e) {}
 
-            if (Array.isArray(availableCols) && availableCols.length > 0) {
-                if (availableCols.includes(key)) return key;
-                const firstCol = availableCols[0];
-                const lastCol = availableCols[availableCols.length - 1];
-                const [kY, kM] = key.split('/').map(Number);
-                const [fY, fM] = firstCol.split('/').map(Number);
-                const [lY, lM] = lastCol.split('/').map(Number);
-                const kVal = kY * 12 + kM;
-                const fVal = fY * 12 + fM;
-                const lVal = lY * 12 + lM;
-                if (kVal <= fVal) return firstCol;
-                if (kVal >= lVal) return lastCol;
-            }
+            // 【v5.4.1 解除強制收攏至最後一欄】：回傳精準月份 key (不強塞入 lastCol，杜絕 2027/12 被擠入 2026/11 造成多棒擠壓之 Bug)
             return key;
         }
 
@@ -5223,16 +5271,26 @@ function renderTimelineMatrix(container) {
 
                     <!-- 【v5.3.8 Forteller 目標模式動態欄位計算】：以母卡片里程碑為基準，於對應預期達成月份後緊鄰插入「段落目標」欄位 -->
                     ${(() => {
-                        // 收集目前目標模式可見之所有母卡片中，所有接力里程碑落點之月份
+                        // 收集目前目標模式可見之所有母卡片中，落在可視月份內之接力里程碑落點月份
                         const milestoneMonthsSet = new Set();
+                        let hasFarFutureMilestones = false;
+
+                        const lastVisibleMonth = monthCols[monthCols.length - 1];
+                        const [lvY, lvM] = lastVisibleMonth.split('/').map(Number);
+                        const lastVisibleVal = lvY * 12 + lvM;
+
                         if (fortellerMode === 'goal') {
                             rootThoughts.forEach(root => {
                                 const rootMilestones = getThoughtMilestones(root);
                                 rootMilestones.forEach(m => {
-                                    if (m.targetDate && m.targetDate !== '未指定日期') {
-                                        const mKey = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
-                                        if (mKey && monthCols.includes(mKey)) {
+                                    if (m.targetDate && m.targetDate !== '未指定日期' && m.targetDate.length >= 7) {
+                                        const p = m.targetDate.replace(/\//g, '-').split('-');
+                                        const mVal = parseInt(p[0]) * 12 + parseInt(p[1]);
+                                        const mKey = `${parseInt(p[0])}/${parseInt(p[1])}`;
+                                        if (monthCols.includes(mKey)) {
                                             milestoneMonthsSet.add(mKey);
+                                        } else if (mVal > lastVisibleVal) {
+                                            hasFarFutureMilestones = true;
                                         }
                                     }
                                 });
@@ -5248,10 +5306,14 @@ function renderTimelineMatrix(container) {
                             }
                         });
 
-                        // 防呆：若無任何月份有里程碑，至少於最後一欄提供一個段落目標欄位
-                        if (fortellerMode === 'goal' && !window._fortellerGoalTableCols.some(c => c.type === 'milestone')) {
-                            const lastM = monthCols[monthCols.length - 1];
-                            window._fortellerGoalTableCols.push({ type: 'milestone', afterMonth: lastM, label: '段落目標' });
+                        // 【v5.4.1 遠期接力目標分離】：若有超出當前可視跨度的遠期接力目標，在最右側獨立呈現「🔮 遠期接力目標」欄位
+                        if (fortellerMode === 'goal') {
+                            if (hasFarFutureMilestones) {
+                                window._fortellerGoalTableCols.push({ type: 'future_milestone', label: '🔮 遠期接力目標' });
+                            } else if (!window._fortellerGoalTableCols.some(c => c.type === 'milestone')) {
+                                const lastM = monthCols[monthCols.length - 1];
+                                window._fortellerGoalTableCols.push({ type: 'milestone', afterMonth: lastM, label: '段落目標' });
+                            }
                         }
                         return '';
                     })()}
@@ -5271,6 +5333,12 @@ function renderTimelineMatrix(container) {
                                                     <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
                                                         <div>${col.monthKey}${isCurrent ? ' (當月)' : ''}</div>
                                                         ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(col.monthKey) : ''}
+                                                    </th>
+                                                `;
+                                            } else if (col.type === 'future_milestone') {
+                                                return `
+                                                    <th class="py-2 px-3 font-extrabold bg-purple-50/80 dark:bg-purple-950/50 text-purple-950 dark:text-purple-200 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap text-center w-52 min-w-[180px]">
+                                                        🔮 遠期接力目標
                                                     </th>
                                                 `;
                                             } else {
@@ -5538,6 +5606,62 @@ function renderTimelineMatrix(container) {
                                                                 ${renderFortellerCellContent(items)}
                                                             </td>
                                                         `;
+                                                    } else if (col.type === 'future_milestone') {
+                                                        // 【v5.4.1 遠期接力目標單元格】：展示落在可視月份之後的接力棒次 (真實年份，不再與近期棒次擠在同一個月)
+                                                        if (!row.isFirstInRoot) {
+                                                            return '';
+                                                        }
+                                                        const lastVisibleMonth = monthCols[monthCols.length - 1];
+                                                        const [lvY, lvM] = lastVisibleMonth.split('/').map(Number);
+                                                        const lastVisibleVal = lvY * 12 + lvM;
+
+                                                        const rootMilestones = getThoughtMilestones(root);
+                                                        const futureMilestones = [];
+                                                        rootMilestones.forEach((m, mIdx) => {
+                                                            if (m.targetDate && m.targetDate !== '未指定日期' && m.targetDate.length >= 7) {
+                                                                const p = m.targetDate.replace(/\//g, '-').split('-');
+                                                                const mVal = parseInt(p[0]) * 12 + parseInt(p[1]);
+                                                                if (mVal > lastVisibleVal) {
+                                                                    futureMilestones.push({ milestone: m, stageIndex: mIdx });
+                                                                }
+                                                            }
+                                                        });
+
+                                                        if (futureMilestones.length === 0) {
+                                                            return `<td rowspan="${row.rootRowspan}" class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-middle bg-slate-50/20 dark:bg-slate-850/10 text-center text-slate-300 dark:text-slate-600 font-mono text-xs select-none">·</td>`;
+                                                        }
+
+                                                        return `
+                                                            <td rowspan="${row.rootRowspan}" class="py-2.5 px-3 border-r border-slate-300 dark:border-slate-600 align-middle bg-purple-50/30 dark:bg-purple-950/20 text-slate-800 dark:text-slate-200 min-w-[150px] max-w-[220px] shadow-2xs">
+                                                                <div class="space-y-2">
+                                                                    <div class="font-extrabold text-purple-950 dark:text-purple-200 leading-snug cursor-pointer hover:underline text-xs flex items-center gap-1" onclick="jumpToGoalCard(${root.id})" title="點擊前往母目標卡片：${escapeAttr(root.text)}">
+                                                                        <span class="select-none text-sm">🔮</span>
+                                                                        <span class="break-words font-black">${escapeHtml(root.text)}</span>
+                                                                    </div>
+                                                                    ${futureMilestones.map(({ milestone: m, stageIndex: mIdx }) => {
+                                                                        const stageStyle = getMilestoneStageStyle(mIdx, m.done);
+                                                                        const badgeClass = stageStyle.paletteClass || stageStyle.className;
+                                                                        const isDone = m.done;
+                                                                        return `
+                                                                            <div class="p-2 rounded-xl border font-bold ${badgeClass} shadow-2xs cursor-pointer hover:opacity-95 transition-all text-xs leading-snug flex flex-col gap-1" onclick="jumpToGoalCard(${root.id})" title="點擊跳轉至母目標卡片：${escapeAttr(m.title)}">
+                                                                                <div class="flex items-center justify-between gap-1 text-[10px] font-mono">
+                                                                                    <span class="font-black">${stageStyle.icon} 第 ${mIdx + 1} 棒</span>
+                                                                                    <span class="text-[9px] opacity-90 font-bold bg-white/60 dark:bg-black/30 px-1 py-0.2 rounded">${m.targetDate && m.targetDate !== '未指定日期' ? m.targetDate.slice(0, 7).replace('-', '/') : '未指定'}</span>
+                                                                                </div>
+                                                                                <div class="${isDone ? 'line-through opacity-70 font-normal' : 'font-black text-[12px]'} break-words">
+                                                                                    ${escapeHtml(m.title)}
+                                                                                </div>
+                                                                                ${m.done ? `
+                                                                                    <div class="text-[9px] text-emerald-700 dark:text-emerald-300 font-mono">
+                                                                                        ✓ 已達成 ${m.completedDate ? `(${m.completedDate.slice(5)})` : ''}
+                                                                                    </div>
+                                                                                ` : ''}
+                                                                            </div>
+                                                                        `;
+                                                                    }).join('')}
+                                                                </div>
+                                                            </td>
+                                                        `;
                                                     } else {
                                                         // 【v5.3.8 段落目標單元格】：只放母卡片的目標資訊，且跨 NO. 合併儲存格 (含所有同一母卡片下的子孫步驟)
                                                         if (!row.isFirstInRoot) {
@@ -5545,15 +5669,15 @@ function renderTimelineMatrix(container) {
                                                             return '';
                                                         }
 
-                                                        const isLastCol = (cIdx === goalTableCols.length - 1);
                                                         const matchedMilestones = [];
                                                         const rootMilestones = getThoughtMilestones(root);
                                                         rootMilestones.forEach((m, mIdx) => {
-                                                            const mTargetM = (m.targetDate && m.targetDate !== '未指定日期') 
-                                                                ? getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols)
-                                                                : (isLastCol ? col.afterMonth : null);
-                                                            if (mTargetM === col.afterMonth) {
-                                                                matchedMilestones.push({ milestone: m, stageIndex: mIdx });
+                                                            if (m.targetDate && m.targetDate !== '未指定日期') {
+                                                                const p = m.targetDate.replace(/\//g, '-').split('-');
+                                                                const mKey = `${parseInt(p[0])}/${parseInt(p[1])}`;
+                                                                if (mKey === col.afterMonth) {
+                                                                    matchedMilestones.push({ milestone: m, stageIndex: mIdx });
+                                                                }
                                                             }
                                                         });
 
