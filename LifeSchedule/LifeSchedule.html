@@ -308,7 +308,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.4-test (修復 AI 教練全域作用域、補正端點格式與多模型自動容錯切換)</span>
+<span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.5-test (導入 ListModels 動態探測、v1/v1beta 雙端點相容與 API Key 一鍵連線檢測)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -535,15 +535,19 @@
                 <!-- 新增區塊：Gemini AI 思維教練 API 設定 -->
                 <div class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-700">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                             <span>🤖 Gemini AI 思維教練 (第一性原理)</span>
                         </span>
+                        <button type="button" onclick="testGeminiApiKey()" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 shadow-2xs" title="立即連線 Google 探測此金鑰可用的真實模型清單">
+                            <span>⚡ 檢測金鑰與可用模型</span>
+                        </button>
                     </div>
                     <div class="space-y-2.5">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Google Gemini API Key：</label>
-                            <input type="password" id="geminiApiKeyInput" placeholder="請輸入自 Google AI Studio 取得之 API Key" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white">
-                            <p class="text-[10px] text-slate-400 mt-0.5">💡 金鑰僅儲存於本機瀏覽器，透過端對端直接連線呼叫 API。</p>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Google Gemini API Key：</label>
+                            <input type="password" id="geminiApiKeyInput" placeholder="請輸入自 Google AI Studio 取得之 API Key" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                            <div id="geminiKeyStatusText" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono"></div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">💡 金鑰僅儲存於本機瀏覽器。請至 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-600 underline font-bold">Google AI Studio</a> 建立免付費 API Key。</p>
                         </div>
                     </div>
                 </div>
@@ -6752,6 +6756,87 @@ function removeChatLoading() {
 
 
 let _geminiWorkingModel = (typeof localStorage !== 'undefined' && localStorage.getItem('gemini_preferred_model')) || null;
+let _geminiWorkingVersion = (typeof localStorage !== 'undefined' && localStorage.getItem('gemini_preferred_version')) || 'v1beta';
+
+// 【v5.4.5 核心探測器】：自動向 Google 探測當前金鑰真實可用之模型清單 (支援 v1beta 與 v1 雙端點)
+async function detectAvailableGeminiModel(apiKey) {
+    if (!apiKey) return null;
+    const key = apiKey.trim();
+    const versions = ['v1beta', 'v1'];
+    for (const ver of versions) {
+        try {
+            const url = `https://generativelanguage.googleapis.com/${ver}/models?key=${encodeURIComponent(key)}`;
+            const res = await fetch(url, {
+                headers: { 'x-goog-api-key': key }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.models && Array.isArray(data.models)) {
+                    const usable = data.models
+                        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+                        .map(m => m.name.replace('models/', ''));
+                    if (usable.length > 0) {
+                        // 優先選擇適合對話的 Flash 系列
+                        const preferred = usable.find(m => m.includes('2.5-flash')) ||
+                                          usable.find(m => m.includes('2.0-flash')) ||
+                                          usable.find(m => m.includes('flash') && !m.includes('8b')) ||
+                                          usable[0];
+                        return { model: preferred, version: ver, allUsable: usable };
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn(`[探測 ${ver} 端點異常]`, e);
+        }
+    }
+    return null;
+}
+
+// 【v5.4.5 一鍵檢測按鈕】：於設定視窗即時檢驗 API Key 並彈窗反饋真實模型清單
+async function testGeminiApiKey() {
+    const input = document.getElementById('geminiApiKeyInput');
+    const key = (input ? input.value : localStorage.getItem('gemini_api_key'))?.trim();
+    if (!key) {
+        alert("請先輸入 Google Gemini API Key 再執行檢測！");
+        if (input) input.focus();
+        return;
+    }
+
+    const statusEl = document.getElementById('geminiKeyStatusText');
+    if (statusEl) statusEl.textContent = "⏳ 正在連線 Google 伺服器探測模型清單...";
+
+    try {
+        const detected = await detectAvailableGeminiModel(key);
+        if (detected) {
+            _geminiWorkingModel = detected.model;
+            _geminiWorkingVersion = detected.version;
+            localStorage.setItem('gemini_preferred_model', detected.model);
+            localStorage.setItem('gemini_preferred_version', detected.version);
+            if (statusEl) statusEl.textContent = `✅ 連線成功！已匹配最佳模型：${detected.model} (${detected.version})`;
+            alert(`🎉 連線檢測成功！
+
+你的金鑰可正常使用，Google 伺服器回傳之可用模型清單：
+- ${detected.allUsable.join('\n- ')}
+
+已為你自動匹配最佳模型：${detected.model}`);
+        } else {
+            // 嘗試單獨查詢以取得具體錯誤訊息
+            const errRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+            const errData = await errRes.json().catch(() => ({}));
+            const errMsg = errData.error?.message || `HTTP ${errRes.status}`;
+            if (statusEl) statusEl.textContent = `❌ 連線失敗：${errMsg}`;
+            alert(`❌ 連線檢測失敗：
+${errMsg}
+
+💡 排除指引：
+1. 請確認金鑰是自 Google AI Studio (aistudio.google.com) 取得。
+2. 若使用 Google Cloud 專案金鑰，請確認專案中已「啟用 Generative Language API」。`);
+        }
+    } catch (e) {
+        if (statusEl) statusEl.textContent = `❌ 網路連線錯誤：${e.message}`;
+        alert(`❌ 網路連線異常：${e.message}`);
+    }
+}
 
 async function invokeGeminiAPI() {
     const rawKey = localStorage.getItem('gemini_api_key');
@@ -6759,59 +6844,81 @@ async function invokeGeminiAPI() {
     const apiKey = rawKey.trim();
     appendChatLoading();
 
-    // 智能多版本模型候選鏈 (支援 2.5-flash, 2.0-flash, 1.5-flash-latest, 1.5-flash)
-    const candidateModels = [
-        _geminiWorkingModel,
-        'gemini-2.5-flash',
-        'gemini-2.0-flash',
-        'gemini-1.5-flash-latest',
-        'gemini-1.5-flash'
-    ].filter(Boolean);
-    const uniqueCandidates = [...new Set(candidateModels)];
+    try {
+        // 若尚未快取有效模型，即時發起動態探測
+        if (!_geminiWorkingModel) {
+            const detected = await detectAvailableGeminiModel(apiKey);
+            if (detected) {
+                _geminiWorkingModel = detected.model;
+                _geminiWorkingVersion = detected.version;
+                localStorage.setItem('gemini_preferred_model', detected.model);
+                localStorage.setItem('gemini_preferred_version', detected.version);
+            }
+        }
 
-    let lastErrorMsg = '';
-    for (const model of uniqueCandidates) {
-        try {
-            const u = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-            const response = await fetch(u, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': apiKey
-                },
-                body: JSON.stringify({ contents: aiChatContext })
-            });
+        // 依序排列候選模型
+        const candidateModels = [
+            _geminiWorkingModel,
+            'gemini-2.5-flash',
+            'gemini-2.0-flash',
+            'gemini-1.5-flash-latest',
+            'gemini-1.5-flash',
+            'gemini-2.0-flash-exp'
+        ].filter(Boolean);
+        const uniqueCandidates = [...new Set(candidateModels)];
+        const candidateVersions = [_geminiWorkingVersion, 'v1beta', 'v1'].filter(Boolean);
+        const uniqueVersions = [...new Set(candidateVersions)];
 
-            if (response.ok) {
-                const data = await response.json();
-                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                aiChatContext.push({ role: "model", parts: [{ text: aiText }] });
-                removeChatLoading();
-                appendChatMessage("model", aiText);
-                _geminiWorkingModel = model;
-                localStorage.setItem('gemini_preferred_model', model);
-                return;
-            } else {
-                const err = await response.json();
-                lastErrorMsg = err.error?.message || `HTTP ${response.status}`;
-                // 若遇 404 (模型版本更迭或未開放)，無縫嘗試下一個候選模型
-                if (response.status === 404 || lastErrorMsg.includes("not found")) {
-                    console.warn(`[Gemini API] 模型 ${model} 回傳 404，自動切換至下一備用模型...`);
-                    continue;
-                } else {
-                    removeChatLoading();
-                    appendChatMessage("model", `[API 錯誤] ${lastErrorMsg}`);
-                    return;
+        let lastErrorMsg = '';
+        for (const model of uniqueCandidates) {
+            for (const ver of uniqueVersions) {
+                try {
+                    const u = `https://generativelanguage.googleapis.com/${ver}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+                    const response = await fetch(u, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': apiKey
+                        },
+                        body: JSON.stringify({ contents: aiChatContext })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                        aiChatContext.push({ role: "model", parts: [{ text: aiText }] });
+                        removeChatLoading();
+                        appendChatMessage("model", aiText);
+                        _geminiWorkingModel = model;
+                        _geminiWorkingVersion = ver;
+                        localStorage.setItem('gemini_preferred_model', model);
+                        localStorage.setItem('gemini_preferred_version', ver);
+                        return;
+                    } else {
+                        const err = await response.json().catch(() => ({}));
+                        lastErrorMsg = err.error?.message || `HTTP ${response.status}`;
+                        // 若遇 404 (not found)，無縫切換下一組模型/端點重試
+                        if (response.status === 404 || lastErrorMsg.includes("not found")) {
+                            continue;
+                        } else {
+                            removeChatLoading();
+                            appendChatMessage("model", `[API 錯誤] ${lastErrorMsg}`);
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    lastErrorMsg = "網路連線異常";
+                    break;
                 }
             }
-        } catch (error) {
-            lastErrorMsg = "網路連線異常，請檢查網路狀態。";
-            break;
         }
-    }
 
-    removeChatLoading();
-    appendChatMessage("model", `[API 錯誤] ${lastErrorMsg || "所有候選模型連線失敗，請檢查 API 金鑰與可用權限。"}`);
+        removeChatLoading();
+        appendChatMessage("model", `[API 錯誤] 無法存取任何 Gemini 模型（${lastErrorMsg || '404 Not Found'}）。\n\n💡 建議點擊右上角「⚙️ 設定」內的「⚡ 檢測金鑰與可用模型」進行即時診斷；並請確認金鑰是從 Google AI Studio (aistudio.google.com) 直接建立。`);
+    } catch (e) {
+        removeChatLoading();
+        appendChatMessage("model", `[連線錯誤] ${e.message || '未知的連線異常'}`);
+    }
 }
 
 function sendAiMessage() {
@@ -6866,6 +6973,7 @@ window.openAiCoachModal = openAiCoachModal;
 window.closeAiCoachModal = closeAiCoachModal;
 window.sendAiMessage = sendAiMessage;
 window.convertAiConclusionToStep = convertAiConclusionToStep;
+window.testGeminiApiKey = testGeminiApiKey;
 
 
         function renderFocusMindmapHtml() {
