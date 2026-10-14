@@ -446,27 +446,7 @@
                 </div>
 
                 <!-- 區塊三：樹莓派伺服器連線參數設定 -->
-                <!-- 新增區塊：Gemini AI 思維教練 API 設定 -->
-                <div class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-700">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <span>🤖 Gemini AI 思維教練 (第一性原理)</span>
-                        </span>
-                    </div>
-                    <div class="space-y-2.5">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Google Gemini API Key：</label>
-                            <input type="password" id="geminiApiKeyInput" placeholder="請輸入自 Google AI Studio 取得之 API Key" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white">
-                            <p class="text-[10px] text-slate-400 mt-0.5">💡 金鑰僅儲存於本機瀏覽器，透過端對端直接連線呼叫 API。</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- 區塊三：樹莓派伺服器連線參數設定 -->
-                <div class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-700">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <span>🔌 伺服器連線參數</span>
-                        </span>
+                <div class="space-y-3 pt-1">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <span>🔌 伺服器連線參數</span>
@@ -498,6 +478,22 @@
                         </span>
                         <span class="text-[10px] text-indigo-600 font-bold">高可用雙軌容錯</span>
                     </div>
+                <!-- 新增區塊：Gemini AI 思維教練 API 設定 -->
+                <div class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <span>🤖 Gemini AI 思維教練 (第一性原理)</span>
+                        </span>
+                    </div>
+                    <div class="space-y-2.5">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Google Gemini API Key：</label>
+                            <input type="password" id="geminiApiKeyInput" placeholder="請輸入自 Google AI Studio 取得之 API Key" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white">
+                            <p class="text-[10px] text-slate-400 mt-0.5">💡 金鑰僅儲存於本機瀏覽器，透過端對端直接連線呼叫 API。</p>
+                        </div>
+                    </div>
+                </div>
+
                     <div class="space-y-2.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Google Apps Script 網址 (Web App URL)：</label>
@@ -797,6 +793,8 @@
             </div>
         </div>
 
+        <!-- 主顯示區塊 -->
+
         <!-- 🤖 第一性原理 AI 思考教練彈窗 -->
         <div id="aiCoachModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 hidden">
             <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col h-[85vh] sm:h-[75vh] max-h-[800px] animate-in fade-in zoom-in duration-200">
@@ -831,8 +829,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- 主顯示區塊 -->
 
         <div id="mainContentList" class="space-y-6"></div>
     </div>
@@ -1309,20 +1305,6 @@ function openPiSettingsModal() {
     if (modal) modal.classList.remove('hidden');
 }
 
-    const modal = document.getElementById('piSettingsModal');
-    const urlInput = document.getElementById('piServerUrlInput');
-    const keyInput = document.getElementById('piApiKeyInput');
-    const accInput = document.getElementById('piAccountInput');
-    if (urlInput) urlInput.value = localStorage.getItem('pi_server_url') || '';
-    if (keyInput) keyInput.value = localStorage.getItem('pi_api_key') || '';
-    if (accInput) accInput.value = localStorage.getItem('pi_account') || '';
-    const gasUrlInput = document.getElementById('gasSyncUrlInput');
-    const gasKeyInput = document.getElementById('gasApiKeyInput');
-    if (gasUrlInput) gasUrlInput.value = localStorage.getItem('gas_sync_url') || '';
-    if (gasKeyInput) gasKeyInput.value = localStorage.getItem('gas_api_key') || '';
-    if (modal) modal.classList.remove('hidden');
-}
-
 function closePiSettingsModal() {
 
     const modal = document.getElementById('piSettingsModal');
@@ -1468,9 +1450,6 @@ async function savePiSettings() {
     localStorage.setItem('gas_api_key', newGasKey);
     const geminiKeyInput = document.getElementById('geminiApiKeyInput');
     if (geminiKeyInput) localStorage.setItem('gemini_api_key', geminiKeyInput.value.trim());
-    closePiSettingsModal();
-    localStorage.setItem('gas_sync_url', newGasUrl);
-    localStorage.setItem('gas_api_key', newGasKey);
     closePiSettingsModal();
     if (oldAcc !== newAcc) {
         lastSyncedFileName = '';
@@ -6049,6 +6028,159 @@ function renderTimelineMatrix(container) {
         });
 
         function jumpToCardsViewWithBacklog() {
+// ============================================================
+// 🤖 第一性原理 AI 思維教練 (Gemini API Integration)
+// ============================================================
+let currentAiCoachThoughtId = null;
+let aiChatContext = [];
+
+function openAiCoachModal(thoughtId) {
+    const geminiKey = localStorage.getItem('gemini_api_key');
+    if (!geminiKey) {
+        alert("請先在「⚙️ 設定 / 資料管理」中設定 Google Gemini API Key！");
+        openPiSettingsModal();
+        return;
+    }
+    const t = thoughts.find(x => x.id === thoughtId);
+    if (!t) return;
+    
+    currentAiCoachThoughtId = thoughtId;
+    const titleEl = document.getElementById('aiCoachTargetTitle');
+    if (titleEl) titleEl.textContent = `目標：${t.goal || t.text}`;
+    
+    aiChatContext = [
+        {
+            role: "user",
+            parts: [{ text: `你現在是一位精通「第一性原理 (First Principles)」的思維教練。我的目標是「${t.goal || t.text}」，專案描述是「${t.detail || '無'}」。
+請嚴格遵守以下規則：
+1. 每次只問「一個」銳利的問題。
+2. 不斷質疑我的假設，剝除表象，逼出物理或現實層面的「基本事實 (Basic Truth)」。
+3. 語氣要像一個沒有情緒、不受既有框架限制的第三方拷問者，直接指出盲點。
+4. 當你認為已經逼出基本事實後，請引導我得出一個立即可執行的具體小行動 (Action Item)。
+現在，請先以一句簡短有力的開場白，詢問我目前在這個目標上遇到的最大阻礙或「理所當然」的假設是什麼。` }]
+        }
+    ];
+
+    const historyContainer = document.getElementById('aiChatHistory');
+    if (historyContainer) historyContainer.innerHTML = '';
+    const inputEl = document.getElementById('aiChatInput');
+    if (inputEl) inputEl.value = '';
+
+    const modal = document.getElementById('aiCoachModal');
+    if (modal) modal.classList.remove('hidden');
+
+    invokeGeminiAPI();
+}
+
+function closeAiCoachModal() {
+    const modal = document.getElementById('aiCoachModal');
+    if (modal) modal.classList.add('hidden');
+    currentAiCoachThoughtId = null;
+    aiChatContext = [];
+}
+
+function appendChatMessage(role, text) {
+    const historyContainer = document.getElementById('aiChatHistory');
+    if (!historyContainer) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+    const bubble = document.createElement('div');
+    bubble.className = `max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed shadow-sm ${role === 'user' ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-tl-sm'}`;
+    bubble.textContent = text;
+    wrapper.appendChild(bubble);
+    historyContainer.appendChild(wrapper);
+    historyContainer.scrollTop = historyContainer.scrollHeight;
+}
+
+function appendChatLoading() {
+    const historyContainer = document.getElementById('aiChatHistory');
+    if (!historyContainer) return;
+    const wrapper = document.createElement('div');
+    wrapper.id = 'aiChatLoading';
+    wrapper.className = 'flex justify-start';
+    wrapper.innerHTML = `<div class="bg-slate-100 dark:bg-slate-700 text-slate-500 px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-slate-200 dark:border-slate-600 text-xs font-bold animate-pulse">教練思考中...</div>`;
+    historyContainer.appendChild(wrapper);
+    historyContainer.scrollTop = historyContainer.scrollHeight;
+}
+
+function removeChatLoading() {
+    const loading = document.getElementById('aiChatLoading');
+    if (loading) loading.remove();
+}
+
+async function invokeGeminiAPI() {
+    const apiKey = localStorage.getItem('gemini_api_key');
+    if (!apiKey) return;
+    appendChatLoading();
+    try {
+        const u = atob("aHR0cHM6Ly9nZW5lcmF0aXZlbGFuZ3VhZ2UuZ29vZ2xlYXBpcy5jb20vdjFiZXRhL21vZGVscy9nZW1pbmktMS41LWZsYXNoOmdlbmVyYXRlQ29udGVudD9rZXk=") + apiKey;
+        const response = await fetch(u, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: aiChatContext })
+        });
+        removeChatLoading();
+        if (response.ok) {
+            const data = await response.json();
+            const aiText = data.candidates[0].content.parts[0].text;
+            aiChatContext.push({ role: "model", parts: [{ text: aiText }] });
+            appendChatMessage('model', aiText);
+        } else {
+            const err = await response.json();
+            appendChatMessage('model', `[API 錯誤] ${err.error?.message || '連線失敗'}`);
+        }
+    } catch (error) {
+        removeChatLoading();
+        appendChatMessage('model', `[網路錯誤] 請檢查連線或 API Key 是否正確。`);
+    }
+}
+
+function sendAiMessage() {
+    const inputEl = document.getElementById('aiChatInput');
+    const text = inputEl.value.trim();
+    if (!text) return;
+    appendChatMessage('user', text);
+    aiChatContext.push({ role: "user", parts: [{ text: text }] });
+    inputEl.value = '';
+    invokeGeminiAPI();
+}
+
+function convertAiConclusionToStep() {
+    if (!currentAiCoachThoughtId || aiChatContext.length < 3) {
+        alert("請先與教練進行討論，得出具體結論後再轉換。");
+        return;
+    }
+    let lastAction = "";
+    for (let i = aiChatContext.length - 1; i >= 0; i--) {
+        if (aiChatContext[i].role === 'model') {
+            lastAction = aiChatContext[i].parts[0].text;
+            break;
+        }
+    }
+    const suggestedText = prompt("請微調教練建議的下一步行動，這將直接成為此卡片的新步驟：", lastAction.substring(0, 100));
+    if (suggestedText && suggestedText.trim()) {
+        const t = thoughts.find(x => x.id === currentAiCoachThoughtId);
+        if (t) {
+            if (!Array.isArray(t.steps)) t.steps = [];
+            t.steps.push({
+                id: Date.now(),
+                text: suggestedText.trim(),
+                stepDate: todayStr,
+                stepTime: "0.5小時",
+                stepTimeSlot: "全天",
+                recurrence: "none",
+                milestoneId: null,
+                done: false
+            });
+            saveData();
+            closeAiCoachModal();
+            render();
+            showToast("⚡ 思考突破！新行動步驟已成功加入卡片！", "success");
+            setTimeout(() => jumpToGoalCard(currentAiCoachThoughtId), 300);
+        }
+    }
+}
+
             activeCategory = '全部'; // 自動切換至「全部」領域分頁，確保所有冰存目標立即可見
             recordNavigationReturnPoint();
             showBacklogCards = true;
@@ -6923,13 +7055,10 @@ const card = document.createElement('div');
                             </div>
                             <div class="ml-0 sm:ml-10 space-y-2 mt-2">
                                 ${thought.detail ? `<p class="text-xs text-slate-600 bg-white/80 p-2.5 rounded-xl whitespace-pre-wrap leading-relaxed border border-slate-200/60">📝 ${escapeHtml(thought.detail)}</p>` : ''}
-                                
                                 <button type="button" onclick="openAiCoachModal(${thought.id})" class="w-full text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-2 rounded-xl transition-all cursor-pointer shadow-2xs flex items-center justify-center gap-1.5 active:scale-[0.98]">
                                     <span class="text-sm">🤖</span>
                                     <span>卡關了？呼叫第一性原理 AI 教練帶你拆解</span>
                                 </button>
-
-                                <div class="flex flex-wrap gap-2 text-xs">
                                 <div class="flex flex-wrap gap-2 text-xs">
                                     <!-- 【v5.0.0 階段接力目標鏈】：單卡多階段生命週期管理 -->
                                 <div class="space-y-1.5 bg-slate-50/70 dark:bg-slate-750/50 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700">
@@ -7151,180 +7280,7 @@ const card = document.createElement('div');
         });
         
 
-// ============================================================
-// 🤖 第一性原理 AI 思維教練 (Gemini API Integration)
-// ============================================================
-let currentAiCoachThoughtId = null;
-let aiChatContext = [];
-
-function openAiCoachModal(thoughtId) {
-    const geminiKey = localStorage.getItem('gemini_api_key');
-    if (!geminiKey) {
-        alert("請先在「⚙️ 設定 / 資料管理」中設定 Google Gemini API Key！");
-        openPiSettingsModal();
-        return;
-    }
-    const t = thoughts.find(x => x.id === thoughtId);
-    if (!t) return;
-    
-    currentAiCoachThoughtId = thoughtId;
-    const titleEl = document.getElementById('aiCoachTargetTitle');
-    if (titleEl) titleEl.textContent = `目標：${t.goal || t.text}`;
-    
-    // 初始化對話上下文與 System Prompt
-    aiChatContext = [
-        {
-            role: "user",
-            parts: [{ text: `你現在是一位精通「第一性原理 (First Principles)」的思維教練。我的目標是「${t.goal || t.text}」，專案描述是「${t.detail || '無'}」。
-請嚴格遵守以下規則：
-1. 每次只問「一個」銳利的問題。
-2. 不斷質疑我的假設，剝除表象，逼出物理或現實層面的「基本事實 (Basic Truth)」。
-3. 語氣要像一個沒有情緒、不受既有框架限制的第三方拷問者，直接指出盲點。
-4. 當你認為已經逼出基本事實後，請引導我得出一個立即可執行的具體小行動 (Action Item)。
-現在，請先以一句簡短有力的開場白，詢問我目前在這個目標上遇到的最大阻礙或「理所當然」的假設是什麼。` }]
-        }
-    ];
-
-    const historyContainer = document.getElementById('aiChatHistory');
-    if (historyContainer) historyContainer.innerHTML = '';
-    const inputEl = document.getElementById('aiChatInput');
-    if (inputEl) inputEl.value = '';
-
-    const modal = document.getElementById('aiCoachModal');
-    if (modal) modal.classList.remove('hidden');
-
-    // 觸發初始開場白
-    invokeGeminiAPI();
-}
-
-function closeAiCoachModal() {
-    const modal = document.getElementById('aiCoachModal');
-    if (modal) modal.classList.add('hidden');
-    currentAiCoachThoughtId = null;
-    aiChatContext = [];
-}
-
-function appendChatMessage(role, text) {
-    const historyContainer = document.getElementById('aiChatHistory');
-    if (!historyContainer) return;
-    
-    const wrapper = document.createElement('div');
-    wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
-    
-    const bubble = document.createElement('div');
-    bubble.className = `max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed shadow-sm ${
-        role === 'user' 
-            ? 'bg-indigo-600 text-white rounded-tr-sm' 
-            : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-tl-sm'
-    }`;
-    bubble.textContent = text;
-    
-    wrapper.appendChild(bubble);
-    historyContainer.appendChild(wrapper);
-    historyContainer.scrollTop = historyContainer.scrollHeight;
-}
-
-function appendChatLoading() {
-    const historyContainer = document.getElementById('aiChatHistory');
-    if (!historyContainer) return;
-    const wrapper = document.createElement('div');
-    wrapper.id = 'aiChatLoading';
-    wrapper.className = 'flex justify-start';
-    wrapper.innerHTML = `<div class="bg-slate-100 dark:bg-slate-700 text-slate-500 px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-slate-200 dark:border-slate-600 text-xs font-bold animate-pulse">教練思考中...</div>`;
-    historyContainer.appendChild(wrapper);
-    historyContainer.scrollTop = historyContainer.scrollHeight;
-}
-
-function removeChatLoading() {
-    const loading = document.getElementById('aiChatLoading');
-    if (loading) loading.remove();
-}
-
-async function invokeGeminiAPI() {
-    const apiKey = localStorage.getItem('gemini_api_key');
-    if (!apiKey) return;
-    
-    appendChatLoading();
-    
-    try {
-        const u = atob("aHR0cHM6Ly9nZW5lcmF0aXZlbGFuZ3VhZ2UuZ29vZ2xlYXBpcy5jb20vdjFiZXRhL21vZGVscy9nZW1pbmktMS41LWZsYXNoOmdlbmVyYXRlQ29udGVudD9rZXk9") + apiKey;
-        const response = await fetch(u, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: aiChatContext })
-        });
-        
-        removeChatLoading();
-        
-        if (response.ok) {
-            const data = await response.json();
-            const aiText = data.candidates[0].content.parts[0].text;
-            
-            aiChatContext.push({ role: "model", parts: [{ text: aiText }] });
-            appendChatMessage('model', aiText);
-        } else {
-            const err = await response.json();
-            appendChatMessage('model', `[API 錯誤] ${err.error?.message || '連線失敗'}`);
-        }
-    } catch (error) {
-        removeChatLoading();
-        appendChatMessage('model', `[網路錯誤] 請檢查連線或 API Key 是否正確。`);
-    }
-}
-
-function sendAiMessage() {
-    const inputEl = document.getElementById('aiChatInput');
-    const text = inputEl.value.trim();
-    if (!text) return;
-    
-    appendChatMessage('user', text);
-    aiChatContext.push({ role: "user", parts: [{ text: text }] });
-    inputEl.value = '';
-    
-    invokeGeminiAPI();
-}
-
-function convertAiConclusionToStep() {
-    if (!currentAiCoachThoughtId || aiChatContext.length < 3) {
-        alert("請先與教練進行討論，得出具體結論後再轉換。");
-        return;
-    }
-    
-    // 萃取最後一次 AI 或 User 提到的行動作為預設文字
-    let lastAction = "";
-    for (let i = aiChatContext.length - 1; i >= 0; i--) {
-        if (aiChatContext[i].role === 'model') {
-            lastAction = aiChatContext[i].parts[0].text;
-            break;
-        }
-    }
-    
-    const suggestedText = prompt("請微調教練建議的下一步行動，這將直接成為此卡片的新步驟：", lastAction.substring(0, 100));
-    if (suggestedText && suggestedText.trim()) {
-        const t = thoughts.find(x => x.id === currentAiCoachThoughtId);
-        if (t) {
-            if (!Array.isArray(t.steps)) t.steps = [];
-            t.steps.push({
-                id: Date.now(),
-                text: suggestedText.trim(),
-                stepDate: todayStr,
-                stepTime: "0.5小時",
-                stepTimeSlot: "全天",
-                recurrence: "none",
-                milestoneId: null,
-                done: false
-            });
-            saveData();
-            closeAiCoachModal();
-            render();
-            showToast("⚡ 思考突破！新行動步驟已成功加入卡片！", "success");
-            setTimeout(() => jumpToGoalCard(currentAiCoachThoughtId), 300);
-        }
-    }
-}
-
 function render() {
-            updateCategoryQuickSelectors();
             updateCategoryQuickSelectors();
     syncLinkedData();
     updateContainerWidth();
