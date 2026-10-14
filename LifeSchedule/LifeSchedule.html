@@ -6752,14 +6752,18 @@ function removeChatLoading() {
 
 
 async function invokeGeminiAPI() {
-    const apiKey = localStorage.getItem('gemini_api_key');
-    if (!apiKey) return;
+    const rawKey = localStorage.getItem('gemini_api_key');
+    if (!rawKey || !rawKey.trim()) return;
+    const apiKey = rawKey.trim();
     appendChatLoading();
     try {
-        const u = atob("aHR0cHM6Ly9nZW5lcmF0aXZlbGFuZ3VhZ2UuZ29vZ2xlYXBpcy5jb20vdjFiZXRhL21vZGVscy9nZW1pbmktMS41LWZsYXNoOmdlbmVyYXRlQ29udGVudD9rZXk=") + apiKey;
+        const u = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + encodeURIComponent(apiKey);
         const response = await fetch(u, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-goog-api-key': apiKey
+            },
             body: JSON.stringify({ contents: aiChatContext })
         });
         removeChatLoading();
