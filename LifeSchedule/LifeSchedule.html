@@ -308,7 +308,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.5-test (導入 ListModels 動態探測、v1/v1beta 雙端點相容與 API Key 一鍵連線檢測)</span>
+<span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.4.6-test (支援 Gemini 3.1 最新模型、模型自選下拉選單與檢測清單一鍵複製)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -548,6 +548,24 @@
                             <input type="password" id="geminiApiKeyInput" placeholder="請輸入自 Google AI Studio 取得之 API Key" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                             <div id="geminiKeyStatusText" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono"></div>
                             <p class="text-[10px] text-slate-400 mt-0.5">💡 金鑰僅儲存於本機瀏覽器。請至 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-600 underline font-bold">Google AI Studio</a> 建立免付費 API Key。</p>
+                        </div>
+                        <!-- 【v5.4.6 模型自選與檢測清單可複製區塊】 -->
+                        <div id="geminiModelConfigBlock" class="hidden space-y-2 bg-slate-100/70 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <div>
+                                <label class="block text-xs font-bold text-indigo-900 dark:text-indigo-300 mb-1">🎯 選用 AI 模型：</label>
+                                <select id="geminiModelSelect" onchange="onGeminiModelSelectChange(this.value)" class="w-full px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer">
+                                    <option value="">(尚未探測，請點擊上方檢測按鈕)</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">📋 Google 回傳之完整可用模型清單：</span>
+                                    <button type="button" onclick="copyGeminiDetectedModels()" class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer">
+                                        <span>📋 複製模型清單</span>
+                                    </button>
+                                </div>
+                                <textarea id="geminiDetectedModelsText" rows="3" readonly placeholder="點擊檢測按鈕後，此處將顯示可選取的完整模型名稱清單..." class="w-full p-2 text-[10px] font-mono border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 select-all"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1440,6 +1458,15 @@ function openPiSettingsModal() {
     if (gasKeyInput) gasKeyInput.value = localStorage.getItem('gas_api_key') || '';
     const geminiKeyInput = document.getElementById('geminiApiKeyInput');
     if (geminiKeyInput) geminiKeyInput.value = localStorage.getItem('gemini_api_key') || '';
+    const cachedModelsRaw = localStorage.getItem('gemini_cached_models');
+    if (cachedModelsRaw) {
+        try {
+            const arr = JSON.parse(cachedModelsRaw);
+            if (Array.isArray(arr) && arr.length > 0) {
+                updateGeminiModelUI(arr, localStorage.getItem('gemini_preferred_model') || arr[0]);
+            }
+        } catch (e) {}
+    }
     if (modal) modal.classList.remove('hidden');
 }
 
@@ -6757,8 +6784,20 @@ function removeChatLoading() {
 
 let _geminiWorkingModel = (typeof localStorage !== 'undefined' && localStorage.getItem('gemini_preferred_model')) || null;
 let _geminiWorkingVersion = (typeof localStorage !== 'undefined' && localStorage.getItem('gemini_preferred_version')) || 'v1beta';
+let _geminiCachedUsableModels = [];
 
-// 【v5.4.5 核心探測器】：自動向 Google 探測當前金鑰真實可用之模型清單 (支援 v1beta 與 v1 雙端點)
+// 【v5.4.6 模型優先匹配演算法】：優先選取最新 Gemini 3 系列 (如 3.1-pro, 3-flash)，再到 2.5/2.0
+function pickBestGeminiModel(models) {
+    if (!models || models.length === 0) return null;
+    return models.find(m => m.match(/gemini-3.*flash/i)) ||
+           models.find(m => m.match(/gemini-3/i)) ||
+           models.find(m => m.match(/gemini-2.*flash/i)) ||
+           models.find(m => m.match(/gemini-2/i)) ||
+           models.find(m => m.includes('flash')) ||
+           models[0];
+}
+
+// 【v5.4.6 核心探測器】：自動向 Google 探測當前金鑰真實可用之模型清單 (支援 v1beta 與 v1 雙端點)
 async function detectAvailableGeminiModel(apiKey) {
     if (!apiKey) return null;
     const key = apiKey.trim();
@@ -6776,11 +6815,7 @@ async function detectAvailableGeminiModel(apiKey) {
                         .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
                         .map(m => m.name.replace('models/', ''));
                     if (usable.length > 0) {
-                        // 優先選擇適合對話的 Flash 系列
-                        const preferred = usable.find(m => m.includes('2.5-flash')) ||
-                                          usable.find(m => m.includes('2.0-flash')) ||
-                                          usable.find(m => m.includes('flash') && !m.includes('8b')) ||
-                                          usable[0];
+                        const preferred = pickBestGeminiModel(usable);
                         return { model: preferred, version: ver, allUsable: usable };
                     }
                 }
@@ -6792,7 +6827,59 @@ async function detectAvailableGeminiModel(apiKey) {
     return null;
 }
 
-// 【v5.4.5 一鍵檢測按鈕】：於設定視窗即時檢驗 API Key 並彈窗反饋真實模型清單
+// 【v5.4.6 UI 狀態同步】：更新設定面板中的模型選單與文字框
+function updateGeminiModelUI(models, selectedModel) {
+    const configBlock = document.getElementById('geminiModelConfigBlock');
+    const selectEl = document.getElementById('geminiModelSelect');
+    const textEl = document.getElementById('geminiDetectedModelsText');
+
+    if (configBlock) configBlock.classList.remove('hidden');
+    if (textEl && Array.isArray(models)) {
+        textEl.value = models.join('\n');
+    }
+
+    if (selectEl && Array.isArray(models) && models.length > 0) {
+        selectEl.innerHTML = '';
+        models.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = m + (m === selectedModel ? ' (推薦/預設)' : '');
+            if (m === selectedModel) opt.selected = true;
+            selectEl.appendChild(opt);
+        });
+    }
+}
+
+function onGeminiModelSelectChange(val) {
+    if (!val) return;
+    _geminiWorkingModel = val;
+    localStorage.setItem('gemini_preferred_model', val);
+    const statusEl = document.getElementById('geminiKeyStatusText');
+    if (statusEl) statusEl.textContent = `🎯 已選用模型：${val}`;
+    showToast(`🎯 已套用模型：${val}`, 'success');
+}
+
+function copyGeminiDetectedModels() {
+    const textEl = document.getElementById('geminiDetectedModelsText');
+    if (!textEl || !textEl.value) {
+        showToast('尚未有可複製的模型清單，請先點擊檢測按鈕！', 'warning');
+        return;
+    }
+    textEl.select();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textEl.value).then(() => {
+            showToast('📋 已成功複製可用模型清單至剪貼簿！', 'success');
+        }).catch(() => {
+            document.execCommand('copy');
+            showToast('📋 已複製可用模型清單！', 'success');
+        });
+    } else {
+        document.execCommand('copy');
+        showToast('📋 已複製可用模型清單！', 'success');
+    }
+}
+
+// 【v5.4.6 一鍵檢測按鈕】：於設定視窗即時檢驗 API Key 並填入自選下拉選單與可複製文字框
 async function testGeminiApiKey() {
     const input = document.getElementById('geminiApiKeyInput');
     const key = (input ? input.value : localStorage.getItem('gemini_api_key'))?.trim();
@@ -6810,27 +6897,22 @@ async function testGeminiApiKey() {
         if (detected) {
             _geminiWorkingModel = detected.model;
             _geminiWorkingVersion = detected.version;
+            _geminiCachedUsableModels = detected.allUsable;
             localStorage.setItem('gemini_preferred_model', detected.model);
             localStorage.setItem('gemini_preferred_version', detected.version);
+            localStorage.setItem('gemini_cached_models', JSON.stringify(detected.allUsable));
+
+            updateGeminiModelUI(detected.allUsable, detected.model);
+
             if (statusEl) statusEl.textContent = `✅ 連線成功！已匹配最佳模型：${detected.model} (${detected.version})`;
-            alert(`🎉 連線檢測成功！
-
-你的金鑰可正常使用，Google 伺服器回傳之可用模型清單：
-- ${detected.allUsable.join('\n- ')}
-
-已為你自動匹配最佳模型：${detected.model}`);
+            showToast(`🎉 檢測成功！已匹配最新模型：${detected.model}`, 'success');
         } else {
             // 嘗試單獨查詢以取得具體錯誤訊息
             const errRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
             const errData = await errRes.json().catch(() => ({}));
             const errMsg = errData.error?.message || `HTTP ${errRes.status}`;
             if (statusEl) statusEl.textContent = `❌ 連線失敗：${errMsg}`;
-            alert(`❌ 連線檢測失敗：
-${errMsg}
-
-💡 排除指引：
-1. 請確認金鑰是自 Google AI Studio (aistudio.google.com) 取得。
-2. 若使用 Google Cloud 專案金鑰，請確認專案中已「啟用 Generative Language API」。`);
+            alert(`❌ 連線檢測失敗：\n${errMsg}\n\n💡 排除指引：\n1. 請確認金鑰是自 Google AI Studio (aistudio.google.com) 取得。\n2. 若使用 Google Cloud 專案金鑰，請確認專案中已「啟用 Generative Language API」。`);
         }
     } catch (e) {
         if (statusEl) statusEl.textContent = `❌ 網路連線錯誤：${e.message}`;
@@ -6845,29 +6927,39 @@ async function invokeGeminiAPI() {
     appendChatLoading();
 
     try {
-        // 若尚未快取有效模型，即時發起動態探測
-        if (!_geminiWorkingModel) {
+        // 第一步：若尚未探測或快取模型，先向 Google 動態探測
+        let candidateList = [];
+        if (_geminiWorkingModel) {
+            candidateList.push(_geminiWorkingModel);
+        }
+
+        // 若有快取的可用模型清單，全數納入備援候選
+        const cachedRaw = localStorage.getItem('gemini_cached_models');
+        if (cachedRaw) {
+            try {
+                const arr = JSON.parse(cachedRaw);
+                if (Array.isArray(arr)) candidateList.push(...arr);
+            } catch (e) {}
+        }
+
+        // 若依然沒有模型，動態發起線上探測
+        if (candidateList.length === 0) {
             const detected = await detectAvailableGeminiModel(apiKey);
             if (detected) {
                 _geminiWorkingModel = detected.model;
                 _geminiWorkingVersion = detected.version;
                 localStorage.setItem('gemini_preferred_model', detected.model);
                 localStorage.setItem('gemini_preferred_version', detected.version);
+                localStorage.setItem('gemini_cached_models', JSON.stringify(detected.allUsable));
+                candidateList = detected.allUsable;
             }
         }
 
-        // 依序排列候選模型
-        const candidateModels = [
-            _geminiWorkingModel,
-            'gemini-2.5-flash',
-            'gemini-2.0-flash',
-            'gemini-1.5-flash-latest',
-            'gemini-1.5-flash',
-            'gemini-2.0-flash-exp'
-        ].filter(Boolean);
-        const uniqueCandidates = [...new Set(candidateModels)];
-        const candidateVersions = [_geminiWorkingVersion, 'v1beta', 'v1'].filter(Boolean);
-        const uniqueVersions = [...new Set(candidateVersions)];
+        // 最後加上常見兜底候選
+        candidateList.push('gemini-3.1-pro', 'gemini-3-flash', 'gemini-2.5-flash', 'gemini-2.0-flash');
+        const uniqueCandidates = [...new Set(candidateList.filter(Boolean))];
+        const versions = [_geminiWorkingVersion, 'v1beta', 'v1'].filter(Boolean);
+        const uniqueVersions = [...new Set(versions)];
 
         let lastErrorMsg = '';
         for (const model of uniqueCandidates) {
@@ -6914,7 +7006,7 @@ async function invokeGeminiAPI() {
         }
 
         removeChatLoading();
-        appendChatMessage("model", `[API 錯誤] 無法存取任何 Gemini 模型（${lastErrorMsg || '404 Not Found'}）。\n\n💡 建議點擊右上角「⚙️ 設定」內的「⚡ 檢測金鑰與可用模型」進行即時診斷；並請確認金鑰是從 Google AI Studio (aistudio.google.com) 直接建立。`);
+        appendChatMessage("model", `[API 錯誤] 無法存取所選 Gemini 模型（${lastErrorMsg || '404 Not Found'}）。\n\n💡 建議至右上角「⚙️ 設定」點擊「⚡ 檢測金鑰與可用模型」，系統將直接列出你金鑰可用的完整模型清單並提供一鍵複製與選取。`);
     } catch (e) {
         removeChatLoading();
         appendChatMessage("model", `[連線錯誤] ${e.message || '未知的連線異常'}`);
@@ -6974,6 +7066,8 @@ window.closeAiCoachModal = closeAiCoachModal;
 window.sendAiMessage = sendAiMessage;
 window.convertAiConclusionToStep = convertAiConclusionToStep;
 window.testGeminiApiKey = testGeminiApiKey;
+window.copyGeminiDetectedModels = copyGeminiDetectedModels;
+window.onGeminiModelSelectChange = onGeminiModelSelectChange;
 
 
         function renderFocusMindmapHtml() {
