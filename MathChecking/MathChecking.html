@@ -3,12 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathChecking 錯題本</title>
+    <title>MathChecking 題庫系統 v1.0.1</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; max-width: 800px; margin: auto; }
         .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .question-title { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 10px; }
-        .q-image { max-width: 100%; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px; }
+        
+        /* 方案 B：CSS 視窗裁剪容器 */
+        .image-crop-container {
+            width: 100%;
+            height: 140px; /* 視窗高度 */
+            overflow: hidden;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            background: #fafafa;
+        }
+        .crop-img {
+            width: 100%;
+        }
+
         .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; color: white; margin-bottom: 10px;}
         .badge-wrong { background-color: #e74c3c; }
         .badge-correct { background-color: #2ecc71; }
@@ -24,58 +38,62 @@
     <div id="quiz-container"></div>
 
     <script>
-        // 1. 讀取 JSON 檔案 (請確認 data/exam_01.json 路徑正確)
-        fetch('data/exam_01.json')
+        let examData = {};
+
+        // 1. 讀取完整 JSON 檔案 (對應 data/exam_01.json)
+        fetch('../data/exam_01.json')
             .then(response => response.json())
             .then(data => {
+                examData = data;
                 document.getElementById('exam-title').innerText = `${data.exam_name} (${data.scope})`;
-                renderQuestions(data.questions);
+                renderQuestions(data.questions, data.source_images);
             })
             .catch(error => console.error('Error loading JSON:', error));
 
-        // 2. 渲染題目
-        function renderQuestions(questions) {
+        // 2. 渲染題目與套用 CSS 裁剪檢視器
+        function renderQuestions(questions, sourceImages) {
             const container = document.getElementById('quiz-container');
             
             questions.forEach(q => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 
-                // 標籤 (對或錯)
                 const badgeClass = q.is_correct ? 'badge-correct' : 'badge-wrong';
                 const badgeText = q.is_correct ? '答對' : '答錯需複習';
                 
-                // 處理圖形
-                // 原本是： const imgHtml = q.has_image ? `<img src="../data/picture/${q.image_filename}" class="q-image" alt="題目附圖">` : '';
-                // 請修改為：
-                const imgHtml = q.has_image ? `<img src="data/picture/${q.image_filename}" class="q-image" alt="題目附圖">` : '';
+                // CSS 視窗顯示大圖中的特定區域
+                let imgHtml = '';
+                if (q.has_image && q.page_ref && sourceImages[q.page_ref]) {
+                    // 因為網頁在 test/ 資料夾內，圖片路徑需向上返回上一層再進入 data/picture
+                    const imgSrc = '../' + sourceImages[q.page_ref];
+                    imgHtml = `
+                        <div class="image-crop-container">
+                            <img src="${imgSrc}" class="crop-img" style="${q.css_crop_style}" alt="題目附圖檢視">
+                        </div>
+                    `;
+                }
 
-                // 卡片 HTML 結構
                 card.innerHTML = `
                     <span class="status-badge ${badgeClass}">${badgeText}</span>
                     <div class="question-title">${q.question_text}</div>
                     ${imgHtml}
-                    <br><br>
+                    <br>
                     <button class="btn" onclick="toggleExplanation('${q.id}')">顯示解答與解析</button>
                     
                     <div id="exp-${q.id}" class="explanation-box">
                         <strong>正確答案：</strong> ${q.correct_answer} <br>
                         <strong>當時作答：</strong> ${q.user_answer} <br>
-                        <strong>AI 盲算解析：</strong> ${q.explanation}
+                        <strong>AI V3 盲算解析：</strong> ${q.explanation}
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // 3. 按鈕切換解答顯示
+        // 3. 切換解答顯示
         function toggleExplanation(id) {
             const expBox = document.getElementById(`exp-${id}`);
-            if (expBox.style.display === "none" || expBox.style.display === "") {
-                expBox.style.display = "block";
-            } else {
-                expBox.style.display = "none";
-            }
+            expBox.style.display = (expBox.style.display === "none" || expBox.style.display === "") ? "block" : "none";
         }
     </script>
 </body>
