@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathChecking 題庫系統 v1.0.1</title>
+    <title>MathChecking 題庫系統 v1.0.2</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; max-width: 800px; margin: auto; }
         .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -40,8 +41,8 @@
     <script>
         let examData = {};
 
-        // 1. 讀取完整 JSON 檔案 (對應 data/exam_01.json)
-        fetch('../data/exam_01.json')
+        // 1. 讀取完整 JSON 檔案 (對應同層的 data/exam_01.json)
+        fetch('data/exam_01.json')
             .then(response => response.json())
             .then(data => {
                 examData = data;
@@ -64,8 +65,8 @@
                 // CSS 視窗顯示大圖中的特定區域
                 let imgHtml = '';
                 if (q.has_image && q.page_ref && sourceImages[q.page_ref]) {
-                    // 因為網頁在 test/ 資料夾內，圖片路徑需向上返回上一層再進入 data/picture
-                    const imgSrc = '../' + sourceImages[q.page_ref];
+                    // 網頁在主目錄，直接使用 JSON 內的相對路徑 data/picture/...
+                    const imgSrc = sourceImages[q.page_ref];
                     imgHtml = `
                         <div class="image-crop-container">
                             <img src="${imgSrc}" class="crop-img" style="${q.css_crop_style}" alt="題目附圖檢視">
