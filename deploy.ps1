@@ -11,7 +11,7 @@ $ErrorActionPreference = "Stop"
 
 $RepoPath = "D:\weber\APP"
 
-# Find Google Drive APP directory safely without encoding issues
+# Find Google Drive APP directory safely
 $GdriveApp = $null
 if (Test-Path "G:\") {
     $driveDirs = Get-ChildItem -Path "G:\" -Directory -ErrorAction SilentlyContinue
@@ -24,7 +24,8 @@ if (Test-Path "G:\") {
     }
 }
 
-$GdriveBackup = if ($GdriveApp) { Join-Path $GdriveApp "LifeSchedule_Backups" } else { $null }
+# 歷史封存備份路徑：G:\我的雲端硬碟\APP\LifeSchedule\LifeSchedule_History_Backups
+$GdriveBackup = if ($GdriveApp) { Join-Path (Join-Path $GdriveApp "LifeSchedule") "LifeSchedule_History_Backups" } else { $null }
 $LifeScheduleFile = "LifeSchedule\LifeSchedule.html"
 
 Write-Host "==========================================" -ForegroundColor Cyan
@@ -46,7 +47,7 @@ if ($GdriveApp -and (Test-Path $GdriveApp)) {
             Copy-Item -Path (Join-Path $RepoPath $LifeScheduleFile) -Destination $BackupDest -Force
             Copy-Item -Path (Join-Path $RepoPath $LifeScheduleFile) -Destination $CurrentDest -Force
             Write-Host "[1/3] Backup to Google Drive succeeded:" -ForegroundColor Green
-            Write-Host "      - History file: $BackupFileName" -ForegroundColor Gray
+            Write-Host "      - History file: $BackupDest" -ForegroundColor Gray
             Write-Host "      - Current sync: $CurrentDest" -ForegroundColor Gray
         } else {
             Write-Host "[1/3] Warning: $LifeScheduleFile not found, skipped backup." -ForegroundColor Yellow
