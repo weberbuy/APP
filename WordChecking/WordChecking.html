@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 小包子帽帽與修身裙裝水手服優化版 (v2.13.20-test)</title>
+  <title>WordChecking | 1200 單字小工具 - 小包子帽帽與修身裙裝水手服優化版 (v2.13.21-test)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.20-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.21-test</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -438,6 +438,7 @@
             <select id="themeSelect" onchange="onThemeChange()" class="bg-transparent text-xs sm:text-sm font-bold text-slate-900 dark:text-amber-100 focus:outline-none cursor-pointer">
               <option value="all1200" class="dark:bg-slate-800 dark:text-slate-100">📚 全集篇：國中會考 1200 單字全集</option>
               <option value="grade7_1st_exam" class="dark:bg-slate-800 dark:text-slate-100">🎯 段考篇：七年級一上第一次段考 (Get Ready ~ L2)</option>
+              <option value="grade7_2nd_exam" class="dark:bg-slate-800 dark:text-slate-100">🎯 段考篇：七年級一上第二次段考 (Lesson 3 ~ L4)</option>
               <option value="numbers" class="dark:bg-slate-800 dark:text-slate-100">🔢 專題篇：1-100 基礎數字</option>
               <option value="family" class="dark:bg-slate-800 dark:text-slate-100">👨‍👩‍👧‍👦 專題篇：人物與家庭親屬</option>
             </select>
@@ -1958,6 +1959,21 @@ if (typeof window !== 'undefined') {
           { value: "get_ready", label: "🌱 Get Ready 入門暖身 (4字)" },
           { value: "lesson1", label: "👨‍👩‍👧 Lesson 1 家庭、親屬與學校 (37字)" },
           { value: "lesson2", label: "🐯 Lesson 2 動物、生肖與特徵 (38字)" },
+          { value: "familiar", label: "🌱 貓貓熟悉待掌握清單" },
+          { value: "weak", label: "★ 貓貓待加強清單" }
+        ]
+      },
+      grade7_2nd_exam: {
+        id: "grade7_2nd_exam",
+        name: "七年級一上第二次段考 (Lesson 3 ~ L4)",
+        url: "./data/vocab-grade7-exam2.json",
+        fallbackUrl: "./vocab-grade7-exam2.json",
+        storageKey: "wordchecking_progress_grade7_exam2_v1",
+        catIntro: "段考衝刺篇：七年級一上第二次段考（Lesson 3 居家格局、Lesson 4 交通生活與規則，共 76 字）！滿分衝刺喵～🐾",
+        scopes: [
+          { value: "all", label: "全部段考範圍 (Lesson 3 + Lesson 4 共 76 字)" },
+          { value: "lesson3", label: "🏠 Lesson 3 居家格局與空間介系詞 (40字)" },
+          { value: "lesson4", label: "🚦 Lesson 4 交通指示與日常生活 (36字)" },
           { value: "familiar", label: "🌱 貓貓熟悉待掌握清單" },
           { value: "weak", label: "★ 貓貓待加強清單" }
         ]
@@ -6239,7 +6255,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.20-test",
+        version: "2.13.21-test",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -9404,6 +9420,14 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
           filteredList = RAW_VOCAB.filter(x => x.scope === 'lesson1' || x.category === 'Lesson 1');
         } else if (currentScope === 'lesson2') {
           filteredList = RAW_VOCAB.filter(x => x.scope === 'lesson2' || x.category === 'Lesson 2');
+        } else {
+          filteredList = [...RAW_VOCAB];
+        }
+      } else if (currentThemeKey === 'grade7_2nd_exam') {
+        if (currentScope === 'lesson3') {
+          filteredList = RAW_VOCAB.filter(x => x.scope === 'lesson3' || x.category === 'Lesson 3');
+        } else if (currentScope === 'lesson4') {
+          filteredList = RAW_VOCAB.filter(x => x.scope === 'lesson4' || x.category === 'Lesson 4');
         } else {
           filteredList = [...RAW_VOCAB];
         }

@@ -2,3 +2,7 @@
 # Deploy scripts (local only)
 deploy.bat
 deploy.ps1
+
+# Raw textbook image folders
+*第一次段考*
+*第二次段考*
