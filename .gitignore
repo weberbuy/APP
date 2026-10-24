@@ -1,4 +1,3 @@
-
 # Deploy scripts (local only)
 deploy.bat
 deploy.ps1
@@ -7,6 +6,12 @@ deploy.ps1
 *第一次段考*
 *第二次段考*
 
-# Local generator scripts (local only)
+# Local generator scripts & test scripts (local only)
 generate_*.py
 WordChecking/generate_*.py
+scripts/
+*.ps1
+test_*.py
+
+# AI & Workspace rules (local development only, not for production web)
+GEMINI.md
