@@ -6,3 +6,7 @@ deploy.ps1
 # Raw textbook image folders
 *第一次段考*
 *第二次段考*
+
+# Local generator scripts (local only)
+generate_*.py
+WordChecking/generate_*.py

@@ -1809,13 +1809,25 @@ function playVoiceText(word, rate = 1.0) {
     triggerFallback();
     return;
   }
-  const safeFilename = encodeURIComponent(cleanWord.toLowerCase()) + '.mp3';
+  const rawBase = cleanWord.toLowerCase();
+  const strippedBase = rawBase.replace(/[?]/g, '').replace(/\.{2,}/g, '').trim();
+  const candidateFilenames = [
+    encodeURIComponent(rawBase) + '.mp3',
+    encodeURIComponent(strippedBase) + '.mp3',
+    encodeURIComponent(strippedBase.replace(/\s+/g, '_')) + '.mp3'
+  ].filter((v, i, a) => a.indexOf(v) === i);
+
   const candidateBaseDirs = detectedAudioBasePath 
     ? [detectedAudioBasePath]
     : ['./data/audio/', './WordChecking/data/audio/', 'data/audio/', 'WordChecking/data/audio/', '../data/audio/'];
-  let pathIndex = 0;
+  let dirIndex = 0;
+  let fileIndex = 0;
   function tryNextAudio() {
-    if (pathIndex >= candidateBaseDirs.length) {
+    if (dirIndex >= candidateBaseDirs.length) {
+      dirIndex = 0;
+      fileIndex++;
+    }
+    if (fileIndex >= candidateFilenames.length) {
       knownMissingAudioWords.add(cleanWord.toLowerCase());
       if (!detectedAudioBasePath) {
         consecutiveAudioMisses++;
@@ -1823,8 +1835,9 @@ function playVoiceText(word, rate = 1.0) {
       triggerFallback();
       return;
     }
-    const currentBaseDir = candidateBaseDirs[pathIndex++];
-    const audioUrl = currentBaseDir + safeFilename;
+    const currentBaseDir = candidateBaseDirs[dirIndex++];
+    const currentFile = candidateFilenames[fileIndex];
+    const audioUrl = currentBaseDir + currentFile;
     const audio = new Audio(audioUrl);
     currentAudioInstance = audio;
     if (rate && rate !== 1.0) {
