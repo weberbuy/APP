@@ -15,3 +15,6 @@ test_*.py
 
 # AI & Workspace rules (local development only, not for production web)
 GEMINI.md
+
+.agents/
+MathChecking/data/picture/PXL_*.jpg

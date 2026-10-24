@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -8,28 +7,32 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; max-width: 800px; margin: auto; }
         .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .question-title { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 10px; }
+        .question-title { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 12px; white-space: pre-line; line-height: 1.6; }
         
         /* 方案 B：CSS 視窗裁剪容器 */
         .image-crop-container {
             width: 100%;
-            height: 140px; /* 視窗高度 */
+            display: block;
+            height: 105px; /* 視窗高度，緊湊對齊題目核心圖形 */
             overflow: hidden;
             border: 1px solid #ccc;
             border-radius: 5px;
             margin-top: 10px;
-            background: #fafafa;
+            margin-bottom: 10px;
+            background: #ffffff;
         }
         .crop-img {
             width: 100%;
+            display: block;
+            transform-origin: 0 0; /* 縮放基準點設在左上角 */
         }
 
-        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; color: white; margin-bottom: 10px;}
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; color: white; margin-bottom: 10px; }
         .badge-wrong { background-color: #e74c3c; }
         .badge-correct { background-color: #2ecc71; }
         .btn { background-color: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 1em; }
         .btn:hover { background-color: #2980b9; }
-        .explanation-box { background-color: #e8f4f8; padding: 15px; border-radius: 5px; margin-top: 15px; display: none; }
+        .explanation-box { background-color: #e8f4f8; padding: 15px; border-radius: 5px; margin-top: 15px; display: none; white-space: pre-line; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -38,22 +41,34 @@
     <h3 id="exam-title">載入中...</h3>
     <div id="quiz-container"></div>
 
+    <!-- 支援直接以 file:// 雙擊開啟（避開瀏覽器本機 CORS 限制） -->
+    <script src="data/exam_data.js"></script>
     <script>
         let examData = {};
 
-        // 1. 讀取完整 JSON 檔案 (對應同層的 data/exam_01.json)
-        fetch('data/exam_01.json')
-            .then(response => response.json())
-            .then(data => {
-                examData = data;
-                document.getElementById('exam-title').innerText = `${data.exam_name} (${data.scope})`;
-                renderQuestions(data.questions, data.source_images);
-            })
-            .catch(error => console.error('Error loading JSON:', error));
+        function initExam(data) {
+            examData = data;
+            document.getElementById('exam-title').innerText = `${data.exam_name} (${data.scope})`;
+            renderQuestions(data.questions, data.source_images);
+        }
+
+        // 1. 若本地 script 已載入 EXAM_DATA 則直接初始化，否則嘗試 fetch('data/exam_01.json')
+        if (typeof EXAM_DATA !== 'undefined') {
+            initExam(EXAM_DATA);
+        } else {
+            fetch('data/exam_01.json')
+                .then(response => response.json())
+                .then(data => initExam(data))
+                .catch(error => {
+                    document.getElementById('exam-title').innerText = '載入失敗，請確認 data/exam_01.json 是否存在。';
+                    console.error('Error loading JSON:', error);
+                });
+        }
 
         // 2. 渲染題目與套用 CSS 裁剪檢視器
         function renderQuestions(questions, sourceImages) {
             const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
             
             questions.forEach(q => {
                 const card = document.createElement('div');
@@ -65,10 +80,10 @@
                 // CSS 視窗顯示大圖中的特定區域
                 let imgHtml = '';
                 if (q.has_image && q.page_ref && sourceImages[q.page_ref]) {
-                    // 網頁在主目錄，直接使用 JSON 內的相對路徑 data/picture/...
                     const imgSrc = sourceImages[q.page_ref];
+                    const containerStyle = q.container_height ? `style="height: ${q.container_height};"` : '';
                     imgHtml = `
-                        <div class="image-crop-container">
+                        <div class="image-crop-container" ${containerStyle}>
                             <img src="${imgSrc}" class="crop-img" style="${q.css_crop_style}" alt="題目附圖檢視">
                         </div>
                     `;
@@ -78,13 +93,12 @@
                     <span class="status-badge ${badgeClass}">${badgeText}</span>
                     <div class="question-title">${q.question_text}</div>
                     ${imgHtml}
-                    <br>
                     <button class="btn" onclick="toggleExplanation('${q.id}')">顯示解答與解析</button>
                     
                     <div id="exp-${q.id}" class="explanation-box">
                         <strong>正確答案：</strong> ${q.correct_answer} <br>
                         <strong>當時作答：</strong> ${q.user_answer} <br>
-                        <strong>AI V3 盲算解析：</strong> ${q.explanation}
+                        <strong>AI V3 盲算解析：</strong>\n${q.explanation}
                     </div>
                 `;
                 container.appendChild(card);

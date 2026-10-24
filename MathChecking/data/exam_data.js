@@ -1,0 +1,597 @@
+window.EXAM_DATA = {
+  "exam_id": "2026-10_math_01",
+  "exam_name": "一上第一次段考",
+  "scope": "整數與數線、絕對值、科學記號",
+  "source_images": {
+    "page_1": "data/picture/exam_01_p1.jpg",
+    "page_2": "data/picture/exam_01_p2.jpg"
+  },
+  "questions": [
+    {
+      "id": "p1_q1",
+      "type": "multiple_choice",
+      "question_text": "1. 以正午十二點為準，若下午二點用「+6」表示，則上午五點該用下列何者來表示？\n(A) -5\n(B) +5\n(C) +21\n(D) -21",
+      "correct_answer": "D",
+      "user_answer": "C",
+      "is_correct": false,
+      "explanation": "正午 12 點為基準 0，下午 2 點（+2 小時）記為 +6，可知每小時變化量為 (+6) ÷ 2 = +3。\n上午 5 點為正午 12 點的前 7 小時（即 -7 小時），故表示為 (-7) × 3 = -21，選 (D)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q2",
+      "type": "multiple_choice",
+      "question_text": "2. 設乙數為正整數，若絕對值不大於乙數的整數有 5 個，則乙數 = ？\n(A) 5\n(B) 4\n(C) 3\n(D) 2",
+      "correct_answer": "D",
+      "user_answer": "A",
+      "is_correct": false,
+      "explanation": "設整數為 x，條件為 |x| ≤ 乙數。包含 0、正整數 1 ~ 乙數、負整數 -1 ~ -乙數，整數個數公式為 2 × 乙數 + 1 = 5。\n解得 2 × 乙數 = 4，故 乙數 = 2，選 (D)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q3",
+      "type": "multiple_choice",
+      "question_text": "3. 下列哪一個數與原點的距離最近？\n(A) -3又1/2\n(B) 17/5\n(C) -3.1\n(D) 4.2",
+      "correct_answer": "C",
+      "user_answer": "C",
+      "is_correct": true,
+      "explanation": "數與原點的距離即為該數的絕對值：\n(A) |-3又1/2| = 3.5\n(B) |17/5| = 3.4\n(C) |-3.1| = 3.1\n(D) |4.2| = 4.2\n比較可知 3.1 最小，故距離原點最近的是 -3.1，選 (C)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q4",
+      "type": "multiple_choice",
+      "question_text": "4. 若乙數為負數，且甲數 × 3 = 乙數 × (-4) = 丙數 × (-7)，則甲、乙、丙三數的大小關係為何？\n(A) 丙 > 乙 > 甲\n(B) 甲 > 乙 > 丙\n(C) 甲 > 丙 > 乙\n(D) 乙 > 甲 > 丙",
+      "correct_answer": "C",
+      "user_answer": "B",
+      "is_correct": false,
+      "explanation": "已知乙數為負數，故 乙數 × (-4) > 0（乘積為正數）。\n因乘積為正，甲數 × 3 > 0 ⇒ 甲數 > 0；丙數 × (-7) > 0 ⇒ 丙數 < 0。\n此時甲數為正數，乙數與丙數皆為負數。\n比較負數大小：由 4|乙| = 7|丙| 得 |乙| > |丙|。負數絕對值越大者其值越小，故 乙數 < 丙數。\n綜合得甲、乙、丙大小關係為：甲 > 丙 > 乙，選 (C)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q5",
+      "type": "multiple_choice",
+      "question_text": "5. 若 a × 10ⁿ 代表某數的科學記號，則下列條件何者正確？\n(A) 1 ≤ a ≤ 10\n(B) 1 ≤ a < 10\n(C) 1 < a ≤ 10\n(D) 1 < a < 10",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "根據科學記號定義，數值寫成 a × 10ⁿ 時，條件為 1 ≤ a < 10 且 n 為整數，選 (B)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q6",
+      "type": "multiple_choice",
+      "question_text": "6. 右圖所表示的是下列哪一個整數加法的式子？\n(A) (-5) + 6 = -11\n(B) (-5) + 11 = 6\n(C) 6 + (-5) = 1\n(D) (-11) + 5 = -6",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "由數線向量分析：\n第一段向量從原點 0 向左走到 -5，表示數值 (-5)；\n第二段向量從 -5 向右走 11 個單位到達 6，表示加上 (+11)；\n整體算式代表 (-5) + 11 = 6，選 (B)。",
+      "has_image": true,
+      "page_ref": "page_1",
+      "css_crop_style": "transform: scale(2.5) translate(-57%, -23.6%);"
+    },
+    {
+      "id": "p1_q7",
+      "type": "multiple_choice",
+      "question_text": "7. 下列算式何者正確？\n(A) 2³ - (-2)³ = 0\n(B) 2⁴ - (-2⁴) = 0\n(C) (-2)³ - (-2³) = 0\n(D) (-2)⁴ - (-2⁴) = 0",
+      "correct_answer": "C",
+      "user_answer": "D",
+      "is_correct": false,
+      "explanation": "逐一拆解指數與負號：\n(A) 2³ - (-2)³ = 8 - (-8) = 16 ≠ 0\n(B) 2⁴ - (-2⁴) = 16 - (-16) = 32 ≠ 0\n(C) (-2)³ = -8，-2³ = -(2³) = -8，故 (-2)³ - (-2³) = -8 - (-8) = 0（正確！）\n(D) (-2)⁴ = 16，-2⁴ = -(2⁴) = -16，故 16 - (-16) = 32 ≠ 0，選 (C)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q8",
+      "type": "multiple_choice",
+      "question_text": "8. 下列算式何者不正確？\n(A) (9 + 5) ÷ 7 = 9 ÷ 7 + 5 ÷ 7\n(B) 9 ÷ (5 + 7) = 9 ÷ 5 + 5 ÷ 7\n(C) 9 ÷ 5 ÷ 7 = 9 ÷ (5 × 7)\n(D) (9 ÷ 5) × 7 = 9 ÷ 5 × 7",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "除法對加法僅有右分配律 (a + b) ÷ c = a ÷ c + b ÷ c，沒有左分配律 c ÷ (a + b) ≠ c ÷ a + c ÷ b。\n故 (B) 9 ÷ (5 + 7) = 9 ÷ 5 + 5 ÷ 7 不正確，選 (B)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q9",
+      "type": "multiple_choice",
+      "question_text": "9. 衛生福利部在食品藥物管理署培養了下列四種長度不同的細菌，請問哪一種細菌長度最小？\n(A) 3.8 × 10⁻⁵ mm\n(B) 2.9 × 10⁻⁵ mm\n(C) 3.8 × 10⁻⁴ mm\n(D) 2.9 × 10⁻⁴ mm",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "比較科學記號大小：\n指數 10⁻⁵ < 10⁻⁴，故 (A)、(B) 較小。\n再比較係數：2.9 < 3.8，故 2.9 × 10⁻⁵ mm 最小，選 (B)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q10",
+      "type": "multiple_choice",
+      "question_text": "10. 若 |a| ≤ 4，則下列何者不可能是 a 的位置？\n(請對照附圖中 (A)、(B)、(C)、(D) 四條數線之標示)",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "|a| ≤ 4 代表 a 在數線上的範圍為 -4 ≤ a ≤ 4。\n(B) 圖中 a 落在 4 的右側（a > 4），其絕對值 |a| > 4，違反條件，故不可能，選 (B)。",
+      "has_image": true,
+      "page_ref": "page_1",
+      "css_crop_style": "transform: scale(1.25) translate(-14.5%, -39.9%);",
+      "container_height": "52px"
+    },
+    {
+      "id": "p1_q11",
+      "type": "multiple_choice",
+      "question_text": "11. 如圖所示，有甲、乙、丙、丁四點，請問哪一個點所代表的數其絕對值最大？\n(A) 甲\n(B) 乙\n(C) 丙\n(D) 丁",
+      "correct_answer": "B",
+      "user_answer": "B",
+      "is_correct": true,
+      "explanation": "數的絕對值代表該點到原點 0 的幾何距離。\n觀察數線圖，四個點中「乙」距離原點 0 最遠，故其絕對值最大，選 (B)。",
+      "has_image": true,
+      "page_ref": "page_1",
+      "css_crop_style": "transform: scale(2.5) translate(-14.5%, -44.2%);"
+    },
+    {
+      "id": "p1_q12",
+      "type": "multiple_choice",
+      "question_text": "12. 數線上有隻螞蟻在某一點上，先向右移 5 單位，再向左移 7 單位，又向右移 4 單位，最後停在表示 10 的點上，則此螞蟻最初位置表示的數是多少？\n(A) 10\n(B) 9\n(C) 8\n(D) 7",
+      "correct_answer": "C",
+      "user_answer": "C",
+      "is_correct": true,
+      "explanation": "設螞蟻最初位置為 x。\n根據題意列式：x + 5 - 7 + 4 = 10\nx + 2 = 10 ⇒ x = 8，選 (C)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q13",
+      "type": "multiple_choice",
+      "question_text": "13. 樂透彩頭彩中獎機率約為五百萬分之一，表示成科學記號應為下列何者？\n(A) 5 × 10⁻⁶\n(B) 5 × 10⁻⁷\n(C) 2 × 10⁻⁷\n(D) 2 × 10⁻⁸",
+      "correct_answer": "C",
+      "user_answer": "A",
+      "is_correct": false,
+      "explanation": "五百萬分之一 = 1 / 5,000,000 = 1 / (5 × 10⁶) = 0.2 × 10⁻⁶ = 2 × 10⁻⁷，選 (C)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q14",
+      "type": "multiple_choice",
+      "question_text": "14. 如果 500 張白紙的厚度大約是 1.5 公分，那麼一張白紙的厚度大約是多少公分？ (以科學記號表示)\n(A) 3 × 10⁻² 公分\n(B) 3 × 10⁻³ 公分\n(C) 3 × 10⁻⁴ 公分\n(D) 3 × 10⁻⁵ 公分",
+      "correct_answer": "B",
+      "user_answer": "A",
+      "is_correct": false,
+      "explanation": "一張白紙厚度 = 1.5 ÷ 500 = 1.5 ÷ (5 × 10²) = 0.3 × 10⁻² = 3 × 10⁻³ 公分，選 (B)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q15",
+      "type": "multiple_choice",
+      "question_text": "15. 在數線上要畫出 4.125 的點，至少要將表示 4 與 5 兩點之間分成幾等分？\n(A) 5 等分\n(B) 8 等分\n(C) 100 等分\n(D) 1000 等分",
+      "correct_answer": "B",
+      "user_answer": "D",
+      "is_correct": false,
+      "explanation": "4.125 = 4 + 125/1000。將小數部分化為最簡分數：125/1000 = 1/8。\n因此在數線 4 與 5 之間，至少須平分成 8 等分才能準確標示出 4又1/8，選 (B)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q16",
+      "type": "multiple_choice",
+      "question_text": "16. 數線上兩點 A(a)、B(b)，若 a + b < 0、a - b > 0 且 a × b < 0，則下列何者為 A、B 兩點在數線上的位置？\n(請對照附圖中 (A)、(B)、(C)、(D) 四條數線之標示)",
+      "correct_answer": "A",
+      "user_answer": "A",
+      "is_correct": true,
+      "explanation": "條件分析：\n1. a × b < 0 ⇒ a、b 一正一負（異號）。\n2. a - b > 0 ⇒ a > b，因此 a > 0（點 A 在原點右側），b < 0（點 B 在原點左側）。\n3. a + b < 0 ⇒ b < -a ⇒ |b| > |a|，即負數 B 到原點的距離大於正數 A 到原點的距離。\n綜合以上，點 B 在原點左側較遠處，點 A 在原點右側較近處，對應圖 (A)，選 (A)。",
+      "has_image": true,
+      "page_ref": "page_1",
+      "css_crop_style": "transform: scale(1.25) translate(-14.0%, -66.5%);",
+      "container_height": "52px"
+    },
+    {
+      "id": "p1_q17",
+      "type": "multiple_choice",
+      "question_text": "17. 滿足 |-3又1/2| < 甲數 < |6又1/2| 的整數甲共有幾個？\n(A) 3 個\n(B) 4 個\n(C) 9 個\n(D) 10 個",
+      "correct_answer": "A",
+      "user_answer": "A",
+      "is_correct": true,
+      "explanation": "拆解絕對值：|-3又1/2| = 3.5，|6又1/2| = 6.5。\n不等式為 3.5 < 甲數 < 6.5。\n滿足條件的整數甲有 4、5、6 共 3 個，選 (A)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_q18",
+      "type": "multiple_choice",
+      "question_text": "18. 下列敘述何者不正確？\n(A) a - b 和 b - a 互為相反數\n(B) a - b 的相反數也可以記成 -(a - b)\n(C) -(a - b) = -a - b\n(D) |a - b| = |b - a|",
+      "correct_answer": "C",
+      "user_answer": "A",
+      "is_correct": false,
+      "explanation": "根據去括號法則：-(a - b) = -a + b。\n(C) 選項寫為 -a - b 是錯誤的，選 (C)。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_1",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(1) 計算 4³ 之值為 ________。",
+      "correct_answer": "64",
+      "user_answer": "64",
+      "is_correct": true,
+      "explanation": "4³ = 4 × 4 × 4 = 64。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_2",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(2) 計算 (-1)¹¹¹¹ 之值為 ________。",
+      "correct_answer": "-1",
+      "user_answer": "-1",
+      "is_correct": true,
+      "explanation": "-1 的奇數次方等於 -1，故 (-1)¹¹¹¹ = -1。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_3",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(3) 計算 -1⁹ 之值為 ________。",
+      "correct_answer": "-1",
+      "user_answer": "-1",
+      "is_correct": true,
+      "explanation": "-1⁹ 代表 -(1⁹) = -(1) = -1（次方優先於前方負號）。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_4",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(4) 計算 -3² 之值為 ________。",
+      "correct_answer": "-9",
+      "user_answer": "-6",
+      "is_correct": false,
+      "explanation": "-3² 代表 -(3 × 3) = -9（注意：沒有括號時次方優先於負號；只有 (-3)² 才是 9）。學生誤算為 -3 × 2 = -6。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_5",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(5) 計算 -(-3)³ - 5² + 2⁶ 之值為 ________。",
+      "correct_answer": "66",
+      "user_answer": "66",
+      "is_correct": true,
+      "explanation": "依序計算各次方：\n1. (-3)³ = -27，故 -(-3)³ = 27。\n2. 5² = 25，故 -5² = -25。\n3. 2⁶ = 64。\n原式 = 27 - 25 + 64 = 2 + 64 = 66。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_6",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(6) 計算 120 ÷ [(-2) × 3 - 4] 之值為 ________。",
+      "correct_answer": "-12",
+      "user_answer": "-60",
+      "is_correct": false,
+      "explanation": "依序計算中括號內：(-2) × 3 - 4 = -6 - 4 = -10。\n再進行除法：120 ÷ (-10) = -12。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_7",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(7) 計算 (-2)¹ + (-2)² + (-2)³ + (-2)⁴ 之值為 ________。",
+      "correct_answer": "10",
+      "user_answer": "10",
+      "is_correct": true,
+      "explanation": "各項展開：(-2) + 4 + (-8) + 16 = [(-2) + 4] + [(-8) + 16] = 2 + 8 = 10。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_8",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(8) 計算 18 ÷ (-3²) - |8 × (-3) - 11| 之值為 ________。",
+      "correct_answer": "-37",
+      "user_answer": "32",
+      "is_correct": false,
+      "explanation": "逐步拆解：\n1. -3² = -9，前半段 18 ÷ (-9) = -2。\n2. 絕對值內部：8 × (-3) - 11 = -24 - 11 = -35，故 |-35| = 35。\n3. 原式 = -2 - 35 = -37。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_9",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(9) 計算 |542 - 1985 + 113| - |1985 - 542| 之值為 ________。",
+      "correct_answer": "-113",
+      "user_answer": "-113",
+      "is_correct": true,
+      "explanation": "原式化簡：\n1. 第一項 |542 - 1985 + 113| = |-1443 + 113| = |-1330| = 1330。\n2. 第二項 |1985 - 542| = 1443。\n3. 1330 - 1443 = -113。",
+      "has_image": false
+    },
+    {
+      "id": "p1_fill_10",
+      "type": "fill_in",
+      "question_text": "一、計算與填充題 1.(10) 計算 [2 + 3 × (-15) + 12 ÷ (-3) - 2 × (-11)] ÷ 5 之值為 ________。",
+      "correct_answer": "-5",
+      "user_answer": "-5",
+      "is_correct": true,
+      "explanation": "中括號內先乘除後加減：\n= 2 + (-45) + (-4) - (-22)\n= 2 - 45 - 4 + 22 = -25。\n最後除以 5：-25 ÷ 5 = -5。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q2_1",
+      "type": "fill_in",
+      "question_text": "2.(1) 如圖，A、B、C 分別是數線上的三個點，則 A 點所代表的數為 ________。",
+      "correct_answer": "2又2/3",
+      "user_answer": "2又2/3",
+      "is_correct": true,
+      "explanation": "空間座標錨定：點 A 落於整數 2 與 3 之間，該區間被平分為 3 等分，點 A 位於第 2 格，故 A 點代表的數為 2又2/3。",
+      "has_image": true,
+      "page_ref": "page_2",
+      "css_crop_style": "transform: scale(2.5) translate(-41%, -3.6%);"
+    },
+    {
+      "id": "p2_q2_2",
+      "type": "fill_in",
+      "question_text": "2.(2) 如圖，A、B、C 分別是數線上的三個點，則 B 點所代表的數的相反數為 ________。",
+      "correct_answer": "2又3/4",
+      "user_answer": "2又3/4",
+      "is_correct": true,
+      "explanation": "空間座標錨定：點 B 落於整數 -3 與 -2 之間，該區間被平分為 4 等分。點 B 位於從 -3 往右數第 1 格（或 -2 往左數第 3 格），故 B = -2又3/4。\n其相反數為 2又3/4。",
+      "has_image": true,
+      "page_ref": "page_2",
+      "css_crop_style": "transform: scale(2.5) translate(-41%, -3.6%);"
+    },
+    {
+      "id": "p2_q2_3",
+      "type": "fill_in",
+      "question_text": "2.(3) 如圖，A、B、C 分別是數線上的三個點，則 C 點與 A 點的距離為 ________。",
+      "correct_answer": "3又2/3",
+      "user_answer": "3又2/3",
+      "is_correct": true,
+      "explanation": "空間座標錨定：C 點精準落在整數 -1 上，A 點為 2又2/3。\n兩點距離 = |A - C| = |2又2/3 - (-1)| = 2又2/3 + 1 = 3又2/3。",
+      "has_image": true,
+      "page_ref": "page_2",
+      "css_crop_style": "transform: scale(2.5) translate(-41%, -3.6%);"
+    },
+    {
+      "id": "p2_q3",
+      "type": "fill_in",
+      "question_text": "3. 在數線上描出 1.6 這一點，至少須將 1 和 2 之間分成幾等分？________",
+      "correct_answer": "5",
+      "user_answer": "7",
+      "is_correct": false,
+      "explanation": "1.6 = 1又6/10 = 1又3/5。化為最簡分數後分母為 5，因此至少須將 1 和 2 之間分成 5 等分。學生寫 7 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q4",
+      "type": "fill_in",
+      "question_text": "4. 若以 101 大樓的一樓為原點，地下一樓記為「+1」，則第 101 樓記為多少？________",
+      "correct_answer": "-100",
+      "user_answer": "-101",
+      "is_correct": false,
+      "explanation": "以一樓為原點 (0)，地下一樓（向下一層）記為「+1」，表示向上記為負號。從 1 樓到 101 樓共向上 101 - 1 = 100 層，故應記為 -100。學生寫 -101 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q5",
+      "type": "fill_in",
+      "question_text": "5. 若 (-8) - (-9) = 甲，8 - (-7) = 乙，則 甲 + 乙 = ________。",
+      "correct_answer": "16",
+      "user_answer": "2",
+      "is_correct": false,
+      "explanation": "甲 = (-8) - (-9) = -8 + 9 = 1。\n乙 = 8 - (-7) = 8 + 7 = 15。\n甲 + 乙 = 1 + 15 = 16。學生寫 2 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q6",
+      "type": "fill_in",
+      "question_text": "6. 比較下列各數的大小，並以「<」連接：|4|, -|-5|, |-2|, 3, -1又1/3。________",
+      "correct_answer": "-|-5| < -1又1/3 < |-2| < 3 < |4|",
+      "user_answer": "-|-5| < -1又1/3 < |-2| < 3 < |4|",
+      "is_correct": true,
+      "explanation": "計算各數數值：\n|4| = 4\n-|-5| = -5\n|-2| = 2\n3 = 3\n-1又1/3 ≈ -1.33\n由小到大排列：-5 < -1又1/3 < 2 < 3 < 4，即 -|-5| < -1又1/3 < |-2| < 3 < |4|。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q7",
+      "type": "fill_in",
+      "question_text": "7. 若 0.0000000001 = 10^(□)，則 □ = ________。",
+      "correct_answer": "-10",
+      "user_answer": "-10",
+      "is_correct": true,
+      "explanation": "0.0000000001 的小數點後有 10 位（第 10 位為 1），等於 10⁻¹⁰，故 □ = -10。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q8",
+      "type": "fill_in",
+      "question_text": "8. 數線上兩點 A(a) 與 B(-3)，若線段 AB = 5，則 a 之值為何？________",
+      "correct_answer": "2 或 -8",
+      "user_answer": "8",
+      "is_correct": false,
+      "explanation": "線段 AB = |a - (-3)| = |a + 3| = 5。\n故 a + 3 = 5 或 a + 3 = -5，解得 a = 2 或 a = -8。學生僅寫 8 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q9",
+      "type": "fill_in",
+      "question_text": "9. 若以中午 12 時為基準，下午 3 時記為「+3」時，則同日之上午 3 時記為多少時？________",
+      "correct_answer": "-9",
+      "user_answer": "-9",
+      "is_correct": true,
+      "explanation": "中午 12 時為基準 0，下午 3 時比中午晚 3 小時記為 +3。同日上午 3 時比中午早 9 小時，故記為 -9 時。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q10",
+      "type": "fill_in",
+      "question_text": "10. 在 (-2)², 10⁻⁴, 10⁰, -3², (-5)³ 五個數中，正數共有幾個？________",
+      "correct_answer": "3",
+      "user_answer": "1",
+      "is_correct": false,
+      "explanation": "逐一檢視：\n1. (-2)² = 4（正數）\n2. 10⁻⁴ = 0.0001（正數）\n3. 10⁰ = 1（正數）\n4. -3² = -9（負數）\n5. (-5)³ = -125（負數）\n正數共有 3 個。學生寫 1 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q11",
+      "type": "fill_in",
+      "question_text": "11. 利用分配律計算 958 × 8591 - 959 × 8591 = ________。",
+      "correct_answer": "-8591",
+      "user_answer": "-8591",
+      "is_correct": true,
+      "explanation": "提出公因數 8591：(958 - 959) × 8591 = (-1) × 8591 = -8591。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q12",
+      "type": "fill_in",
+      "question_text": "12. 數線上 A 點的坐標為 3，B 點在原點的左邊，且線段 AB 的長度為 9，則 B 點的坐標為何？________",
+      "correct_answer": "-6",
+      "user_answer": "-6",
+      "is_correct": true,
+      "explanation": "B 點在原點左邊，故 B 點坐標為負數。A 點為 3，AB = 9，故 B = 3 - 9 = -6。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q13",
+      "type": "fill_in",
+      "question_text": "13. 已知數線上三點坐標分別為 A(-8)、B(13)、C(-14)，則線段長度和 AB + BC + CA = ________。",
+      "correct_answer": "54",
+      "user_answer": "54",
+      "is_correct": true,
+      "explanation": "各線段長度：\nAB = |13 - (-8)| = 21\nBC = |(-14) - 13| = 27\nCA = |(-8) - (-14)| = 6\n總和 = 21 + 27 + 6 = 54。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q14",
+      "type": "fill_in",
+      "question_text": "14. 若 (-10 - x) 與 (6 - x) 互為相反數，則 x = ________。",
+      "correct_answer": "-2",
+      "user_answer": "-2",
+      "is_correct": true,
+      "explanation": "互為相反數的兩數之和為 0：\n(-10 - x) + (6 - x) = 0\n-4 - 2x = 0\n2x = -4 => x = -2。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q15",
+      "type": "fill_in",
+      "question_text": "15. 若以全班平均成績為基準，小明的成績 79 分記為「+9」分，則全班平均成績為多少分？________",
+      "correct_answer": "70",
+      "user_answer": "70",
+      "is_correct": true,
+      "explanation": "基準分 + 9 = 79，故基準分（全班平均）= 79 - 9 = 70 分。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q16",
+      "type": "fill_in",
+      "question_text": "16. 從 -8, -5, 0, 4, 5, 9 六個數中任選三個數相乘，所得的乘積最小值為何？________",
+      "correct_answer": "-360",
+      "user_answer": "-360",
+      "is_correct": true,
+      "explanation": "乘積要最小，須為負數且絕對值最大。因此挑選最小的負數 (-8) 與兩個最大的正數 5 和 9：(-8) × 5 × 9 = -360。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q17",
+      "type": "fill_in",
+      "question_text": "17. 數線上 A(-18)、B(-6) 兩點：\n(1) 線段 AB 的長度為多少？________\n(2) 若 BC = 7，則 C 點的坐標為何？________\n(3) A、B 兩點的中點坐標為何？________",
+      "correct_answer": "(1) 12  (2) 1 或 -13  (3) -12",
+      "user_answer": "(1) 12  (2) 13  (3) 12",
+      "is_correct": false,
+      "explanation": "(1) AB = |-6 - (-18)| = 12。\n(2) |C - (-6)| = 7 => C + 6 = ±7 => C = 1 或 -13。\n(3) 中點坐標 = [(-18) + (-6)] / 2 = -24 / 2 = -12。\n學生在 (2) 誤算為 13，在 (3) 漏負號寫 12。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q18",
+      "type": "fill_in",
+      "question_text": "18. 數線上 A(-15)、B(13)，將線段 AB 分成七等分，得六個等分點，則此六個等分點的坐標總和為何？________",
+      "correct_answer": "-6",
+      "user_answer": "24",
+      "is_correct": false,
+      "explanation": "A(-15) 與 B(13) 的中點坐標為 (-15 + 13) / 2 = -1。六個等分點對稱於中點，其平均值即為中點坐標，故六點總和 = 6 × (-1) = -6。學生寫 24 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q19",
+      "type": "fill_in",
+      "question_text": "19. 一份測驗共有 25 題，每答對一題得 4 分，答錯一題倒扣 1 分，不作答則不給分也不扣分。小華有 3 題未作答，共得 68 分，則小華答對了幾題？________",
+      "correct_answer": "18",
+      "user_answer": "17",
+      "is_correct": false,
+      "explanation": "作答題數 = 25 - 3 = 22 題。設答對 x 題，答錯 (22 - x) 題。\n4x - 1 × (22 - x) = 68\n4x - 22 + x = 68\n5x = 90 => x = 18 題。學生寫 17 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q20",
+      "type": "fill_in",
+      "question_text": "20. 已知 |a| = 3，|b| = 7，則 a - b 的最大值為何？________",
+      "correct_answer": "10",
+      "user_answer": "4",
+      "is_correct": false,
+      "explanation": "a = ±3, b = ±7。要使 a - b 最大，a 應取最大值 3，b 應取最小值 -7。\n最大值 = 3 - (-7) = 3 + 7 = 10。學生寫 4 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q21",
+      "type": "fill_in",
+      "question_text": "21. 若數線上兩點甲、乙，已知 |甲 - 2| = 12，乙數為 -5，則 甲 - 乙 = ________。",
+      "correct_answer": "19 或 -5",
+      "user_answer": "19",
+      "is_correct": false,
+      "explanation": "|甲 - 2| = 12 => 甲 - 2 = ±12 => 甲 = 14 或 -10。\n若甲 = 14，甲 - 乙 = 14 - (-5) = 19。\n若甲 = -10，甲 - 乙 = -10 - (-5) = -5。\n故答案為 19 或 -5。學生漏寫 -5。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q22",
+      "type": "fill_in",
+      "question_text": "22. 若 |a| = 9，|-b| = 5，則 -|-a| - |b| = ________。",
+      "correct_answer": "-14",
+      "user_answer": "-14",
+      "is_correct": true,
+      "explanation": "|a| = 9 => |-a| = 9；|-b| = 5 => |b| = 5。\n故 -|-a| - |b| = -9 - 5 = -14。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q23",
+      "type": "fill_in",
+      "question_text": "23. 若 |甲 - 4| + |乙 + 5| = 0，則 甲 - 乙 = ________。",
+      "correct_answer": "9",
+      "user_answer": "-1",
+      "is_correct": false,
+      "explanation": "絕對值恆大於或等於 0，兩非負數相加為 0 則各項必為 0：\n甲 - 4 = 0 => 甲 = 4；乙 + 5 = 0 => 乙 = -5。\n故 甲 - 乙 = 4 - (-5) = 4 + 5 = 9。學生寫 -1 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q24",
+      "type": "fill_in",
+      "question_text": "24. 已知 10 × 11 × 12 × 13 × 14 = 240240，則 (-11) × (-12) × (-13) × (-14) × (-15) = ________。",
+      "correct_answer": "-360360",
+      "user_answer": "-24024",
+      "is_correct": false,
+      "explanation": "共有 5 個負數相乘，結果為負數。\n數值 = -(11 × 12 × 13 × 14 × 15) = - (240240 × 15 / 10) = -(240240 × 1.5) = -360360。學生寫 -24024 錯誤。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q25",
+      "type": "fill_in",
+      "question_text": "25. 將 2.148 × 10⁻¹⁷ 乘開後，小數點後共連續出現幾個「0」？________",
+      "correct_answer": "16",
+      "user_answer": "16",
+      "is_correct": true,
+      "explanation": "科學記號 a × 10⁻ⁿ（1 ≤ a < 10）的小數點後第 n 位為第一個非零數字，故前面的零共有 (n - 1) 個。本題 n = 17，小數點後共連續出現 17 - 1 = 16 個 0。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q26",
+      "type": "fill_in",
+      "question_text": "26. 數線上甲、乙兩點分別表示 -31 與 17，甲向右每秒走 3 單位，乙向左每秒走 1 單位，兩人同時出發相向而行，則相遇點的坐標為何？________",
+      "correct_answer": "5",
+      "user_answer": "5",
+      "is_correct": true,
+      "explanation": "兩點距離 = 17 - (-31) = 48 單位。兩人速度和 = 3 + 1 = 4 單位/秒。\n相遇時間 = 48 ÷ 4 = 12 秒。\n甲從 -31 向右走 12 秒：-31 + 3 × 12 = -31 + 36 = 5（或乙從 17 向左走 12 秒：17 - 1 × 12 = 5），相遇點坐標為 5。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q27",
+      "type": "fill_in",
+      "question_text": "27. 設 a = -2⁴, b = (-2)⁵, c = -4³, d = (-4)², e = -2³，比較 a, b, c, d, e 之大小關係為 ________。",
+      "correct_answer": "c < b < a < e < d",
+      "user_answer": "c < b < a < e < d",
+      "is_correct": true,
+      "explanation": "分別計算各數值：\na = -2⁴ = -16\nb = (-2)⁵ = -32\nc = -4³ = -64\nd = (-4)² = 16\ne = -2³ = -8\n由小到大排列：-64 < -32 < -16 < -8 < 16，即 c < b < a < e < d。",
+      "has_image": false
+    },
+    {
+      "id": "p2_q28",
+      "type": "fill_in",
+      "question_text": "28. 利用分配律計算 1985 × 67 + 1985 × 33 - 542 × 33 - 542 × 67 = ________。",
+      "correct_answer": "144300",
+      "user_answer": "144300",
+      "is_correct": true,
+      "explanation": "利用分配律分組：\n= 1985 × (67 + 33) - 542 × (33 + 67)\n= 1985 × 100 - 542 × 100\n= (1985 - 542) × 100\n= 1443 × 100 = 144300。",
+      "has_image": false
+    }
+  ]
+};
