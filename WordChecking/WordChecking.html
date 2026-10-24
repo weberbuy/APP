@@ -3441,52 +3441,137 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
   </g>
 </g>`,
         outfit_cloak: `<!-- Lv.4 Hero Adventurer Cloak --><g id="acc_outfit_cloak"><path d="M 32,74 C 20,86 16,112 25,116 C 36,118 42,105 46,95 C 54,92 66,92 74,95 C 78,105 84,118 95,116 C 104,112 100,86 88,74 Z" fill="#b91c1c" /><path d="M 25,116 C 36,118 42,105 46,95" stroke="#facc15" stroke-width="2" fill="none" /><path d="M 74,95 C 78,105 84,118 95,116" stroke="#facc15" stroke-width="2" fill="none" /><circle cx="60" cy="76" r="4.5" fill="#facc15" /><circle cx="60" cy="76" r="2.5" fill="#ef4444" /></g>`,
-        outfit_sailor: `<!-- ⚓ 可愛水手制服: 正統日系JK水手服，海軍領雙白線+紅色領巾+海軍藍雙白線百褶裙 -->
+        outfit_sailor: `<!-- ⚓ 可愛水手制服: 加長A字百褶裙+海軍領雙白線+紅色領巾+顯眼裙摺雙白線 (長度延伸至足部，裙子立體有型) -->
 <g id="acc_outfit_sailor" filter="drop-shadow(0 2px 5px rgba(30,58,138,0.22))">
-  <path d="M 37,73 L 33,85 L 43,87 L 77,87 L 87,85 L 83,73 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.8" />
-  <path d="M 42,72 L 35,84 L 46,84 L 54,76 Z" fill="#1e3a8a" stroke="#172554" stroke-width="0.8" />
-  <path d="M 78,72 L 85,84 L 74,84 L 66,76 Z" fill="#1e3a8a" stroke="#172554" stroke-width="0.8" />
-  <line x1="37" y1="82" x2="44" y2="82" stroke="#ffffff" stroke-width="0.8" />
-  <line x1="83" y1="82" x2="76" y2="82" stroke="#ffffff" stroke-width="0.8" />
-  <polygon points="60,84 55,77 65,77" fill="#ffffff" />
-  <ellipse cx="56.5" cy="81" rx="3" ry="1.8" transform="rotate(-15 56.5 81)" fill="#dc2626" />
-  <ellipse cx="63.5" cy="81" rx="3" ry="1.8" transform="rotate(15 63.5 81)" fill="#dc2626" />
-  <polygon points="60,82 56,92 60,90 64,92" fill="#ef4444" />
-  <circle cx="60" cy="81" r="1.5" fill="#b91c1c" />
-  <rect x="39" y="86" width="42" height="2.5" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.5" />
-  <path d="M 39,88 L 30,105 Q 60,108 90,105 L 81,88 Z" fill="#1e3a8a" stroke="#172554" stroke-width="0.9" />
-  <line x1="43" y1="88" x2="37" y2="105" stroke="#172554" stroke-width="1.1" />
-  <line x1="50" y1="88" x2="47" y2="106" stroke="#172554" stroke-width="1.1" />
-  <line x1="57" y1="88" x2="56" y2="107" stroke="#172554" stroke-width="1.1" />
-  <line x1="63" y1="88" x2="64" y2="107" stroke="#172554" stroke-width="1.1" />
-  <line x1="70" y1="88" x2="73" y2="106" stroke="#172554" stroke-width="1.1" />
-  <line x1="77" y1="88" x2="83" y2="105" stroke="#172554" stroke-width="1.1" />
-  <path d="M 32,101 Q 60,104 88,101" stroke="#ffffff" stroke-width="1.1" fill="none" />
-  <path d="M 31,103 Q 60,106 89,103" stroke="#ffffff" stroke-width="1.1" fill="none" />
+  <!-- 上衣白色襯衫基底 -->
+  <path d="M 36,73 L 32,86 L 43,87 L 77,87 L 88,86 L 84,73 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.8" />
+  <!-- 海軍大翻領 (深藍配雙白細線) -->
+  <path d="M 42,72 L 32,85 L 46,85 L 54,76 Z" fill="#1e3a8a" stroke="#172554" stroke-width="0.8" />
+  <path d="M 78,72 L 88,85 L 74,85 L 66,76 Z" fill="#1e3a8a" stroke="#172554" stroke-width="0.8" />
+  <line x1="34" y1="82" x2="44" y2="82" stroke="#ffffff" stroke-width="0.8" />
+  <line x1="86" y1="82" x2="76" y2="82" stroke="#ffffff" stroke-width="0.8" />
+  <!-- 胸前倒三角水手領襯底與紅色蝴蝶領巾 -->
+  <polygon points="60,84 55,76 65,76" fill="#ffffff" />
+  <ellipse cx="56.5" cy="80.5" rx="3" ry="1.8" transform="rotate(-15 56.5 80.5)" fill="#dc2626" />
+  <ellipse cx="63.5" cy="80.5" rx="3" ry="1.8" transform="rotate(15 63.5 80.5)" fill="#dc2626" />
+  <polygon points="60,81 55,92 60,89 65,92" fill="#ef4444" />
+  <circle cx="60" cy="80.5" r="1.5" fill="#b91c1c" />
+  <!-- 水手百褶裙：加長至足部 y=114，呈自然A字外擴百褶裙擺，裙褶立體感十足 -->
+  <path d="M 37,86 Q 60,88 83,86 L 94,113 Q 60,116 26,113 Z" fill="#1e3a8a" stroke="#172554" stroke-width="0.9" />
+  <!-- 白色高腰腰帶線條 -->
+  <rect x="37" y="85.5" width="46" height="2.5" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.5" />
+  <!-- 立體百褶裙摺線 (8條立體折痕，明暗陰影) -->
+  <line x1="41" y1="87" x2="33" y2="113" stroke="#172554" stroke-width="1.2" />
+  <line x1="47" y1="87" x2="42" y2="114" stroke="#172554" stroke-width="1.2" />
+  <line x1="53" y1="87" x2="51" y2="114.5" stroke="#172554" stroke-width="1.2" />
+  <line x1="60" y1="87" x2="60" y2="115" stroke="#172554" stroke-width="1.2" />
+  <line x1="67" y1="87" x2="69" y2="114.5" stroke="#172554" stroke-width="1.2" />
+  <line x1="73" y1="87" x2="78" y2="114" stroke="#172554" stroke-width="1.2" />
+  <line x1="79" y1="87" x2="87" y2="113" stroke="#172554" stroke-width="1.2" />
+  <!-- 經典百褶裙擺經典雙白條紋 -->
+  <path d="M 28,107 Q 60,110 92,107" stroke="#ffffff" stroke-width="1.4" fill="none" />
+  <path d="M 27,110 Q 60,113 93,110" stroke="#ffffff" stroke-width="1.4" fill="none" />
 </g>`,
-        outfit_dress: `<!-- 👗 夢幻粉紅修身公主裙: 圓領泡泡袖上衣+高腰緞帶蝴蝶結+修身A字垂墜荷葉裙擺(顯瘦修身款) -->
+        outfit_dress: `<!-- 👗 夢幻粉紅法式公主裙: 顯瘦修身收腰+立體抓褶垂墜A字裙+法式荷葉花邊 (徹底告別臃腫圓球) -->
 <g id="acc_outfit_dress">
-  <g filter="drop-shadow(0 3px 6px rgba(219,39,119,0.22))">
-    <ellipse cx="36" cy="77" rx="5.2" ry="4.8" fill="#f472b6" stroke="#db2777" stroke-width="0.8" />
-    <path d="M 31,78 Q 36,80 41,78" stroke="#ffffff" stroke-width="1.1" fill="none" stroke-linecap="round" />
-    <ellipse cx="84" cy="77" rx="5.2" ry="4.8" fill="#f472b6" stroke="#db2777" stroke-width="0.8" />
-    <path d="M 79,78 Q 84,80 89,78" stroke="#ffffff" stroke-width="1.1" fill="none" stroke-linecap="round" />
-    <path d="M 40,71 C 48,72 72,72 80,71 C 84,76 85,82 83,86 C 76,87 44,87 37,86 C 35,82 36,76 40,71 Z" fill="#f472b6" stroke="#db2777" stroke-width="0.9" />
-    <path d="M 46,71 Q 53,74 60,71 Q 67,74 74,71" stroke="#ffffff" stroke-width="1.6" fill="none" stroke-linecap="round" />
-    <circle cx="60" cy="75.5" r="1.1" fill="#ffffff" stroke="#db2777" stroke-width="0.5" />
-    <circle cx="60" cy="79.5" r="1.1" fill="#ffffff" stroke="#db2777" stroke-width="0.5" />
-    <circle cx="60" cy="83.5" r="1.1" fill="#ffffff" stroke="#db2777" stroke-width="0.5" />
-    <path d="M 38,85 Q 60,88 82,85 L 83,88.5 Q 60,91.5 37,88.5 Z" fill="#db2777" />
-    <line x1="39" y1="86.8" x2="81" y2="86.8" stroke="#fbcfe8" stroke-width="0.8" opacity="0.8" />
-    <path d="M 28,104 Q 36,108 44,105 Q 52,109 60,106 Q 68,109 76,105 Q 84,108 92,104 C 90,107 80,109 60,109 C 40,109 30,107 28,104 Z" fill="#ffffff" stroke="#fbcfe8" stroke-width="0.8" />
-    <path d="M 33,97 C 26,101 27,106 36,106 Q 60,108 84,106 C 93,106 94,101 87,97 Q 60,99 33,97 Z" fill="#f472b6" stroke="#db2777" stroke-width="0.9" />
-    <path d="M 35,97 Q 43,100 52,98 Q 60,101 68,98 Q 77,100 85,97" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linecap="round" />
-    <path d="M 37,88 C 29,91 30,98 38,98 Q 60,100 82,98 C 90,98 91,91 83,88 Q 60,90 37,88 Z" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.8" />
-    <ellipse cx="56.5" cy="87" rx="3.5" ry="2.2" transform="rotate(-15 56.5 87)" fill="#f43f5e" stroke="#ffffff" stroke-width="0.6" />
-    <ellipse cx="63.5" cy="87" rx="3.5" ry="2.2" transform="rotate(15 63.5 87)" fill="#f43f5e" stroke="#ffffff" stroke-width="0.6" />
-    <circle cx="60" cy="87" r="1.8" fill="#ffffff" stroke="#db2777" stroke-width="0.6" />
+  <g filter="drop-shadow(0 3px 6px rgba(219,39,119,0.25))">
+    <!-- 兩側合身微翹荷葉短袖 (取代原本突出的寬大左右兩側大圓球泡泡袖) -->
+    <path d="M 39,73 C 33,75 32,82 37,84 C 40,84 41,80 40,75 Z" fill="#f472b6" stroke="#db2777" stroke-width="0.8" />
+    <path d="M 81,73 C 87,75 88,82 83,84 C 80,84 79,80 80,75 Z" fill="#f472b6" stroke="#db2777" stroke-width="0.8" />
+    <path d="M 34,79 Q 37,82 40,79" stroke="#ffffff" stroke-width="0.9" fill="none" />
+    <path d="M 86,79 Q 83,82 80,79" stroke="#ffffff" stroke-width="0.9" fill="none" />
+    <!-- 修身合身上衣 (寬度收窄，線條流暢貼合身形) -->
+    <path d="M 40,71 C 48,72 72,72 80,71 C 82,76 81,81 79,86 C 72,87 48,87 41,86 C 39,81 38,76 40,71 Z" fill="#f472b6" stroke="#db2777" stroke-width="0.9" />
+    <!-- 精緻法式方領白色蕾絲滾邊 -->
+    <path d="M 45,71 Q 52,73 60,71 Q 68,73 75,71" stroke="#ffffff" stroke-width="1.6" fill="none" stroke-linecap="round" />
+    <!-- 胸前垂直珍珠寶石鈕扣 (縱向延伸視覺，顯瘦拉長比例) -->
+    <circle cx="60" cy="74.5" r="1.1" fill="#ffffff" stroke="#db2777" stroke-width="0.4" />
+    <circle cx="60" cy="78" r="1.1" fill="#ffffff" stroke="#db2777" stroke-width="0.4" />
+    <circle cx="60" cy="81.5" r="1.1" fill="#ffffff" stroke="#db2777" stroke-width="0.4" />
+    <!-- 束腰酒紅緞帶與收腰蝴蝶結 (強調高腰線條) -->
+    <path d="M 40,85 Q 60,87 80,85 L 80,88.5 Q 60,90.5 40,88.5 Z" fill="#db2777" />
+    <line x1="41" y1="86.8" x2="79" y2="86.8" stroke="#fbcfe8" stroke-width="0.7" opacity="0.8" />
+    <!-- 顯瘦A字垂墜長裙 (縱向流暢垂直線條，不再向兩側鼓脹成圓球) -->
+    <path d="M 40,88 Q 60,90 80,88 L 89,113 Q 60,116 31,113 Z" fill="#fbcfe8" stroke="#db2777" stroke-width="0.9" />
+    <!-- 裙面垂直柔和陰影摺線 (增加垂直修長感) -->
+    <path d="M 46,88 Q 44,101 41,113" stroke="#f472b6" stroke-width="1" fill="none" />
+    <path d="M 53,89 Q 52,102 51,114" stroke="#f472b6" stroke-width="1" fill="none" />
+    <path d="M 67,89 Q 68,102 69,114" stroke="#f472b6" stroke-width="1" fill="none" />
+    <path d="M 74,88 Q 76,101 79,113" stroke="#f472b6" stroke-width="1" fill="none" />
+    <!-- 裙擺優雅雪白波浪蕾絲邊 -->
+    <path d="M 31,112 Q 38,115 45,112 Q 52,116 60,113 Q 68,116 75,112 Q 82,115 89,112 C 87,114 78,116 60,116 C 42,116 33,114 31,112 Z" fill="#ffffff" stroke="#f472b6" stroke-width="0.8" />
+    <!-- 腰際小巧俏麗立體蝴蝶結 -->
+    <ellipse cx="57" cy="86.8" rx="3.2" ry="2" transform="rotate(-15 57 86.8)" fill="#f43f5e" stroke="#ffffff" stroke-width="0.5" />
+    <ellipse cx="63" cy="86.8" rx="3.2" ry="2" transform="rotate(15 63 86.8)" fill="#f43f5e" stroke="#ffffff" stroke-width="0.5" />
+    <circle cx="60" cy="86.8" r="1.6" fill="#ffffff" stroke="#db2777" stroke-width="0.5" />
   </g>
 </g>`,
+        outfit_hoodie: `<!-- 🐱 暖萌柴犬連帽衛衣: 溫暖芥末黃連帽T，胸前軟萌貓爪口袋與棉質抽繩 -->
+<g id="acc_outfit_hoodie" filter="drop-shadow(0 2px 4px rgba(202,138,4,0.25))">
+  <path d="M 38,71 Q 60,65 82,71 Q 74,62 60,62 Q 46,62 38,71 Z" fill="#d97706" />
+  <path d="M 37,72 L 30,88 L 41,89 L 41,108 Q 60,110 79,108 L 79,89 L 90,88 L 83,72 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1" />
+  <rect x="29" y="86" width="12" height="3" rx="1.5" fill="#d97706" />
+  <rect x="79" y="86" width="12" height="3" rx="1.5" fill="#d97706" />
+  <path d="M 52,72 L 60,77 L 68,72" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" />
+  <path d="M 56,76 Q 54,84 55,89" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linecap="round" />
+  <circle cx="55" cy="89.5" r="1.2" fill="#ffffff" />
+  <path d="M 64,76 Q 66,84 65,89" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linecap="round" />
+  <circle cx="65" cy="89.5" r="1.2" fill="#ffffff" />
+  <path d="M 45,93 L 49,88 L 71,88 L 75,93 L 73,103 Q 60,105 47,103 Z" fill="#fef3c7" stroke="#d97706" stroke-width="0.8" />
+  <ellipse cx="60" cy="97" rx="2.5" ry="2" fill="#f59e0b" />
+  <circle cx="56.5" cy="94" r="0.9" fill="#f59e0b" />
+  <circle cx="59" cy="93" r="0.9" fill="#f59e0b" />
+  <circle cx="61.5" cy="93" r="0.9" fill="#f59e0b" />
+  <circle cx="63.5" cy="94" r="0.9" fill="#f59e0b" />
+  <path d="M 41,107 Q 60,109 79,107 L 79,110 Q 60,112 41,110 Z" fill="#d97706" />
+</g>`,
+        outfit_overalls: `<!-- 👖 青春丹寧牛仔吊帶褲: 內搭經典紅白條紋T恤，外搭復古水洗牛仔連身工裝褲 -->
+<g id="acc_outfit_overalls" filter="drop-shadow(0 2px 4px rgba(30,58,138,0.25))">
+  <path d="M 37,72 L 31,86 L 43,87 L 77,87 L 89,86 L 83,72 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.8" />
+  <path d="M 35,76 L 41,76" stroke="#ef4444" stroke-width="1.8" />
+  <path d="M 33,80 L 42,80" stroke="#ef4444" stroke-width="1.8" />
+  <path d="M 79,76 L 85,76" stroke="#ef4444" stroke-width="1.8" />
+  <path d="M 78,80 L 87,80" stroke="#ef4444" stroke-width="1.8" />
+  <path d="M 45,74 L 75,74" stroke="#ef4444" stroke-width="1.8" />
+  <path d="M 42,83 L 78,83 L 84,112 Q 60,114 36,112 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.9" />
+  <path d="M 43,72 L 46,84" stroke="#1e40af" stroke-width="2.6" stroke-linecap="round" />
+  <path d="M 77,72 L 74,84" stroke="#1e40af" stroke-width="2.6" stroke-linecap="round" />
+  <rect x="44" y="82" width="4.5" height="4" rx="1" fill="#facc15" stroke="#a16207" stroke-width="0.6" />
+  <rect x="71.5" y="82" width="4.5" height="4" rx="1" fill="#facc15" stroke="#a16207" stroke-width="0.6" />
+  <path d="M 50,88 L 70,88 L 68,98 L 60,102 L 52,98 Z" fill="#1d4ed8" stroke="#facc15" stroke-width="0.8" stroke-dasharray="2 1" />
+  <line x1="62" y1="84" x2="66" y2="92" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
+  <polygon points="62,84 61,82 63,82" fill="#ef4444" />
+  <path d="M 36,108 Q 60,111 84,108" stroke="#facc15" stroke-width="0.8" stroke-dasharray="2 1" fill="none" />
+</g>`,
+        outfit_maid: `<!-- ☕ 萌系經典女僕裝: 黑色典雅連身長裙+雪白抓褶荷葉邊圍裙+胸前紅色蝴蝶結 -->
+<g id="acc_outfit_maid" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.25))">
+  <path d="M 38,72 L 31,86 L 42,87 L 78,87 L 89,86 L 82,72 Z" fill="#18181b" stroke="#09090b" stroke-width="0.8" />
+  <path d="M 37,86 Q 60,88 83,86 L 93,113 Q 60,116 27,113 Z" fill="#27272a" stroke="#18181b" stroke-width="0.9" />
+  <path d="M 38,72 Q 33,76 34,84 Q 38,82 42,76 Z" fill="#ffffff" stroke="#e4e4e7" stroke-width="0.6" />
+  <path d="M 82,72 Q 87,76 86,84 Q 82,82 78,76 Z" fill="#ffffff" stroke="#e4e4e7" stroke-width="0.6" />
+  <path d="M 47,74 L 73,74 L 71,86 L 49,86 Z" fill="#ffffff" stroke="#e4e4e7" stroke-width="0.6" />
+  <path d="M 44,86 L 76,86 L 82,111 Q 60,114 38,111 Z" fill="#fafafa" stroke="#e4e4e7" stroke-width="0.7" />
+  <path d="M 38,110 Q 43,113 49,110 Q 55,113 60,110 Q 65,113 71,110 Q 77,113 82,110" stroke="#d4d4d8" stroke-width="1.2" fill="none" />
+  <ellipse cx="56.5" cy="76" rx="2.8" ry="1.6" transform="rotate(-15 56.5 76)" fill="#ef4444" />
+  <ellipse cx="63.5" cy="76" rx="2.8" ry="1.6" transform="rotate(15 63.5 76)" fill="#ef4444" />
+  <circle cx="60" cy="76" r="1.3" fill="#b91c1c" />
+  <path d="M 44,86 Q 37,88 38,94 Q 44,91 46,87" fill="#ffffff" stroke="#e4e4e7" stroke-width="0.6" />
+  <path d="M 76,86 Q 83,88 82,94 Q 76,91 74,87" fill="#ffffff" stroke="#e4e4e7" stroke-width="0.6" />
+</g>`,
+        outfit_witch: `<!-- 🧹 萬聖星夜小魔女法袍: 幽邃紫黑星紋魔法長袍+神秘金月胸針+繁星金邊滾條 -->
+<g id="acc_outfit_witch" filter="drop-shadow(0 3px 6px rgba(88,28,135,0.35))">
+  <path d="M 36,73 L 28,88 L 42,88 L 78,88 L 92,88 L 84,73 Z" fill="#3b0764" stroke="#2e1065" stroke-width="0.8" />
+  <path d="M 37,86 Q 60,89 83,86 L 96,114 Q 60,117 24,114 Z" fill="#581c87" stroke="#3b0764" stroke-width="0.9" />
+  <path d="M 28,88 C 24,96 26,104 33,101 C 36,96 36,90 41,88 Z" fill="#4c1d95" stroke="#3b0764" stroke-width="0.7" />
+  <path d="M 92,88 C 96,96 94,104 87,101 C 84,96 84,90 79,88 Z" fill="#4c1d95" stroke="#3b0764" stroke-width="0.7" />
+  <path d="M 52,73 L 60,84 L 68,73 L 63,115 L 57,115 Z" fill="#701a75" opacity="0.9" />
+  <line x1="60" y1="84" x2="60" y2="115" stroke="#facc15" stroke-width="0.9" />
+  <path d="M 58,76 C 56,74 56,71 58,69 C 55,70 54,73 55,75 C 56,77 58,76 58,76 Z" fill="#facc15" stroke="#ca8a04" stroke-width="0.5" />
+  <circle cx="63" cy="72.5" r="1.3" fill="#facc15" />
+  <path d="M 25,113 Q 60,116 95,113" stroke="#facc15" stroke-width="1.3" stroke-dasharray="3 2" fill="none" />
+  <polygon points="42,104 43,106 45,106 43.5,107 44,109 42,108 40,109 40.5,107 39,106 41,106" fill="#fde047" opacity="0.9" />
+  <polygon points="76,102 77,104 79,104 77.5,105 78,107 76,106 74,107 74.5,105 73,104 75,104" fill="#fde047" opacity="0.9" />
+</g>,
         outfit_kimono: `<!-- 👘 和風櫻花祭浴衣 -->
 <g id="acc_outfit_kimono"><path d="M 40,71 L 32,88 L 44,98 L 76,98 L 88,88 L 80,71 Z" fill="#fbcfe8" stroke="#ec4899" stroke-width="1" /><path d="M 46,71 L 63,88 L 57,88 L 42,73 Z" fill="#ffffff" opacity="0.8" /><path d="M 74,71 L 57,88 L 63,88 L 78,73 Z" fill="#f472b6" /><rect x="42" y="84" width="36" height="8" rx="1.5" fill="#7c3aed" stroke="#6d28d9" stroke-width="0.8" /><line x1="43" y1="88" x2="77" y2="88" stroke="#fbbf24" stroke-width="1" /><circle cx="60" cy="88" r="2.2" fill="#fbbf24" /><circle cx="60" cy="88" r="1" fill="#dc2626" /><circle cx="48" cy="95" r="1" fill="#ec4899" /><circle cx="72" cy="95" r="1" fill="#ec4899" /></g>`,
         outfit_princess: `<!-- 👑 星空璀璨公主裙 -->
@@ -3698,10 +3783,14 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       ],
       outfit: [
         { id: 'outfit_none', name: '自然毛皮', icon: '🚫', desc: '柔軟三花貓毛皮與白襪肉球', unlockType: 'free', price: 0, reqLevel: 1 },
+        { id: 'outfit_hoodie', name: '🐱 暖萌柴犬連帽衛衣', icon: '🐱', desc: '【Lv.1】溫暖芥末黃連帽T，胸前軟萌貓爪口袋與棉質抽繩', unlockType: 'fish', price: 45, reqLevel: 1 },
         { id: 'outfit_backpack', name: '🎒 探險雙肩包', icon: '🎒', desc: '【Lv.2 免費】背起小書包探索單字世界！', unlockType: 'level', price: 0, reqLevel: 2 },
-        { id: 'outfit_sailor', name: '⚓ 可愛水手制服', icon: '⚓', desc: '正統日系海軍領雙白線水手服，搭配海軍藍雙白線百褶裙！', unlockType: 'fish', price: 70, reqLevel: 2 },
+        { id: 'outfit_overalls', name: '👖 青春丹寧牛仔吊帶褲', icon: '👖', desc: '【Lv.2】紅白條紋T恤搭配水洗牛仔吊帶褲，胸前插著小鉛筆', unlockType: 'fish', price: 60, reqLevel: 2 },
+        { id: 'outfit_sailor', name: '⚓ 可愛水手制服', icon: '⚓', desc: '正統日系海軍翻領雙白線，加長A字立體百褶裙與雙白飾線！', unlockType: 'fish', price: 70, reqLevel: 2 },
         { id: 'outfit_kimono', name: '👘 和風櫻花祭浴衣', icon: '👘', desc: '粉櫻和服搭配典雅紫腰帶，浪漫夏日祭典', unlockType: 'fish', price: 65, reqLevel: 2 },
-        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '身軀公主洋裝與泡泡袖，搭配修身A字垂墜荷葉裙擺！', unlockType: 'fish', price: 80, reqLevel: 3 },
+        { id: 'outfit_maid', name: '☕ 萌系經典女僕裝', icon: '☕', desc: '【Lv.2】黑白女僕洋裝搭配雪白荷葉邊圍裙與俏麗紅蝴蝶結', unlockType: 'fish', price: 75, reqLevel: 2 },
+        { id: 'outfit_dress', name: '👗 夢幻粉紅蓬蓬裙', icon: '👗', desc: '修身高腰法式公主洋裝，微翹荷葉短袖與垂墜A字蕾絲裙擺！', unlockType: 'fish', price: 80, reqLevel: 3 },
+        { id: 'outfit_witch', name: '🧹 萬聖星夜小魔女法袍', icon: '🧹', desc: '【Lv.3】午夜幽邃紫黑星紋魔法長袍，金色新月胸針與繁星金邊', unlockType: 'fish', price: 85, reqLevel: 3 },
         { id: 'outfit_cloak', name: '🧥 英勇冒險披風', icon: '🧥', desc: '【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！', unlockType: 'level', price: 0, reqLevel: 4 },
         { id: 'outfit_princess', name: '👑 星空璀璨公主裙', icon: '👑', desc: '午夜深藍星河長裙與金星流蘇，至尊公主風', unlockType: 'fish', price: 85, reqLevel: 4 }
       ],
@@ -3744,8 +3833,12 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       neck_medal: "第一名金牌！這是我們一起努力征服 1200 單字的榮耀證書喵！🥇🌟",
       outfit_backpack: "喵！背起小探險背包，今天也要去單字森林挖掘好多新寶藏！🎒✨",
       outfit_cloak: "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
-      outfit_sailor: "水手服套裝登場！上衣配上海軍藍百褶裙，青春活力滿點，今天模擬考一定能拿滿分喵！⚓💙",
-      outfit_dress: "哇～換上修身顯瘦的粉紅公主裙！垂墜荷葉裙擺好優雅，咪咪身材看起來超纖細苗條喵！👗✨",
+      outfit_hoodie: "穿上軟綿綿的柴犬連帽衛衣～胸前的貓爪小口袋可以裝三條小魚乾耶！溫暖又好動喵！🐱💛",
+      outfit_overalls: "丹寧牛仔吊帶褲穿好囉！胸前還插著考試專用小鉛筆，活力滿滿～今天一定要背完所有單字喵！👖✏️✨",
+      outfit_maid: "主人，歡迎回來！萌系女僕咪咪今天為您準備了酥脆小魚乾與滿分英文筆記喵！☕🐾❤️",
+      outfit_sailor: "水手服套裝登場！加長的海軍藍A字百褶裙好飄逸，雙白線條紋超青春，今天模擬考一定能拿滿分喵！⚓💙",
+      outfit_dress: "哇～換上修身顯瘦的粉紅公主裙！微翹荷葉袖配上垂墜A字蕾絲裙擺好優雅，咪咪身材看起來超纖細苗條喵！👗✨",
+      outfit_witch: "（輕揮魔杖念咒）萬聖星夜小魔女咪咪登場！月牙胸針閃爍光芒，把所有的英文難題通通變不見喵！🧹🌙✨",
       hand_fishbone: "嚼嚼嚼～現烤出爐的香脆金黃烤魚！熱騰騰好美味，背單字更有力氣了！🐟♨️😋",
       hand_book: "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
       hand_icecream: "嘴裡咬著草莓冰淇淋甜筒！滴滴答答好消暑～吃完再來背十個單字喵！🍦🍓",
