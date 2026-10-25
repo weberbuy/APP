@@ -1,6 +1,11 @@
-# Deploy scripts (local only)
+# Deploy & Review scripts (local only)
 deploy*.bat
 deploy*.ps1
+review*.bat
+start-watcher.bat
+REVIEW_DASHBOARD.html
+triggers/
+*.trigger
 
 # Raw textbook image folders
 *第一次段考*

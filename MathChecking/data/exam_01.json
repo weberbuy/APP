@@ -300,7 +300,7 @@
     {
       "id": "p2_q2_1",
       "type": "fill_in",
-      "question_text": "2.(1) 如圖，A、B、C 分別是數線上的三個點，則 A 點所代表的數為 ________。",
+      "question_text": "2.(1) 如右圖，A、B、C 分別是數線上的三個點，則 A 點所代表的數為 ________ 。",
       "correct_answer": "2又2/3",
       "user_answer": "2又2/3",
       "is_correct": true,
@@ -312,7 +312,7 @@
     {
       "id": "p2_q2_2",
       "type": "fill_in",
-      "question_text": "2.(2) 如圖，A、B、C 分別是數線上的三個點，則 B 點所代表的數的相反數為 ________。",
+      "question_text": "2.(2) 如右圖，A、B、C 分別是數線上的三個點，則 B 點所代表的數的相反數為 ________ 。",
       "correct_answer": "2又3/4",
       "user_answer": "2又3/4",
       "is_correct": true,
@@ -324,7 +324,7 @@
     {
       "id": "p2_q2_3",
       "type": "fill_in",
-      "question_text": "2.(3) 如圖，A、B、C 分別是數線上的三個點，則 C 點與 A 點的距離為 ________。",
+      "question_text": "2.(3) 如右圖，A、B、C 分別是數線上的三個點，則 C 點與 A 點的距離為 ________ 。",
       "correct_answer": "3又2/3",
       "user_answer": "3又2/3",
       "is_correct": true,
@@ -336,7 +336,7 @@
     {
       "id": "p2_q3",
       "type": "fill_in",
-      "question_text": "3. 在數線上描出 1.6 這一點，至少須將 1 和 2 之間分成幾等分？________",
+      "question_text": "3. 在數線上要描出 1.6 這一點，至少須將 1 和 2 之間分成 ________ 等分。",
       "correct_answer": "5",
       "user_answer": "7",
       "is_correct": false,
@@ -346,7 +346,7 @@
     {
       "id": "p2_q4",
       "type": "fill_in",
-      "question_text": "4. 若以 101 大樓的一樓為原點，地下一樓記為「+1」，則第 101 樓記為多少？________",
+      "question_text": "4. 若將 101 大樓看成一條數線，並以一樓當作原點，若地下一樓記為「+1」，則第 101 樓應記為 ________ 。",
       "correct_answer": "-100",
       "user_answer": "-101",
       "is_correct": false,
@@ -356,7 +356,7 @@
     {
       "id": "p2_q5",
       "type": "fill_in",
-      "question_text": "5. 若 (-8) - (-9) = 甲，8 - (-7) = 乙，則 甲 + 乙 = ________。",
+      "question_text": "5. 若 (-8) - (-9) = 甲，8 - (-7) = 乙，則 甲 + 乙 = ________ 。",
       "correct_answer": "16",
       "user_answer": "2",
       "is_correct": false,
@@ -366,7 +366,7 @@
     {
       "id": "p2_q6",
       "type": "fill_in",
-      "question_text": "6. 比較下列各數的大小，並以「<」連接：|4|, -|-5|, |-2|, 3, -1又1/3。________",
+      "question_text": "6. 將 -1又1/3、|-2|、|4|、-|-5|、3 由小到大排列：________ 。",
       "correct_answer": "-|-5| < -1又1/3 < |-2| < 3 < |4|",
       "user_answer": "-|-5| < -1又1/3 < |-2| < 3 < |4|",
       "is_correct": true,
@@ -376,7 +376,7 @@
     {
       "id": "p2_q7",
       "type": "fill_in",
-      "question_text": "7. 若 0.0000000001 = 10^(□)，則 □ = ________。",
+      "question_text": "7. 若 0.0000000001 = 10^(□)，則 □ = ________ 。",
       "correct_answer": "-10",
       "user_answer": "-10",
       "is_correct": true,
@@ -386,7 +386,7 @@
     {
       "id": "p2_q8",
       "type": "fill_in",
-      "question_text": "8. 數線上兩點 A(a) 與 B(-3)，若線段 AB = 5，則 a 之值為何？________",
+      "question_text": "8. 若數線上有 A(a)、B(-3) 兩點，若 AB = 5，則 a = ________ 。",
       "correct_answer": "2 或 -8",
       "user_answer": "8",
       "is_correct": false,
@@ -396,7 +396,7 @@
     {
       "id": "p2_q9",
       "type": "fill_in",
-      "question_text": "9. 若以中午 12 時為基準，下午 3 時記為「+3」時，則同日之上午 3 時記為多少時？________",
+      "question_text": "9. 以中午 12 時為基準。若下午 3 時記為 +3 時，則上午 3 時應記為 ________ 時。",
       "correct_answer": "-9",
       "user_answer": "-9",
       "is_correct": true,
@@ -406,7 +406,7 @@
     {
       "id": "p2_q10",
       "type": "fill_in",
-      "question_text": "10. 在 (-2)², 10⁻⁴, 10⁰, -3², (-5)³ 五個數中，正數共有幾個？________",
+      "question_text": "10. (-2)²、10⁻⁴、10⁰、(-3²)、(-5)³，以上數值為正數的有 ________ 個。",
       "correct_answer": "3",
       "user_answer": "1",
       "is_correct": false,
@@ -416,7 +416,7 @@
     {
       "id": "p2_q11",
       "type": "fill_in",
-      "question_text": "11. 利用分配律計算 958 × 8591 - 959 × 8591 = ________。",
+      "question_text": "11. 利用分配律計算 958 × 8591 - 959 × 8591 = ________ 。",
       "correct_answer": "-8591",
       "user_answer": "-8591",
       "is_correct": true,
@@ -426,7 +426,7 @@
     {
       "id": "p2_q12",
       "type": "fill_in",
-      "question_text": "12. 數線上 A 點的坐標為 3，B 點在原點的左邊，且線段 AB 的長度為 9，則 B 點的坐標為何？________",
+      "question_text": "12. 在數線上，A 點所代表的數為 3，若 B 點在原點的左邊，且與 A 點的距離為 9，則 B 點所代表的數為 ________ 。",
       "correct_answer": "-6",
       "user_answer": "-6",
       "is_correct": true,
@@ -436,7 +436,7 @@
     {
       "id": "p2_q13",
       "type": "fill_in",
-      "question_text": "13. 已知數線上三點坐標分別為 A(-8)、B(13)、C(-14)，則線段長度和 AB + BC + CA = ________。",
+      "question_text": "13. 若數線上 A、B、C 三點所代表的數分別為 -8、13、-14，則 AB + BC + CA = ________ 。",
       "correct_answer": "54",
       "user_answer": "54",
       "is_correct": true,
@@ -446,27 +446,27 @@
     {
       "id": "p2_q14",
       "type": "fill_in",
-      "question_text": "14. 若 (-10 - x) 與 (6 - x) 互為相反數，則 x = ________。",
+      "question_text": "14. 設 -10 與 6 同時減去某數後，恰好成為相反數，則某數是 ________ 。",
       "correct_answer": "-2",
       "user_answer": "-2",
       "is_correct": true,
-      "explanation": "互為相反數的兩數之和為 0：\n(-10 - x) + (6 - x) = 0\n-4 - 2x = 0\n2x = -4 => x = -2。",
+      "explanation": "設某數為 x。依題意：(-10 - x) 與 (6 - x) 互為相反數，其和為 0：\n(-10 - x) + (6 - x) = 0\n-4 - 2x = 0 => 2x = -4 => x = -2。\n故某數是 -2。",
       "has_image": false
     },
     {
       "id": "p2_q15",
       "type": "fill_in",
-      "question_text": "15. 若以全班平均成績為基準，小明的成績 79 分記為「+9」分，則全班平均成績為多少分？________",
+      "question_text": "15. 明芳數學考 79 分記為 +9 分，若大寶考了 65 分記為 -5 分，則基準分數是 ________ 分。",
       "correct_answer": "70",
       "user_answer": "70",
       "is_correct": true,
-      "explanation": "基準分 + 9 = 79，故基準分（全班平均）= 79 - 9 = 70 分。",
+      "explanation": "明芳 79 分記為 +9 分，表示基準分數 = 79 - 9 = 70 分；\n檢驗大寶：65 - 70 = -5 分，完全吻合。\n故基準分數是 70 分。",
       "has_image": false
     },
     {
       "id": "p2_q16",
       "type": "fill_in",
-      "question_text": "16. 從 -8, -5, 0, 4, 5, 9 六個數中任選三個數相乘，所得的乘積最小值為何？________",
+      "question_text": "16. 在 -8、-5、0、4、5、9 六個數中任選三個數相乘，其中乘積最小的值為 ________ 。",
       "correct_answer": "-360",
       "user_answer": "-360",
       "is_correct": true,
@@ -476,7 +476,7 @@
     {
       "id": "p2_q17",
       "type": "fill_in",
-      "question_text": "17. 數線上 A(-18)、B(-6) 兩點：\n(1) 線段 AB 的長度為多少？________\n(2) 若 BC = 7，則 C 點的坐標為何？________\n(3) A、B 兩點的中點坐標為何？________",
+      "question_text": "17. 數線上有 A(-18)、B(-6) 兩點，請問：\n(1) AB = ________\n(2) 若 BC = 7，則 C 點的坐標為 ________\n(3) A、B 兩點的中點坐標為 ________",
       "correct_answer": "(1) 12  (2) 1 或 -13  (3) -12",
       "user_answer": "(1) 12  (2) 13  (3) 12",
       "is_correct": false,
@@ -486,27 +486,27 @@
     {
       "id": "p2_q18",
       "type": "fill_in",
-      "question_text": "18. 數線上 A(-15)、B(13)，將線段 AB 分成七等分，得六個等分點，則此六個等分點的坐標總和為何？________",
+      "question_text": "18. 數線上有兩點 A、B，若 A 點表示的數為 -15，B 點表示的數為 13，且在 A 與 B 之間分成 7 等分，得 6 個等分點，則這 6 個等分點所表示的各數之和為 ________ 。",
       "correct_answer": "-6",
       "user_answer": "24",
       "is_correct": false,
-      "explanation": "A(-15) 與 B(13) 的中點坐標為 (-15 + 13) / 2 = -1。六個等分點對稱於中點，其平均值即為中點坐標，故六點總和 = 6 × (-1) = -6。學生寫 24 錯誤。",
+      "explanation": "A(-15) 與 B(13) 的中點坐標為 [(-15) + 13] / 2 = -1。\n在 A 與 B 之間等分所得的 6 個等分點兩兩對稱於中點，6 個等分點的平均值即為中點坐標 (-1)。\n故這 6 個等分點所表示的各數之和 = 6 × (-1) = -6。學生寫 24 錯誤。",
       "has_image": false
     },
     {
       "id": "p2_q19",
       "type": "fill_in",
-      "question_text": "19. 一份測驗共有 25 題，每答對一題得 4 分，答錯一題倒扣 1 分，不作答則不給分也不扣分。小華有 3 題未作答，共得 68 分，則小華答對了幾題？________",
+      "question_text": "19. 魯夫參加某次數學測驗，此測驗共有 25 題選擇題，每答對一題得 4 分，未作答的題目不給分，答錯一題倒扣 1 分。魯夫在該次測驗中，只有 3 題沒作答，並且得到 68 分，所以魯夫答對 ________ 題。",
       "correct_answer": "18",
       "user_answer": "17",
       "is_correct": false,
-      "explanation": "作答題數 = 25 - 3 = 22 題。設答對 x 題，答錯 (22 - x) 題。\n4x - 1 × (22 - x) = 68\n4x - 22 + x = 68\n5x = 90 => x = 18 題。學生寫 17 錯誤。",
+      "explanation": "魯夫共作答 25 - 3 = 22 題。設魯夫答對 x 題，則答錯 (22 - x) 題。\n得分方程式：\n4x - 1 × (22 - x) = 68\n4x - 22 + x = 68\n5x = 90 => x = 18 題。\n故魯夫答對 18 題。學生寫 17 錯誤。",
       "has_image": false
     },
     {
       "id": "p2_q20",
       "type": "fill_in",
-      "question_text": "20. 已知 |a| = 3，|b| = 7，則 a - b 的最大值為何？________",
+      "question_text": "20. 若 |a| = 3，|b| = 7，則 a - b 的最大值為 ________ 。",
       "correct_answer": "10",
       "user_answer": "4",
       "is_correct": false,
@@ -516,7 +516,7 @@
     {
       "id": "p2_q21",
       "type": "fill_in",
-      "question_text": "21. 若 |甲數 - 2| = 12，乙數 = -5，則甲數 - 乙數 = ________。",
+      "question_text": "21. 若 |甲數 - 2| = 12，乙數 = -5，則甲數 - 乙數 = ________ 。",
       "correct_answer": "19 或 -5",
       "user_answer": "19",
       "is_correct": false,
@@ -526,7 +526,7 @@
     {
       "id": "p2_q22",
       "type": "fill_in",
-      "question_text": "22. 若 |a| = 9，|-b| = 5，則 -|-a| - |b| = ________。",
+      "question_text": "22. 若 |a| = 9，|-b| = 5，則 -|-a| - |b| = ________ 。",
       "correct_answer": "-14",
       "user_answer": "-14",
       "is_correct": true,
@@ -536,7 +536,7 @@
     {
       "id": "p2_q23",
       "type": "fill_in",
-      "question_text": "23. |甲數 - 4| + |乙數 + 5| = 0，則甲數 - 乙數 = ________。",
+      "question_text": "23. |甲數 - 4| + |乙數 + 5| = 0，則甲數 - 乙數 = ________ 。",
       "correct_answer": "9",
       "user_answer": "-1",
       "is_correct": false,
@@ -546,7 +546,7 @@
     {
       "id": "p2_q24",
       "type": "fill_in",
-      "question_text": "24. 已知 10 × 11 × 12 × 13 × 14 = 240240，則 (-11) × (-12) × (-13) × (-14) × (-15) = ________。",
+      "question_text": "24. 若 10 × 11 × 12 × 13 × 14 = 240240，則 (-11) × (-12) × (-13) × (-14) × (-15) = ________ 。",
       "correct_answer": "-360360",
       "user_answer": "-24024",
       "is_correct": false,
@@ -576,7 +576,7 @@
     {
       "id": "p2_q27",
       "type": "fill_in",
-      "question_text": "27. 若 a = -2⁴, b = -2⁵, c = -2⁶, d = (-2)⁴, e = (-2)³，則 a、b、c、d、e 的大小關係為 ________。",
+      "question_text": "27. 若 a = -2⁴, b = -2⁵, c = -2⁶, d = (-2)⁴, e = (-2)³，則 a、b、c、d、e 的大小關係為 ________ 。",
       "correct_answer": "c < b < a < e < d",
       "user_answer": "c < b < a < e < d",
       "is_correct": true,
@@ -586,7 +586,7 @@
     {
       "id": "p2_q28",
       "type": "fill_in",
-      "question_text": "28. 計算 1985 × 67 - 542 × 33 + 1985 × 33 - 542 × 67 = ________。",
+      "question_text": "28. 計算 1985 × 67 - 542 × 33 + 1985 × 33 - 542 × 67 = ________ 。",
       "correct_answer": "144300",
       "user_answer": "144300",
       "is_correct": true,
