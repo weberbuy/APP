@@ -547,7 +547,7 @@
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Google Gemini API Key：</label>
                             <input type="password" id="geminiApiKeyInput" placeholder="請輸入自 Google AI Studio 取得之 API Key" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                             <div id="geminiKeyStatusText" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono"></div>
-                            <p class="text-[10px] text-slate-400 mt-0.5">💡 金鑰僅儲存於本機瀏覽器。請至 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-600 underline font-bold">Google AI Studio</a> 建立免付費 API Key。</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">💡 金鑰僅儲存於本機瀏覽器。請至 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline font-bold">Google AI Studio</a> 建立免付費 API Key。</p>
                         </div>
                         <!-- 【v5.4.6 模型自選與檢測清單可複製區塊】 -->
                         <div id="geminiModelConfigBlock" class="hidden space-y-2 bg-slate-100/70 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
@@ -1943,8 +1943,8 @@ function jumpToCardsCategory(cat) {
 
 
         function recordNavigationReturnPoint(customLabel = '') {
-            // 僅在非看板模式 (總覽/Forteller/時間軸) 跳轉至看板時記錄來源
-            if (typeof viewMode !== 'undefined' && viewMode === 'cards') return;
+            // 僅在非看板模式 (總覽/Forteller/時間軸) 跳轉至看板時記錄來源；但若明確指定 customLabel (如今日習慣打卡專區)，即使在看板模式亦記錄，以保證能精準返回
+            if (!customLabel && typeof viewMode !== 'undefined' && viewMode === 'cards') return;
 
 
             let label = customLabel;
@@ -2107,7 +2107,7 @@ function jumpToCardsCategory(cat) {
         }
 
 
-        function jumpToStepEdit(thoughtId, stepId) {
+        function jumpToStepEdit(thoughtId, stepId, customLabel = '') {
 
 
             const t = thoughts.find(x => x.id === thoughtId);
@@ -2123,7 +2123,7 @@ function jumpToCardsCategory(cat) {
             if (step && step.done) {
                 showCompletedStepsMap[thoughtId] = true;
             }
-            recordNavigationReturnPoint(); // 【v5.3.15 補足步驟編輯跳轉來源記錄】
+            recordNavigationReturnPoint(customLabel); // 【v5.3.15 補足步驟編輯跳轉來源記錄】
             editingId = null;
             editingStepIdKey = `${thoughtId}-${stepId}`;
             setViewMode('cards');
@@ -2133,6 +2133,10 @@ function jumpToCardsCategory(cat) {
                 const el = document.getElementById(`step-item-${thoughtId}-${stepId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add('ring-4', 'ring-amber-400', 'ring-offset-2', 'transition-all', 'duration-500');
+                    setTimeout(() => {
+                        el.classList.remove('ring-4', 'ring-amber-400', 'ring-offset-2');
+                    }, 2000);
                 } else {
 
 
@@ -2140,6 +2144,15 @@ function jumpToCardsCategory(cat) {
                     if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 150);
+        }
+
+
+        // 【v5.4.1 新增】：從今日習慣打卡專區雙擊步驟跳轉至看板模式編輯對應步驟
+        function jumpFromRoutineToStepEdit(thoughtId, stepId, event) {
+            if (event && event.target && event.target.closest('input, button, select, label, a')) {
+                return;
+            }
+            jumpToStepEdit(thoughtId, stepId, '今日習慣打卡專區');
         }
 
 
@@ -4015,17 +4028,17 @@ function updateContainerWidth() {
                 }
 
 
-                // 1. 逾期未完成清單 (v5.3.17 加入「全部遞延至今日」快捷整理按鈕)
+                // 1. 逾期未完成清單 (v5.4.1 支援「全部依週期遞延」：每週延到下週、每日延到今日)
                 if (overdueList.length > 0) {
                     html += `
                         <div class="bg-rose-50/80 dark:bg-rose-950/30 p-3 rounded-xl border border-rose-200 dark:border-rose-900/60 space-y-2">
                             <div class="text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center justify-between gap-1.5 flex-wrap">
                                 <div class="flex items-center gap-1.5">
                                     <span>⚠️ 逾期未打卡 (${overdueList.length})</span>
-                                    <span class="text-[10px] font-normal text-rose-600 dark:text-rose-400">近 7 天待補打卡，或遞延至今日</span>
+                                    <span class="text-[10px] font-normal text-rose-600 dark:text-rose-400">近 7 天待補打卡，或依週期遞延</span>
                                 </div>
-                                <button type="button" onclick="batchSyncAllOverdueToToday()" class="text-[10px] font-bold text-rose-700 dark:text-rose-200 bg-white dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-300 dark:border-rose-700 px-2 py-0.5 rounded-lg shadow-2xs transition-colors cursor-pointer" title="一鍵將所有逾期習慣快速對齊至今日">
-                                    ⏭️ 全部遞延至今日
+                                <button type="button" onclick="batchSyncAllOverdueToToday()" class="text-[10px] font-bold text-rose-700 dark:text-rose-200 bg-white dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-300 dark:border-rose-700 px-2 py-0.5 rounded-lg shadow-2xs transition-colors cursor-pointer" title="一鍵將所有逾期習慣依各自週期遞延（每週延到下週、每日延到今日）">
+                                    ⏭️ 全部依週期遞延
                                 </button>
                             </div>
                             <div class="space-y-1.5">
@@ -4085,14 +4098,14 @@ function updateContainerWidth() {
 
 
             return `
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-xl border transition-all gap-2 ${
+                <div ondblclick="jumpFromRoutineToStepEdit(${t.id}, ${s.id}, event)" title="💡 雙擊步驟可跳轉至看板模式編輯此步驟" class="group/routine flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-xl border transition-all gap-2 cursor-pointer select-none ${
                     isCompleted 
-                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/40 text-slate-500' 
+                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/40 text-slate-500 hover:border-emerald-300' 
                         : isOverdue 
-                        ? 'bg-white dark:bg-slate-800 border-rose-200 dark:border-rose-800/60 shadow-2xs hover:border-rose-300' 
-                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-2xs hover:border-indigo-300'
+                        ? 'bg-white dark:bg-slate-800 border-rose-200 dark:border-rose-800/60 shadow-2xs hover:border-rose-400 hover:shadow-xs' 
+                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-2xs hover:border-indigo-400 hover:shadow-xs'
                 }">
-                    <!-- 左側：勾選框與名稱 -->
+                    <!-- 左側：勾選框與名稱 (支援雙擊跳轉看板編輯) -->
                     <div class="flex items-center gap-2.5 min-w-0 flex-1">
                         <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleStep(${t.id}, ${s.id})" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0">
                         <div class="min-w-0 flex-1">
@@ -4107,6 +4120,7 @@ function updateContainerWidth() {
                                 <span>[${escapeHtml(t.category || '目標')}]</span>
                                 <span class="truncate max-w-[180px]">${escapeHtml(t.text)}</span>
                                 ${isOverdue ? `<span class="text-rose-600 font-bold">(原定 ${s.stepDate})</span>` : ''}
+                                <span class="opacity-0 group-hover/routine:opacity-100 text-indigo-500 dark:text-indigo-400 font-medium transition-opacity ml-1 text-[10px]">✏️ 雙擊編輯</span>
                             </div>
                         </div>
                     </div>
@@ -4140,12 +4154,15 @@ function updateContainerWidth() {
                         ` : ''}
 
 
-                        <!-- 逾期專屬遞延按鈕 -->
-                        ${isOverdue ? `
-                            <button type="button" onclick="skipOverdueRoutine(${t.id}, ${s.id})" class="text-[10px] font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-slate-600 transition-colors cursor-pointer" title="跳過逾期紀錄，直接改為今日執行">
-                                ⏭️ 遞延至今日
-                            </button>
-                        ` : ''}
+                        <!-- 逾期專屬遞延按鈕 (依各步驟之循環週期智慧顯示：每週延到下週、每日延到今日等) -->
+                        ${isOverdue ? (() => {
+                            const deferInfo = getRoutineDeferInfo(s);
+                            return `
+                                <button type="button" onclick="skipOverdueRoutine(${t.id}, ${s.id})" class="text-[10px] font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-slate-600 transition-colors cursor-pointer shadow-2xs" title="${escapeAttr(deferInfo.title)}">
+                                    ${deferInfo.btnLabel}
+                                </button>
+                            `;
+                        })() : ''}
                     </div>
                 </div>
             `;
@@ -4215,20 +4232,99 @@ function updateContainerWidth() {
         }
 
 
+        // 【v5.4.1 新增】：取得逾期步驟依其循環週期應遞延的目標日期與說明（每週延到下週、每日延到今日等）
+        function getRoutineDeferInfo(step) {
+            const rec = step.recurrence;
+            const oldDate = step.stepDate || todayStr;
+
+            if (rec === 'weekly') {
+                let nextDate = getNextRecurrenceDate(oldDate, 'weekly');
+                // 確保遞延至未來的下一個週循環，避免仍落在過去或今日
+                while (nextDate <= todayStr) {
+                    nextDate = getNextRecurrenceDate(nextDate, 'weekly');
+                }
+                return {
+                    targetDate: nextDate,
+                    btnLabel: '⏭️ 遞延至下週',
+                    title: `跳過逾期紀錄，維持每週週期延至下週 (${nextDate})`,
+                    toastText: `已跳過逾期紀錄，步驟「${step.text}」已維持每週週期遞延至下週 (${nextDate})！`
+                };
+            } else if (rec === 'monthly') {
+                let nextDate = getNextRecurrenceDate(oldDate, 'monthly');
+                while (nextDate <= todayStr) {
+                    nextDate = getNextRecurrenceDate(nextDate, 'monthly');
+                }
+                return {
+                    targetDate: nextDate,
+                    btnLabel: '⏭️ 遞延至下月',
+                    title: `跳過逾期紀錄，維持每月週期延至下月 (${nextDate})`,
+                    toastText: `已跳過逾期紀錄，步驟「${step.text}」已維持每月週期遞延至下月 (${nextDate})！`
+                };
+            } else if (rec === 'weekends') {
+                const todayDay = todayObj.getDay();
+                const isTodayWeekend = (todayDay === 0 || todayDay === 6);
+                if (isTodayWeekend) {
+                    return {
+                        targetDate: todayStr,
+                        btnLabel: '⏭️ 遞延至今日',
+                        title: '跳過逾期紀錄，改為今日(週末)執行',
+                        toastText: `已跳過逾期紀錄，步驟「${step.text}」遞延至今日 (${todayStr}) 待辦！`
+                    };
+                } else {
+                    let nextDate = getNextRecurrenceDate(todayStr, 'weekends');
+                    return {
+                        targetDate: nextDate,
+                        btnLabel: '⏭️ 遞延至週末',
+                        title: `跳過逾期紀錄，維持週末週期延至 (${nextDate})`,
+                        toastText: `已跳過逾期紀錄，步驟「${step.text}」已遞延至週末 (${nextDate})！`
+                    };
+                }
+            } else if (rec === 'weekdays') {
+                const todayDay = todayObj.getDay();
+                const isTodayWeekend = (todayDay === 0 || todayDay === 6);
+                if (isTodayWeekend) {
+                    let nextDate = getNextRecurrenceDate(todayStr, 'weekdays');
+                    return {
+                        targetDate: nextDate,
+                        btnLabel: '⏭️ 遞延至週一',
+                        title: `跳過逾期紀錄，維持工作日週期延至下週一 (${nextDate})`,
+                        toastText: `已跳過逾期紀錄，步驟「${step.text}」已遞延至週一 (${nextDate})！`
+                    };
+                } else {
+                    return {
+                        targetDate: todayStr,
+                        btnLabel: '⏭️ 遞延至今日',
+                        title: '跳過逾期紀錄，直接改為今日執行',
+                        toastText: `已跳過逾期紀錄，步驟「${step.text}」遞延至今日 (${todayStr}) 待辦！`
+                    };
+                }
+            } else {
+                // daily 或其他默認情況
+                return {
+                    targetDate: todayStr,
+                    btnLabel: '⏭️ 遞延至今日',
+                    title: '跳過逾期紀錄，直接改為今日執行',
+                    toastText: `已跳過逾期紀錄，步驟「${step.text}」遞延至今日 (${todayStr}) 待辦！`
+                };
+            }
+        }
+
+
         function skipOverdueRoutine(thoughtId, stepId) {
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
             const s = (t.steps || []).find(x => x.id === stepId);
             if (!s) return;
-            
-            s.stepDate = todayStr;
+
+            const deferInfo = getRoutineDeferInfo(s);
+            s.stepDate = deferInfo.targetDate;
             saveData();
             render();
-            showToast(`已跳過過往紀錄，步驟「${s.text}」遞延至今日 (${todayStr}) 待辦！`, 'info');
+            showToast(deferInfo.toastText, 'info');
         }
 
 
-        // 【v5.3.17 新增】：一鍵將所有逾期習慣快速對齊至今日
+        // 【v5.4.1 優化】：一鍵將所有逾期習慣依各自週期遞延（每週延到下週、每日延到今日）
         function batchSyncAllOverdueToToday() {
             const overdueCutoffDate = new Date(todayObj.getTime() - 7 * 86400000);
             const overdueCutoffStr = `${overdueCutoffDate.getFullYear()}-${String(overdueCutoffDate.getMonth() + 1).padStart(2, '0')}-${String(overdueCutoffDate.getDate()).padStart(2, '0')}`;
@@ -4241,7 +4337,8 @@ function updateContainerWidth() {
                     if (!s.recurrence || s.recurrence === 'none' || s.done) return;
                     const sDate = s.stepDate || '';
                     if (sDate < todayStr && sDate >= overdueCutoffStr) {
-                        s.stepDate = todayStr;
+                        const deferInfo = getRoutineDeferInfo(s);
+                        s.stepDate = deferInfo.targetDate;
                         count++;
                     }
                 });
@@ -4256,7 +4353,7 @@ function updateContainerWidth() {
 
             saveData();
             render();
-            showToast(`⏭️ 已將 ${count} 項逾期習慣全部遞延至今日 (${todayStr})！`, 'success');
+            showToast(`⏭️ 已將 ${count} 項逾期習慣依各自週期完成遞延！`, 'success');
         }
 
 
@@ -7720,20 +7817,23 @@ const card = document.createElement('div');
                                 ${navigationReturnState ? `
                                     <div class="p-2 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-lg border border-indigo-200 dark:border-indigo-800 flex items-center justify-between text-xs mb-1.5 transition-all">
                                         <span class="font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
-                                            <span>📍 來自【${navigationReturnState.label}】跳轉</span>
+                                            <span>📍 來自【${escapeHtml(navigationReturnState.label)}】跳轉</span>
                                         </span>
-                                        <button type="button" onclick="returnToPreviousView()" class="font-bold bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-700 transition-colors shadow-2xs cursor-pointer flex items-center gap-1">
-                                            <span>↩️ 點此返回原模式</span>
+                                        <button type="button" onclick="returnToPreviousView()" class="font-bold bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-700 transition-colors shadow-2xs cursor-pointer flex items-center gap-1" title="放棄未儲存變更並返回原畫面">
+                                            <span>↩️ 點此返回原畫面</span>
                                         </button>
                                     </div>
                                 ` : ''}
                                 <div class="flex items-center justify-between">
                                     <span class="text-[11px] font-bold text-amber-800 dark:text-amber-300">✏️ 編輯步驟</span>
-                                    <div class="flex gap-1">
+                                    <div class="flex gap-1 flex-wrap">
                                         <button onclick="cancelEditStep()" class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 py-1 rounded cursor-pointer">取消</button>
+                                        ${navigationReturnState ? `
+                                            <button type="button" onclick="cancelEditStep(); returnToPreviousView();" class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 py-1 rounded cursor-pointer" title="取消編輯並返回原畫面">取消並返回</button>
+                                        ` : ''}
                                         <button onclick="saveEditStep(${thought.id}, ${s.id})" class="text-[10px] bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded shadow-sm cursor-pointer">💾 儲存</button>
                                         ${navigationReturnState ? `
-                                            <button type="button" onclick="saveEditStep(${thought.id}, ${s.id}); returnToPreviousView();" class="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm cursor-pointer">💾 儲存並返回</button>
+                                            <button type="button" onclick="saveEditStep(${thought.id}, ${s.id}); returnToPreviousView();" class="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm cursor-pointer" title="儲存變更並返回原畫面">💾 儲存並返回</button>
                                         ` : ''}
                                     </div>
                                 </div>
