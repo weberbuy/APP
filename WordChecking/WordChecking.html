@@ -2948,6 +2948,7 @@ if (typeof window !== 'undefined') {
       if (event) event.stopPropagation();
       ScreenPet.pet();
     }
+    /* === [BUNDLED MODULE: js/cat_wardrobe.js] === */
     const WARDROBE_STORAGE_KEY = 'wordchecking_cat_wardrobe_v1';
     const ACCESSORIES_SVG = {
       aura: {
@@ -4509,6 +4510,8 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
     }
     loadCatWardrobe();
     renderCatAccessories();
+/* === [END MODULE: js/cat_wardrobe.js] === */
+    /* === [BUNDLED MODULE: js/adventure.js] === */
 /**
  * WordChecking Phase 3: 冒險闖關地圖模組 (Adventure Map Mode)
  * 適用於國中會考 1200 單字學習系統
@@ -5396,6 +5399,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
   };
 }));
 var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckingAdventure) ? window.WordCheckingAdventure : (typeof WordCheckingAdventure !== 'undefined' ? WordCheckingAdventure : null);
+/* === [END MODULE: js/adventure.js] === */
     function pickNextStudyItem(pool, mode = 'general') {
       if (!pool || pool.length === 0) return null;
       const order = currentCardOrder || 'default';
@@ -6733,6 +6737,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         alert(`喵！已重置【${theme.name}】的所有紀錄！`);
       }
     }
+    /* === [BUNDLED MODULE: js/rain.js] === */
 (function (global) {
   'use strict';
   const safeCancelAnim = (id) => {
@@ -7502,6 +7507,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     }
   });
 })(typeof window !== 'undefined' ? window : this);
+/* === [END MODULE: js/rain.js] === */
+    /* === [BUNDLED MODULE: js/phonics.js] === */
 (function(window) {
   'use strict';
   const PHONICS_CATEGORIES = [
@@ -8753,6 +8760,8 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     checkQuizAnswer: checkQuizAnswer
   };
 })(window);
+/* === [END MODULE: js/phonics.js] === */
+    /* === [BUNDLED MODULE: js/cruise.js] === */
 (function(window) {
   'use strict';
   const CRUISE_STAGES = [
@@ -9276,6 +9285,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     getBatch: () => cruiseBatch
   };
 })(window);
+/* === [END MODULE: js/cruise.js] === */
     document.addEventListener('DOMContentLoaded', () => {
       try { initTheme(); updateCardFaceModeUI(); } catch (e) { console.warn('initTheme error:', e); }
       try {
