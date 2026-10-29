@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathChecking 題庫系統 v1.0.2</title>
+    <title>MathChecking 題庫系統 v1.1.0 (2026-10-29)</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; max-width: 800px; margin: auto; }
         .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -37,13 +37,14 @@
 </head>
 <body>
 
-    <h1>MathChecking 數學題庫系統</h1>
+    <h1>MathChecking 數學題庫系統 <span style="font-size: 0.45em; vertical-align: middle; background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; padding: 3px 9px; border-radius: 9999px; font-weight: bold; font-family: monospace;">v1.1.0 (2026-10-29)</span></h1>
     <h3 id="exam-title">載入中...</h3>
     <div id="quiz-container"></div>
 
     <!-- 支援直接以 file:// 雙擊開啟（避開瀏覽器本機 CORS 限制） -->
     <script src="data/exam_data.js"></script>
     <script>
+        window.APP_VERSION = "v1.1.0 (2026-10-29)";
         let examData = {};
 
         function initExam(data) {
