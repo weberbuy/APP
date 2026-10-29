@@ -61,7 +61,7 @@
               Weber Workspace
             </h1>
             <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-              v1.0.3-test
+              v1.1.0 (2026-10-29)
             </span>
           </div>
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
@@ -270,6 +270,7 @@
 
   <!-- JavaScript 邏輯 -->
   <script>
+    window.APP_VERSION = "v1.1.0 (2026-10-29)";
     // 預設應用資料庫 (符合 LifeSchedule.html->LifeSchedule, WordChecking.html->WordChecking, MathChecking.html->MathChecking 規則)
     const DEFAULT_APPS = [
       {
@@ -279,7 +280,7 @@
         icon: 'fa-brain',
         url: 'LifeSchedule/LifeSchedule.html',
         desc: '雙擊目標/步驟跳轉編輯、步驟循環順延、時間軸對照矩陣與樹莓派遠端資料同步。',
-        badge: 'v4.3.8-test · 核心',
+        badge: 'v5.5.0 · 核心系統',
         color: 'indigo',
         isDefault: true
       },
@@ -290,7 +291,7 @@
         icon: 'fa-graduation-cap',
         url: 'WordChecking/WordChecking.html',
         desc: '專為升國一設計之單字熟練與口語跟讀系統。整合主題分類、KK音標、間隔重複記憶箱與語音互動測驗。',
-        badge: '教育部1200單 · 推薦',
+        badge: 'v2.14.0 · 英語大師',
         color: 'emerald',
         isDefault: true
       },
@@ -301,7 +302,7 @@
         icon: 'fa-calculator',
         url: 'MathChecking/MathChecking.html',
         desc: '段考數學試卷錯題複習、AI 盲算解題解析、原卷視窗視圖裁剪與錯題檢視題庫系統。',
-        badge: 'v1.0.2 · 題庫系統',
+        badge: 'v1.1.0 · 題庫系統',
         color: 'amber',
         isDefault: true
       },
