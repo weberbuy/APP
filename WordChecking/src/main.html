@@ -159,7 +159,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">WordChecking-2.13.21-test</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">v2.14.0 (2026-10-29)</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1694,6 +1694,7 @@
     </div>
   </div>
   <script>
+window.APP_VERSION = "v2.14.0 (2026-10-29)";
 let sharedAudioCtx = null;
 function getSharedAudioContext() {
   try {
@@ -3915,7 +3916,7 @@ if (typeof window !== 'undefined') {
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: "2.13.21-test",
+        version: window.APP_VERSION || "v2.14.0 (2026-10-29)",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
