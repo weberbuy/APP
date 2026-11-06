@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小工具 - 小包子帽帽與修身裙裝水手服優化版 (v2.13.21-test)</title>
+  <title>WordChecking | 1200 單字小幫手 (v2.15.0)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -30,6 +30,14 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <style>
+    @keyframes inputShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-input-shake {
+      animation: inputShake 0.38s ease-in-out;
+    }
     @keyframes floatUpFade {
       0% { transform: translate(0, 0) scale(0.7); opacity: 1; }
       50% { transform: translate(var(--dx, 5px), -25px) scale(1.1); opacity: 0.9; }
@@ -159,7 +167,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">v2.14.0 (2026-10-29)</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">v2.15.0 (2026-11-06)</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -786,7 +794,7 @@
             </div>
           </div>
           <button onclick="nextQuizQuestion()" class="w-full mt-3 py-2.5 bg-rose-500 text-white rounded-xl font-bold text-xs hover:bg-rose-600 transition shadow flex items-center justify-center gap-1.5 cursor-pointer">
-            <span>下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按空白鍵）</span>
+            <span>下一題 🐾</span><span class="text-[10px] opacity-80 font-normal">（可按 Enter 或空白鍵）</span>
           </button>
         </div>
       </div>
@@ -1225,6 +1233,9 @@
             </button>
             <button onclick="WordCheckingCruise.selectQuickWords(20, 'new')" class="px-2.5 py-1 rounded-xl bg-white dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-slate-600 text-xs font-bold text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-slate-600 shadow-2xs transition cursor-pointer">
               ✨ 勾選前 20 新詞
+            </button>
+            <button onclick="WordCheckingCruise.selectQuickWords(10, 'last')" class="px-2.5 py-1 rounded-xl bg-white dark:bg-slate-700 hover:bg-emerald-50 dark:hover:bg-slate-600 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-slate-600 shadow-2xs transition cursor-pointer" title="勾選上次特訓或背過的單字進行跨日間隔複習">
+              🌱 勾選上次背過
             </button>
             <button onclick="WordCheckingCruise.selectQuickWords(10, 'weak')" class="px-2.5 py-1 rounded-xl bg-white dark:bg-slate-700 hover:bg-amber-50 dark:hover:bg-slate-600 text-xs font-bold text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-slate-600 shadow-2xs transition cursor-pointer">
               🐾 勾選待加強
@@ -1694,7 +1705,7 @@
     </div>
   </div>
   <script>
-window.APP_VERSION = "v2.14.0 (2026-10-29)";
+window.APP_VERSION = "v2.15.0 (2026-11-06)";
 let sharedAudioCtx = null;
 function getSharedAudioContext() {
   try {
@@ -5621,6 +5632,93 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
         hintBox.innerText = `🐾 咪咪給提示：${masked} (共 ${hintTarget.replace(/[-\s]/g,'').length} 字母)`;
       }
     }
+    let lastSpellSubmitTime = 0;
+    function triggerInputShake(el) {
+      if (!el) return;
+      el.classList.remove('animate-input-shake');
+      void el.offsetWidth;
+      el.classList.add('animate-input-shake');
+      if (typeof el.focus === 'function') el.focus();
+    }
+
+    const LAST_STUDIED_STORAGE_KEY = 'wordchecking_last_studied_words_v2';
+    function saveLastStudiedWords(words) {
+      try {
+        if (!Array.isArray(words) || words.length === 0) return;
+        const clean = words.map(w => (typeof w === 'object' && w) ? (w.word || w.num) : w).filter(Boolean);
+        if (clean.length === 0) return;
+        const existing = getLastStudiedWords();
+        const combined = Array.from(new Set([...clean, ...existing])).slice(0, 50);
+        localStorage.setItem(LAST_STUDIED_STORAGE_KEY, JSON.stringify(combined));
+        localStorage.setItem('wordchecking_last_studied_time_v2', Date.now().toString());
+      } catch (e) {
+        console.warn('saveLastStudiedWords failed:', e);
+      }
+    }
+
+    function getLastStudiedWords() {
+      try {
+        const raw = localStorage.getItem(LAST_STUDIED_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function generateCharDiff(input, target) {
+      const s1 = String(input || '').trim().toLowerCase();
+      const s2 = String(target || '').trim().toLowerCase();
+      const m = s1.length;
+      const n = s2.length;
+      const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+      for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+          if (s1[i - 1] === s2[j - 1]) {
+            dp[i][j] = dp[i - 1][j - 1] + 1;
+          } else {
+            dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+          }
+        }
+      }
+      let i = m, j = n;
+      const inputDiff = [];
+      const targetDiff = [];
+      while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && s1[i - 1] === s2[j - 1]) {
+          inputDiff.unshift({ char: s1[i - 1], type: 'match' });
+          targetDiff.unshift({ char: s2[j - 1], type: 'match' });
+          i--;
+          j--;
+        } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+          targetDiff.unshift({ char: s2[j - 1], type: 'missing' });
+          j--;
+        } else {
+          inputDiff.unshift({ char: s1[i - 1], type: 'extra' });
+          i--;
+        }
+      }
+      return { inputDiff, targetDiff };
+    }
+
+    function renderWordDiffHtml(inputWord, targetWord) {
+      const { inputDiff, targetDiff } = generateCharDiff(inputWord, targetWord);
+      const inputHtml = inputDiff.map(d => {
+        if (d.type === 'match') {
+          return '<span class="text-slate-700 dark:text-slate-300">' + escapeHtml(d.char) + '</span>';
+        }
+        return '<span class="px-1 py-0.2 rounded bg-rose-200 dark:bg-rose-900/70 text-rose-700 dark:text-rose-200 font-black underline decoration-rose-500 decoration-2">' + escapeHtml(d.char) + '</span>';
+      }).join('');
+
+      const targetHtml = targetDiff.map(d => {
+        if (d.type === 'match') {
+          return '<span class="text-slate-700 dark:text-slate-300">' + escapeHtml(d.char) + '</span>';
+        }
+        return '<span class="px-1 py-0.2 rounded bg-emerald-200 dark:bg-emerald-900/70 text-emerald-800 dark:text-emerald-200 font-black border border-emerald-400 dark:border-emerald-600">' + escapeHtml(d.char) + '</span>';
+      }).join('');
+
+      return { inputHtml, targetHtml };
+    }
+
     function checkSpelling(e) {
       e.preventDefault();
       const inputVal = document.getElementById('spellInput').value.trim().toLowerCase();
@@ -6366,7 +6464,7 @@ var WordCheckingAdventure = (typeof window !== 'undefined' && window.WordCheckin
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: window.APP_VERSION || "v2.14.0 (2026-10-29)",
+        version: window.APP_VERSION || "v2.15.0 (2026-11-06)",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
