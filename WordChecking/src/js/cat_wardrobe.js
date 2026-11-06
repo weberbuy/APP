@@ -856,7 +856,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
       ],
       aura: [
         { id: 'aura_none', name: '無特效', icon: '🚫', desc: '回歸純粹的貓咪氛圍', unlockType: 'free', price: 0, reqLevel: 1 },
-        { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '周圍閃爍璀璨的金色呼吸光芒', unlockType: 'fish', price: 40, reqLevel: 2 },
+        { id: 'aura_sparkle', name: '✨ 璀璨星光微芒', icon: '✨', desc: '【Lv.1 免費】周圍閃爍璀璨的金色呼吸光芒', unlockType: 'level', price: 0, reqLevel: 1 },
         { id: 'aura_bubbles', name: '🫧 夢幻彩虹泡泡雨', icon: '🫧', desc: '身旁漂浮折射七彩虹光的晶瑩泡泡', unlockType: 'fish', price: 45, reqLevel: 2 },
         { id: 'aura_sakura', name: '🌸 飛舞落櫻花瓣', icon: '🌸', desc: '浪漫櫻花瓣在身邊翩翩起舞', unlockType: 'fish', price: 50, reqLevel: 3 },
         { id: 'aura_fish', name: '🐟 游動小魚乾群', icon: '🐟', desc: '小魚乾環繞身旁，貓咪的天堂！', unlockType: 'fish', price: 65, reqLevel: 3 },
@@ -929,7 +929,7 @@ head_cap: `<!-- 🧢 活力運動帽: 比照 🧢 emoji 經典皇家藍棒球帽
         'head_none', 'head_sakura',
         'face_none', 'face_blush',
         'neck_none', 'neck_bell',
-        'outfit_none', 'hand_none', 'aura_none'
+        'outfit_none', 'hand_none', 'aura_none', 'aura_sparkle'
       ]
     };
     function loadCatWardrobe() {
