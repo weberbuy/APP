@@ -42,9 +42,12 @@ let _e2eeSessionSaltB64 = '';
 let _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
 let _latestRemoteEnvelope = null;
 let _pendingEncryptedRemote = null;
+let _hasUnsavedCloudChanges = false;
 let _e2eeModalMode = 'unlock';
 let _e2eeModalCustomEnvelope = null;
 let _e2eeModalOnSuccess = null;
+
+const E2EE_DEFAULT_HINT_HTML = '⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。一旦遺忘通行碼，任何人都無法還原您的財務與目標備份，請務必妥善保存於密碼管理器！';
 
 function isSecureCryptoAvailable() {
     return Boolean(typeof window !== 'undefined' && window.crypto && window.crypto.subtle);
@@ -311,7 +314,7 @@ function toggleE2eeInputVisibility(inputId, btnId) {
     }
 }
 
-function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelope = null) {
+function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelope = null, customPromptHint = '') {
     if (!isSecureCryptoAvailable()) {
         alert('❌ 當前連線環境非 HTTPS / localhost 安全環境，瀏覽器禁用 Web Crypto API，無法執行加解密！');
         return;
@@ -325,6 +328,7 @@ function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelo
 
     const modal = document.getElementById('e2eePassphraseModal');
     const titleEl = document.getElementById('e2eeModalTitle');
+    const hintBox = document.getElementById('e2eeModalHintBox');
     const input1Label = document.getElementById('e2eeInput1Label');
     const input1 = document.getElementById('e2eePassphraseInput');
     const input2 = document.getElementById('e2eePassphraseConfirmInput');
@@ -340,6 +344,15 @@ function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelo
     if (eyeBtn1) eyeBtn1.textContent = '👁️ 顯示';
     if (eyeBtn2) eyeBtn2.textContent = '👁️ 顯示';
     if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
+    if (hintBox) {
+        if (customPromptHint) {
+            hintBox.textContent = customPromptHint;
+            hintBox.className = 'bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-xs font-bold text-indigo-900 leading-relaxed';
+        } else {
+            hintBox.innerHTML = E2EE_DEFAULT_HINT_HTML;
+            hintBox.className = 'bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed';
+        }
+    }
 
     if (effectiveMode === 'setup') {
         if (titleEl) titleEl.textContent = '設定 / 更換備份加密通行碼';
@@ -359,7 +372,7 @@ function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelo
     }
 }
 
-function closeE2eePassphraseModal() {
+function closeE2eePassphraseModal(fromSuccess = false) {
     const modal = document.getElementById('e2eePassphraseModal');
     const input1 = document.getElementById('e2eePassphraseInput');
     const input2 = document.getElementById('e2eePassphraseConfirmInput');
@@ -367,6 +380,13 @@ function closeE2eePassphraseModal() {
     if (input2) input2.value = '';
     if (modal) modal.classList.add('hidden');
     updateE2eeSettingsUI();
+    // 【v6.0.1 第三段防線】：若本機已有未上傳修改但使用者按了取消關閉彈窗，維持紅燈警示並彈出 Toast 提醒
+    if (!fromSuccess && _hasUnsavedCloudChanges && isE2eeEnabled() && !_e2eeSessionKey) {
+        updatePiSyncBadge('🚨 本機修改尚未上傳雲端 (點擊輸入通行碼)', 'bg-rose-100 text-rose-900 border-rose-400 animate-pulse');
+        if (typeof showToast === 'function') {
+            showToast('⚠️ 注意：您的修改僅存於本機，尚未加密上傳雲端！離開前請點擊上方紅燈徽章解鎖備份。', 'info');
+        }
+    }
 }
 
 function showE2eeModalError(msg) {
@@ -422,7 +442,8 @@ async function confirmE2eePassphraseModal() {
             localStorage.setItem('ls_e2ee_enabled', 'true');
             const cb = _e2eeModalOnSuccess;
             _e2eeModalOnSuccess = null;
-            closeE2eePassphraseModal();
+            isInitialSyncCompleted = true;
+            closeE2eePassphraseModal(true);
             updateE2eeSettingsUI();
             if (!localStorage.getItem('ls_e2ee_cleaned_reminded')) {
                 localStorage.setItem('ls_e2ee_cleaned_reminded', 'true');
@@ -430,7 +451,7 @@ async function confirmE2eePassphraseModal() {
             }
             if (cb) {
                 await cb();
-            } else if (isInitialSyncCompleted && thoughts.length > 0) {
+            } else if (_hasUnsavedCloudChanges || (isInitialSyncCompleted && thoughts.length > 0)) {
                 triggerAutoSaveToPi();
             }
         } else {
@@ -441,23 +462,33 @@ async function confirmE2eePassphraseModal() {
             _e2eeModalOnSuccess = null;
             _e2eeModalCustomEnvelope = null;
 
-            // 若有待解鎖的雲端同步封套，立即套用並解除開頁同步鎖
+            // 若有待解鎖的雲端同步封套，檢查是否有本機未上傳修改衝突 (防後解鎖覆蓋)
             if (_pendingEncryptedRemote && targetEnvelope === _pendingEncryptedRemote.envelope) {
                 const pending = _pendingEncryptedRemote;
                 _pendingEncryptedRemote = null;
-                if (pending.shouldApply) {
+                if (pending.shouldApply && !_hasUnsavedCloudChanges) {
                     applyImportedData(plainData, pending.fileName);
+                } else if (pending.shouldApply && _hasUnsavedCloudChanges) {
+                    const keepLocal = confirm('⚠️ 偵測到雲端有另一份備份，但您剛才已在本機進行了修改！\n\n點擊「確定」：保留您剛才在本機的修改，並立即加密上傳至雲端\n點擊「取消」：放棄剛才的修改，改為載入雲端備份');
+                    if (!keepLocal) {
+                        applyImportedData(plainData, pending.fileName);
+                        _hasUnsavedCloudChanges = false;
+                    }
                 }
                 isInitialSyncCompleted = true;
                 updatePiSyncBadge(pending.syncedBadgeText + ' 🔐', pending.syncedBadgeClass);
-            } else if (isInitialSyncCompleted) {
+            } else {
+                isInitialSyncCompleted = true;
                 updatePiSyncBadge('🟢 金鑰已解鎖 🔐', 'bg-emerald-100 text-emerald-900 border-emerald-300');
             }
 
-            closeE2eePassphraseModal();
+            closeE2eePassphraseModal(true);
             updateE2eeSettingsUI();
             if (cb) {
                 await cb(plainData);
+            } else if (_hasUnsavedCloudChanges) {
+                // 【v6.0.1 第二段防線】：解鎖後若本機有未上傳之修改，立即自動觸發加密上傳
+                triggerAutoSaveToPi();
             }
         }
     } catch (err) {
@@ -473,10 +504,11 @@ async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBad
         isInitialSyncCompleted = true;
         return { unlocked: true, applied: false };
     }
+    const isRemoteNewer = Boolean(shouldApply || thoughts.length === 0);
     if (!isEncryptedEnvelope(rawBackupData)) {
         _pendingEncryptedRemote = null;
         let applied = false;
-        if (shouldApply) {
+        if (isRemoteNewer && !_hasUnsavedCloudChanges) {
             applied = applyImportedData(rawBackupData, fileName);
         }
         isInitialSyncCompleted = true;
@@ -493,7 +525,7 @@ async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBad
             const plainData = await decryptBackupWithKey(rawBackupData, _e2eeSessionKey);
             _pendingEncryptedRemote = null;
             let applied = false;
-            if (shouldApply) {
+            if (isRemoteNewer && !_hasUnsavedCloudChanges) {
                 applied = applyImportedData(plainData, fileName);
             }
             isInitialSyncCompleted = true;
@@ -512,10 +544,23 @@ async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBad
         fileName: fileName,
         syncedBadgeText: syncedBadgeText,
         syncedBadgeClass: syncedBadgeClass,
-        shouldApply: Boolean(shouldApply || thoughts.length === 0)
+        shouldApply: isRemoteNewer
     };
-    updatePiSyncBadge('🔒 雲端加密備份待解鎖 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
     updateE2eeSettingsUI();
+
+    // 【v6.0.1 第一段防線】：區分「雲端比本機新」與「本機已是最新 (如 F5 重整)」
+    if (isRemoteNewer) {
+        updatePiSyncBadge('🔒 雲端有新版本待解鎖 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
+        openE2eePassphraseModal(
+            'unlock',
+            null,
+            null,
+            '☁️ 偵測到雲端有較新的加密備份（' + fileName + '）！請輸入通行碼解鎖並同步最新進度，避免改到過期舊資料。'
+        );
+    } else {
+        // 本機已經是最新 (fileName === lastSyncedFileName)：開頁不彈窗打擾，僅在動手修改時自動彈出解鎖窗
+        updatePiSyncBadge('🔐 已是最新 (修改時將提示輸入通行碼)', 'bg-emerald-50 text-emerald-800 border-emerald-300');
+    }
     return { unlocked: false, applied: false };
 }
 
@@ -963,13 +1008,6 @@ async function savePiSettings() {
 
 
 function triggerAutoSaveToPi() {
-    // 【v5.3.18 開頁同步閘門防禦】：若開頁之初尚未完成伺服器最新檔案檢查/拉取（或雲端加密備份尚未解鎖），嚴禁觸發自動儲存
-    if (!isInitialSyncCompleted) {
-        console.warn('[AutoSave Blocked] 開頁雲端同步或加密解鎖尚未完成，已攔截自動儲存，杜絕本機覆蓋雲端。');
-        return;
-    }
-
-
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -978,16 +1016,36 @@ function triggerAutoSaveToPi() {
     const hasPi = Boolean(piServerUrl && piApiKey);
     const hasGas = Boolean(gasUrl && gasKey);
 
-
     // 【v5.3.16 解除單軌死鎖】：支援純 Google 雲端硬碟 (GAS) 或純樹莓派或雙軌自動備份
     if (!hasPi && !hasGas) {
         updatePiSyncBadge('⚪ 未設定伺服器 (點擊設定)', 'bg-slate-100 text-slate-600 border-slate-200');
         return;
     }
+
+    // 標記本機已有尚未上傳至雲端的修改 (Dirty Flag)
+    _hasUnsavedCloudChanges = true;
+
+    // 【v6.0.1 第二段防線】：若已啟用加密但尚未解鎖金鑰，使用者一動手修改立刻轉為紅燈並自動彈出通行碼解鎖視窗，絕不靜默略過！
     if (isE2eeEnabled() && !_e2eeSessionKey) {
-        updatePiSyncBadge('🔒 待解鎖加密金鑰 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
+        updatePiSyncBadge('🚨 本機修改尚未上傳雲端 (點擊輸入通行碼)', 'bg-rose-100 text-rose-900 border-rose-400 animate-pulse');
+        const e2eeModal = document.getElementById('e2eePassphraseModal');
+        if (!e2eeModal || e2eeModal.classList.contains('hidden')) {
+            openE2eePassphraseModal(
+                hasE2eeRemoteOrSession() ? 'unlock' : 'setup',
+                null,
+                null,
+                '💡 您剛剛修改了內容！請輸入加密通行碼，系統將立即為您加密並同步備份至雲端與樹莓派。'
+            );
+        }
         return;
     }
+
+    // 【v5.3.18 開頁同步閘門防禦】：若開頁之初尚未完成伺服器最新檔案檢查/拉取，暫緩發送 (待檢查完成後自動補發)
+    if (!isInitialSyncCompleted) {
+        console.warn('[AutoSave Queued] 開頁雲端同步檢查尚未完成，已排入待同步佇列。');
+        return;
+    }
+
     updatePiSyncBadge('⏳ 待發送...', 'bg-amber-50 text-amber-800 border-amber-200');
     clearTimeout(autoSaveTimer);
     autoSaveTimer = setTimeout(performSilentAutoSave, 1500);
@@ -1009,7 +1067,7 @@ async function performSilentAutoSave() {
 
     // 【v6.0.0 零靜默降級防禦】：啟用加密時，若尚未解鎖金鑰，嚴禁退回明文上傳
     if (isE2eeEnabled() && !_e2eeSessionKey) {
-        updatePiSyncBadge('🔒 待解鎖加密金鑰 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
+        updatePiSyncBadge('🚨 本機修改尚未上傳雲端 (點擊輸入通行碼)', 'bg-rose-100 text-rose-900 border-rose-400 animate-pulse');
         return;
     }
 
@@ -1042,16 +1100,19 @@ async function performSilentAutoSave() {
 
 
         if (piOk && gasOk) {
+            _hasUnsavedCloudChanges = false;
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
             localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
             updatePiSyncBadge('🟢 雙軌已備份最新' + e2eeSuffix, 'bg-emerald-100 text-emerald-900 border-emerald-300');
         } else if (gasOk && !piOk) {
+            _hasUnsavedCloudChanges = false;
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
             localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
             updatePiSyncBadge('🟡 雲端已備份 (樹莓派離線待復原)' + e2eeSuffix, 'bg-amber-100 text-amber-900 border-amber-300');
         } else if (piOk && !gasOk) {
+            _hasUnsavedCloudChanges = false;
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
             localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
@@ -1061,7 +1122,7 @@ async function performSilentAutoSave() {
         }
     } catch (e) {
         if (e && e.message === 'E2EE_KEY_LOCKED') {
-            updatePiSyncBadge('🔒 待解鎖加密金鑰 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
+            updatePiSyncBadge('🚨 本機修改尚未上傳雲端 (點擊輸入通行碼)', 'bg-rose-100 text-rose-900 border-rose-400 animate-pulse');
         } else {
             updatePiSyncBadge('⚠️ 離線/儲存失敗', 'bg-rose-50 text-rose-700 border-rose-200');
         }
@@ -1069,11 +1130,18 @@ async function performSilentAutoSave() {
 }
 
 
-// 【v5.3.16 視窗關閉/切換立即強制結算保護】：防止 1.5s 防抖計時器因關閉分頁或切到手機被銷毀而丟失雲端備份
-function flushPendingAutoSave() {
+// 【v5.3.16 視窗關閉/切換立即強制結算保護】 + 【v6.0.1 第三段防線：未解鎖修改關頁攔截警告】
+function flushPendingAutoSave(e) {
+    if (_hasUnsavedCloudChanges && isE2eeEnabled() && !_e2eeSessionKey) {
+        if (e && e.type === 'beforeunload') {
+            e.preventDefault();
+            e.returnValue = '您有修改尚未輸入通行碼加密上傳至雲端，確定要離開嗎？';
+            return e.returnValue;
+        }
+        return;
+    }
     // 【v5.3.18 開頁同步閘門防禦】：若開頁初期尚未完成雲端同步拉取，視窗關閉/切換時嚴禁執行強制儲存
     if (!isInitialSyncCompleted) return;
-    // 【v6.0.0 視窗關閉防呆】：若啟用加密但尚未解鎖，不發起會失敗的上傳，僅確保本機儲存完整
     if (isE2eeEnabled() && !_e2eeSessionKey) return;
 
 
@@ -1100,8 +1168,7 @@ async function exportToPi() {
     }
     if (thoughts.length === 0) return alert("目前沒有可備份的資料！");
     if (!isInitialSyncCompleted && _pendingEncryptedRemote) {
-        alert("⚠️ 雲端尚有待解鎖的加密備份！請先解鎖雲端備份後再上傳，以免覆蓋雲端資料。");
-        openE2eePassphraseModal('unlock');
+        openE2eePassphraseModal('unlock', () => exportToPi(), null, '⚠️ 雲端尚有加密備份待驗證！請輸入通行碼完成驗證後自動上傳。');
         return;
     }
     if (isE2eeEnabled() && !_e2eeSessionKey) {
@@ -1115,6 +1182,7 @@ async function exportToPi() {
         const outboundPayload = await prepareOutboundPayload(getExportPayload());
         const response = await uploadPayloadToPi(fileName, outboundPayload);
         if (response && response.ok) {
+            _hasUnsavedCloudChanges = false;
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
             const e2eeSuffix = isE2eeEnabled() ? ' 🔐' : '';
@@ -1227,7 +1295,7 @@ async function checkAndAutoSyncFromPi() {
                     gasFile,
                     '🟢 已自雲端同步最新 (已補齊樹莓派)',
                     'bg-emerald-100 text-emerald-900 border-emerald-300',
-                    true
+                    gasFile > lastSyncedFileName || thoughts.length === 0
                 );
                 return;
             } else if (piFile > gasFile) {
@@ -1237,7 +1305,7 @@ async function checkAndAutoSyncFromPi() {
                     piFile,
                     '🟢 已自樹莓派同步最新 (已補齊雲端)',
                     'bg-emerald-100 text-emerald-900 border-emerald-300',
-                    true
+                    piFile > lastSyncedFileName || thoughts.length === 0
                 );
                 return;
             } else {
