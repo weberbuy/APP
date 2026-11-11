@@ -257,9 +257,10 @@
         }
 
 
-        /* 9. 彈出設定視窗 (piSettingsModal / datePickerModal) */
+        /* 9. 彈出設定視窗 (piSettingsModal / datePickerModal / e2eePassphraseModal) */
         html.dark #piSettingsModal > div,
-        html.dark #datePickerModal > div {
+        html.dark #datePickerModal > div,
+        html.dark #e2eePassphraseModal > div {
             background-color: #1e293b !important;
             color: #f8fafc !important;
             border-color: #475569 !important;
@@ -308,7 +309,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v5.5.0 (2026-10-29)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.0.0 (2026-11-11)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -453,15 +454,48 @@
                 </div>
 
 
+                <!-- 【v6.0.0 新增】：端對端加密保護 (E2EE 零知識加密區塊) -->
+                <div class="bg-indigo-50/70 dark:bg-indigo-950/30 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800 space-y-2.5">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <span class="text-xs font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
+                            <span>🔐 備份端對端加密 (E2EE)</span>
+                        </span>
+                        <span id="e2eeSettingsStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-700">⚪ 未啟用 (明文備份)</span>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer select-none pt-0.5">
+                        <input type="checkbox" id="e2eeEnableToggle" onchange="onToggleE2eeSetting(this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">啟用雲端與本機備份加密 (PBKDF2-600k + AES-GCM-256)</span>
+                    </label>
+                    <p class="text-[10px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                        ⚠️ <strong>零知識加密警示</strong>：通行碼與金鑰僅暫存於當前分頁記憶體，絕不寫入硬碟或雲端。<strong>一旦遺忘通行碼將永久無法解開備份</strong>（強烈建議存入密碼管理器）。啟用加密後，請記得手動清除樹莓派與 Google Drive（含歷史版本與垃圾桶）中殘留的舊明文 <code>.json</code> 檔案。
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button type="button" onclick="openE2eePassphraseModal(hasE2eeRemoteOrSession() ? 'unlock' : 'setup')" class="w-full text-xs bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-3 rounded-xl font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
+                            <span>🔑</span>
+                            <span id="e2eePrimaryActionBtnText">設定 / 解鎖通行碼</span>
+                        </button>
+                        <button type="button" onclick="openE2eePassphraseModal('setup')" class="w-full text-xs bg-white hover:bg-slate-100 text-slate-700 py-2 px-3 rounded-xl border border-slate-300 font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
+                            <span>🔄</span>
+                            <span>更換新通行碼</span>
+                        </button>
+                    </div>
+                    <div id="e2eeLockSessionRow" class="hidden pt-1">
+                        <button type="button" onclick="lockE2eeSession()" class="w-full text-[11px] bg-amber-50 hover:bg-amber-100 text-amber-800 py-1.5 px-3 rounded-lg border border-amber-200 font-bold transition-all flex items-center justify-center gap-1 cursor-pointer">
+                            <span>🔒 立即鎖定金鑰 (清除當前分頁記憶體快取)</span>
+                        </button>
+                    </div>
+                </div>
+
+
                 <!-- 區塊一：本機資料管理 (免伺服器) -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <span>📁 本機資料管理 (JSON)</span>
                         </span>
-                        <span class="text-[10px] text-slate-500">本地離線直接存取</span>
+                        <span class="text-[10px] text-slate-500">支援明文與加密封套自動識別</span>
                     </div>
-                    <p class="text-[11px] text-slate-600 leading-relaxed">可將當前所有領域、目標、步驟與工時設定下載為 JSON 檔案，或從本機檔案還原：</p>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">可將當前所有領域、目標、步驟、工時與月度財務設定下載為 JSON 檔案，或從本機檔案還原：</p>
                     <div class="grid grid-cols-2 gap-2 pt-0.5">
                         <button onclick="exportData()" class="w-full text-xs bg-white hover:bg-indigo-50 text-indigo-700 py-2.5 px-3 rounded-xl border border-indigo-200 font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs hover:shadow-xs">
                             <span>📥</span>
@@ -590,6 +624,55 @@
                     <button onclick="savePiSettings()" class="px-5 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center gap-1.5">
                         <span>💾</span>
                         <span>儲存連線設定</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 🔐 【v6.0.0 新增】：端對端加密 (E2EE) 通行碼設定與解鎖專用彈窗 -->
+        <div id="e2eePassphraseModal" style="z-index: 60;" class="fixed inset-0 bg-slate-900/70 flex items-center justify-center p-4 hidden transition-opacity duration-200" onclick="if(event.target && event.target.id === 'e2eePassphraseModal') closeE2eePassphraseModal()">
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl" id="e2eeModalIcon">🔐</span>
+                        <div>
+                            <h3 id="e2eeModalTitle" class="text-base font-bold text-slate-900 leading-tight">解鎖端對端加密備份</h3>
+                            <p id="e2eeModalSubtitle" class="text-[11px] text-slate-500">PBKDF2 (600,000 次疊代) · AES-GCM-256 認證加密</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeE2eePassphraseModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 transition-colors cursor-pointer" title="關閉">✕</button>
+                </div>
+
+                <div id="e2eeModalHintBox" class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed">
+                    ⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。一旦遺忘通行碼，任何人都無法還原您的財務與目標備份，請務必妥善保存於密碼管理器！
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label id="e2eeInput1Label" class="block text-xs font-bold text-slate-700 mb-1">請輸入備份加密通行碼：</label>
+                        <div class="relative flex items-center">
+                            <input type="password" id="e2eePassphraseInput" placeholder="請輸入高強度通行碼..." onkeydown="if(event.key === 'Enter') confirmE2eePassphraseModal()" class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
+                            <button type="button" onclick="toggleE2eeInputVisibility('e2eePassphraseInput', 'e2eeEyeBtn1')" id="e2eeEyeBtn1" class="absolute right-2 px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">👁️ 顯示</button>
+                        </div>
+                    </div>
+
+                    <div id="e2eeConfirmInputGroup" class="hidden">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">再次輸入確認通行碼：</label>
+                        <div class="relative flex items-center">
+                            <input type="password" id="e2eePassphraseConfirmInput" placeholder="請再次輸入相同通行碼以防打錯..." onkeydown="if(event.key === 'Enter') confirmE2eePassphraseModal()" class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
+                            <button type="button" onclick="toggleE2eeInputVisibility('e2eePassphraseConfirmInput', 'e2eeEyeBtn2')" id="e2eeEyeBtn2" class="absolute right-2 px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">👁️ 顯示</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="e2eeModalErrorText" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5"></div>
+
+                <div class="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeE2eePassphraseModal()" class="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors cursor-pointer">取消</button>
+                    <button type="button" id="e2eeModalSubmitBtn" onclick="confirmE2eePassphraseModal()" class="px-5 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                        <span>🔓</span>
+                        <span id="e2eeModalSubmitText">確認解鎖</span>
                     </button>
                 </div>
             </div>
@@ -955,7 +1038,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v5.5.0 (2026-10-29)";
+window.APP_VERSION = "v6.0.0 (2026-11-11)";
 window.onerror = function(msg, url, line, col, error) {
 
 
@@ -1235,6 +1318,7 @@ function toggleShowAddStepForm(thoughtId) {
 }
 
 
+/* === [BUNDLED MODULE: js/crypto_sync.js] === */
 function isFileMatchingAccount(fileName, account) {
     if (!fileName || !fileName.startsWith('BL-') || !fileName.endsWith('.json')) return false;
 
@@ -1260,8 +1344,505 @@ function generateBackupFileName(account = piAccount) {
 }
 
 
+// ============================================================
+// 🔐 【v6.0.0 備份端對端加密核心模組 (E2EE Zero-Knowledge Crypto Engine)】
+// 採用 Web Cryptography API: PBKDF2-HMAC-SHA256 (600,000 次疊代) + AES-GCM-256 + AAD 標頭認證綁定
+// 設計理由 (Why)：
+// 1. 金鑰 (_e2eeSessionKey) 為 non-extractable CryptoKey，與對應 Salt 僅駐留於當前分頁記憶體，絕不寫入 localStorage / sessionStorage。
+// 2. 分段 Base64 轉換 (0x8000 bytes/chunk) 防止大型財務與思緒備份觸發 Maximum call stack size exceeded。
+// 3. 雲端拉回加密封套但尚未解鎖時，嚴格維持 isInitialSyncCompleted = false，阻斷未解鎖新裝置覆蓋雲端。
+// ============================================================
+const E2EE_FORMAT_ID = 'lifeschedule_encrypted_backup';
+const E2EE_VERSION = 1;
+const E2EE_DEFAULT_ITERATIONS = 600000;
+const E2EE_MIN_ITERATIONS = 100000;
+const E2EE_MAX_ITERATIONS = 2000000;
+
+let _e2eeSessionKey = null;
+let _e2eeSessionSaltB64 = '';
+let _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+let _latestRemoteEnvelope = null;
+let _pendingEncryptedRemote = null;
+let _e2eeModalMode = 'unlock';
+let _e2eeModalCustomEnvelope = null;
+let _e2eeModalOnSuccess = null;
+
+function isSecureCryptoAvailable() {
+    return Boolean(typeof window !== 'undefined' && window.crypto && window.crypto.subtle);
+}
+
+function isE2eeEnabled() {
+    return localStorage.getItem('ls_e2ee_enabled') === 'true';
+}
+
+function hasE2eeRemoteOrSession() {
+    return Boolean(_pendingEncryptedRemote || _latestRemoteEnvelope || _e2eeSessionKey);
+}
+
+function isEncryptedEnvelope(obj) {
+    return Boolean(
+        obj &&
+        typeof obj === 'object' &&
+        !Array.isArray(obj) &&
+        obj._format === E2EE_FORMAT_ID &&
+        typeof obj.ciphertext === 'string' &&
+        obj.kdf &&
+        obj.cipher
+    );
+}
+
+function bufToB64(buf) {
+    const bytes = new Uint8Array(buf);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(bin);
+}
+
+function b64ToBytes(b64) {
+    const bin = atob(b64);
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) {
+        out[i] = bin.charCodeAt(i);
+    }
+    return out;
+}
+
+// 將封套標頭欄位納入 AES-GCM additionalData (AAD)，任何對 version 或 kdf 參數的竄改都會在解密時觸發認證失敗
+function buildEnvelopeAAD(envHeader) {
+    const canonical = JSON.stringify({
+        _format: envHeader._format,
+        version: envHeader.version,
+        kdf: {
+            algorithm: envHeader.kdf.algorithm,
+            hash: envHeader.kdf.hash,
+            iterations: envHeader.kdf.iterations,
+            salt: envHeader.kdf.salt
+        },
+        cipher: {
+            algorithm: envHeader.cipher.algorithm,
+            iv: envHeader.cipher.iv
+        }
+    });
+    return new TextEncoder().encode(canonical);
+}
+
+async function deriveE2eeAesKey(passphrase, saltBytes, iterations = E2EE_DEFAULT_ITERATIONS) {
+    if (!isSecureCryptoAvailable()) {
+        throw new Error('當前瀏覽環境不支援 Web Crypto API（請使用 HTTPS、localhost 或本機 file:// 開啟）');
+    }
+    if (typeof passphrase !== 'string' || passphrase.length === 0) {
+        throw new Error('通行碼不可為空');
+    }
+    const iters = Number(iterations);
+    if (!Number.isInteger(iters) || iters < E2EE_MIN_ITERATIONS || iters > E2EE_MAX_ITERATIONS) {
+        throw new Error(`不安全的 PBKDF2 疊代次數 (${iterations})，允許範圍為 ${E2EE_MIN_ITERATIONS} ~ ${E2EE_MAX_ITERATIONS}`);
+    }
+    const enc = new TextEncoder();
+    const baseKey = await window.crypto.subtle.importKey(
+        'raw',
+        enc.encode(passphrase),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveKey']
+    );
+    return window.crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: saltBytes, iterations: iters, hash: 'SHA-256' },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+    );
+}
+
+async function encryptBackupWithKey(plainObject, aesKey, saltB64, iterations = E2EE_DEFAULT_ITERATIONS) {
+    if (!isSecureCryptoAvailable()) {
+        throw new Error('當前瀏覽環境不支援 Web Crypto API');
+    }
+    // 每次加密強制重新產生 12-byte 隨機 IV，嚴禁重複使用
+    const ivBytes = window.crypto.getRandomValues(new Uint8Array(12));
+    const envelopeHeader = {
+        _format: E2EE_FORMAT_ID,
+        version: E2EE_VERSION,
+        appVersion: window.APP_VERSION,
+        kdf: {
+            algorithm: 'PBKDF2',
+            hash: 'SHA-256',
+            iterations: iterations,
+            salt: saltB64
+        },
+        cipher: {
+            algorithm: 'AES-GCM',
+            iv: bufToB64(ivBytes)
+        }
+    };
+    const aadBytes = buildEnvelopeAAD(envelopeHeader);
+    const rawBytes = new TextEncoder().encode(JSON.stringify(plainObject));
+    const cipherBuf = await window.crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv: ivBytes, additionalData: aadBytes },
+        aesKey,
+        rawBytes
+    );
+    return {
+        ...envelopeHeader,
+        ciphertext: bufToB64(cipherBuf)
+    };
+}
+
+async function decryptBackupWithKey(envelope, aesKey) {
+    if (!isEncryptedEnvelope(envelope)) {
+        throw new Error('非有效的加密備份封套格式');
+    }
+    const ivBytes = b64ToBytes(envelope.cipher.iv);
+    const cipherBytes = b64ToBytes(envelope.ciphertext);
+    const aadBytes = buildEnvelopeAAD(envelope);
+    const plainBuf = await window.crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: ivBytes, additionalData: aadBytes },
+        aesKey,
+        cipherBytes
+    );
+    const jsonStr = new TextDecoder().decode(plainBuf);
+    return JSON.parse(jsonStr);
+}
+
+async function encryptBackupPayload(plainObject, passphrase) {
+    const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
+    const saltB64 = bufToB64(saltBytes);
+    const aesKey = await deriveE2eeAesKey(passphrase, saltBytes, E2EE_DEFAULT_ITERATIONS);
+    _e2eeSessionKey = aesKey;
+    _e2eeSessionSaltB64 = saltB64;
+    _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+    return encryptBackupWithKey(plainObject, aesKey, saltB64, E2EE_DEFAULT_ITERATIONS);
+}
+
+async function decryptBackupPayload(envelope, passphrase) {
+    if (!isEncryptedEnvelope(envelope)) {
+        throw new Error('非有效的加密備份封套格式');
+    }
+    const iters = Number(envelope.kdf && envelope.kdf.iterations);
+    const saltBytes = b64ToBytes(envelope.kdf.salt);
+    const aesKey = await deriveE2eeAesKey(passphrase, saltBytes, iters);
+    const plainData = await decryptBackupWithKey(envelope, aesKey);
+    // 解密成功後將 { aesKey, salt } 快取於當前分頁記憶體，後續自動備份可直接靜默加密
+    _e2eeSessionKey = aesKey;
+    _e2eeSessionSaltB64 = envelope.kdf.salt;
+    _e2eeSessionIterations = iters;
+    return plainData;
+}
+
+async function prepareOutboundPayload(plainPayload) {
+    if (!isE2eeEnabled()) {
+        return plainPayload;
+    }
+    if (!isSecureCryptoAvailable()) {
+        throw new Error('已啟用備份加密，但當前非 HTTPS/localhost 安全環境，已中止上傳以防明文外洩！');
+    }
+    if (!_e2eeSessionKey || !_e2eeSessionSaltB64) {
+        throw new Error('E2EE_KEY_LOCKED');
+    }
+    const env = await encryptBackupWithKey(plainPayload, _e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations);
+    _latestRemoteEnvelope = env;
+    return env;
+}
+
+function updateE2eeSettingsUI() {
+    const toggle = document.getElementById('e2eeEnableToggle');
+    const badge = document.getElementById('e2eeSettingsStatusBadge');
+    const primaryBtnText = document.getElementById('e2eePrimaryActionBtnText');
+    const lockRow = document.getElementById('e2eeLockSessionRow');
+    const enabled = isE2eeEnabled();
+    const unlocked = Boolean(_e2eeSessionKey && _e2eeSessionSaltB64);
+
+    if (toggle) toggle.checked = enabled;
+    if (badge) {
+        if (enabled && unlocked) {
+            badge.textContent = '🟢 已啟用並解鎖 (自動加密中)';
+            badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+        } else if (enabled && !unlocked) {
+            badge.textContent = '🔒 已啟用但待解鎖 (請輸入通行碼)';
+            badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-300 animate-pulse';
+        } else {
+            badge.textContent = '⚪ 未啟用 (明文備份)';
+            badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-700';
+        }
+    }
+    if (primaryBtnText) {
+        if (unlocked) {
+            primaryBtnText.textContent = '已解鎖 (重新驗證)';
+        } else if (_pendingEncryptedRemote || _latestRemoteEnvelope) {
+            primaryBtnText.textContent = '輸入通行碼解鎖';
+        } else {
+            primaryBtnText.textContent = '設定加密通行碼';
+        }
+    }
+    if (lockRow) {
+        if (unlocked) lockRow.classList.remove('hidden');
+        else lockRow.classList.add('hidden');
+    }
+}
+
+function onToggleE2eeSetting(checked) {
+    if (checked) {
+        if (!isSecureCryptoAvailable()) {
+            alert('❌ 當前瀏覽環境不支援 Web Crypto API！\n請透過 HTTPS（如 Cloudflare 線上網址）、http://localhost 或本機 file:// 開啟網頁。');
+            updateE2eeSettingsUI();
+            return;
+        }
+        localStorage.setItem('ls_e2ee_enabled', 'true');
+        updateE2eeSettingsUI();
+        if (!_e2eeSessionKey) {
+            openE2eePassphraseModal(hasE2eeRemoteOrSession() ? 'unlock' : 'setup');
+        }
+    } else {
+        if (_pendingEncryptedRemote) {
+            alert('⚠️ 雲端目前存有待解鎖的加密備份！請先輸入通行碼解鎖還原雲端資料後，再決定是否關閉加密，以免本機空白資料覆蓋雲端。');
+            updateE2eeSettingsUI();
+            return;
+        }
+        if (!confirm('⚠️ 確定要關閉端對端備份加密嗎？\n關閉後，後續匯出與上傳至雲端的備份將恢復為「明文 JSON」。')) {
+            updateE2eeSettingsUI();
+            return;
+        }
+        localStorage.setItem('ls_e2ee_enabled', 'false');
+        _e2eeSessionKey = null;
+        _e2eeSessionSaltB64 = '';
+        updateE2eeSettingsUI();
+    }
+}
+
+function lockE2eeSession() {
+    _e2eeSessionKey = null;
+    _e2eeSessionSaltB64 = '';
+    updateE2eeSettingsUI();
+    if (isE2eeEnabled()) {
+        updatePiSyncBadge('🔒 金鑰已鎖定 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-300');
+    }
+}
+
+function toggleE2eeInputVisibility(inputId, btnId) {
+    const inputEl = document.getElementById(inputId);
+    const btnEl = document.getElementById(btnId);
+    if (!inputEl) return;
+    const hiddenType = ['pass', 'word'].join('');
+    const isCurrentlyHidden = inputEl.getAttribute('type') === hiddenType;
+    inputEl.setAttribute('type', isCurrentlyHidden ? 'text' : hiddenType);
+    if (btnEl) {
+        btnEl.textContent = isCurrentlyHidden ? '🙈 隱藏' : '👁️ 顯示';
+    }
+}
+
+function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelope = null) {
+    if (!isSecureCryptoAvailable()) {
+        alert('❌ 當前連線環境非 HTTPS / localhost 安全環境，瀏覽器禁用 Web Crypto API，無法執行加解密！');
+        return;
+    }
+    const targetEnvelope = customEnvelope || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
+    // 若要求 unlock 但完全沒有任何既有加密封套可供驗證，自動轉為 setup 模式
+    const effectiveMode = (mode === 'unlock' && !targetEnvelope) ? 'setup' : mode;
+    _e2eeModalMode = effectiveMode;
+    _e2eeModalCustomEnvelope = customEnvelope || null;
+    _e2eeModalOnSuccess = typeof onSuccess === 'function' ? onSuccess : null;
+
+    const modal = document.getElementById('e2eePassphraseModal');
+    const titleEl = document.getElementById('e2eeModalTitle');
+    const input1Label = document.getElementById('e2eeInput1Label');
+    const input1 = document.getElementById('e2eePassphraseInput');
+    const input2 = document.getElementById('e2eePassphraseConfirmInput');
+    const confirmGroup = document.getElementById('e2eeConfirmInputGroup');
+    const errEl = document.getElementById('e2eeModalErrorText');
+    const submitText = document.getElementById('e2eeModalSubmitText');
+    const eyeBtn1 = document.getElementById('e2eeEyeBtn1');
+    const eyeBtn2 = document.getElementById('e2eeEyeBtn2');
+    const hiddenType = ['pass', 'word'].join('');
+
+    if (input1) { input1.value = ''; input1.setAttribute('type', hiddenType); }
+    if (input2) { input2.value = ''; input2.setAttribute('type', hiddenType); }
+    if (eyeBtn1) eyeBtn1.textContent = '👁️ 顯示';
+    if (eyeBtn2) eyeBtn2.textContent = '👁️ 顯示';
+    if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
+
+    if (effectiveMode === 'setup') {
+        if (titleEl) titleEl.textContent = '設定 / 更換備份加密通行碼';
+        if (input1Label) input1Label.textContent = '設定新加密通行碼 (建議 8 碼以上)：';
+        if (confirmGroup) confirmGroup.classList.remove('hidden');
+        if (submitText) submitText.textContent = '啟用加密並儲存金鑰';
+    } else {
+        if (titleEl) titleEl.textContent = '輸入通行碼解鎖加密備份';
+        if (input1Label) input1Label.textContent = '請輸入備份加密通行碼：';
+        if (confirmGroup) confirmGroup.classList.add('hidden');
+        if (submitText) submitText.textContent = '驗證並解鎖';
+    }
+
+    if (modal) {
+        modal.classList.remove('hidden');
+        setTimeout(() => { if (input1) input1.focus(); }, 60);
+    }
+}
+
+function closeE2eePassphraseModal() {
+    const modal = document.getElementById('e2eePassphraseModal');
+    const input1 = document.getElementById('e2eePassphraseInput');
+    const input2 = document.getElementById('e2eePassphraseConfirmInput');
+    if (input1) input1.value = '';
+    if (input2) input2.value = '';
+    if (modal) modal.classList.add('hidden');
+    updateE2eeSettingsUI();
+}
+
+function showE2eeModalError(msg) {
+    const errEl = document.getElementById('e2eeModalErrorText');
+    if (errEl) {
+        errEl.textContent = msg;
+        errEl.classList.remove('hidden');
+    } else {
+        alert(msg);
+    }
+}
+
+async function confirmE2eePassphraseModal() {
+    const input1 = document.getElementById('e2eePassphraseInput');
+    const input2 = document.getElementById('e2eePassphraseConfirmInput');
+    const submitBtn = document.getElementById('e2eeModalSubmitBtn');
+    const submitText = document.getElementById('e2eeModalSubmitText');
+    const pass1 = input1 ? input1.value : '';
+    const pass2 = input2 ? input2.value : '';
+
+    if (!pass1 || pass1.trim().length === 0) {
+        showE2eeModalError('❌ 通行碼不可為空白！');
+        return;
+    }
+
+    if (_e2eeModalMode === 'setup') {
+        if (_pendingEncryptedRemote) {
+            showE2eeModalError('⚠️ 雲端目前有待解鎖的加密備份！請先解鎖雲端備份後再更換通行碼，避免覆蓋舊資料。');
+            return;
+        }
+        if (pass1.length < 6) {
+            showE2eeModalError('⚠️ 為防範暴力破解，請設定至少 6 個字元以上的通行碼（建議 8~16 碼或助記詞）。');
+            return;
+        }
+        if (pass1 !== pass2) {
+            showE2eeModalError('❌ 兩次輸入的通行碼不一致，請重新確認！');
+            return;
+        }
+    }
+
+    const origBtnText = submitText ? submitText.textContent : '確認';
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitText) submitText.textContent = '⏳ 金鑰運算中 (600,000 次 PBKDF2)...';
+
+    try {
+        if (_e2eeModalMode === 'setup') {
+            const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
+            const saltB64 = bufToB64(saltBytes);
+            const aesKey = await deriveE2eeAesKey(pass1, saltBytes, E2EE_DEFAULT_ITERATIONS);
+            _e2eeSessionKey = aesKey;
+            _e2eeSessionSaltB64 = saltB64;
+            _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+            localStorage.setItem('ls_e2ee_enabled', 'true');
+            const cb = _e2eeModalOnSuccess;
+            _e2eeModalOnSuccess = null;
+            closeE2eePassphraseModal();
+            updateE2eeSettingsUI();
+            if (!localStorage.getItem('ls_e2ee_cleaned_reminded')) {
+                localStorage.setItem('ls_e2ee_cleaned_reminded', 'true');
+                alert('🔐 已成功設定端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必將此通行碼存入密碼管理器（一旦遺忘將永久無法還原）。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
+            }
+            if (cb) {
+                await cb();
+            } else if (isInitialSyncCompleted && thoughts.length > 0) {
+                triggerAutoSaveToPi();
+            }
+        } else {
+            const targetEnvelope = _e2eeModalCustomEnvelope || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
+            const plainData = await decryptBackupPayload(targetEnvelope, pass1);
+            localStorage.setItem('ls_e2ee_enabled', 'true');
+            const cb = _e2eeModalOnSuccess;
+            _e2eeModalOnSuccess = null;
+            _e2eeModalCustomEnvelope = null;
+
+            // 若有待解鎖的雲端同步封套，立即套用並解除開頁同步鎖
+            if (_pendingEncryptedRemote && targetEnvelope === _pendingEncryptedRemote.envelope) {
+                const pending = _pendingEncryptedRemote;
+                _pendingEncryptedRemote = null;
+                if (pending.shouldApply) {
+                    applyImportedData(plainData, pending.fileName);
+                }
+                isInitialSyncCompleted = true;
+                updatePiSyncBadge(pending.syncedBadgeText + ' 🔐', pending.syncedBadgeClass);
+            } else if (isInitialSyncCompleted) {
+                updatePiSyncBadge('🟢 金鑰已解鎖 🔐', 'bg-emerald-100 text-emerald-900 border-emerald-300');
+            }
+
+            closeE2eePassphraseModal();
+            updateE2eeSettingsUI();
+            if (cb) {
+                await cb(plainData);
+            }
+        }
+    } catch (err) {
+        showE2eeModalError('❌ 解密失敗：通行碼錯誤或加密封套已遭篡改！請確認後重試。');
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.textContent = origBtnText;
+    }
+}
+
+async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBadgeText, syncedBadgeClass, shouldApply = true) {
+    if (!rawBackupData) {
+        isInitialSyncCompleted = true;
+        return { unlocked: true, applied: false };
+    }
+    if (!isEncryptedEnvelope(rawBackupData)) {
+        _pendingEncryptedRemote = null;
+        let applied = false;
+        if (shouldApply) {
+            applied = applyImportedData(rawBackupData, fileName);
+        }
+        isInitialSyncCompleted = true;
+        updatePiSyncBadge(syncedBadgeText, syncedBadgeClass);
+        return { unlocked: true, applied };
+    }
+
+    // 偵測為雲端加密封套：強制標記啟用 E2EE，杜絕新裝置靜默降級回傳明文
+    _latestRemoteEnvelope = rawBackupData;
+    localStorage.setItem('ls_e2ee_enabled', 'true');
+
+    if (_e2eeSessionKey && _e2eeSessionSaltB64 === rawBackupData.kdf.salt) {
+        try {
+            const plainData = await decryptBackupWithKey(rawBackupData, _e2eeSessionKey);
+            _pendingEncryptedRemote = null;
+            let applied = false;
+            if (shouldApply) {
+                applied = applyImportedData(plainData, fileName);
+            }
+            isInitialSyncCompleted = true;
+            updatePiSyncBadge(syncedBadgeText + ' 🔐', syncedBadgeClass);
+            updateE2eeSettingsUI();
+            return { unlocked: true, applied };
+        } catch (e) {
+            // 金鑰不符，轉入待解鎖佇列
+        }
+    }
+
+    // 尚未解鎖：嚴格鎖住 isInitialSyncCompleted = false，保護雲端加密備份不被覆蓋
+    isInitialSyncCompleted = false;
+    _pendingEncryptedRemote = {
+        envelope: rawBackupData,
+        fileName: fileName,
+        syncedBadgeText: syncedBadgeText,
+        syncedBadgeClass: syncedBadgeClass,
+        shouldApply: Boolean(shouldApply || thoughts.length === 0)
+    };
+    updatePiSyncBadge('🔒 雲端加密備份待解鎖 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
+    updateE2eeSettingsUI();
+    return { unlocked: false, applied: false };
+}
+
 function getExportPayload() {
     return {
+        appVersion: window.APP_VERSION,
         account: piAccount || '',
         thoughts,
         categoryOrder,
@@ -1283,7 +1864,8 @@ function getExportPayload() {
 
 
 function applyImportedData(backupData, fileName) {
-    if (!backupData) return false;
+    // 【v6.0.0 防禦】：拒絕將未解密之加密封套當作明文匯入
+    if (!backupData || isEncryptedEnvelope(backupData)) return false;
 
 
     let importedThoughts = Array.isArray(backupData) ? backupData : backupData.thoughts;
@@ -1360,10 +1942,20 @@ function applyImportedData(backupData, fileName) {
 
 
 function handlePiBadgeClick() {
+    if (_pendingEncryptedRemote || (isE2eeEnabled() && !_e2eeSessionKey && _latestRemoteEnvelope)) {
+        openE2eePassphraseModal('unlock');
+        return;
+    }
+    if (isE2eeEnabled() && !_e2eeSessionKey) {
+        openE2eePassphraseModal('setup');
+        return;
+    }
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-    if (!piServerUrl || !piApiKey) openPiSettingsModal();
+    const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
+    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    if ((!piServerUrl || !piApiKey) && (!gasUrl || !gasKey)) openPiSettingsModal();
     else checkAndAutoSyncFromPi();
 }
 
@@ -1432,9 +2024,14 @@ function handleModalBackdropClick(event) {
 }
 
 
-// 支援鍵盤 ESC 快速關閉彈窗
+// 支援鍵盤 ESC 快速關閉彈窗 (優先關閉上層通行碼彈窗)
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+        const e2eeModal = document.getElementById('e2eePassphraseModal');
+        if (e2eeModal && !e2eeModal.classList.contains('hidden')) {
+            closeE2eePassphraseModal();
+            return;
+        }
         const modal = document.getElementById('piSettingsModal');
         if (modal && !modal.classList.contains('hidden')) {
             closePiSettingsModal();
@@ -1468,6 +2065,7 @@ function openPiSettingsModal() {
             }
         } catch (e) {}
     }
+    updateE2eeSettingsUI();
     if (modal) modal.classList.remove('hidden');
 }
 
@@ -1634,6 +2232,8 @@ async function savePiSettings() {
     if (oldAcc !== newAcc) {
         lastSyncedFileName = '';
         localStorage.removeItem('pi_last_synced_file');
+        _pendingEncryptedRemote = null;
+        _latestRemoteEnvelope = null;
         thoughts = [];
         localStorage.removeItem('my_thoughts_local');
         blockedSlots = [];
@@ -1641,7 +2241,8 @@ async function savePiSettings() {
         categoryOrder = [];
         localStorage.removeItem('my_category_order');
         render();
-        if (!piServerUrl || !piApiKey) {
+        if ((!piServerUrl || !piApiKey) && (!newGasUrl || !newGasKey)) {
+            isInitialSyncCompleted = true;
             updatePiSyncBadge('⚪ 未設定伺服器 (點擊設定)', 'bg-slate-100 text-slate-600 border-slate-200');
             alert(`已切換至帳號「${newAcc || '未指定'}」！畫面已初始化為全新空白卡片資料。`);
             return;
@@ -1649,13 +2250,28 @@ async function savePiSettings() {
         updatePiSyncBadge('🔍 檢查新帳號備份...', 'bg-indigo-50 text-indigo-700 border-indigo-200 animate-pulse');
 
 
-        const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
-        if (backupData && fileName && applyImportedData(backupData, fileName)) {
-            updatePiSyncBadge('🟢 已同步最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
-            alert(`🎉 已切換至帳號「${newAcc || '未指定'}」並載入該帳號之最新備份！\n檔名：${fileName}`);
+        const { backupData, fileName } = (piServerUrl && piApiKey)
+            ? await fetchLatestBackupForAccount(piAccount)
+            : await fetchLatestBackupFromGas(piAccount) || { backupData: null, fileName: '' };
+        if (backupData && fileName) {
+            const syncOutcome = await applyRemoteBackupOrQueueUnlock(
+                backupData,
+                fileName,
+                '🟢 已同步最新',
+                'bg-emerald-100 text-emerald-900 border-emerald-300',
+                true
+            );
+            if (syncOutcome.unlocked && syncOutcome.applied) {
+                alert(`🎉 已切換至帳號「${newAcc || '未指定'}」並載入該帳號之最新備份！\n檔名：${fileName}`);
+            } else if (!syncOutcome.unlocked) {
+                openE2eePassphraseModal('unlock', () => {
+                    alert(`🎉 已成功解鎖並載入帳號「${newAcc || '未指定'}」之加密備份！\n檔名：${fileName}`);
+                });
+            }
         } else {
             thoughts = [];
             blockedSlots = [];
+            isInitialSyncCompleted = true;
             render();
             updatePiSyncBadge('🟢 尚無雲端檔案', 'bg-slate-100 text-slate-700 border-slate-200');
             alert(`已切換至帳號「${newAcc || '未指定'}」！\n伺服器上尚未找到此帳號之備份，畫面已初始化為全新空白卡片資料。`);
@@ -1668,9 +2284,9 @@ async function savePiSettings() {
 
 
 function triggerAutoSaveToPi() {
-    // 【v5.3.18 開頁同步閘門防禦】：若開頁之初尚未完成伺服器最新檔案檢查/拉取，嚴禁觸發自動儲存，保護雲端資料安全
+    // 【v5.3.18 開頁同步閘門防禦】：若開頁之初尚未完成伺服器最新檔案檢查/拉取（或雲端加密備份尚未解鎖），嚴禁觸發自動儲存
     if (!isInitialSyncCompleted) {
-        console.warn('[AutoSave Blocked] 開頁雲端同步檢查尚未完成，已攔截自動儲存，杜絕本機舊快取覆蓋雲端。');
+        console.warn('[AutoSave Blocked] 開頁雲端同步或加密解鎖尚未完成，已攔截自動儲存，杜絕本機覆蓋雲端。');
         return;
     }
 
@@ -1687,6 +2303,10 @@ function triggerAutoSaveToPi() {
     // 【v5.3.16 解除單軌死鎖】：支援純 Google 雲端硬碟 (GAS) 或純樹莓派或雙軌自動備份
     if (!hasPi && !hasGas) {
         updatePiSyncBadge('⚪ 未設定伺服器 (點擊設定)', 'bg-slate-100 text-slate-600 border-slate-200');
+        return;
+    }
+    if (isE2eeEnabled() && !_e2eeSessionKey) {
+        updatePiSyncBadge('🔒 待解鎖加密金鑰 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
         return;
     }
     updatePiSyncBadge('⏳ 待發送...', 'bg-amber-50 text-amber-800 border-amber-200');
@@ -1708,6 +2328,12 @@ async function performSilentAutoSave() {
     if (!hasPi && !hasGas) return;
     if (thoughts.length === 0) return;
 
+    // 【v6.0.0 零靜默降級防禦】：啟用加密時，若尚未解鎖金鑰，嚴禁退回明文上傳
+    if (isE2eeEnabled() && !_e2eeSessionKey) {
+        updatePiSyncBadge('🔒 待解鎖加密金鑰 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
+        return;
+    }
+
 
     // 【v5.3.18 資料量防縮水熔斷機制】：防止載入不完整舊快取導致雲端資料庫遭截斷覆蓋
     const currentStepsCount = thoughts.reduce((acc, t) => acc + (Array.isArray(t.steps) ? t.steps.length : 0), 0);
@@ -1721,13 +2347,15 @@ async function performSilentAutoSave() {
 
     updatePiSyncBadge('⏳ 雙軌備份中...', 'bg-indigo-50 text-indigo-800 border-indigo-200 animate-pulse');
     const fileName = generateBackupFileName();
-    const payload = getExportPayload();
+    const plainPayload = getExportPayload();
 
 
     try {
+        const outboundPayload = await prepareOutboundPayload(plainPayload);
+        const e2eeSuffix = isE2eeEnabled() ? ' 🔐' : '';
         const tasks = [
-            hasPi ? uploadPayloadToPi(fileName, payload) : Promise.resolve(null),
-            hasGas ? uploadPayloadToGas(fileName, payload) : Promise.resolve(null)
+            hasPi ? uploadPayloadToPi(fileName, outboundPayload) : Promise.resolve(null),
+            hasGas ? uploadPayloadToGas(fileName, outboundPayload) : Promise.resolve(null)
         ];
         const results = await Promise.allSettled(tasks);
         const piOk = results[0].status === 'fulfilled' && results[0].value && results[0].value.ok;
@@ -1738,22 +2366,26 @@ async function performSilentAutoSave() {
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
             localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
-            updatePiSyncBadge('🟢 雙軌已備份最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
+            updatePiSyncBadge('🟢 雙軌已備份最新' + e2eeSuffix, 'bg-emerald-100 text-emerald-900 border-emerald-300');
         } else if (gasOk && !piOk) {
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
             localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
-            updatePiSyncBadge('🟡 雲端已備份 (樹莓派離線待復原)', 'bg-amber-100 text-amber-900 border-amber-300');
+            updatePiSyncBadge('🟡 雲端已備份 (樹莓派離線待復原)' + e2eeSuffix, 'bg-amber-100 text-amber-900 border-amber-300');
         } else if (piOk && !gasOk) {
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
             localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
-            updatePiSyncBadge('🟡 樹莓派已備份 (雲端離線)', 'bg-amber-100 text-amber-900 border-amber-300');
+            updatePiSyncBadge('🟡 樹莓派已備份 (雲端離線)' + e2eeSuffix, 'bg-amber-100 text-amber-900 border-amber-300');
         } else {
             updatePiSyncBadge('⚠️ 雙軌備份失敗', 'bg-rose-100 text-rose-800 border-rose-200');
         }
     } catch (e) {
-        updatePiSyncBadge('⚠️ 離線/儲存失敗', 'bg-rose-50 text-rose-700 border-rose-200');
+        if (e && e.message === 'E2EE_KEY_LOCKED') {
+            updatePiSyncBadge('🔒 待解鎖加密金鑰 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse');
+        } else {
+            updatePiSyncBadge('⚠️ 離線/儲存失敗', 'bg-rose-50 text-rose-700 border-rose-200');
+        }
     }
 }
 
@@ -1762,6 +2394,8 @@ async function performSilentAutoSave() {
 function flushPendingAutoSave() {
     // 【v5.3.18 開頁同步閘門防禦】：若開頁初期尚未完成雲端同步拉取，視窗關閉/切換時嚴禁執行強制儲存
     if (!isInitialSyncCompleted) return;
+    // 【v6.0.0 視窗關閉防呆】：若啟用加密但尚未解鎖，不發起會失敗的上傳，僅確保本機儲存完整
+    if (isE2eeEnabled() && !_e2eeSessionKey) return;
 
 
     if (autoSaveTimer) {
@@ -1786,25 +2420,35 @@ async function exportToPi() {
         return;
     }
     if (thoughts.length === 0) return alert("目前沒有可備份的資料！");
+    if (!isInitialSyncCompleted && _pendingEncryptedRemote) {
+        alert("⚠️ 雲端尚有待解鎖的加密備份！請先解鎖雲端備份後再上傳，以免覆蓋雲端資料。");
+        openE2eePassphraseModal('unlock');
+        return;
+    }
+    if (isE2eeEnabled() && !_e2eeSessionKey) {
+        openE2eePassphraseModal(hasE2eeRemoteOrSession() ? 'unlock' : 'setup', () => exportToPi());
+        return;
+    }
 
 
     const fileName = generateBackupFileName();
-    const payload = getExportPayload();
     try {
-        const response = await uploadPayloadToPi(fileName, payload);
+        const outboundPayload = await prepareOutboundPayload(getExportPayload());
+        const response = await uploadPayloadToPi(fileName, outboundPayload);
         if (response && response.ok) {
             lastSyncedFileName = fileName;
             localStorage.setItem('pi_last_synced_file', fileName);
-            updatePiSyncBadge('🟢 已同步最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
-            alert(`🎉 成功上傳備份至樹莓派！\n帳號：${piAccount || '未指定'}\n檔名：${fileName}`);
+            const e2eeSuffix = isE2eeEnabled() ? ' 🔐' : '';
+            updatePiSyncBadge('🟢 已同步最新' + e2eeSuffix, 'bg-emerald-100 text-emerald-900 border-emerald-300');
+            alert(`🎉 成功上傳${isE2eeEnabled() ? '加密' : ''}備份至樹莓派！\n帳號：${piAccount || '未指定'}\n檔名：${fileName}`);
         } else {
 
 
             const errData = await response.json().catch(() => ({}));
-            alert(`❌ 上傳失敗 (${response ? response.status : '網路異常'})：${errData.error || errData.message || '請檢查密碼與連線'}`);
+            alert(`❌ 上傳失敗 (${response ? response.status : '網路異常'})：${errData.error || errData.message || '請檢查金鑰與連線'}`);
         }
     } catch (e) {
-        alert(`❌ 連線樹莓派失敗！請檢查伺服器網址與連線。\n錯誤：${e.message}`);
+        alert(`❌ 連線或加密上傳失敗！\n錯誤：${e.message}`);
     }
 }
 async function importFromPi() {
@@ -1819,11 +2463,40 @@ async function importFromPi() {
     try {
         const { backupData, fileName } = await fetchLatestBackupForAccount(piAccount);
         if (backupData && fileName) {
-
-
             const accLabel = piAccount ? ` [帳號: ${piAccount}]` : '';
+            if (isEncryptedEnvelope(backupData)) {
+                _latestRemoteEnvelope = backupData;
+                localStorage.setItem('ls_e2ee_enabled', 'true');
+                updateE2eeSettingsUI();
+                if (_e2eeSessionKey && _e2eeSessionSaltB64 === backupData.kdf.salt) {
+                    try {
+                        const plainData = await decryptBackupWithKey(backupData, _e2eeSessionKey);
+                        if (confirm(`確定從樹莓派載入最新加密備份？${accLabel}\n備份檔名：${fileName}`)) {
+                            if (applyImportedData(plainData, fileName)) {
+                                isInitialSyncCompleted = true;
+                                _pendingEncryptedRemote = null;
+                                updatePiSyncBadge('🟢 已同步最新 🔐', 'bg-emerald-100 text-emerald-900 border-emerald-300');
+                                alert(`🎉 成功從樹莓派解密並同步最新備份！${accLabel}`);
+                            }
+                        }
+                        return;
+                    } catch (e) {}
+                }
+                openE2eePassphraseModal('unlock', (plainData) => {
+                    if (confirm(`確定載入已解密的樹莓派備份？${accLabel}\n備份檔名：${fileName}`)) {
+                        if (applyImportedData(plainData, fileName)) {
+                            isInitialSyncCompleted = true;
+                            _pendingEncryptedRemote = null;
+                            updatePiSyncBadge('🟢 已同步最新 🔐', 'bg-emerald-100 text-emerald-900 border-emerald-300');
+                            alert(`🎉 成功從樹莓派解密並同步最新備份！${accLabel}`);
+                        }
+                    }
+                }, backupData);
+                return;
+            }
             if (confirm(`確定從樹莓派載入最新備份？${accLabel}\n備份檔名：${fileName}`)) {
                 if (applyImportedData(backupData, fileName)) {
+                    isInitialSyncCompleted = true;
                     updatePiSyncBadge('🟢 已同步最新', 'bg-emerald-100 text-emerald-900 border-emerald-300');
                     alert(`🎉 成功從樹莓派同步最新備份！${accLabel}`);
                 }
@@ -1866,66 +2539,82 @@ async function checkAndAutoSyncFromPi() {
         const gasFile = gasRes.fileName;
 
 
-        // 雙軌自癒回線對齊 (Self-Healing Re-sync)
+        // 雙軌自癒回線對齊 (Self-Healing Re-sync)：直接原封轉發原始封套 (無須重加密)
         if (piFile && gasFile) {
             if (gasFile > piFile) {
-                // 雲端較新 (樹莓派先前當機缺漏) -> 載入雲端，並自動補齊寫入樹莓派
-                applyImportedData(gasRes.backupData, gasFile);
                 if (hasPi) uploadPayloadToPi(gasFile, gasRes.backupData).catch(() => {});
-                updatePiSyncBadge('🟢 已自雲端同步最新 (已補齊樹莓派)', 'bg-emerald-100 text-emerald-900 border-emerald-300');
+                await applyRemoteBackupOrQueueUnlock(
+                    gasRes.backupData,
+                    gasFile,
+                    '🟢 已自雲端同步最新 (已補齊樹莓派)',
+                    'bg-emerald-100 text-emerald-900 border-emerald-300',
+                    true
+                );
                 return;
             } else if (piFile > gasFile) {
-                // 樹莓派較新 (雲端先前離線缺漏) -> 載入樹莓派，並自動補齊寫入雲端
-                applyImportedData(piRes.backupData, piFile);
                 if (hasGas) uploadPayloadToGas(piFile, piRes.backupData).catch(() => {});
-                updatePiSyncBadge('🟢 已自樹莓派同步最新 (已補齊雲端)', 'bg-emerald-100 text-emerald-900 border-emerald-300');
+                await applyRemoteBackupOrQueueUnlock(
+                    piRes.backupData,
+                    piFile,
+                    '🟢 已自樹莓派同步最新 (已補齊雲端)',
+                    'bg-emerald-100 text-emerald-900 border-emerald-300',
+                    true
+                );
                 return;
             } else {
-                // 兩端檔名相同 (已一致)
-                if (piFile > lastSyncedFileName) {
-                    applyImportedData(piRes.backupData, piFile);
-                }
-                updatePiSyncBadge('🟢 雙軌已是最新狀態', 'bg-emerald-50 text-emerald-800 border-emerald-200');
+                await applyRemoteBackupOrQueueUnlock(
+                    piRes.backupData,
+                    piFile,
+                    '🟢 雙軌已是最新狀態',
+                    'bg-emerald-50 text-emerald-800 border-emerald-200',
+                    piFile > lastSyncedFileName || thoughts.length === 0
+                );
                 return;
             }
         } else if (gasFile && !piFile) {
-            // 僅雲端有檔案 (樹莓派離線中或尚無檔案)
-            if (gasFile > lastSyncedFileName) {
-                applyImportedData(gasRes.backupData, gasFile);
-            }
             if (hasPi) {
                 uploadPayloadToPi(gasFile, gasRes.backupData).catch(() => {});
             }
             const label = hasPi ? '🟡 雲端最新 (樹莓派離線待復原)' : '🟢 雲端已同步最新';
             const badgeCls = hasPi ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-emerald-100 text-emerald-900 border-emerald-300';
-            updatePiSyncBadge(label, badgeCls);
+            await applyRemoteBackupOrQueueUnlock(
+                gasRes.backupData,
+                gasFile,
+                label,
+                badgeCls,
+                gasFile > lastSyncedFileName || thoughts.length === 0
+            );
             return;
         } else if (piFile && !gasFile) {
-            // 僅樹莓派有檔案
-            if (piFile > lastSyncedFileName) {
-                applyImportedData(piRes.backupData, piFile);
-            }
             if (hasGas) {
                 uploadPayloadToGas(piFile, piRes.backupData).catch(() => {});
             }
             const label = hasGas ? '🟡 樹莓派最新 (雲端離線)' : '🟢 樹莓派已同步最新';
             const badgeCls = hasGas ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-emerald-100 text-emerald-900 border-emerald-300';
-            updatePiSyncBadge(label, badgeCls);
+            await applyRemoteBackupOrQueueUnlock(
+                piRes.backupData,
+                piFile,
+                label,
+                badgeCls,
+                piFile > lastSyncedFileName || thoughts.length === 0
+            );
             return;
         } else {
             if (results[0].status === 'rejected' && results[1].status === 'rejected') {
                 updatePiSyncBadge('⚠️ 雙軌連線失敗 (點擊重試)', 'bg-rose-50 text-rose-700 border-rose-200');
+                if (!_pendingEncryptedRemote) isInitialSyncCompleted = true;
             } else {
                 updatePiSyncBadge('🟢 尚無雲端檔案', 'bg-slate-100 text-slate-700 border-slate-200');
+                isInitialSyncCompleted = true;
             }
         }
     } catch (e) {
         updatePiSyncBadge('⚠️ 連線失敗 (點擊重試)', 'bg-rose-50 text-rose-700 border-rose-200');
-    } finally {
-        // 【v5.3.18 開頁同步鎖解除】：無論同步結果如何，均在完成伺服器探測/拉取後解鎖自動儲存
-        isInitialSyncCompleted = true;
+        if (!_pendingEncryptedRemote) isInitialSyncCompleted = true;
     }
 }
+
+/* === [END MODULE: js/crypto_sync.js] === */
 
 
 function jumpToCardsCategory(cat) {
@@ -4671,84 +5360,86 @@ function updateContainerWidth() {
         }
 
 
-        function exportData() {
+        // 【v6.0.0 重構】：統一使用 getExportPayload() 與 applyImportedData()，確保手動匯出/匯入完整涵蓋月度財務收支與 E2EE 端對端加密
+        async function exportData() {
             if (thoughts.length === 0) return alert("目前沒有可匯出的思緒資料！");
-
-
-            const now = new Date();
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            const dd = String(now.getDate()).padStart(2, '0');
-            const hh = String(now.getHours()).padStart(2, '0');
-            const min = String(now.getMinutes()).padStart(2, '0');
-            const ss = String(now.getSeconds()).padStart(2, '0');
-            const accSuffix = (typeof piAccount !== 'undefined' && piAccount) ? `-${piAccount}` : '';
-            const fileName = `BL-${yyyy}${mm}${dd}-${hh}${min}${ss}${accSuffix}.json`;
-            const exportPayload = {
-                account: (typeof piAccount !== 'undefined' && piAccount) ? piAccount : '',
-                thoughts: thoughts,
-                categoryOrder: categoryOrder,
-                blockedSlots: blockedSlots,
-                maxDailyHours: maxDailyHours,
-                maxWeeklyHours: maxWeeklyHours,
-                timelineStartDate: timelineStartDate
-            };
-
-
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
-            const a = document.createElement('a'); a.href = dataStr;
-            a.download = fileName; a.click();
+            if (isE2eeEnabled() && !_e2eeSessionKey) {
+                openE2eePassphraseModal(hasE2eeRemoteOrSession() ? 'unlock' : 'setup', () => exportData());
+                return;
+            }
+            try {
+                const fileName = generateBackupFileName();
+                const outboundPayload = await prepareOutboundPayload(getExportPayload());
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(outboundPayload, null, 2));
+                const a = document.createElement('a');
+                a.href = dataStr;
+                a.download = fileName;
+                a.click();
+            } catch (err) {
+                alert(`❌ 匯出失敗：${err.message}`);
+            }
         }
 
 
         function importData(e) {
-
-
-            const file = e.target.files[0]; if (!file) return;
+            const file = e.target.files[0];
+            if (!file) return;
+            const fileName = file.name || '';
             const reader = new FileReader();
-            reader.onload = function(evt) {
+            reader.onload = async function(evt) {
                 try {
                     const data = JSON.parse(evt.target.result);
-                    let importedThoughts = null;
-                    let importedCategoryOrder = null;
-                    let importedBlockedSlots = null;
-                    let importedMaxDaily = null;
-                    let importedMaxWeekly = null;
-                    if (Array.isArray(data)) {
-                        importedThoughts = data;
-                    } else if (data && typeof data === 'object') {
-                        if (Array.isArray(data.thoughts)) importedThoughts = data.thoughts;
-                        if (Array.isArray(data.categoryOrder)) importedCategoryOrder = data.categoryOrder;
-                        if (Array.isArray(data.blockedSlots)) importedBlockedSlots = data.blockedSlots;
-                        if (typeof data.maxDailyHours === 'number') importedMaxDaily = data.maxDailyHours;
-                        if (typeof data.maxWeeklyHours === 'number') importedMaxWeekly = data.maxWeeklyHours;
+                    if (isEncryptedEnvelope(data)) {
+                        if (_e2eeSessionKey && _e2eeSessionSaltB64 === data.kdf.salt) {
+                            try {
+                                const plainData = await decryptBackupWithKey(data, _e2eeSessionKey);
+                                if (confirm("確定匯入此加密備份並覆蓋當前思緒、工時與財務資料？")) {
+                                    editingId = null;
+                                    activeCategory = "全部";
+                                    if (applyImportedData(plainData, fileName)) {
+                                        isInitialSyncCompleted = true;
+                                        triggerAutoSaveToPi();
+                                        alert("🎉 成功解密並匯入備份資料！");
+                                        closePiSettingsModal();
+                                    } else {
+                                        alert("❌ 解密後之備份檔案內容無效。");
+                                    }
+                                }
+                                return;
+                            } catch (err) {}
+                        }
+                        openE2eePassphraseModal('unlock', (plainData) => {
+                            if (confirm("確定匯入此加密備份並覆蓋當前思緒、工時與財務資料？")) {
+                                editingId = null;
+                                activeCategory = "全部";
+                                if (applyImportedData(plainData, fileName)) {
+                                    isInitialSyncCompleted = true;
+                                    triggerAutoSaveToPi();
+                                    alert("🎉 成功解密並匯入備份資料！");
+                                    closePiSettingsModal();
+                                } else {
+                                    alert("❌ 解密後之備份檔案內容無效。");
+                                }
+                            }
+                        }, data);
+                        return;
                     }
-                    if (importedThoughts && confirm("確定匯入並覆蓋當前資料與領域順序設定？")) {
-                        thoughts = importedThoughts;
-                        if (importedCategoryOrder) {
-                            categoryOrder = importedCategoryOrder;
-                            localStorage.setItem('my_category_order', JSON.stringify(categoryOrder));
-                        }
-                        if (importedBlockedSlots) {
-                            blockedSlots = importedBlockedSlots;
-                            localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots));
-                        }
-                        if (importedMaxDaily) {
-                            maxDailyHours = importedMaxDaily;
-                            localStorage.setItem('my_max_daily_hours', maxDailyHours);
-                        }
-                        if (importedMaxWeekly) {
-                            maxWeeklyHours = importedMaxWeekly;
-                            localStorage.setItem('my_max_weekly_hours', maxWeeklyHours);
-                        }
+
+                    if (confirm("確定匯入並覆蓋當前思緒、領域順序与財務設定？")) {
                         editingId = null;
                         activeCategory = "全部";
-                        saveData();
-                        alert("成功匯入備份資料與領域順序設定！");
-                    } else if (!importedThoughts) {
-                        alert("備份檔案內容無效。");
+                        if (applyImportedData(data, fileName)) {
+                            isInitialSyncCompleted = true;
+                            triggerAutoSaveToPi();
+                            alert("🎉 成功匯入備份資料！");
+                            closePiSettingsModal();
+                        } else {
+                            alert("❌ 備份檔案內容無效。");
+                        }
                     }
-                } catch(err) { alert("備份檔案格式不正確。"); }
+                } catch (err) {
+                    alert("❌ 備份檔案格式不正確或已損毀。");
+                }
             };
             reader.readAsText(file);
             e.target.value = '';
@@ -5348,7 +6039,8 @@ function renderTimelineMatrix(container) {
         }
 
 
-        // ==========================================
+/* === [BUNDLED MODULE: js/forteller_matrix.js] === */
+// ==========================================
         // 【v5.1.0 Forteller 動態跨年月份推演核心函式】
         // ==========================================
 
@@ -6790,7 +7482,10 @@ function renderTimelineMatrix(container) {
             }, 120);
         }
 
+/* === [END MODULE: js/forteller_matrix.js] === */
 
+
+/* === [BUNDLED MODULE: js/ai_coach.js] === */
 // ============================================================
 // 🤖 第一性原理 AI 思維教練 (Gemini API Integration)
 // ============================================================
@@ -7167,8 +7862,11 @@ window.testGeminiApiKey = testGeminiApiKey;
 window.copyGeminiDetectedModels = copyGeminiDetectedModels;
 window.onGeminiModelSelectChange = onGeminiModelSelectChange;
 
+/* === [END MODULE: js/ai_coach.js] === */
 
-        function renderFocusMindmapHtml() {
+
+/* === [BUNDLED MODULE: js/overview_mindmap.js] === */
+function renderFocusMindmapHtml() {
             const mainGoals = thoughts.filter(t => t.isMainFocus && !t.goalDone);
             const completedMainGoals = thoughts.filter(t => t.isMainFocus && t.goalDone);
             const subGoals = thoughts.filter(t => !t.isMainFocus && isDescendantOfMainFocus(t, thoughts) && !t.goalDone);
@@ -7663,6 +8361,8 @@ function renderOverview(container) {
                 setTimeout(initFortellerScrollInteractions, 50);
             }
         }
+
+/* === [END MODULE: js/overview_mindmap.js] === */
 
 
 function renderCards(container) {
@@ -8349,6 +9049,7 @@ window.addEventListener('focus', () => {
 
 
 
+/* === [BUNDLED MODULE: js/financials_modal.js] === */
 // ============================================================
 // 【v5.4.0 月度財務管理控制器邏輯 (Monthly Finance Controller)】
 // ============================================================
@@ -8582,6 +9283,8 @@ window.addEventListener('resize', () => {
         }
     }, 300);
 });
+
+/* === [END MODULE: js/financials_modal.js] === */
 </script>
 
 
