@@ -22,4 +22,7 @@ test_*.py
 GEMINI.md
 
 .agents/
+
+# Raspberry Pi backend (deployed manually by copy, never published to web)
+_server/
 MathChecking/data/picture/PXL_*.jpg

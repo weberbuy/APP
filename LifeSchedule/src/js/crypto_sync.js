@@ -831,6 +831,50 @@ async function uploadPayloadToGas(fileName, payload) {
 }
 
 
+// ============================================================
+// 🛡️ 【v6.0.2 雲端備份讀取驗證與多版本自動退回防護 (Read-Side Fallback Guard)】
+// 設計理由 (Why)：
+// 1. 即使伺服器端有 Atomic Write，若遇舊版殘檔、網路截斷或走 /files 備援路徑，不能只盲信第一份檔案 (jsonFiles[0])。
+// 2. 明文備份必須具備合法 thoughts 陣列；加密封套必須具備合法 PBKDF2 參數、12-byte IV 與 >16 bytes 密文（含 128-bit GCM Tag）。
+// 3. 若當前分頁已解鎖相同 Salt 之金鑰，直接以 AES-GCM 驗證密文完整性；認證失敗立即自動退回嘗試上一份完好備份。
+// ============================================================
+const MAX_BACKUP_FALLBACK_SCAN = 5;
+
+function isValidBackupPayload(data) {
+    if (!data || typeof data !== 'object') return false;
+    if (Array.isArray(data)) return true;
+    if (Array.isArray(data.thoughts)) return true;
+    if (isEncryptedEnvelope(data)) {
+        try {
+            const iters = Number(data.kdf && data.kdf.iterations);
+            if (!Number.isInteger(iters) || iters < E2EE_MIN_ITERATIONS || iters > E2EE_MAX_ITERATIONS) return false;
+            const saltBytes = b64ToBytes(data.kdf.salt);
+            const ivBytes = b64ToBytes(data.cipher.iv);
+            const cipherBytes = b64ToBytes(data.ciphertext);
+            if (saltBytes.length < 8 || ivBytes.length !== 12 || cipherBytes.length <= 16) return false;
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+    return false;
+}
+
+async function isUsableBackupCandidate(data) {
+    if (!isValidBackupPayload(data)) return false;
+    if (isEncryptedEnvelope(data) && _e2eeSessionKey && _e2eeSessionSaltB64 === data.kdf.salt) {
+        try {
+            const plain = await decryptBackupWithKey(data, _e2eeSessionKey);
+            return Boolean(plain && (Array.isArray(plain) || Array.isArray(plain.thoughts)));
+        } catch (e) {
+            console.warn('[Backup Fallback] 已解鎖金鑰無法通過此加密備份之 AES-GCM 認證，視為損壞並退回上一份:', e);
+            return false;
+        }
+    }
+    return true;
+}
+
+
 async function fetchLatestBackupFromGas(targetAccount) {
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
     const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
@@ -849,7 +893,10 @@ async function fetchLatestBackupFromGas(targetAccount) {
         if (res.ok) {
             const json = await res.json();
             if (json && json.success && json.fileName && json.backupData) {
-                return { fileName: json.fileName, backupData: json.backupData };
+                if (await isUsableBackupCandidate(json.backupData)) {
+                    return { fileName: json.fileName, backupData: json.backupData };
+                }
+                console.warn('[GAS Sync] 雲端硬碟最新備份格式或加密驗證未通過，已略過:', json.fileName);
             }
         }
     } catch (e) {
@@ -867,6 +914,9 @@ async function uploadPayloadToPi(fileName, payload) {
         headers: { 'Content-Type': 'application/json', 'x-api-key': piApiKey, 'x-account': encodeURIComponent(piAccount) },
         body: JSON.stringify({ fileName, account: piAccount, data: payload })
     }).catch(() => null);
+    if (response && (response.status === 401 || response.status === 403 || response.status === 429)) {
+        return response;
+    }
     if (!response || !response.ok) {
 
 
@@ -879,47 +929,85 @@ async function uploadPayloadToPi(fileName, payload) {
             body: formData
         });
     }
+    if (response && response.ok && typeof response.clone === 'function') {
+        try {
+            const body = await response.clone().json();
+            if (body && (body.fileName || body.filename)) {
+                response.savedFileName = body.fileName || body.filename;
+            }
+        } catch (e) {}
+    }
     return response;
 }
 async function fetchLatestBackupForAccount(targetAccount) {
 
 
     const acc = (targetAccount || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+    const skippedCorrupt = [];
     try {
         let response = await fetch(`${piServerUrl}/api/liveschedule/latest?account=${encodeURIComponent(acc)}`, {
             method: 'GET',
             headers: { 'x-api-key': piApiKey, 'x-account': encodeURIComponent(acc) }
         });
+        if (response.status === 401 || response.status === 403 || response.status === 429) {
+            return { backupData: null, fileName: '', skippedCorrupt };
+        }
         if (response.ok) {
 
 
             const result = await response.json();
-            if (result && result.fileName && isFileMatchingAccount(result.fileName, acc) && result.data) {
-                return { backupData: result.data, fileName: result.fileName };
+            if (result && Array.isArray(result.skippedCorrupt)) {
+                result.skippedCorrupt.forEach(f => {
+                    if (!skippedCorrupt.includes(f)) skippedCorrupt.push(f);
+                });
+            }
+            if (result && result.fileName && isFileMatchingAccount(result.fileName, acc)) {
+                if (await isUsableBackupCandidate(result.data)) {
+                    return { backupData: result.data, fileName: result.fileName, skippedCorrupt };
+                }
+                console.warn(`[Backup Fallback] /latest 回傳之備份 (${result.fileName}) 結構或加密驗證未通過，轉入 /files 逐份退回搜尋`);
+                if (!skippedCorrupt.includes(result.fileName)) skippedCorrupt.push(result.fileName);
             }
         }
     } catch (e) {}
     try {
         const filesRes = await fetch(`${piServerUrl}/files?path=LiveSchedule`, { headers: { 'x-api-key': piApiKey } });
+        if (filesRes.status === 401 || filesRes.status === 403 || filesRes.status === 429) {
+            return { backupData: null, fileName: '', skippedCorrupt };
+        }
         if (filesRes.ok) {
 
 
             const filesData = await filesRes.json();
             const jsonFiles = (filesData.files || [])
-                .filter(f => !f.isDirectory && isFileMatchingAccount(f.name, acc))
-                .map(f => f.name).sort().reverse();
-            if (jsonFiles.length > 0) {
-
-
-                const fileName = jsonFiles[0];
-                const downRes = await fetch(`${piServerUrl}/download/LiveSchedule%2F${encodeURIComponent(fileName)}`, { headers: { 'x-api-key': piApiKey } });
-                if (downRes.ok) {
-                    return { backupData: await downRes.json(), fileName };
+                .filter(f => !f.isDirectory && isFileMatchingAccount(f.name, acc) && !skippedCorrupt.includes(f.name))
+                .map(f => f.name).sort().reverse()
+                .slice(0, MAX_BACKUP_FALLBACK_SCAN);
+            for (const fileName of jsonFiles) {
+                try {
+                    const downRes = await fetch(`${piServerUrl}/download/LiveSchedule%2F${encodeURIComponent(fileName)}`, { headers: { 'x-api-key': piApiKey } });
+                    if (downRes.status === 401 || downRes.status === 403 || downRes.status === 429) break;
+                    if (!downRes.ok) {
+                        skippedCorrupt.push(fileName);
+                        continue;
+                    }
+                    const data = await downRes.json();
+                    if (await isUsableBackupCandidate(data)) {
+                        if (skippedCorrupt.length > 0) {
+                            console.warn(`[Backup Fallback] 已略過 ${skippedCorrupt.length} 份異常備份，成功退回載入完好備份: ${fileName}`);
+                        }
+                        return { backupData: data, fileName, skippedCorrupt };
+                    }
+                    console.warn(`[Backup Fallback] 備份檔 ${fileName} 內容驗證未通過，繼續嘗試上一份...`);
+                    skippedCorrupt.push(fileName);
+                } catch (innerErr) {
+                    console.warn(`[Backup Fallback] 備份檔 ${fileName} JSON 解析失敗，繼續嘗試上一份...`);
+                    skippedCorrupt.push(fileName);
                 }
             }
         }
     } catch (e) {}
-    return { backupData: null, fileName: '' };
+    return { backupData: null, fileName: '', skippedCorrupt };
 }
 async function savePiSettings() {
 
@@ -1097,12 +1185,13 @@ async function performSilentAutoSave() {
         const results = await Promise.allSettled(tasks);
         const piOk = results[0].status === 'fulfilled' && results[0].value && results[0].value.ok;
         const gasOk = results[1].status === 'fulfilled' && results[1].value && results[1].value.success;
+        const syncedName = (piOk && results[0].value.savedFileName) ? results[0].value.savedFileName : fileName;
 
 
         if (piOk && gasOk) {
             _hasUnsavedCloudChanges = false;
-            lastSyncedFileName = fileName;
-            localStorage.setItem('pi_last_synced_file', fileName);
+            lastSyncedFileName = syncedName;
+            localStorage.setItem('pi_last_synced_file', syncedName);
             localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
             updatePiSyncBadge('🟢 雙軌已備份最新' + e2eeSuffix, 'bg-emerald-100 text-emerald-900 border-emerald-300');
         } else if (gasOk && !piOk) {
@@ -1113,8 +1202,8 @@ async function performSilentAutoSave() {
             updatePiSyncBadge('🟡 雲端已備份 (樹莓派離線待復原)' + e2eeSuffix, 'bg-amber-100 text-amber-900 border-amber-300');
         } else if (piOk && !gasOk) {
             _hasUnsavedCloudChanges = false;
-            lastSyncedFileName = fileName;
-            localStorage.setItem('pi_last_synced_file', fileName);
+            lastSyncedFileName = syncedName;
+            localStorage.setItem('pi_last_synced_file', syncedName);
             localStorage.setItem('ls_last_known_steps_count', String(currentStepsCount));
             updatePiSyncBadge('🟡 樹莓派已備份 (雲端離線)' + e2eeSuffix, 'bg-amber-100 text-amber-900 border-amber-300');
         } else {
@@ -1182,12 +1271,13 @@ async function exportToPi() {
         const outboundPayload = await prepareOutboundPayload(getExportPayload());
         const response = await uploadPayloadToPi(fileName, outboundPayload);
         if (response && response.ok) {
+            const savedName = response.savedFileName || fileName;
             _hasUnsavedCloudChanges = false;
-            lastSyncedFileName = fileName;
-            localStorage.setItem('pi_last_synced_file', fileName);
+            lastSyncedFileName = savedName;
+            localStorage.setItem('pi_last_synced_file', savedName);
             const e2eeSuffix = isE2eeEnabled() ? ' 🔐' : '';
             updatePiSyncBadge('🟢 已同步最新' + e2eeSuffix, 'bg-emerald-100 text-emerald-900 border-emerald-300');
-            alert(`🎉 成功上傳${isE2eeEnabled() ? '加密' : ''}備份至樹莓派！\n帳號：${piAccount || '未指定'}\n檔名：${fileName}`);
+            alert(`🎉 成功上傳${isE2eeEnabled() ? '加密' : ''}備份至樹莓派！\n帳號：${piAccount || '未指定'}\n檔名：${savedName}`);
         } else {
 
 
