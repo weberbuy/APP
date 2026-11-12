@@ -789,6 +789,10 @@ function openPiSettingsModal() {
             }
         } catch (e) {}
     }
+    const piStatusEl = document.getElementById('piConnectionStatusText');
+    if (piStatusEl) { piStatusEl.textContent = ''; piStatusEl.className = 'text-[11px] font-mono mt-1 hidden'; }
+    const gasStatusEl = document.getElementById('gasConnectionStatusText');
+    if (gasStatusEl) { gasStatusEl.textContent = ''; gasStatusEl.className = 'text-[11px] font-mono mt-1 hidden'; }
     updateE2eeSettingsUI();
     if (modal) modal.classList.remove('hidden');
 }
@@ -799,6 +803,269 @@ function closePiSettingsModal() {
 
     const modal = document.getElementById('piSettingsModal');
     if (modal) modal.classList.add('hidden');
+}
+
+
+// ============================================================
+// 🔌 【v6.0.3 樹莓派與 Google 雲端硬碟 (GAS) 手動連線檢測模組】
+// 設計理由 (Why)：
+// 1. 提供設定彈窗即時驗證連線狀態與 API 金鑰正確性，無需盲目點擊「儲存」或等待自動備份報錯。
+// 2. 樹莓派端探測 /status 路由，確認服務就緒、版本識別與網路 RTT 延遲；若路由為舊版自動相容 fallback 至 /latest。
+// 3. GAS 端發送 action: 'latest' 輕量唯讀封包，驗證 Web App 部署權限、金鑰與目標帳號存在性。
+// 4. 8~10 秒逾時保護 (AbortController) + 嚴格防呆，阻斷 HTTPS 存取未加密 HTTP 網址的 Mixed Content 陷阱。
+// ============================================================
+async function testPiConnection() {
+    const urlInput = document.getElementById('piServerUrlInput');
+    const keyInput = document.getElementById('piApiKeyInput');
+    const accInput = document.getElementById('piAccountInput');
+    const statusEl = document.getElementById('piConnectionStatusText');
+    const btn = document.getElementById('piTestBtn');
+
+    let rawUrl = (urlInput ? urlInput.value : localStorage.getItem('pi_server_url') || '').trim().replace(/\/+$/, '');
+    const key = (keyInput ? keyInput.value : localStorage.getItem('pi_api_key') || '').trim();
+    const acc = (accInput ? accInput.value : localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+
+    if (!rawUrl) {
+        if (statusEl) {
+            statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold';
+            statusEl.textContent = '⚠️ 請先填寫樹莓派伺服器網址 (URL)！';
+            statusEl.classList.remove('hidden');
+        }
+        if (urlInput) urlInput.focus();
+        return;
+    }
+    if (!key) {
+        if (statusEl) {
+            statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold';
+            statusEl.textContent = '⚠️ 請先填寫 API 金鑰 (x-api-key)！';
+            statusEl.classList.remove('hidden');
+        }
+        if (keyInput) keyInput.focus();
+        return;
+    }
+
+    if (!/^https?:\/\//i.test(rawUrl)) {
+        rawUrl = 'http://' + rawUrl;
+    }
+
+    // 檢查 HTTPS 網頁存取未加密 HTTP 之 Mixed Content 限制
+    if (typeof location !== 'undefined' && location.protocol === 'https:' && rawUrl.startsWith('http://') && !rawUrl.includes('localhost') && !rawUrl.includes('127.0.0.1')) {
+        if (statusEl) {
+            statusEl.className = 'text-[11px] font-mono mt-1 text-amber-600 dark:text-amber-400 font-bold leading-relaxed';
+            statusEl.textContent = '⚠️ 瀏覽器安全性警告：當前為 HTTPS 頁面，瀏覽器將禁止連線至未加密之 http:// 伺服器 (Mixed Content)！請透過 HTTPS 網址 (如 Cloudflare Tunnel) 或改以本機開啟。';
+            statusEl.classList.remove('hidden');
+        }
+    }
+
+    if (statusEl) {
+        statusEl.className = 'text-[11px] font-mono mt-1 text-indigo-600 dark:text-indigo-400 font-bold animate-pulse';
+        statusEl.textContent = '⏳ 正在連線樹莓派伺服器探測中...';
+        statusEl.classList.remove('hidden');
+    }
+    const origBtnText = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.classList.add('opacity-60', 'cursor-not-allowed');
+    }
+
+    const startTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    let controller = null;
+    let timeoutId = null;
+    if (typeof AbortController !== 'undefined') {
+        controller = new AbortController();
+        timeoutId = setTimeout(() => controller.abort(), 8000);
+    }
+
+    try {
+        let res = await fetch(`${rawUrl}/status`, {
+            method: 'GET',
+            headers: { 'x-api-key': key },
+            signal: controller ? controller.signal : undefined
+        }).catch(err => ({ _fetchErr: err }));
+
+        if (timeoutId) clearTimeout(timeoutId);
+
+        const latency = Math.round(((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - startTime);
+
+        if (res && res._fetchErr) {
+            throw res._fetchErr;
+        }
+
+        if (res.status === 200) {
+            const data = await res.json().catch(() => ({}));
+            const ver = data.version ? ` (${data.version})` : '';
+            if (statusEl) {
+                statusEl.className = 'text-[11px] font-mono mt-1 text-emerald-600 dark:text-emerald-400 font-bold';
+                statusEl.textContent = `🟢 連線成功！伺服器運作正常${ver}，延遲 ${latency}ms`;
+            }
+            if (typeof showToast === 'function') showToast(`🎉 樹莓派連線成功！${ver} (${latency}ms)`, 'success');
+        } else if (res.status === 403) {
+            if (statusEl) {
+                statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold';
+                statusEl.textContent = `❌ 驗證失敗 (HTTP 403)：API 金鑰錯誤！請確認金鑰是否與樹莓派 .env 相符。`;
+            }
+            if (typeof showToast === 'function') showToast('❌ 樹莓派金鑰錯誤 (HTTP 403)', 'error');
+        } else if (res.status === 429) {
+            if (statusEl) {
+                statusEl.className = 'text-[11px] font-mono mt-1 text-amber-600 dark:text-amber-400 font-bold';
+                statusEl.textContent = `⚠️ 觸發伺服器頻繁請求保護 (HTTP 429 Too Many Requests)，請稍後再試。`;
+            }
+        } else if (res.status === 404) {
+            // 退回測試 /api/liveschedule/latest 路由
+            const backupRes = await fetch(`${rawUrl}/api/liveschedule/latest?account=${encodeURIComponent(acc || 'test')}`, {
+                method: 'GET',
+                headers: { 'x-api-key': key }
+            }).catch(() => null);
+            if (backupRes && (backupRes.ok || backupRes.status === 404)) {
+                if (statusEl) {
+                    statusEl.className = 'text-[11px] font-mono mt-1 text-emerald-600 dark:text-emerald-400 font-bold';
+                    statusEl.textContent = `🟢 連線成功！API 金鑰認證通過，延遲 ${latency}ms`;
+                }
+                if (typeof showToast === 'function') showToast(`🎉 樹莓派認證成功！(${latency}ms)`, 'success');
+            } else {
+                if (statusEl) {
+                    statusEl.className = 'text-[11px] font-mono mt-1 text-amber-600 dark:text-amber-400 font-bold';
+                    statusEl.textContent = `⚠️ 伺服器已回應但未找到狀態路徑 (HTTP 404)，請檢查 server.js 版本。`;
+                }
+            }
+        } else {
+            if (statusEl) {
+                statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold';
+                statusEl.textContent = `❌ 連線異常 (HTTP ${res.status})：伺服器回應非預期狀態碼。`;
+            }
+        }
+    } catch (err) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (statusEl) {
+            statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold leading-relaxed';
+            if (err && err.name === 'AbortError') {
+                statusEl.textContent = `❌ 連線逾時 (8 秒)：無法連線至樹莓派伺服器，請確認伺服器已啟動且連接埠已開放。`;
+            } else {
+                statusEl.textContent = `❌ 連線失敗 (${err && err.message ? err.message : '網路異常'})：請檢查伺服器網址、連接埠或網路防火牆。`;
+            }
+        }
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-60', 'cursor-not-allowed');
+            if (origBtnText) btn.innerHTML = origBtnText;
+        }
+    }
+}
+
+async function testGasConnection() {
+    const urlInput = document.getElementById('gasSyncUrlInput');
+    const keyInput = document.getElementById('gasApiKeyInput');
+    const accInput = document.getElementById('piAccountInput');
+    const statusEl = document.getElementById('gasConnectionStatusText');
+    const btn = document.getElementById('gasTestBtn');
+
+    const url = (urlInput ? urlInput.value : localStorage.getItem('gas_sync_url') || '').trim();
+    const key = (keyInput ? keyInput.value : localStorage.getItem('gas_api_key') || '').trim();
+    const acc = (accInput ? accInput.value : localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
+
+    if (!url) {
+        if (statusEl) {
+            statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold';
+            statusEl.textContent = '⚠️ 請先填寫 Google Apps Script 網址 (Web App URL)！';
+            statusEl.classList.remove('hidden');
+        }
+        if (urlInput) urlInput.focus();
+        return;
+    }
+    if (!key) {
+        if (statusEl) {
+            statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold';
+            statusEl.textContent = '⚠️ 請先填寫 Google 雲端 API 金鑰 (Secret Key)！';
+            statusEl.classList.remove('hidden');
+        }
+        if (keyInput) keyInput.focus();
+        return;
+    }
+
+    if (statusEl) {
+        statusEl.className = 'text-[11px] font-mono mt-1 text-indigo-600 dark:text-indigo-400 font-bold animate-pulse';
+        statusEl.textContent = '⏳ 正在連線 Google Apps Script 探測中...';
+        statusEl.classList.remove('hidden');
+    }
+    const origBtnText = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.classList.add('opacity-60', 'cursor-not-allowed');
+    }
+
+    const startTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    let controller = null;
+    let timeoutId = null;
+    if (typeof AbortController !== 'undefined') {
+        controller = new AbortController();
+        timeoutId = setTimeout(() => controller.abort(), 10000);
+    }
+
+    try {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: 'latest',
+                apiKey: key,
+                account: acc
+            }),
+            signal: controller ? controller.signal : undefined
+        });
+
+        if (timeoutId) clearTimeout(timeoutId);
+        const latency = Math.round(((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - startTime);
+
+        if (res.ok) {
+            const json = await res.json().catch(() => null);
+            if (json && json.success) {
+                const info = json.fileName ? `最新備份: ${json.fileName}` : '雲端正常 (該帳號尚無備份)';
+                if (statusEl) {
+                    statusEl.className = 'text-[11px] font-mono mt-1 text-emerald-600 dark:text-emerald-400 font-bold';
+                    statusEl.textContent = `🟢 連線成功！Google 雲端硬碟 (GAS) 運作正常 (${info})，延遲 ${latency}ms`;
+                }
+                if (typeof showToast === 'function') showToast(`🎉 GAS 雲端硬碟連線成功！(${latency}ms)`, 'success');
+            } else if (json && (json.error || json.message)) {
+                if (statusEl) {
+                    statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold';
+                    statusEl.textContent = `❌ 驗證失敗：${json.error || json.message} (請檢查 GAS API 金鑰)`;
+                }
+                if (typeof showToast === 'function') showToast('❌ GAS API 金鑰驗證失敗', 'error');
+            } else {
+                if (statusEl) {
+                    statusEl.className = 'text-[11px] font-mono mt-1 text-amber-600 dark:text-amber-400 font-bold';
+                    statusEl.textContent = `⚠️ GAS 回應異常 (未取得 success 標記)，延遲 ${latency}ms`;
+                }
+            }
+        } else {
+            if (statusEl) {
+                statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold';
+                statusEl.textContent = `❌ 連線異常 (HTTP ${res.status})：Google 伺服器回應非 200 狀態。`;
+            }
+        }
+    } catch (err) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (statusEl) {
+            statusEl.className = 'text-[11px] font-mono mt-1 text-rose-600 dark:text-rose-400 font-bold leading-relaxed';
+            if (err && err.name === 'AbortError') {
+                statusEl.textContent = `❌ 連線逾時 (10 秒)：Google Apps Script 未能於時限內回應。`;
+            } else {
+                statusEl.textContent = `❌ 連線失敗 (${err && err.message ? err.message : '網路異常'})：請確認 Web App 是否已發布為「所有人可存取」。`;
+            }
+        }
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-60', 'cursor-not-allowed');
+            if (origBtnText) btn.innerHTML = origBtnText;
+        }
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.testPiConnection = testPiConnection;
+    window.testGasConnection = testGasConnection;
 }
 
 
