@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Weber Vault · 零知識雙軌加密私人雲端保險箱</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+    body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
+    .drop-active { border-color: #4f46e5 !important; background-color: rgba(79, 70, 229, 0.06) !important; }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <!-- 頂部導覽列 -->
+    <header class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div class="flex items-start sm:items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 shrink-0">
+            <i class="fa-solid fa-shield-halved text-xl"></i>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Weber Vault 私人加密雲端保險箱</h1>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-bold" id="appVersionBadge">v1.0.0 · WBVLT1</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              瀏覽器端 PBKDF2 (600,000 次) + AES-256-GCM 零知識加密 · 檔名與內容雙重隱匿 · 🍓 樹莓派 + ☁️ Google Drive 雙軌自癒備份
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- 金鑰解鎖狀態按鈕 -->
+          <button id="vaultLockBtn" onclick="handleVaultLockBtnClick()" class="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:opacity-90">
+            <i class="fa-solid fa-lock" id="vaultLockIcon"></i>
+            <span id="vaultLockText">尚未解鎖通行碼 (點擊輸入)</span>
+          </button>
+
+          <!-- 雙軌狀態徽章 -->
+          <button id="dualTrackBadge" onclick="refreshVaultList()" class="px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 border bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200/70 transition-all" title="點擊重新掃描雙軌狀態">
+            <span>🍓 -</span>
+            <span class="text-slate-300 dark:text-slate-600">|</span>
+            <span>☁️ -</span>
+          </button>
+
+          <!-- GAS / 救援說明 -->
+          <button onclick="openHelpModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1.5" title="查看 Google Drive GAS 腳本與離線解密教學">
+            <i class="fa-solid fa-life-ring text-indigo-500"></i>
+            <span class="hidden sm:inline">部署與救援</span>
+          </button>
+
+          <!-- 伺服器設定 -->
+          <button onclick="openSettingsModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-gear text-slate-500"></i>
+            <span>雙軌設定</span>
+          </button>
+
+          <!-- 深色模式 -->
+          <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-all" title="切換深淺色主題">
+            <i id="themeIcon" class="fa-solid fa-moon text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 雙軌自癒補齊橫幅 (預設隱藏) -->
+      <div id="selfHealBanner" class="hidden mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 bg-indigo-50/70 dark:bg-indigo-950/40 px-4 py-3 rounded-2xl border border-indigo-200/70 dark:border-indigo-800/60">
+        <div class="flex items-center gap-2.5 text-xs text-indigo-900 dark:text-indigo-200 font-semibold">
+          <i class="fa-solid fa-wand-magic-sparkles text-indigo-600 dark:text-indigo-400"></i>
+          <span id="selfHealBannerText">偵測到部分加密檔案僅存在於單邊儲存端，可原封轉傳密文完成雙軌對齊（無須重新加密）。</span>
+        </div>
+        <button id="selfHealAllBtn" onclick="syncAllMissingTracks()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all shrink-0">
+          🔄 一鍵雙軌自癒補齊
+        </button>
+      </div>
+    </header>
+
+    <!-- 主內容雙欄佈局 -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- 左欄：加密上傳與本機離線加解密工具 (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+
+        <!-- 卡片 1：加密並上傳至雙軌雲端 -->
+        <section class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up text-indigo-600"></i>
+              <span>加密備份私人檔案</span>
+            </h2>
+            <span id="piSpaceBadge" class="text-[11px] font-mono text-slate-400 dark:text-slate-500">上限 50MB/檔</span>
+          </div>
+
+          <!-- 拖曳選檔區 -->
+          <div id="dropZone"
+               onclick="document.getElementById('fileInput').click()"
+               ondragover="handleDragOver(event)"
+               ondragleave="handleDragLeave(event)"
+               ondrop="handleDrop(event)"
+               class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer transition-all bg-slate-50/60 dark:bg-slate-800/40">
+            <input type="file" id="fileInput" multiple class="hidden" onchange="handleFileSelect(event)" />
+            <div class="w-12 h-12 rounded-2xl bg-indigo-100/80 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
+              <i class="fa-solid fa-file-shield text-xl"></i>
+            </div>
+            <p class="text-sm font-bold text-slate-700 dark:text-slate-200">點擊選擇手機/電腦檔案，或拖曳至此</p>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">支援照片、PDF、證件、合約、壓縮檔（可多選）</p>
+          </div>
+
+          <!-- 已選檔案預覽列表 -->
+          <div id="selectedFilesBox" class="hidden mt-4 space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+
+          <!-- 分類與加密備註 -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">機密分類 (加密保護)</label>
+              <select id="uploadCategory" class="w-full px-3 py-2 text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="id_doc">🪪 證件 / 護照</option>
+                <option value="finance">🏦 財務 / 存摺 / 稅務</option>
+                <option value="contract">📑 合約 / 保單</option>
+                <option value="key">🔑 金鑰 / 救援碼</option>
+                <option value="photo">🖼️ 私人照片 / 影像</option>
+                <option value="general" selected>📦 一般私人檔案</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">加密備註 (選填，僅解鎖後可見)</label>
+              <input type="text" id="uploadNote" placeholder="例如：2026 報稅憑證、玉山外幣帳戶..." class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+          </div>
+
+          <!-- 執行按鈕群 -->
+          <div class="mt-4 flex flex-col sm:flex-row gap-2.5">
+            <button id="encryptUploadBtn" onclick="startEncryptAndUpload(false)" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-500/20 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-lock"></i>
+              <span>加密並雙軌上傳 (🍓 + ☁️)</span>
+            </button>
+            <button onclick="startEncryptAndUpload(true)" class="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all flex items-center justify-center gap-1.5" title="不經過網路，直接加密打包成 .vlt 檔案下載至本機">
+              <i class="fa-solid fa-download"></i>
+              <span>僅加密存本機</span>
+            </button>
+          </div>
+
+          <!-- 上傳進度紀錄區 -->
+          <div id="uploadProgressList" class="hidden mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs"></div>
+        </section>
+
+        <!-- 卡片 2：離線本機 .vlt 救援解密器 -->
+        <section class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-unlock-keyhole text-emerald-500"></i>
+              <span>離線救援解密 (.vlt 檔案直接還原)</span>
+            </h2>
+            <span class="text-[10px] px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-bold">免連網可用</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
+            即使樹莓派停機或無網路，只要從 Google Drive 或隨身碟取得 <code class="font-mono text-indigo-500">.vlt</code> 加密檔，即可在此直接驗證並還原原始檔案。
+          </p>
+          <label class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-file-arrow-up"></i>
+            <span>選擇本機 .vlt 加密檔立即解密還原</span>
+            <input type="file" id="localVltInput" accept=".vlt,.enc,application/octet-stream" multiple class="hidden" onchange="handleLocalVltDecrypt(event)" />
+          </label>
+        </section>
+
+      </div>
+
+      <!-- 右欄：雲端保險箱檔案清單 (7 cols) -->
+      <div class="lg:col-span-7">
+        <section class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 min-h-[520px] flex flex-col">
+          <!-- 清單標題與篩選列 -->
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-vault text-indigo-600"></i>
+                <span>雲端加密檔案庫</span>
+              </h2>
+              <span id="vaultCountBadge" class="text-xs font-mono px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">0</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="relative flex-1 sm:w-48">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="vaultSearchInput" oninput="renderVaultList()" placeholder="搜尋檔名、備註或代號..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <select id="vaultCategoryFilter" onchange="renderVaultList()" class="px-2.5 py-1.5 text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all">全部分類</option>
+                <option value="id_doc">🪪 證件</option>
+                <option value="finance">🏦 財務</option>
+                <option value="contract">📑 合約</option>
+                <option value="key">🔑 金鑰</option>
+                <option value="photo">🖼️ 照片</option>
+                <option value="general">📦 一般</option>
+              </select>
+              <button onclick="refreshVaultList()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1">
+                <i class="fa-solid fa-rotate" id="refreshSpinIcon"></i>
+                <span>重整</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 檔案清單容器 -->
+          <div id="vaultListContainer" class="flex-1 space-y-3"></div>
+        </section>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= Modal 1：通行碼解鎖 / 設定 ================= -->
+  <div id="passphraseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-key text-amber-500"></i>
+          <span id="passModalTitle">輸入加密主通行碼 (Master Passphrase)</span>
+        </h3>
+        <button onclick="closePassphraseModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-3 rounded-2xl bg-amber-50/90 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/70 text-[11px] text-amber-900 dark:text-amber-200 leading-relaxed mb-4">
+        ⚠️ <strong>零知識加密原則</strong>：主通行碼<strong>僅駐留於當前分頁記憶體</strong>，絕不寫入本機硬碟或傳送至伺服器。請與伺服器連線 API_KEY 分開設定，並務必保存在密碼管理器中！
+      </div>
+
+      <form onsubmit="submitPassphraseModal(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">加密主通行碼 (建議 8 碼以上)</label>
+          <input type="password" id="masterPassInput" required autocomplete="current-password" placeholder="請輸入您的私人保險箱通行碼..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <p id="passModalError" class="hidden text-xs text-rose-600 dark:text-rose-400 font-bold"></p>
+
+        <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" id="lockNowBtnInModal" onclick="lockVaultSession()" class="hidden px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all">
+            🔒 清除記憶體金鑰並上鎖
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="closePassphraseModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">取消</button>
+            <button type="submit" id="passModalSubmitBtn" class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">解鎖並解密目錄</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= Modal 2：雙軌伺服器設定 (與 LifeSchedule 共用 localStorage) ================= -->
+  <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-server text-indigo-600"></i>
+          <span>雙軌雲端連線設定 (🍓 樹莓派 + ☁️ Google Drive)</span>
+        </h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">帳號代號 (Account)</label>
+          <input type="text" id="cfgAccount" placeholder="例如：weber" class="w-full px-3.5 py-2 font-mono bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl" />
+          <p class="text-[11px] text-slate-400 mt-1">與 LifeSchedule 共用 `pi_account`，用於區隔不同家庭成員的加密保險箱。</p>
+        </div>
+
+        <!-- 軌道 1：樹莓派 api-server -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 dark:text-slate-200">🍓 軌道一：樹莓派 API Server</span>
+            <button type="button" onclick="testPiServer()" class="px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold hover:opacity-80">測試連線</button>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">伺服器網址 (`pi_server_url`)</label>
+            <input type="text" id="cfgPiUrl" placeholder="例如：https://pi.yourdomain.com 或 http://192.168.1.100:3000" class="w-full px-3 py-2 font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">API 金鑰 (`pi_api_key`)</label>
+            <input type="password" id="cfgPiKey" placeholder="對應樹莓派 .env 的 API_KEY" class="w-full px-3 py-2 font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl" />
+          </div>
+          <p id="piTestStatus" class="text-[11px] font-mono text-slate-500"></p>
+        </div>
+
+        <!-- 軌道 2：Google Drive (GAS Web App) -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 dark:text-slate-200">☁️ 軌道二：Google 雲端硬碟 (GAS 免彈窗雙軌端點)</span>
+            <button type="button" onclick="testGasServer()" class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold hover:opacity-80">測試連線</button>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">GAS Web App URL (`gas_vault_url`)</label>
+            <input type="text" id="cfgGasUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">GAS API 金鑰 (`gas_vault_key`)</label>
+            <input type="password" id="cfgGasKey" placeholder="對應 gas-vault.gs 的 GAS_API_KEY" class="w-full px-3 py-2 font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl" />
+          </div>
+          <p id="gasTestStatus" class="text-[11px] font-mono text-slate-500"></p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100">取消</button>
+          <button type="button" onclick="saveSettingsModal()" class="px-5 py-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">儲存設定並同步</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Modal 3：安全預覽 (圖片 / PDF / 純文字) ================= -->
+  <div id="previewModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <h3 id="previewTitle" class="text-sm font-bold text-slate-900 dark:text-white truncate max-w-md">安全預覽</h3>
+          <p id="previewSubtitle" class="text-[11px] font-mono text-emerald-600 dark:text-emerald-400">AES-GCM 與 SHA-256 完整性驗證通過（僅駐留記憶體）</p>
+        </div>
+        <button onclick="closePreviewModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-800">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="previewBody" class="flex-1 overflow-auto my-4 flex items-center justify-center bg-slate-950/5 dark:bg-slate-950 rounded-2xl p-4 min-h-[280px]"></div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button id="previewDownloadBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white">
+          <i class="fa-solid fa-download mr-1"></i> 下載原始檔案
+        </button>
+        <button onclick="closePreviewModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">關閉並釋放記憶體</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Modal 4：GAS 腳本與離線 CLI 救援說明 ================= -->
+  <div id="helpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[88vh] overflow-y-auto text-xs space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-life-ring text-indigo-600"></i>
+          <span>3-2-1 雙軌加密架構與離線緊急救援指南</span>
+        </h3>
+        <button onclick="closeHelpModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60 space-y-1.5">
+        <div class="font-bold text-indigo-950 dark:text-indigo-200">🔐 為什麼連原始檔名都不外洩？</div>
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+          每個檔案在離開您的手機/電腦前，會先將「原始檔名、分類、備註、SHA-256 雜湊」以 AES-256-GCM 加密放入 <code class="font-mono">WBVLT1</code> 標頭，外部檔名統一混淆為 <code class="font-mono">VLT-日期-時間-帳號-隨機碼.vlt</code>。因此無論是樹莓派或 Google 雲端硬碟搜尋索引，都無法得知檔案真實名稱與內容。
+        </p>
+      </div>
+
+      <div class="space-y-2">
+        <div class="font-bold text-slate-800 dark:text-slate-200">🛟 離線緊急解密方式（當伺服器與網路都無法使用時）</div>
+        <ul class="list-disc pl-5 space-y-1 text-slate-600 dark:text-slate-300">
+          <li><strong>方法 A（使用本網頁離線解密）</strong>：直接用瀏覽器打開本頁 <code class="font-mono">Vault.html</code>，點擊左下方「選擇本機 .vlt 加密檔立即解密還原」。</li>
+          <li><strong>方法 B（使用 Server 專案內建的 Node.js CLI 工具）</strong>：在任何裝有 Node.js 的電腦執行：
+            <pre class="mt-1 p-2.5 rounded-xl bg-slate-900 text-emerald-400 font-mono overflow-x-auto">node decrypt-cli.js ./data/Vault "您的加密主通行碼" ./restored_files</pre>
+          </li>
+        </ul>
+      </div>
+
+      <div class="space-y-2">
+        <div class="font-bold text-slate-800 dark:text-slate-200">☁️ Google 雲端硬碟雙軌部署（免 OAuth 每小時過期彈窗）</div>
+        <p class="text-slate-600 dark:text-slate-300">
+          將專案內的 <code class="font-mono">gas-vault.gs</code> 貼至 <a href="https://script.google.com" target="_blank" class="text-indigo-600 underline">Google Apps Script</a> 並部署為「網頁應用程式（所有人可存取）」，即可與 `LifeSchedule` 一樣永久靜默雙軌備份至 Google 雲端硬碟的 <code class="font-mono">WeberVault</code> 資料夾。
+        </p>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeHelpModal()" class="px-5 py-2 rounded-xl font-bold bg-indigo-600 text-white">了解</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 通知容器 -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 max-w-sm"></div>
+
+  <script>
+    // ============================================================
+    // 🔐 Weber Vault 前端核心邏輯 (WBVLT1 與雙軌同步引擎)
+    // ============================================================
+    const VAULT_MAGIC_STR = 'WBVLT1';
+    const VAULT_FORMAT_ID = 'weber_vault_v1';
+    const VAULT_VERSION = 1;
+    const PBKDF2_ITERATIONS = 600000;
+    const GAS_MAX_SAFE_BYTES = 25 * 1024 * 1024; // GAS Web App 單次請求建議上限 25MB
+
+    const CATEGORY_META = {
+      id_doc:   { label: '🪪 證件', cls: 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800' },
+      finance:  { label: '🏦 財務', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' },
+      contract: { label: '📑 合約', cls: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800' },
+      key:      { label: '🔑 金鑰', cls: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800' },
+      photo:    { label: '🖼️ 照片', cls: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800' },
+      general:  { label: '📦 一般', cls: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700' }
+    };
+
+    // ⚠️ 零知識安全設計：主通行碼與衍生 CryptoKey 僅駐留於當前分頁記憶體，絕不寫入 localStorage / sessionStorage
+    let _memoryPassphrase = '';
+    const _derivedKeyCache = new Map(); // key: `${saltB64}:${iterations}` -> CryptoKey (non-extractable)
+    let _selectedFiles = [];
+    let _vaultItems = []; // merged items: { fileName, size, createdAt, header, onPi, onGas, decryptedMeta, decryptFailed }
+    let _passModalCallback = null;
+    let _activePreviewUrl = null;
+
+    // 讀取連線設定（與 LifeSchedule 共用 pi_server_url / pi_api_key / pi_account）
+    function getConnConfig() {
+      let defaultPiUrl = (localStorage.getItem('pi_server_url') || '').trim().replace(/\/+$/, '');
+      if (!defaultPiUrl && window.location.protocol.startsWith('http') && (window.location.pathname === '/vault' || window.location.port === '3000')) {
+        defaultPiUrl = window.location.origin;
+      }
+      const piKey = (localStorage.getItem('pi_api_key') || '').trim();
+      const account = (localStorage.getItem('pi_account') || 'weber').trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
+      const gasUrl = (localStorage.getItem('gas_vault_url') || localStorage.getItem('gas_sync_url') || '').trim();
+      const gasKey = (localStorage.getItem('gas_vault_key') || localStorage.getItem('gas_api_key') || '').trim();
+      return {
+        piUrl: defaultPiUrl,
+        piKey,
+        account,
+        gasUrl,
+        gasKey,
+        hasPi: Boolean(defaultPiUrl && piKey),
+        hasGas: Boolean(gasUrl && gasKey)
+      };
+    }
+
+    // ============================================================
+    // 🧮 編碼與 Web Crypto API 加解密核心 (與 decrypt-cli.js 100% 相容)
+    // ============================================================
+    function bytesToB64(bytes) {
+      const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+      let bin = '';
+      for (let i = 0; i < u8.length; i += 0x8000) {
+        bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+      }
+      return btoa(bin);
+    }
+
+    function b64ToBytes(b64) {
+      const bin = atob(b64);
+      const u8 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      return u8;
+    }
+
+    function bufToHex(buf) {
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function formatBytes(bytes) {
+      const n = Number(bytes) || 0;
+      if (n < 1024) return `${n} B`;
+      if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+      return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+    }
+
+    function buildMetaAAD(header) {
+      return new TextEncoder().encode(JSON.stringify({
+        _format: header._format,
+        version: header.version,
+        purpose: 'meta',
+        vaultId: header.vaultId,
+        account: header.account,
+        createdAt: header.createdAt,
+        kdf: {
+          algorithm: header.kdf.algorithm,
+          hash: header.kdf.hash,
+          iterations: header.kdf.iterations,
+          salt: header.kdf.salt
+        },
+        iv: header.metaCipher.iv
+      }));
+    }
+
+    function buildBodyAAD(header) {
+      return new TextEncoder().encode(JSON.stringify({
+        _format: header._format,
+        version: header.version,
+        purpose: 'body',
+        vaultId: header.vaultId,
+        account: header.account,
+        createdAt: header.createdAt,
+        kdf: {
+          algorithm: header.kdf.algorithm,
+          hash: header.kdf.hash,
+          iterations: header.kdf.iterations,
+          salt: header.kdf.salt
+        },
+        metaCiphertext: header.metaCipher.ciphertext,
+        iv: header.bodyCipher.iv
+      }));
+    }
+
+    async function deriveAesKey(passphrase, saltBytes, iterations = PBKDF2_ITERATIONS) {
+      if (!window.crypto || !window.crypto.subtle) {
+        throw new Error('當前環境不支援 Web Crypto API，請使用 HTTPS 或 localhost 開啟');
+      }
+      const saltB64 = bytesToB64(saltBytes);
+      const cacheKey = `${passphrase.length}:${saltB64}:${iterations}`;
+      if (_derivedKeyCache.has(cacheKey) && passphrase === _memoryPassphrase) {
+        return _derivedKeyCache.get(cacheKey);
+      }
+      const baseKey = await window.crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(passphrase),
+        'PBKDF2',
+        false,
+        ['deriveKey']
+      );
+      const aesKey = await window.crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: saltBytes,
+          iterations: Number(iterations),
+          hash: 'SHA-256'
+        },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+      if (passphrase === _memoryPassphrase) {
+        _derivedKeyCache.set(cacheKey, aesKey);
+      }
+      return aesKey;
+    }
+
+    async function encryptFileToWbvlt(file, passphrase, { account, category, note }) {
+      const plainBuf = await file.arrayBuffer();
+      const plainBytes = new Uint8Array(plainBuf);
+      const hashBuf = await window.crypto.subtle.digest('SHA-256', plainBytes);
+      const sha256Hex = bufToHex(hashBuf);
+
+      const now = Date.now();
+      const d = new Date(now);
+      const pad2 = n => String(n).padStart(2, '0');
+      const ts = `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}${pad2(d.getSeconds())}`;
+      const randBytes = window.crypto.getRandomValues(new Uint8Array(4));
+      const randHex = bufToHex(randBytes);
+      const cleanAcc = (account || 'weber').replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
+      const vaultId = `VLT-${ts}-${cleanAcc}-${randHex}.vlt`;
+
+      const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
+      const metaIvBytes = window.crypto.getRandomValues(new Uint8Array(12));
+      const bodyIvBytes = window.crypto.getRandomValues(new Uint8Array(12));
+      const aesKey = await deriveAesKey(passphrase, saltBytes, PBKDF2_ITERATIONS);
+
+      const metadata = {
+        originalName: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        originalSize: plainBytes.byteLength,
+        sha256: sha256Hex,
+        category: category || 'general',
+        note: note || '',
+        createdAt: now
+      };
+
+      const header = {
+        _format: VAULT_FORMAT_ID,
+        version: VAULT_VERSION,
+        vaultId,
+        account: cleanAcc,
+        createdAt: now,
+        cipherSize: plainBytes.byteLength + 16,
+        kdf: {
+          algorithm: 'PBKDF2',
+          hash: 'SHA-256',
+          iterations: PBKDF2_ITERATIONS,
+          salt: bytesToB64(saltBytes)
+        },
+        metaCipher: {
+          algorithm: 'AES-GCM',
+          iv: bytesToB64(metaIvBytes),
+          ciphertext: ''
+        },
+        bodyCipher: {
+          algorithm: 'AES-GCM',
+          iv: bytesToB64(bodyIvBytes)
+        }
+      };
+
+      const metaPlainBytes = new TextEncoder().encode(JSON.stringify(metadata));
+      const metaCipherBuf = await window.crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv: metaIvBytes, additionalData: buildMetaAAD(header), tagLength: 128 },
+        aesKey,
+        metaPlainBytes
+      );
+      header.metaCipher.ciphertext = bytesToB64(new Uint8Array(metaCipherBuf));
+
+      const bodyCipherBuf = await window.crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv: bodyIvBytes, additionalData: buildBodyAAD(header), tagLength: 128 },
+        aesKey,
+        plainBytes
+      );
+
+      const headerBytes = new TextEncoder().encode(JSON.stringify(header));
+      const bodyCipherBytes = new Uint8Array(bodyCipherBuf);
+      const totalLen = 6 + 4 + headerBytes.byteLength + bodyCipherBytes.byteLength;
+      const container = new Uint8Array(totalLen);
+
+      for (let i = 0; i < 6; i++) container[i] = VAULT_MAGIC_STR.charCodeAt(i);
+      const dv = new DataView(container.buffer);
+      dv.setUint32(6, headerBytes.byteLength, false); // Big-Endian
+      container.set(headerBytes, 10);
+      container.set(bodyCipherBytes, 10 + headerBytes.byteLength);
+
+      return { containerBytes: container, header, metadata, vaultId };
+    }
+
+    async function decryptHeaderMetadata(header, passphrase) {
+      if (!header || header._format !== VAULT_FORMAT_ID) throw new Error('不支援的標頭格式');
+      const saltBytes = b64ToBytes(header.kdf.salt);
+      const metaIvBytes = b64ToBytes(header.metaCipher.iv);
+      const metaCipherBytes = b64ToBytes(header.metaCipher.ciphertext);
+      const aesKey = await deriveAesKey(passphrase, saltBytes, header.kdf.iterations);
+
+      const plainBuf = await window.crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: metaIvBytes, additionalData: buildMetaAAD(header), tagLength: 128 },
+        aesKey,
+        metaCipherBytes
+      );
+      return JSON.parse(new TextDecoder().decode(plainBuf));
+    }
+
+    function parseWbvltContainer(u8) {
+      const bytes = u8 instanceof Uint8Array ? u8 : new Uint8Array(u8);
+      if (bytes.byteLength < 12) throw new Error('檔案過小，非合法的 WBVLT1 加密容器');
+      const magic = String.fromCharCode(...bytes.subarray(0, 6));
+      if (magic !== VAULT_MAGIC_STR) throw new Error('檔案標頭識別碼錯誤 (非 WBVLT1 格式)');
+      const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      const headerLen = dv.getUint32(6, false);
+      if (headerLen < 2 || 10 + headerLen > bytes.byteLength) throw new Error('加密標頭長度損壞');
+      const headerJson = new TextDecoder().decode(bytes.subarray(10, 10 + headerLen));
+      const header = JSON.parse(headerJson);
+      const bodyCipherBytes = bytes.subarray(10 + headerLen);
+      return { header, bodyCipherBytes };
+    }
+
+    async function decryptFullWbvltContainer(containerBytes, passphrase) {
+      const { header, bodyCipherBytes } = parseWbvltContainer(containerBytes);
+      const metadata = await decryptHeaderMetadata(header, passphrase);
+      const saltBytes = b64ToBytes(header.kdf.salt);
+      const bodyIvBytes = b64ToBytes(header.bodyCipher.iv);
+      const aesKey = await deriveAesKey(passphrase, saltBytes, header.kdf.iterations);
+
+      const plainBuf = await window.crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: bodyIvBytes, additionalData: buildBodyAAD(header), tagLength: 128 },
+        aesKey,
+        bodyCipherBytes
+      );
+      const plainBytes = new Uint8Array(plainBuf);
+
+      if (metadata.sha256) {
+        const digest = await window.crypto.subtle.digest('SHA-256', plainBytes);
+        if (bufToHex(digest) !== metadata.sha256) {
+          throw new Error('解密後 SHA-256 完整性校驗不一致！檔案可能損壞');
+        }
+      }
+      return { header, metadata, plainBytes };
+    }
+
+    // ============================================================
+    // 🍓 軌道一：樹莓派 API Server 通訊函式
+    // ============================================================
+    async function uploadWbvltToPi(fileName, containerBytes) {
+      const { piUrl, piKey, hasPi } = getConnConfig();
+      if (!hasPi) throw new Error('未設定樹莓派伺服器');
+      const fd = new FormData();
+      const blob = new Blob([containerBytes], { type: 'application/octet-stream' });
+      fd.append('photo', blob, fileName);
+
+      const res = await fetch(`${piUrl}/upload`, {
+        method: 'POST',
+        headers: {
+          'x-api-key': piKey,
+          'x-target-path': encodeURIComponent('Vault'),
+          'x-original-name': encodeURIComponent(fileName)
+        },
+        body: fd
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      return json;
+    }
+
+    async function fetchVaultListFromPi() {
+      const { piUrl, piKey, account, hasPi } = getConnConfig();
+      if (!hasPi) return { ok: false, files: [] };
+      const res = await fetch(`${piUrl}/api/vault/list?account=${encodeURIComponent(account)}`, {
+        headers: { 'x-api-key': piKey }
+      });
+      if (!res.ok) throw new Error(`Pi HTTP ${res.status}`);
+      const json = await res.json();
+      if (json.freeBytes !== undefined && json.freeBytes !== null) {
+        const el = document.getElementById('piSpaceBadge');
+        if (el) el.textContent = `🍓 剩餘 ${formatBytes(json.freeBytes)} · 單檔 ${json.maxUploadMb || 50}MB`;
+      }
+      return { ok: true, files: json.files || [] };
+    }
+
+    async function downloadWbvltFromPi(fileName) {
+      const { piUrl, piKey, hasPi } = getConnConfig();
+      if (!hasPi) throw new Error('未設定樹莓派');
+      const encoded = encodeURIComponent(`Vault/${fileName}`);
+      const res = await fetch(`${piUrl}/download/${encoded}`, {
+        headers: { 'x-api-key': piKey }
+      });
+      if (!res.ok) throw new Error(`樹莓派下載失敗 (HTTP ${res.status})`);
+      return new Uint8Array(await res.arrayBuffer());
+    }
+
+    async function deleteWbvltFromPi(fileName) {
+      const { piUrl, piKey, hasPi } = getConnConfig();
+      if (!hasPi) return false;
+      const res = await fetch(`${piUrl}/delete-file`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': piKey },
+        body: JSON.stringify({ path: `Vault/${fileName}` })
+      });
+      return res.ok;
+    }
+
+    // ============================================================
+    // ☁️ 軌道二：Google 雲端硬碟 (GAS Web App) 通訊函式
+    // ============================================================
+    async function uploadWbvltToGas(fileName, containerBytes, header) {
+      const { gasUrl, gasKey, account, hasGas } = getConnConfig();
+      if (!hasGas) throw new Error('未設定 Google Drive (GAS)');
+      if (containerBytes.byteLength > GAS_MAX_SAFE_BYTES) {
+        throw new Error(`超過 GAS 單次 25MB 限制 (${formatBytes(containerBytes.byteLength)})`);
+      }
+      const res = await fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'vault_upload',
+          apiKey: gasKey,
+          account,
+          fileName,
+          header,
+          base64: bytesToB64(containerBytes)
+        })
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || `GAS HTTP ${res.status}`);
+      return json;
+    }
+
+    async function fetchVaultListFromGas() {
+      const { gasUrl, gasKey, account, hasGas } = getConnConfig();
+      if (!hasGas) return { ok: false, files: [] };
+      const res = await fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'vault_list',
+          apiKey: gasKey,
+          account
+        })
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || `GAS HTTP ${res.status}`);
+      return { ok: true, files: json.files || [] };
+    }
+
+    async function downloadWbvltFromGas(fileName) {
+      const { gasUrl, gasKey, hasGas } = getConnConfig();
+      if (!hasGas) throw new Error('未設定 Google Drive (GAS)');
+      const res = await fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'vault_download',
+          apiKey: gasKey,
+          fileName
+        })
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success || !json.base64) {
+        throw new Error(json.error || 'Google Drive 下載失敗');
+      }
+      return b64ToBytes(json.base64);
+    }
+
+    async function deleteWbvltFromGas(fileName) {
+      const { gasUrl, gasKey, hasGas } = getConnConfig();
+      if (!hasGas) return false;
+      const res = await fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'vault_delete',
+          apiKey: gasKey,
+          fileName
+        })
+      });
+      const json = await res.json().catch(() => ({}));
+      return Boolean(res.ok && json.success);
+    }
+
+    // ============================================================
+    // 🔄 雙軌清單整合、標頭解密與自癒補同步 (Split-Brain Self-Healing)
+    // ============================================================
+    async function refreshVaultList() {
+      const { hasPi, hasGas } = getConnConfig();
+      const spin = document.getElementById('refreshSpinIcon');
+      if (spin) spin.classList.add('fa-spin');
+
+      try {
+        const [piSettled, gasSettled] = await Promise.allSettled([
+          hasPi ? fetchVaultListFromPi() : Promise.resolve({ ok: false, files: [] }),
+          hasGas ? fetchVaultListFromGas() : Promise.resolve({ ok: false, files: [] })
+        ]);
+
+        const piOk = piSettled.status === 'fulfilled' && piSettled.value.ok;
+        const gasOk = gasSettled.status === 'fulfilled' && gasSettled.value.ok;
+        const piFiles = piOk ? piSettled.value.files : [];
+        const gasFiles = gasOk ? gasSettled.value.files : [];
+
+        // 更新頂部雙軌連線狀態徽章
+        const badge = document.getElementById('dualTrackBadge');
+        if (badge) {
+          const piStatus = !hasPi ? '🍓 未設' : (piOk ? `🍓 🟢 (${piFiles.length})` : '🍓 🔴 離線');
+          const gasStatus = !hasGas ? '☁️ 未設' : (gasOk ? `☁️ 🟢 (${gasFiles.length})` : '☁️ 🔴 離線');
+          badge.innerHTML = `<span>${piStatus}</span><span class="text-slate-300 dark:text-slate-600">|</span><span>${gasStatus}</span>`;
+        }
+
+        const map = new Map();
+        for (const f of piFiles) {
+          map.set(f.fileName, {
+            fileName: f.fileName,
+            size: f.size,
+            createdAt: (f.header && f.header.createdAt) || f.mtimeMs || Date.now(),
+            header: f.header,
+            onPi: true,
+            onGas: false,
+            decryptedMeta: null,
+            decryptFailed: false
+          });
+        }
+        for (const f of gasFiles) {
+          if (map.has(f.fileName)) {
+            map.get(f.fileName).onGas = true;
+          } else {
+            map.set(f.fileName, {
+              fileName: f.fileName,
+              size: f.size,
+              createdAt: (f.header && f.header.createdAt) || f.mtimeMs || Date.now(),
+              header: f.header,
+              onPi: false,
+              onGas: true,
+              decryptedMeta: null,
+              decryptFailed: false
+            });
+          }
+        }
+
+        _vaultItems = Array.from(map.values()).sort((a, b) => b.createdAt - a.createdAt);
+
+        if (_memoryPassphrase) {
+          await decryptAllLoadedHeaders(_memoryPassphrase);
+        }
+        updateSelfHealBanner(piOk, gasOk);
+        renderVaultList();
+      } finally {
+        if (spin) spin.classList.remove('fa-spin');
+      }
+    }
+
+    async function decryptAllLoadedHeaders(passphrase) {
+      let successAny = false;
+      for (const item of _vaultItems) {
+        if (!item.header) continue;
+        try {
+          item.decryptedMeta = await decryptHeaderMetadata(item.header, passphrase);
+          item.decryptFailed = false;
+          successAny = true;
+        } catch (_) {
+          item.decryptedMeta = null;
+          item.decryptFailed = true;
+        }
+      }
+      return successAny;
+    }
+
+    function updateSelfHealBanner(piOk, gasOk) {
+      const { hasPi, hasGas } = getConnConfig();
+      const banner = document.getElementById('selfHealBanner');
+      const textEl = document.getElementById('selfHealBannerText');
+      if (!banner) return;
+      if (!(hasPi && hasGas && piOk && gasOk)) {
+        banner.classList.add('hidden');
+        return;
+      }
+      const missingCount = _vaultItems.filter(it => !it.onPi || !it.onGas).length;
+      if (missingCount > 0) {
+        if (textEl) {
+          textEl.textContent = `偵測到 ${missingCount} 個加密檔案僅存在於單邊（🍓 樹莓派 或 ☁️ Google Drive），可一鍵原封轉傳密文補齊雙軌！`;
+        }
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    // 單檔雙軌補同步（不需解密，直接搬移 .vlt 密文並由接收端校驗 WBVLT1 Header）
+    async function syncSingleTrack(fileName) {
+      const item = _vaultItems.find(x => x.fileName === fileName);
+      if (!item) return;
+      try {
+        if (item.onPi && !item.onGas) {
+          showToast(`⏳ 正在從 🍓 樹莓派提取密文並補傳至 ☁️ Google Drive...`, 'info');
+          const bytes = await downloadWbvltFromPi(fileName);
+          await uploadWbvltToGas(fileName, bytes, item.header);
+          item.onGas = true;
+          showToast(`✅ 已成功將 ${fileName} 補齊至 ☁️ Google Drive！`, 'success');
+        } else if (item.onGas && !item.onPi) {
+          showToast(`⏳ 正在從 ☁️ Google Drive 提取密文並補傳至 🍓 樹莓派...`, 'info');
+          const bytes = await downloadWbvltFromGas(fileName);
+          await uploadWbvltToPi(fileName, bytes);
+          item.onPi = true;
+          showToast(`✅ 已成功將 ${fileName} 補齊至 🍓 樹莓派！`, 'success');
+        }
+        renderVaultList();
+        updateSelfHealBanner(true, true);
+      } catch (e) {
+        showToast(`❌ 補同步失敗：${e.message}`, 'error');
+      }
+    }
+
+    async function syncAllMissingTracks() {
+      const missing = _vaultItems.filter(it => !it.onPi || !it.onGas);
+      if (!missing.length) return;
+      const btn = document.getElementById('selfHealAllBtn');
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ 雙軌補齊中...'; }
+      try {
+        for (const it of missing) {
+          await syncSingleTrack(it.fileName);
+        }
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '🔄 一鍵雙軌自癒補齊'; }
+      }
+    }
+
+    // ============================================================
+    // 📤 選檔、加密與雙軌上傳流程
+    // ============================================================
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.add('drop-active');
+    }
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('drop-active');
+    }
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('drop-active');
+      if (e.dataTransfer && e.dataTransfer.files) {
+        addSelectedFiles(Array.from(e.dataTransfer.files));
+      }
+    }
+    function handleFileSelect(e) {
+      if (e.target && e.target.files) {
+        addSelectedFiles(Array.from(e.target.files));
+        e.target.value = '';
+      }
+    }
+
+    function addSelectedFiles(files) {
+      for (const f of files) {
+        _selectedFiles.push(f);
+      }
+      renderSelectedFiles();
+    }
+
+    function removeSelectedFile(idx) {
+      _selectedFiles.splice(idx, 1);
+      renderSelectedFiles();
+    }
+
+    function renderSelectedFiles() {
+      const box = document.getElementById('selectedFilesBox');
+      if (!box) return;
+      if (_selectedFiles.length === 0) {
+        box.classList.add('hidden');
+        box.innerHTML = '';
+        return;
+      }
+      box.classList.remove('hidden');
+      box.innerHTML = _selectedFiles.map((f, idx) => `
+        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700 text-xs">
+          <div class="flex items-center gap-2 min-w-0">
+            <i class="fa-solid fa-file text-indigo-500 shrink-0"></i>
+            <span class="font-semibold truncate">${escapeHtml(f.name)}</span>
+            <span class="text-[11px] font-mono text-slate-400 shrink-0">(${formatBytes(f.size)})</span>
+          </div>
+          <button onclick="removeSelectedFile(${idx})" class="text-slate-400 hover:text-rose-500 ml-2">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function startEncryptAndUpload(localOnly = false) {
+      if (_selectedFiles.length === 0) {
+        showToast('請先選擇要加密備份的檔案！', 'error');
+        return;
+      }
+      if (!_memoryPassphrase) {
+        openPassphraseModal(() => startEncryptAndUpload(localOnly));
+        return;
+      }
+
+      const { account, hasPi, hasGas } = getConnConfig();
+      if (!localOnly && !hasPi && !hasGas) {
+        showToast('請先設定 🍓 樹莓派或 ☁️ Google Drive 連線資訊，或改點「僅加密存本機」', 'error');
+        openSettingsModal();
+        return;
+      }
+
+      const category = document.getElementById('uploadCategory').value;
+      const note = document.getElementById('uploadNote').value.trim();
+      const progBox = document.getElementById('uploadProgressList');
+      progBox.classList.remove('hidden');
+      progBox.innerHTML = '';
+
+      const btn = document.getElementById('encryptUploadBtn');
+      if (btn) btn.disabled = true;
+
+      try {
+        const queue = [..._selectedFiles];
+        _selectedFiles = [];
+        renderSelectedFiles();
+        document.getElementById('uploadNote').value = '';
+
+        for (const file of queue) {
+          const row = document.createElement('div');
+          row.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1';
+          row.innerHTML = `
+            <div class="flex items-center justify-between font-bold">
+              <span class="truncate max-w-[200px]">🔐 ${escapeHtml(file.name)}</span>
+              <span class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400" data-role="step">PBKDF2 + AES-GCM 加密中...</span>
+            </div>
+            <div class="text-[11px] text-slate-500 font-mono" data-role="detail">正在計算 SHA-256 並封裝 WBVLT1 容器...</div>
+          `;
+          progBox.prepend(row);
+          const stepEl = row.querySelector('[data-role="step"]');
+          const detailEl = row.querySelector('[data-role="detail"]');
+
+          try {
+            const { containerBytes, header, vaultId } = await encryptFileToWbvlt(file, _memoryPassphrase, {
+              account,
+              category,
+              note
+            });
+
+            if (localOnly) {
+              triggerBrowserDownload(containerBytes, vaultId, 'application/octet-stream');
+              stepEl.textContent = '✅ 已加密下載至本機';
+              stepEl.className = 'text-[11px] font-mono text-emerald-600 font-bold';
+              detailEl.textContent = `容器代號: ${vaultId} (${formatBytes(containerBytes.byteLength)})`;
+              continue;
+            }
+
+            stepEl.textContent = '🚀 雙軌平行上傳中...';
+            const [piRes, gasRes] = await Promise.allSettled([
+              hasPi ? uploadWbvltToPi(vaultId, containerBytes) : Promise.reject(new Error('未啟用')),
+              hasGas ? uploadWbvltToGas(vaultId, containerBytes, header) : Promise.reject(new Error('未啟用'))
+            ]);
+
+            const piOk = piRes.status === 'fulfilled';
+            const gasOk = gasRes.status === 'fulfilled';
+            const piMsg = !hasPi ? '🍓 略過' : (piOk ? '🍓 樹莓派: ✅ 成功' : `🍓 樹莓派: ❌ ${piRes.reason.message}`);
+            const gasMsg = !hasGas ? '☁️ 略過' : (gasOk ? '☁️ GDrive: ✅ 成功' : `☁️ GDrive: ❌ ${gasRes.reason.message}`);
+
+            detailEl.textContent = `${piMsg} ｜ ${gasMsg}`;
+            if (piOk || gasOk) {
+              stepEl.textContent = (piOk && gasOk) ? '🟢 雙軌備份完成' : '🟡 單軌備份成功 (可稍後補同步)';
+              stepEl.className = `text-[11px] font-mono font-bold ${piOk && gasOk ? 'text-emerald-600' : 'text-amber-600'}`;
+            } else {
+              stepEl.textContent = '❌ 雙軌皆上傳失敗';
+              stepEl.className = 'text-[11px] font-mono font-bold text-rose-600';
+            }
+          } catch (err) {
+            stepEl.textContent = '❌ 加密或上傳異常';
+            stepEl.className = 'text-[11px] font-mono font-bold text-rose-600';
+            detailEl.textContent = err.message;
+          }
+        }
+
+        if (!localOnly) await refreshVaultList();
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    // ============================================================
+    // 📥 從雲端解密下載、安全預覽與刪除
+    // ============================================================
+    async function fetchContainerBytesSmart(item) {
+      if (item.onPi) {
+        try {
+          return await downloadWbvltFromPi(item.fileName);
+        } catch (e) {
+          if (item.onGas) {
+            showToast('🍓 樹莓派無法連線，已自動切換從 ☁️ Google Drive 讀取密文！', 'info');
+            return await downloadWbvltFromGas(item.fileName);
+          }
+          throw e;
+        }
+      }
+      if (item.onGas) {
+        return await downloadWbvltFromGas(item.fileName);
+      }
+      throw new Error('找不到可用的儲存來源');
+    }
+
+    async function decryptAndDownloadItem(fileName, previewMode = false) {
+      const item = _vaultItems.find(x => x.fileName === fileName);
+      if (!item) return;
+      if (!_memoryPassphrase) {
+        openPassphraseModal(() => decryptAndDownloadItem(fileName, previewMode));
+        return;
+      }
+
+      try {
+        showToast(`⏳ 正在下載並驗證解密 ${item.decryptedMeta ? item.decryptedMeta.originalName : fileName}...`, 'info');
+        const containerBytes = await fetchContainerBytesSmart(item);
+        const { metadata, plainBytes } = await decryptFullWbvltContainer(containerBytes, _memoryPassphrase);
+
+        if (previewMode) {
+          openPreviewModal(metadata, plainBytes);
+        } else {
+          triggerBrowserDownload(plainBytes, metadata.originalName, metadata.mimeType);
+          showToast(`🎉 解密並驗證 SHA-256 成功：${metadata.originalName}`, 'success');
+        }
+      } catch (e) {
+        showToast(`❌ 解密失敗：${e.message}`, 'error');
+      }
+    }
+
+    async function downloadRawVltItem(fileName) {
+      const item = _vaultItems.find(x => x.fileName === fileName);
+      if (!item) return;
+      try {
+        const containerBytes = await fetchContainerBytesSmart(item);
+        triggerBrowserDownload(containerBytes, item.fileName, 'application/octet-stream');
+        showToast(`📦 已下載加密容器 ${item.fileName}`, 'success');
+      } catch (e) {
+        showToast(`❌ 下載失敗：${e.message}`, 'error');
+      }
+    }
+
+    async function deleteVaultItem(fileName) {
+      const item = _vaultItems.find(x => x.fileName === fileName);
+      if (!item) return;
+      const displayName = item.decryptedMeta ? `${item.decryptedMeta.originalName} (${fileName})` : fileName;
+      if (!confirm(`⚠️ 確定要從雲端永久刪除「${displayName}」嗎？\n（將同時從已連線的 🍓 樹莓派與 ☁️ Google Drive 移除）`)) {
+        return;
+      }
+      try {
+        await Promise.allSettled([
+          item.onPi ? deleteWbvltFromPi(fileName) : Promise.resolve(),
+          item.onGas ? deleteWbvltFromGas(fileName) : Promise.resolve()
+        ]);
+        showToast(`🗑️ 已刪除 ${displayName}`, 'success');
+        await refreshVaultList();
+      } catch (e) {
+        showToast(`❌ 刪除失敗：${e.message}`, 'error');
+      }
+    }
+
+    // 離線本機 .vlt 檔案直接解密
+    async function handleLocalVltDecrypt(e) {
+      const files = e.target && e.target.files ? Array.from(e.target.files) : [];
+      e.target.value = '';
+      if (!files.length) return;
+
+      let pass = _memoryPassphrase;
+      if (!pass) {
+        pass = prompt('請輸入此 .vlt 檔案的加密主通行碼：') || '';
+        if (!pass) return;
+      }
+
+      for (const f of files) {
+        try {
+          const buf = new Uint8Array(await f.arrayBuffer());
+          const { metadata, plainBytes } = await decryptFullWbvltContainer(buf, pass);
+          triggerBrowserDownload(plainBytes, metadata.originalName, metadata.mimeType);
+          showToast(`✅ 離線解密成功：${metadata.originalName} (SHA-256 驗證通過)`, 'success');
+        } catch (err) {
+          showToast(`❌ 解密失敗 (${f.name})：通行碼錯誤或檔案損壞`, 'error');
+        }
+      }
+    }
+
+    // ============================================================
+    // 🖥️ 畫面渲染與互動輔助
+    // ============================================================
+    function renderVaultList() {
+      const container = document.getElementById('vaultListContainer');
+      const countBadge = document.getElementById('vaultCountBadge');
+      const q = (document.getElementById('vaultSearchInput').value || '').trim().toLowerCase();
+      const catFilter = document.getElementById('vaultCategoryFilter').value;
+
+      const filtered = _vaultItems.filter(it => {
+        const meta = it.decryptedMeta;
+        if (catFilter !== 'all') {
+          if (!meta || meta.category !== catFilter) return false;
+        }
+        if (q) {
+          const hay = [
+            it.fileName,
+            meta ? meta.originalName : '',
+            meta ? meta.note : '',
+            meta ? meta.category : ''
+          ].join(' ').toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (countBadge) countBadge.textContent = String(filtered.length);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="h-72 flex flex-col items-center justify-center text-center text-slate-400 dark:text-slate-500 p-6">
+            <i class="fa-solid fa-box-open text-3xl mb-3 text-slate-300 dark:text-slate-700"></i>
+            <p class="text-sm font-bold text-slate-600 dark:text-slate-400">目前尚無符合條件的加密檔案</p>
+            <p class="text-xs mt-1">從左側選取私人檔案即可加密上傳至 🍓 樹莓派與 ☁️ Google 雲端硬碟</p>
+          </div>
+        `;
+        return;
+      }
+
+      const { hasPi, hasGas } = getConnConfig();
+
+      container.innerHTML = filtered.map(it => {
+        const meta = it.decryptedMeta;
+        const catInfo = CATEGORY_META[(meta && meta.category) || 'general'] || CATEGORY_META.general;
+        const dateStr = new Date(it.createdAt).toLocaleString('zh-TW', { hour12: false });
+        const canPreview = meta && /^(image\/|text\/|application\/pdf|application\/json)/i.test(meta.mimeType || '');
+        const needsSyncToGas = hasGas && it.onPi && !it.onGas;
+        const needsSyncToPi = hasPi && it.onGas && !it.onPi;
+
+        return `
+          <div class="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  ${meta
+                    ? `<span class="text-[11px] px-2 py-0.5 rounded-lg border font-bold ${catInfo.cls}">${catInfo.label}</span>
+                       <span class="text-sm font-extrabold text-slate-900 dark:text-white truncate">${escapeHtml(meta.originalName)}</span>`
+                    : `<span class="text-[11px] px-2 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 font-bold">
+                         ${it.decryptFailed ? '❌ 通行碼不符' : '🔒 檔名已加密隱藏'}
+                       </span>
+                       <span class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 truncate">${escapeHtml(it.fileName)}</span>`
+                  }
+                </div>
+
+                ${meta && meta.note ? `<p class="text-xs text-slate-600 dark:text-slate-300 mb-1.5">📝 ${escapeHtml(meta.note)}</p>` : ''}
+
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+                  <span>📦 ${formatBytes(meta ? meta.originalSize : it.size)}</span>
+                  <span>🕒 ${dateStr}</span>
+                  <span class="truncate max-w-[190px]" title="${escapeHtml(it.fileName)}">🆔 ${escapeHtml(it.fileName)}</span>
+                  ${meta && meta.sha256 ? `<span title="SHA-256: ${escapeHtml(meta.sha256)}">🛡️ SHA256:${escapeHtml(meta.sha256.slice(0, 8))}</span>` : ''}
+                </div>
+              </div>
+
+              <!-- 雙軌狀態燈號與操作按鈕 -->
+              <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+                <span class="px-2 py-1 rounded-lg text-[11px] font-bold border ${it.onPi ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' : 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-800 dark:border-slate-700'}" title="${it.onPi ? '樹莓派已存有此檔案' : '樹莓派尚未同步此檔案'}">
+                  🍓 ${it.onPi ? '✓' : '—'}
+                </span>
+                <span class="px-2 py-1 rounded-lg text-[11px] font-bold border ${it.onGas ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' : 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-800 dark:border-slate-700'}" title="${it.onGas ? 'Google Drive 已存有此檔案' : 'Google Drive 尚未同步此檔案'}">
+                  ☁️ ${it.onGas ? '✓' : '—'}
+                </span>
+
+                ${(needsSyncToGas || needsSyncToPi) ? `
+                  <button onclick="syncSingleTrack('${escapeJs(it.fileName)}')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 dark:bg-amber-950 dark:text-amber-300 transition-all" title="將密文原封補傳至另一軌">
+                    🔄 補傳${needsSyncToGas ? '☁️' : '🍓'}
+                  </button>
+                ` : ''}
+
+                ${canPreview ? `
+                  <button onclick="decryptAndDownloadItem('${escapeJs(it.fileName)}', true)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 transition-all" title="記憶體內解密預覽">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                ` : ''}
+
+                <button onclick="decryptAndDownloadItem('${escapeJs(it.fileName)}', false)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-unlock"></i>
+                  <span>解密下載</span>
+                </button>
+
+                <button onclick="downloadRawVltItem('${escapeJs(it.fileName)}')" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition-all" title="下載原始 .vlt 加密容器檔">
+                  <i class="fa-solid fa-file-shield"></i>
+                </button>
+
+                <button onclick="deleteVaultItem('${escapeJs(it.fileName)}')" class="px-2.5 py-1.5 rounded-xl text-xs text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all" title="從雙軌雲端刪除">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ============================================================
+    // 🔑 通行碼解鎖 / 上鎖與設定 Modal 控制
+    // ============================================================
+    function updateLockBadgeUI() {
+      const btn = document.getElementById('vaultLockBtn');
+      const icon = document.getElementById('vaultLockIcon');
+      const text = document.getElementById('vaultLockText');
+      if (!btn || !icon || !text) return;
+
+      if (_memoryPassphrase) {
+        icon.className = 'fa-solid fa-lock-open';
+        text.textContent = '金鑰已解鎖 (僅存記憶體 · 點擊管理/上鎖)';
+        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 hover:opacity-90';
+      } else {
+        icon.className = 'fa-solid fa-lock';
+        text.textContent = '尚未解鎖通行碼 (點擊輸入)';
+        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:opacity-90';
+      }
+    }
+
+    function handleVaultLockBtnClick() {
+      openPassphraseModal();
+    }
+
+    function openPassphraseModal(onUnlockedCallback = null) {
+      _passModalCallback = onUnlockedCallback;
+      const modal = document.getElementById('passphraseModal');
+      const input = document.getElementById('masterPassInput');
+      const errEl = document.getElementById('passModalError');
+      const lockNowBtn = document.getElementById('lockNowBtnInModal');
+      if (errEl) errEl.classList.add('hidden');
+      if (lockNowBtn) {
+        if (_memoryPassphrase) lockNowBtn.classList.remove('hidden');
+        else lockNowBtn.classList.add('hidden');
+      }
+      if (input) input.value = _memoryPassphrase || '';
+      modal.classList.remove('hidden');
+      setTimeout(() => { if (input) input.focus(); }, 50);
+    }
+
+    function closePassphraseModal() {
+      document.getElementById('passphraseModal').classList.add('hidden');
+      document.getElementById('masterPassInput').value = '';
+    }
+
+    async function submitPassphraseModal(e) {
+      e.preventDefault();
+      const input = document.getElementById('masterPassInput');
+      const errEl = document.getElementById('passModalError');
+      const btn = document.getElementById('passModalSubmitBtn');
+      const pass = input ? input.value : '';
+      if (!pass || pass.length < 4) {
+        errEl.textContent = '❌ 請輸入至少 4 個字元以上的加密通行碼';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ PBKDF2 金鑰推導中...';
+      try {
+        _memoryPassphrase = pass;
+        _derivedKeyCache.clear();
+        if (_vaultItems.length > 0) {
+          await decryptAllLoadedHeaders(_memoryPassphrase);
+        }
+        updateLockBadgeUI();
+        renderVaultList();
+        closePassphraseModal();
+        showToast('🔓 通行碼已載入記憶體並完成目錄解密！', 'success');
+        if (typeof _passModalCallback === 'function') {
+          const cb = _passModalCallback;
+          _passModalCallback = null;
+          await cb();
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '解鎖並解密目錄';
+      }
+    }
+
+    function lockVaultSession() {
+      _memoryPassphrase = '';
+      _derivedKeyCache.clear();
+      for (const it of _vaultItems) {
+        it.decryptedMeta = null;
+        it.decryptFailed = false;
+      }
+      updateLockBadgeUI();
+      renderVaultList();
+      closePassphraseModal();
+      showToast('🔒 已清除記憶體金鑰並鎖定所有真實檔名', 'info');
+    }
+
+    // 雙軌設定 Modal
+    function openSettingsModal() {
+      const cfg = getConnConfig();
+      document.getElementById('cfgAccount').value = cfg.account;
+      document.getElementById('cfgPiUrl').value = cfg.piUrl;
+      document.getElementById('cfgPiKey').value = cfg.piKey;
+      document.getElementById('cfgGasUrl').value = cfg.gasUrl;
+      document.getElementById('cfgGasKey').value = cfg.gasKey;
+      document.getElementById('piTestStatus').textContent = '';
+      document.getElementById('gasTestStatus').textContent = '';
+      document.getElementById('settingsModal').classList.remove('hidden');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    function saveSettingsModal() {
+      const acc = document.getElementById('cfgAccount').value.trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
+      const piUrl = document.getElementById('cfgPiUrl').value.trim().replace(/\/+$/, '');
+      const piKey = document.getElementById('cfgPiKey').value.trim();
+      const gasUrl = document.getElementById('cfgGasUrl').value.trim();
+      const gasKey = document.getElementById('cfgGasKey').value.trim();
+
+      localStorage.setItem('pi_account', acc);
+      localStorage.setItem('pi_server_url', piUrl);
+      localStorage.setItem('pi_api_key', piKey);
+      localStorage.setItem('gas_vault_url', gasUrl);
+      localStorage.setItem('gas_vault_key', gasKey);
+
+      closeSettingsModal();
+      showToast('✅ 雙軌雲端設定已儲存！', 'success');
+      refreshVaultList();
+    }
+
+    async function testPiServer() {
+      const url = document.getElementById('cfgPiUrl').value.trim().replace(/\/+$/, '');
+      const key = document.getElementById('cfgPiKey').value.trim();
+      const el = document.getElementById('piTestStatus');
+      if (!url || !key) {
+        el.textContent = '❌ 請先填寫網址與 API_KEY';
+        el.className = 'text-[11px] font-mono text-rose-600';
+        return;
+      }
+      el.textContent = '⏳ 測試連線中...';
+      el.className = 'text-[11px] font-mono text-indigo-600';
+      try {
+        const t0 = Date.now();
+        const res = await fetch(`${url}/status`, { headers: { 'x-api-key': key } });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+        const freeInfo = json.freeBytes ? `，可用空間 ${formatBytes(json.freeBytes)}` : '';
+        el.textContent = `🟢 連線成功！版本 ${json.version}${freeInfo} (${Date.now() - t0}ms)`;
+        el.className = 'text-[11px] font-mono text-emerald-600 font-bold';
+      } catch (e) {
+        el.textContent = `❌ 連線失敗：${e.message}`;
+        el.className = 'text-[11px] font-mono text-rose-600 font-bold';
+      }
+    }
+
+    async function testGasServer() {
+      const url = document.getElementById('cfgGasUrl').value.trim();
+      const key = document.getElementById('cfgGasKey').value.trim();
+      const acc = document.getElementById('cfgAccount').value.trim() || 'weber';
+      const el = document.getElementById('gasTestStatus');
+      if (!url || !key) {
+        el.textContent = '❌ 請先填寫 GAS Web App URL 與金鑰';
+        el.className = 'text-[11px] font-mono text-rose-600';
+        return;
+      }
+      el.textContent = '⏳ 測試 Google Drive (GAS) 連線中...';
+      el.className = 'text-[11px] font-mono text-indigo-600';
+      try {
+        const t0 = Date.now();
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'status', apiKey: key, account: acc })
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) throw new Error(json.error || `HTTP ${res.status}`);
+        el.textContent = `🟢 連線成功！${json.fileName || 'Google Drive 就緒'} (${Date.now() - t0}ms)`;
+        el.className = 'text-[11px] font-mono text-emerald-600 font-bold';
+      } catch (e) {
+        el.textContent = `❌ 連線失敗：${e.message}`;
+        el.className = 'text-[11px] font-mono text-rose-600 font-bold';
+      }
+    }
+
+    // 預覽 Modal
+    function openPreviewModal(metadata, plainBytes) {
+      closePreviewModal();
+      const modal = document.getElementById('previewModal');
+      const title = document.getElementById('previewTitle');
+      const body = document.getElementById('previewBody');
+      const dlBtn = document.getElementById('previewDownloadBtn');
+
+      title.textContent = `👁️ ${metadata.originalName} (${formatBytes(metadata.originalSize)})`;
+      const blob = new Blob([plainBytes], { type: metadata.mimeType || 'application/octet-stream' });
+      _activePreviewUrl = URL.createObjectURL(blob);
+
+      dlBtn.onclick = () => triggerBrowserDownload(plainBytes, metadata.originalName, metadata.mimeType);
+
+      const mime = (metadata.mimeType || '').toLowerCase();
+      if (mime.startsWith('image/')) {
+        body.innerHTML = `<img src="${_activePreviewUrl}" class="max-h-[65vh] rounded-xl object-contain" alt="preview" />`;
+      } else if (mime === 'application/pdf') {
+        body.innerHTML = `<iframe src="${_activePreviewUrl}" class="w-full h-[65vh] rounded-xl border-0"></iframe>`;
+      } else {
+        const textPreview = new TextDecoder().decode(plainBytes.subarray(0, 32768));
+        body.innerHTML = `<pre class="w-full max-h-[65vh] overflow-auto text-xs font-mono p-4 bg-slate-900 text-slate-100 rounded-xl">${escapeHtml(textPreview)}</pre>`;
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closePreviewModal() {
+      if (_activePreviewUrl) {
+        URL.revokeObjectURL(_activePreviewUrl);
+        _activePreviewUrl = null;
+      }
+      document.getElementById('previewBody').innerHTML = '';
+      document.getElementById('previewModal').classList.add('hidden');
+    }
+
+    function openHelpModal() {
+      document.getElementById('helpModal').classList.remove('hidden');
+    }
+    function closeHelpModal() {
+      document.getElementById('helpModal').classList.add('hidden');
+    }
+
+    // 通用工具
+    function triggerBrowserDownload(bytes, fileName, mimeType) {
+      const blob = new Blob([bytes], { type: mimeType || 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName || 'download.bin';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    }
+
+    function showToast(msg, type = 'info') {
+      const box = document.getElementById('toastContainer');
+      if (!box) return;
+      const el = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-600 text-white',
+        error: 'bg-rose-600 text-white',
+        info: 'bg-slate-800 text-white dark:bg-slate-700'
+      };
+      el.className = `px-4 py-2.5 rounded-2xl shadow-lg text-xs font-bold transition-all ${colors[type] || colors.info}`;
+      el.textContent = msg;
+      box.appendChild(el);
+      setTimeout(() => { el.remove(); }, 4200);
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+    function escapeJs(s) {
+      return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    // 深色模式 (與首頁及 LifeSchedule 共用 weber_theme)
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('weber_theme', isDark ? 'dark' : 'light');
+      updateThemeIcon(isDark);
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem('weber_theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = saved === 'dark' || (!saved && prefersDark);
+      document.documentElement.classList.toggle('dark', isDark);
+      updateThemeIcon(isDark);
+    }
+
+    function updateThemeIcon(isDark) {
+      const icon = document.getElementById('themeIcon');
+      if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-400 text-xs' : 'fa-solid fa-moon text-xs';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      updateLockBadgeUI();
+      refreshVaultList();
+    });
+  </script>
+</body>
+</html>
