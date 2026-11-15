@@ -375,7 +375,7 @@
       <div class="space-y-2">
         <div class="font-bold text-slate-800 dark:text-slate-200">☁️ Google 雲端硬碟雙軌部署（免 OAuth 每小時過期彈窗）</div>
         <p class="text-slate-600 dark:text-slate-300">
-          將專案內的 <code class="font-mono">gas-vault.gs</code> 貼至 <a href="https://script.google.com" target="_blank" class="text-indigo-600 underline">Google Apps Script</a> 並部署為「網頁應用程式（所有人可存取）」，即可與 `LifeSchedule` 一樣永久靜默雙軌備份至 Google 雲端硬碟的 <code class="font-mono">WeberVault</code> 資料夾。
+          將專案內的 <code class="font-mono">gas-vault.gs</code> 貼至 <a href="https://script.google.com" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline">Google Apps Script</a> 並部署為「網頁應用程式（所有人可存取）」，即可與 `LifeSchedule` 一樣永久靜默雙軌備份至 Google 雲端硬碟的 <code class="font-mono">WeberVault</code> 資料夾。
         </p>
       </div>
 
@@ -392,6 +392,7 @@
     // ============================================================
     // 🔐 Weber Vault 前端核心邏輯 (WBVLT1 與雙軌同步引擎)
     // ============================================================
+    window.APP_VERSION = 'v1.0.0 (2026-11-14)';
     const VAULT_MAGIC_STR = 'WBVLT1';
     const VAULT_FORMAT_ID = 'weber_vault_v1';
     const VAULT_VERSION = 1;
