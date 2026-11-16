@@ -191,7 +191,7 @@ function openBioIdb() {
     });
 }
 
-async function saveSessionKeyToBioIdb(aesKey, saltB64, iterations) {
+async function saveSessionKeyToBioIdb(aesKey, saltB64, iterations, keySlots = null, vaultId = '') {
     const db = await openBioIdb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(BIO_IDB_STORE, 'readwrite');
@@ -201,6 +201,8 @@ async function saveSessionKeyToBioIdb(aesKey, saltB64, iterations) {
             aesKey,
             saltB64,
             iterations,
+            keySlots: Array.isArray(keySlots) ? keySlots : null,
+            vaultId: vaultId || '',
             savedAt: Date.now()
         });
         tx.oncomplete = () => { db.close(); resolve(); };
@@ -303,14 +305,16 @@ async function registerBiometricCredentialWithPassphrase(passphrase) {
         throw new Error('綁定指紋前請先驗證主通行碼');
     }
 
-    // 確認目前記憶體金鑰已就緒且能與通行碼對應
-    if (!_e2eeSessionKey || !_e2eeSessionSaltB64) {
+    // 確認目前記憶體金鑰已就緒且能與通行碼對應（支援 V1 與 V2）
+    if (!_e2eeSessionKey || (!_e2eeSessionSaltB64 && !_e2eeSessionKeySlots)) {
         throw new Error('尚未解鎖 E2EE 金鑰');
     }
-    const verifyKey = await deriveE2eeAesKey(passphrase, b64ToBytes(_e2eeSessionSaltB64), _e2eeSessionIterations);
     const testEnv = _pendingEncryptedRemote?.envelope || _latestRemoteEnvelope;
     if (testEnv) {
-        await decryptBackupWithKey(testEnv, verifyKey);
+        await decryptBackupPayload(testEnv, passphrase);
+    } else if (Array.isArray(_e2eeSessionKeySlots)) {
+        const masterSlot = _e2eeSessionKeySlots.find(s => s.id === 'master') || _e2eeSessionKeySlots[0];
+        await unwrapDekFromSlot(masterSlot, passphrase, false);
     }
 
     const challenge = window.crypto.getRandomValues(new Uint8Array(32));
@@ -392,7 +396,7 @@ async function registerBiometricCredentialWithPassphrase(passphrase) {
     }
 
     // 降級模式：WebAuthn userVerification 閘門 + IndexedDB non-extractable CryptoKey
-    await saveSessionKeyToBioIdb(_e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations);
+    await saveSessionKeyToBioIdb(_e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations, _e2eeSessionKeySlots, _e2eeSessionVaultId);
     localStorage.removeItem(BIO_WRAPPED_SECRET_KEY);
     localStorage.setItem(BIO_CRED_META_KEY, JSON.stringify({
         credIdB64Url,
@@ -500,7 +504,9 @@ async function authenticateWithBiometrics() {
         mode: 'gate',
         aesKey: rec.aesKey,
         saltB64: rec.saltB64,
-        iterations: rec.iterations || E2EE_DEFAULT_ITERATIONS
+        iterations: rec.iterations || E2EE_DEFAULT_ITERATIONS,
+        keySlots: rec.keySlots || null,
+        vaultId: rec.vaultId || ''
     };
 }
 
@@ -676,19 +682,9 @@ async function unlockWithBiometricsInAppLock() {
 
         if (authRes.mode === 'prf') {
             if (targetEnv && isEncryptedEnvelope(targetEnv)) {
-                const iters = Number(targetEnv.kdf.iterations);
-                const saltBytes = b64ToBytes(targetEnv.kdf.salt);
-                const aesKey = await deriveE2eeAesKey(authRes.passphrase, saltBytes, iters);
-                await decryptBackupWithKey(targetEnv, aesKey);
-                _e2eeSessionKey = aesKey;
-                _e2eeSessionSaltB64 = targetEnv.kdf.salt;
-                _e2eeSessionIterations = iters;
+                await decryptBackupPayload(targetEnv, authRes.passphrase);
             } else {
-                const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
-                const saltB64 = bufToB64(saltBytes);
-                _e2eeSessionKey = await deriveE2eeAesKey(authRes.passphrase, saltBytes, E2EE_DEFAULT_ITERATIONS);
-                _e2eeSessionSaltB64 = saltB64;
-                _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+                await initializeV2SessionWithPassphrase(authRes.passphrase);
             }
         } else {
             // gate 模式
@@ -698,6 +694,8 @@ async function unlockWithBiometricsInAppLock() {
             _e2eeSessionKey = authRes.aesKey;
             _e2eeSessionSaltB64 = authRes.saltB64;
             _e2eeSessionIterations = authRes.iterations;
+            _e2eeSessionKeySlots = authRes.keySlots || (targetEnv && targetEnv.version === 2 ? targetEnv.keySlots : null);
+            _e2eeSessionVaultId = authRes.vaultId || (targetEnv && targetEnv.vaultId) || '';
         }
         await finishSessionUnlock({ fromBiometric: true });
     } catch (err) {
@@ -717,7 +715,7 @@ async function unlockWithPassphraseInAppLock() {
     const pass = passInput ? passInput.value : '';
     if (!pass || !pass.trim()) {
         if (errEl) {
-            errEl.textContent = '❌ 請輸入主通行碼！';
+            errEl.textContent = '❌ 請輸入主通行碼或緊急回復碼！';
             errEl.classList.remove('hidden');
         }
         return;
@@ -734,28 +732,18 @@ async function unlockWithPassphraseInAppLock() {
 
         const targetEnv = vaultEnv || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
         if (targetEnv && isEncryptedEnvelope(targetEnv)) {
-            const iters = Number(targetEnv.kdf.iterations);
-            const saltBytes = b64ToBytes(targetEnv.kdf.salt);
-            const aesKey = await deriveE2eeAesKey(pass, saltBytes, iters);
-            const decrypted = await decryptBackupWithKey(targetEnv, aesKey);
-            _e2eeSessionKey = aesKey;
-            _e2eeSessionSaltB64 = targetEnv.kdf.salt;
-            _e2eeSessionIterations = iters;
+            const decrypted = await decryptBackupPayload(targetEnv, pass);
             if (vaultEnv && targetEnv === vaultEnv) {
                 applyDecryptedLocalVault(decrypted);
             }
         } else {
-            const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
-            const saltB64 = bufToB64(saltBytes);
-            _e2eeSessionKey = await deriveE2eeAesKey(pass, saltBytes, E2EE_DEFAULT_ITERATIONS);
-            _e2eeSessionSaltB64 = saltB64;
-            _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+            await initializeV2SessionWithPassphrase(pass);
         }
         recordManualPassphraseUnlock();
         await finishSessionUnlock({ fromBiometric: false });
     } catch (err) {
         if (errEl) {
-            errEl.textContent = '❌ 通行碼錯誤或本機加密資料無法解開，請確認後重試！';
+            errEl.textContent = '❌ 通行碼 / 回復碼錯誤或本機加密資料無法解開，請確認後重試！';
             errEl.classList.remove('hidden');
         }
     } finally {
@@ -772,23 +760,25 @@ async function unlockE2eeModalWithBiometrics() {
         const authRes = await authenticateWithBiometrics();
         const targetEnvelope = _e2eeModalCustomEnvelope || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
 
+        if (!targetEnvelope) {
+            throw new Error('找不到待解鎖的加密備份封套');
+        }
+
         if (authRes.mode === 'prf') {
-            if (!targetEnvelope) {
-                throw new Error('找不到待解鎖的加密備份封套');
-            }
             const plainData = await decryptBackupPayload(targetEnvelope, authRes.passphrase);
             await completeE2eeModalUnlockSuccess(plainData, targetEnvelope, null);
         } else {
-            if (!targetEnvelope) {
-                throw new Error('找不到待解鎖的加密備份封套');
-            }
-            if (targetEnvelope.kdf && targetEnvelope.kdf.salt !== authRes.saltB64) {
+            const envSalt = typeof getEnvelopeSaltB64 === 'function' ? getEnvelopeSaltB64(targetEnvelope) : (targetEnvelope.kdf && targetEnvelope.kdf.salt);
+            const sameVault = Boolean(authRes.vaultId && targetEnvelope.vaultId && authRes.vaultId === targetEnvelope.vaultId);
+            if (!sameVault && envSalt && envSalt !== authRes.saltB64) {
                 throw new Error('偵測到雲端備份使用了新的鹽值（可能已在其他裝置更換通行碼），請改用主通行碼解鎖並重新綁定指紋');
             }
             const plainData = await decryptBackupWithKey(targetEnvelope, authRes.aesKey);
             _e2eeSessionKey = authRes.aesKey;
             _e2eeSessionSaltB64 = authRes.saltB64;
             _e2eeSessionIterations = authRes.iterations;
+            _e2eeSessionKeySlots = authRes.keySlots || (targetEnvelope.version === 2 ? targetEnvelope.keySlots : null);
+            _e2eeSessionVaultId = authRes.vaultId || targetEnvelope.vaultId || '';
             await completeE2eeModalUnlockSuccess(plainData, targetEnvelope, null);
         }
         if (isPassphraseReviewDue() && typeof showToast === 'function') {
@@ -941,3 +931,62 @@ function handleVisibilityChangeForAutoLock() {
         }
     }
 }
+
+// ---------- 🙈 公共場所財務金額一鍵模糊遮罩 (Privacy Blur) ----------
+const PRIVACY_BLUR_KEY = 'ls_privacy_blur';
+
+function isPrivacyBlurEnabled() {
+    try {
+        return localStorage.getItem(PRIVACY_BLUR_KEY) === 'true';
+    } catch (e) {
+        return false;
+    }
+}
+
+function applyPrivacyBlurState() {
+    const enabled = isPrivacyBlurEnabled();
+    if (document.body) {
+        document.body.classList.toggle('ls-privacy-blur', enabled);
+    }
+    const btn = document.getElementById('headerPrivacyBlurBtn');
+    const iconEl = document.getElementById('headerPrivacyBlurIcon');
+    const textEl = document.getElementById('headerPrivacyBlurText');
+    if (btn) {
+        if (enabled) {
+            btn.className = 'text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 px-3 py-1.5 rounded-xl border border-rose-300 dark:border-rose-800 font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer';
+            if (iconEl) iconEl.textContent = '🙈';
+            if (textEl) textEl.textContent = '金額已遮罩';
+        } else {
+            btn.className = 'text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-300 font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer';
+            if (iconEl) iconEl.textContent = '👁️';
+            if (textEl) textEl.textContent = '遮罩金額';
+        }
+    }
+}
+
+function togglePrivacyBlur() {
+    const next = !isPrivacyBlurEnabled();
+    try {
+        localStorage.setItem(PRIVACY_BLUR_KEY, String(next));
+    } catch (e) {}
+    applyPrivacyBlurState();
+    if (typeof showToast === 'function') {
+        showToast(next ? '🙈 已開啟財務金額模糊遮罩（公共場所防窺）' : '👁️ 已恢復顯示財務金額', 'info');
+    }
+}
+
+// ---------- 📱 手機單手快速記一筆浮動按鈕 (Mobile FAB) ----------
+function openMobileQuickAddThought() {
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+    if (typeof isFormOpen !== 'undefined' && !isFormOpen && typeof toggleForm === 'function') {
+        toggleForm();
+    }
+    const input = document.getElementById('thoughtInput');
+    if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => input.focus(), 180);
+    } else if (typeof scrollToPageTop === 'function') {
+        scrollToPageTop();
+    }
+}
+

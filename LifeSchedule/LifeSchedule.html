@@ -39,6 +39,12 @@
             background-color: #0b0f19 !important;
             color: #f1f5f9 !important;
         }
+        /* 🙈 公共場所財務金額一鍵模糊遮罩 */
+        body.ls-privacy-blur .ls-fin-amount {
+            filter: blur(7px);
+            user-select: none;
+            transition: filter 0.15s ease;
+        }
 
 
         /* 2. 主卡片與核心容器 (slate-800，相容所有 bg-white 與透明度變體如 /80, /90) */
@@ -317,12 +323,16 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.1.1 (2026-11-15)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.2.0 (2026-11-16)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap justify-end">
                 <div id="piSyncStatusBadge" onclick="handlePiBadgeClick()" class="text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 cursor-pointer hover:opacity-80 transition-all" title="點擊檢查樹莓派同步狀態或開啟設定">⚪ 未設定伺服器 (點擊設定)</div>
+                <button type="button" id="headerPrivacyBlurBtn" onclick="togglePrivacyBlur()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-300 font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer" title="公共場所一鍵模糊遮罩財務金額">
+                    <span id="headerPrivacyBlurIcon">👁️</span>
+                    <span id="headerPrivacyBlurText">遮罩金額</span>
+                </button>
                 <button type="button" id="headerQuickLockBtn" onclick="lockE2eeSession()" class="hidden text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl border border-amber-300 font-bold transition-all flex items-center gap-1 shadow-2xs hover:shadow-xs cursor-pointer" title="立即鎖定金鑰與畫面 (公共場所防窺)">
                     <span>🔒</span>
                     <span>鎖定</span>
@@ -494,6 +504,12 @@
                     <div id="e2eeLockSessionRow" class="hidden pt-1">
                         <button type="button" onclick="lockE2eeSession()" class="w-full text-[11px] bg-amber-50 hover:bg-amber-100 text-amber-800 py-1.5 px-3 rounded-lg border border-amber-200 font-bold transition-all flex items-center justify-center gap-1 cursor-pointer">
                             <span>🔒 立即鎖定金鑰 (清除當前分頁記憶體快取)</span>
+                        </button>
+                    </div>
+                    <div class="pt-1">
+                        <button type="button" onclick="generateAndBindRecoveryCodeFlow()" class="w-full text-[11px] bg-white hover:bg-indigo-50 text-indigo-700 py-1.5 px-3 rounded-lg border border-indigo-200 font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span>🆘</span>
+                            <span>產生 / 更新緊急回復碼 (V2 雙層金鑰槽)</span>
                         </button>
                     </div>
 
@@ -784,6 +800,30 @@
                         🔓 驗證通行碼並解鎖
                     </button>
                 </form>
+            </div>
+        </div>
+
+        <!-- 🆘 【v6.2.0 E2EE V2】緊急回復碼顯示彈窗 -->
+        <div id="e2eeRecoveryCodeModal" style="z-index: 85;" class="fixed inset-0 bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-rose-200 dark:border-rose-800 space-y-4">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🆘</span>
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">E2EE 緊急回復碼 (V2 雙層金鑰槽)</h3>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">忘記主通行碼時，可用此回復碼獨立解開雲端與本機資料</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeRecoveryCodeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg p-1 cursor-pointer">✕</button>
+                </div>
+                <div class="bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 rounded-2xl p-3.5 text-center space-y-2">
+                    <p class="text-[11px] font-bold text-rose-800 dark:text-rose-200">⚠️ 請抄寫或離線保存，關閉視窗後系統不會保留明文：</p>
+                    <div id="e2eeRecoveryCodeDisplay" class="font-mono text-sm sm:text-base font-black tracking-wider text-rose-900 dark:text-rose-100 bg-white dark:bg-slate-900 px-3 py-2.5 rounded-xl border border-rose-200 dark:border-rose-700 select-all break-all"></div>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-1">
+                    <button type="button" onclick="copyRecoveryCodeToClipboard()" class="px-4 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors shadow-sm cursor-pointer">📋 複製回復碼</button>
+                    <button type="button" onclick="closeRecoveryCodeModal()" class="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl font-bold transition-colors cursor-pointer">我已妥善保存</button>
+                </div>
             </div>
         </div>
 
@@ -1145,9 +1185,14 @@
             <span class="text-sm font-bold">▲</span>
             <span class="text-xs font-bold">回頂部</span>
         </button>
+
+        <!-- 📱 【v6.2.0 手機單手極速新增 FAB】 -->
+        <button id="mobileFabAddBtn" type="button" onclick="openMobileQuickAddThought()" class="sm:hidden pointer-events-auto w-13 h-13 rounded-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white shadow-2xl border-2 border-indigo-300 dark:border-indigo-500 flex items-center justify-center text-2xl font-black transition-all cursor-pointer select-none" title="單手快速新增目標 / 思緒" aria-label="快速新增目標">
+            ＋
+        </button>
     </div>
     <script>
-window.APP_VERSION = "v6.1.1 (2026-11-15)";
+window.APP_VERSION = "v6.2.0 (2026-11-16)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
@@ -1369,11 +1414,11 @@ function renderFortellerHeaderFinanceBadge(mKey) {
     return `
         <div onclick="openMonthlyFinanceModal('${mKey}', event)" class="mt-1 flex flex-col items-center gap-0.5 p-1 rounded-lg bg-white/95 dark:bg-slate-800/95 border border-slate-200 dark:border-slate-700 shadow-2xs hover:border-indigo-400 hover:shadow-xs cursor-pointer transition-all text-[10px] leading-tight select-none" title="點擊檢視/編輯 ${mKey} 收支細項明細">
             <div class="flex items-center gap-1 text-[9px] font-mono font-bold flex-wrap justify-center">
-                <span class="text-blue-600 dark:text-blue-400" title="主動收入: $${activeTotal.toLocaleString()}">🟢${formatMoneyCompact(activeTotal)}</span>
-                <span class="text-purple-600 dark:text-purple-400" title="被動收入: $${passiveTotal.toLocaleString()}">🔵${formatMoneyCompact(passiveTotal)}</span>
-                <span class="text-rose-600 dark:text-rose-400" title="總支出: $${expensesTotal.toLocaleString()}">🔴${formatMoneyCompact(expensesTotal)}</span>
+                <span class="ls-fin-amount text-blue-600 dark:text-blue-400" title="主動收入: $${activeTotal.toLocaleString()}">🟢${formatMoneyCompact(activeTotal)}</span>
+                <span class="ls-fin-amount text-purple-600 dark:text-purple-400" title="被動收入: $${passiveTotal.toLocaleString()}">🔵${formatMoneyCompact(passiveTotal)}</span>
+                <span class="ls-fin-amount text-rose-600 dark:text-rose-400" title="總支出: $${expensesTotal.toLocaleString()}">🔴${formatMoneyCompact(expensesTotal)}</span>
             </div>
-            <div class="px-1.5 py-0.2 rounded-full border text-[9px] font-mono font-black ${netColor}" title="淨結餘 / 現金流: $${netSavings.toLocaleString()}">
+            <div class="ls-fin-amount px-1.5 py-0.2 rounded-full border text-[9px] font-mono font-black ${netColor}" title="淨結餘 / 現金流: $${netSavings.toLocaleString()}">
                 結餘: ${netSign}${formatMoneyCompact(netSavings)}
             </div>
         </div>
@@ -1484,14 +1529,16 @@ function generateBackupFileName(account = piAccount) {
 // 3. 雲端拉回加密封套但尚未解鎖時，嚴格維持 isInitialSyncCompleted = false，阻斷未解鎖新裝置覆蓋雲端。
 // ============================================================
 const E2EE_FORMAT_ID = 'lifeschedule_encrypted_backup';
-const E2EE_VERSION = 1;
+const E2EE_VERSION = 2;
 const E2EE_DEFAULT_ITERATIONS = 600000;
 const E2EE_MIN_ITERATIONS = 100000;
 const E2EE_MAX_ITERATIONS = 2000000;
 
-let _e2eeSessionKey = null;
+let _e2eeSessionKey = null; // 永遠為 extractable: false 的 DEK (V2) 或 V1 金鑰
 let _e2eeSessionSaltB64 = '';
 let _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+let _e2eeSessionKeySlots = null; // V2 KEK/DEK 金鑰槽陣列
+let _e2eeSessionVaultId = '';
 let _latestRemoteEnvelope = null;
 let _pendingEncryptedRemote = null;
 let _hasUnsavedCloudChanges = false;
@@ -1499,7 +1546,7 @@ let _e2eeModalMode = 'unlock';
 let _e2eeModalCustomEnvelope = null;
 let _e2eeModalOnSuccess = null;
 
-const E2EE_DEFAULT_HINT_HTML = '⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。一旦遺忘通行碼，任何人都無法還原您的財務與目標備份，請務必妥善保存於密碼管理器！';
+const E2EE_DEFAULT_HINT_HTML = '⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。建議於設定中產生一組「緊急回復碼」抄寫保存，以防遺忘主通行碼！';
 
 function isSecureCryptoAvailable() {
     return Boolean(typeof window !== 'undefined' && window.crypto && window.crypto.subtle);
@@ -1514,15 +1561,12 @@ function hasE2eeRemoteOrSession() {
 }
 
 function isEncryptedEnvelope(obj) {
-    return Boolean(
-        obj &&
-        typeof obj === 'object' &&
-        !Array.isArray(obj) &&
-        obj._format === E2EE_FORMAT_ID &&
-        typeof obj.ciphertext === 'string' &&
-        obj.kdf &&
-        obj.cipher
-    );
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return false;
+    if (obj._format !== E2EE_FORMAT_ID || typeof obj.ciphertext !== 'string' || !obj.cipher) return false;
+    if (obj.version === 2) {
+        return Array.isArray(obj.keySlots) && obj.keySlots.length > 0;
+    }
+    return Boolean(obj.kdf);
 }
 
 function bufToB64(buf) {
@@ -1543,8 +1587,27 @@ function b64ToBytes(b64) {
     return out;
 }
 
-// 將封套標頭欄位納入 AES-GCM additionalData (AAD)，任何對 version 或 kdf 參數的竄改都會在解密時觸發認證失敗
+// 將封套標頭欄位納入 AES-GCM additionalData (AAD)，任何對 version、keySlots 或 kdf 參數的竄改都會在解密時觸發認證失敗
 function buildEnvelopeAAD(envHeader) {
+    if (envHeader.version === 2) {
+        const canonicalV2 = JSON.stringify({
+            _format: envHeader._format,
+            version: 2,
+            vaultId: envHeader.vaultId || '',
+            cipher: {
+                algorithm: envHeader.cipher.algorithm,
+                iv: envHeader.cipher.iv
+            },
+            keySlots: (envHeader.keySlots || []).map(s => ({
+                id: s.id,
+                type: s.type,
+                kdf: s.kdf,
+                iv: s.iv,
+                wrappedDek: s.wrappedDek
+            }))
+        });
+        return new TextEncoder().encode(canonicalV2);
+    }
     const canonical = JSON.stringify({
         _format: envHeader._format,
         version: envHeader.version,
@@ -1590,27 +1653,137 @@ async function deriveE2eeAesKey(passphrase, saltBytes, iterations = E2EE_DEFAULT
     );
 }
 
-async function encryptBackupWithKey(plainObject, aesKey, saltB64, iterations = E2EE_DEFAULT_ITERATIONS) {
+async function deriveE2eeWrapKek(secretStr, saltBytes, iterations = E2EE_DEFAULT_ITERATIONS) {
     if (!isSecureCryptoAvailable()) {
         throw new Error('當前瀏覽環境不支援 Web Crypto API');
     }
-    // 每次加密強制重新產生 12-byte 隨機 IV，嚴禁重複使用
-    const ivBytes = window.crypto.getRandomValues(new Uint8Array(12));
-    const envelopeHeader = {
-        _format: E2EE_FORMAT_ID,
-        version: E2EE_VERSION,
-        appVersion: window.APP_VERSION,
+    const baseKey = await window.crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secretStr),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveKey']
+    );
+    return window.crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: saltBytes, iterations: Number(iterations), hash: 'SHA-256' },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['wrapKey', 'unwrapKey']
+    );
+}
+
+async function wrapDekIntoSlot(dekKey, secretStr, slotId = 'master', slotType = 'pbkdf2', iterations = E2EE_DEFAULT_ITERATIONS) {
+    const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
+    const slotIv = window.crypto.getRandomValues(new Uint8Array(12));
+    const kek = await deriveE2eeWrapKek(secretStr, saltBytes, iterations);
+    const wrappedBuf = await window.crypto.subtle.wrapKey(
+        'raw',
+        dekKey,
+        kek,
+        { name: 'AES-GCM', iv: slotIv }
+    );
+    return {
+        id: slotId,
+        type: slotType,
         kdf: {
             algorithm: 'PBKDF2',
             hash: 'SHA-256',
-            iterations: iterations,
-            salt: saltB64
+            iterations,
+            salt: bufToB64(saltBytes)
         },
-        cipher: {
-            algorithm: 'AES-GCM',
-            iv: bufToB64(ivBytes)
-        }
+        iv: bufToB64(slotIv),
+        wrappedDek: bufToB64(wrappedBuf)
     };
+}
+
+async function unwrapDekFromSlot(slot, secretStr, extractable = false) {
+    if (!slot || !slot.kdf || !slot.iv || !slot.wrappedDek) {
+        throw new Error('無效的金鑰槽格式');
+    }
+    const iters = Number(slot.kdf.iterations);
+    if (!Number.isInteger(iters) || iters < E2EE_MIN_ITERATIONS || iters > E2EE_MAX_ITERATIONS) {
+        throw new Error('不安全的金鑰槽疊代次數');
+    }
+    const saltBytes = b64ToBytes(slot.kdf.salt);
+    const slotIv = b64ToBytes(slot.iv);
+    const wrappedBytes = b64ToBytes(slot.wrappedDek);
+    const kek = await deriveE2eeWrapKek(secretStr, saltBytes, iters);
+    return window.crypto.subtle.unwrapKey(
+        'raw',
+        wrappedBytes,
+        kek,
+        { name: 'AES-GCM', iv: slotIv },
+        { name: 'AES-GCM', length: 256 },
+        extractable,
+        ['encrypt', 'decrypt']
+    );
+}
+
+async function initializeV2SessionWithPassphrase(passphrase, existingRecoverySlot = null) {
+    const extractableDek = await window.crypto.subtle.generateKey(
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+    );
+    const masterSlot = await wrapDekIntoSlot(extractableDek, passphrase, 'master', 'pbkdf2', E2EE_DEFAULT_ITERATIONS);
+    const nonExtractableDek = await unwrapDekFromSlot(masterSlot, passphrase, false);
+    const slots = [masterSlot];
+    if (existingRecoverySlot) slots.push(existingRecoverySlot);
+    _e2eeSessionKey = nonExtractableDek;
+    _e2eeSessionSaltB64 = masterSlot.kdf.salt;
+    _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+    _e2eeSessionKeySlots = slots;
+    _e2eeSessionVaultId = bufToB64(window.crypto.getRandomValues(new Uint8Array(12)));
+    return { dek: nonExtractableDek, keySlots: slots, vaultId: _e2eeSessionVaultId };
+}
+
+function generateReadableRecoveryCode() {
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const bytes = window.crypto.getRandomValues(new Uint8Array(20));
+    let raw = '';
+    for (let i = 0; i < bytes.length; i++) {
+        raw += alphabet[bytes[i] % alphabet.length];
+    }
+    return `LS-${raw.slice(0, 4)}-${raw.slice(4, 8)}-${raw.slice(8, 12)}-${raw.slice(12, 16)}-${raw.slice(16, 20)}`;
+}
+
+async function encryptBackupWithKey(plainObject, aesKey, saltB64, iterations = E2EE_DEFAULT_ITERATIONS, keySlotsOverride = null, vaultIdOverride = '') {
+    if (!isSecureCryptoAvailable()) {
+        throw new Error('當前瀏覽環境不支援 Web Crypto API');
+    }
+    const useSlots = Array.isArray(keySlotsOverride) && keySlotsOverride.length > 0
+        ? keySlotsOverride
+        : (Array.isArray(_e2eeSessionKeySlots) && _e2eeSessionKeySlots.length > 0 ? _e2eeSessionKeySlots : null);
+    // 每次加密強制重新產生 12-byte 隨機 IV，嚴禁重複使用
+    const ivBytes = window.crypto.getRandomValues(new Uint8Array(12));
+    const envelopeHeader = useSlots
+        ? {
+            _format: E2EE_FORMAT_ID,
+            version: 2,
+            vaultId: vaultIdOverride || _e2eeSessionVaultId || '',
+            appVersion: window.APP_VERSION,
+            cipher: {
+                algorithm: 'AES-GCM',
+                iv: bufToB64(ivBytes)
+            },
+            keySlots: useSlots
+        }
+        : {
+            _format: E2EE_FORMAT_ID,
+            version: 1,
+            appVersion: window.APP_VERSION,
+            kdf: {
+                algorithm: 'PBKDF2',
+                hash: 'SHA-256',
+                iterations: iterations,
+                salt: saltB64
+            },
+            cipher: {
+                algorithm: 'AES-GCM',
+                iv: bufToB64(ivBytes)
+            }
+        };
     const aadBytes = buildEnvelopeAAD(envelopeHeader);
     const rawBytes = new TextEncoder().encode(JSON.stringify(plainObject));
     const cipherBuf = await window.crypto.subtle.encrypt(
@@ -1641,27 +1814,50 @@ async function decryptBackupWithKey(envelope, aesKey) {
 }
 
 async function encryptBackupPayload(plainObject, passphrase) {
-    const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
-    const saltB64 = bufToB64(saltBytes);
-    const aesKey = await deriveE2eeAesKey(passphrase, saltBytes, E2EE_DEFAULT_ITERATIONS);
-    _e2eeSessionKey = aesKey;
-    _e2eeSessionSaltB64 = saltB64;
-    _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
-    return encryptBackupWithKey(plainObject, aesKey, saltB64, E2EE_DEFAULT_ITERATIONS);
+    const v2 = await initializeV2SessionWithPassphrase(passphrase);
+    return encryptBackupWithKey(plainObject, v2.dek, _e2eeSessionSaltB64, E2EE_DEFAULT_ITERATIONS, v2.keySlots, v2.vaultId);
 }
 
 async function decryptBackupPayload(envelope, passphrase) {
     if (!isEncryptedEnvelope(envelope)) {
         throw new Error('非有效的加密備份封套格式');
     }
+    if (envelope.version === 2 && Array.isArray(envelope.keySlots)) {
+        const normalized = String(passphrase || '').trim();
+        // 若輸入為 LS- 開頭回復碼，優先嘗試 recovery 金鑰槽；否則逐槽嘗試
+        const orderedSlots = normalized.toUpperCase().startsWith('LS-')
+            ? [...envelope.keySlots].sort((a, b) => (a.id === 'recovery' ? -1 : 1))
+            : envelope.keySlots;
+        let lastErr = null;
+        for (const slot of orderedSlots) {
+            try {
+                const candidate = slot.id === 'recovery' ? normalized.toUpperCase() : passphrase;
+                const dek = await unwrapDekFromSlot(slot, candidate, false);
+                const plainData = await decryptBackupWithKey(envelope, dek);
+                _e2eeSessionKey = dek;
+                _e2eeSessionKeySlots = envelope.keySlots;
+                _e2eeSessionVaultId = envelope.vaultId || '';
+                const masterSlot = envelope.keySlots.find(s => s.id === 'master') || envelope.keySlots[0];
+                _e2eeSessionSaltB64 = masterSlot?.kdf?.salt || '';
+                _e2eeSessionIterations = masterSlot?.kdf?.iterations || E2EE_DEFAULT_ITERATIONS;
+                return plainData;
+            } catch (e) {
+                lastErr = e;
+            }
+        }
+        throw lastErr || new Error('金鑰槽解鎖失敗');
+    }
+
+    // V1 向下相容解密
     const iters = Number(envelope.kdf && envelope.kdf.iterations);
     const saltBytes = b64ToBytes(envelope.kdf.salt);
     const aesKey = await deriveE2eeAesKey(passphrase, saltBytes, iters);
     const plainData = await decryptBackupWithKey(envelope, aesKey);
-    // 解密成功後將 { aesKey, salt } 快取於當前分頁記憶體，後續自動備份可直接靜默加密
     _e2eeSessionKey = aesKey;
     _e2eeSessionSaltB64 = envelope.kdf.salt;
     _e2eeSessionIterations = iters;
+    _e2eeSessionKeySlots = null;
+    _e2eeSessionVaultId = '';
     return plainData;
 }
 
@@ -1672,10 +1868,10 @@ async function prepareOutboundPayload(plainPayload) {
     if (!isSecureCryptoAvailable()) {
         throw new Error('已啟用備份加密，但當前非 HTTPS/localhost 安全環境，已中止上傳以防明文外洩！');
     }
-    if (!_e2eeSessionKey || !_e2eeSessionSaltB64) {
+    if (!_e2eeSessionKey || (!_e2eeSessionSaltB64 && !_e2eeSessionKeySlots)) {
         throw new Error('E2EE_KEY_LOCKED');
     }
-    const env = await encryptBackupWithKey(plainPayload, _e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations);
+    const env = await encryptBackupWithKey(plainPayload, _e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations, _e2eeSessionKeySlots, _e2eeSessionVaultId);
     _latestRemoteEnvelope = env;
     return env;
 }
@@ -1975,15 +2171,13 @@ async function confirmE2eePassphraseModal() {
 
     try {
         if (_e2eeModalMode === 'setup') {
-            const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
-            const saltB64 = bufToB64(saltBytes);
-            const aesKey = await deriveE2eeAesKey(pass1, saltBytes, E2EE_DEFAULT_ITERATIONS);
-            _e2eeSessionKey = aesKey;
-            _e2eeSessionSaltB64 = saltB64;
-            _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+            const existingRecovery = Array.isArray(_e2eeSessionKeySlots)
+                ? (_e2eeSessionKeySlots.find(s => s.id === 'recovery') || null)
+                : null;
+            await initializeV2SessionWithPassphrase(pass1, existingRecovery);
             localStorage.setItem('ls_e2ee_enabled', 'true');
             if (typeof recordManualPassphraseUnlock === 'function') recordManualPassphraseUnlock();
-            // 更換新通行碼時清除舊指紋綁定（因 Salt 已變更）
+            // 更換新通行碼時清除舊指紋綁定（因 Master Slot 已更新）
             if (typeof hasBioCredentialBound === 'function' && hasBioCredentialBound() && typeof clearBiometricBinding === 'function') {
                 await clearBiometricBinding(true);
             }
@@ -1999,7 +2193,7 @@ async function confirmE2eePassphraseModal() {
             if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
             if (!localStorage.getItem('ls_e2ee_cleaned_reminded')) {
                 localStorage.setItem('ls_e2ee_cleaned_reminded', 'true');
-                alert('🔐 已成功設定端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必妥善保存此通行碼（一旦遺忘將永久無法還原）。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
+                alert('🔐 已成功設定 V2 端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必妥善保存此通行碼，並建議於設定中產生「緊急回復碼」。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
             }
             if (cb) {
                 await cb(null, pass1);
@@ -2018,6 +2212,108 @@ async function confirmE2eePassphraseModal() {
         if (submitBtn) submitBtn.disabled = false;
         if (submitText) submitText.textContent = origBtnText;
     }
+}
+
+async function generateAndBindRecoveryCodeFlow() {
+    if (!isE2eeEnabled()) {
+        alert('請先啟用「端對端加密 (E2EE)」並設定主通行碼，再產生緊急回復碼。');
+        return;
+    }
+    openE2eePassphraseModal(
+        hasE2eeRemoteOrSession() ? 'unlock' : 'setup',
+        async (_plainData, verifiedPassphrase) => {
+            if (!verifiedPassphrase) {
+                alert('⚠️ 產生緊急回復碼屬於高敏感操作，請輸入主通行碼完成驗證。');
+                return;
+            }
+            try {
+                const recoveryCode = generateReadableRecoveryCode();
+                let tempExtractableDek = null;
+                if (Array.isArray(_e2eeSessionKeySlots)) {
+                    const masterSlot = _e2eeSessionKeySlots.find(s => s.id === 'master');
+                    if (masterSlot) {
+                        tempExtractableDek = await unwrapDekFromSlot(masterSlot, verifiedPassphrase, true);
+                    }
+                }
+                if (!tempExtractableDek) {
+                    // 若原為 V1，順勢無痛升級為 V2 雙層金鑰槽架構
+                    tempExtractableDek = await window.crypto.subtle.generateKey(
+                        { name: 'AES-GCM', length: 256 },
+                        true,
+                        ['encrypt', 'decrypt']
+                    );
+                    const masterSlot = await wrapDekIntoSlot(tempExtractableDek, verifiedPassphrase, 'master', 'pbkdf2', E2EE_DEFAULT_ITERATIONS);
+                    const recoverySlot = await wrapDekIntoSlot(tempExtractableDek, recoveryCode, 'recovery', 'recovery_pbkdf2', E2EE_DEFAULT_ITERATIONS);
+                    const nonExtractableDek = await unwrapDekFromSlot(masterSlot, verifiedPassphrase, false);
+                    _e2eeSessionKey = nonExtractableDek;
+                    _e2eeSessionSaltB64 = masterSlot.kdf.salt;
+                    _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+                    _e2eeSessionKeySlots = [masterSlot, recoverySlot];
+                    _e2eeSessionVaultId = bufToB64(window.crypto.getRandomValues(new Uint8Array(12)));
+                } else {
+                    const recoverySlot = await wrapDekIntoSlot(tempExtractableDek, recoveryCode, 'recovery', 'recovery_pbkdf2', E2EE_DEFAULT_ITERATIONS);
+                    _e2eeSessionKeySlots = [
+                        ..._e2eeSessionKeySlots.filter(s => s.id !== 'recovery'),
+                        recoverySlot
+                    ];
+                }
+                tempExtractableDek = null;
+
+                if (typeof persistEncryptedLocalVault === 'function' && typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                    await persistEncryptedLocalVault();
+                }
+                if (typeof triggerAutoSaveToPi === 'function') {
+                    triggerAutoSaveToPi();
+                }
+
+                const codeEl = document.getElementById('e2eeRecoveryCodeDisplay');
+                const modalEl = document.getElementById('e2eeRecoveryCodeModal');
+                if (codeEl) codeEl.textContent = recoveryCode;
+                if (modalEl) modalEl.classList.remove('hidden');
+            } catch (err) {
+                alert('❌ 產生緊急回復碼失敗：' + (err.message || err));
+            }
+        },
+        null,
+        '🆘 請輸入主通行碼驗證身分，驗證後將產生一組全新的 20 碼緊急回復碼（舊回復碼將自動失效）。'
+    );
+}
+
+function copyRecoveryCodeToClipboard() {
+    const codeEl = document.getElementById('e2eeRecoveryCodeDisplay');
+    const text = codeEl ? codeEl.textContent.trim() : '';
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            if (typeof showToast === 'function') showToast('📋 緊急回復碼已複製，請妥善離線保存！', 'success');
+        }).catch(() => {});
+    }
+}
+
+function closeRecoveryCodeModal() {
+    const codeEl = document.getElementById('e2eeRecoveryCodeDisplay');
+    const modalEl = document.getElementById('e2eeRecoveryCodeModal');
+    if (codeEl) codeEl.textContent = '';
+    if (modalEl) modalEl.classList.add('hidden');
+}
+
+function getEnvelopeSaltB64(env) {
+    if (!env) return '';
+    if (env.version === 2 && Array.isArray(env.keySlots)) {
+        const m = env.keySlots.find(s => s.id === 'master') || env.keySlots[0];
+        return (m && m.kdf && m.kdf.salt) || '';
+    }
+    return (env.kdf && env.kdf.salt) || '';
+}
+
+function canSessionDecryptEnvelope(env) {
+    if (!_e2eeSessionKey || !env) return false;
+    if (env.version === 2) {
+        if (_e2eeSessionVaultId && env.vaultId && _e2eeSessionVaultId === env.vaultId) return true;
+        const envSalt = getEnvelopeSaltB64(env);
+        return Boolean(envSalt && _e2eeSessionSaltB64 === envSalt);
+    }
+    return Boolean(env.kdf && _e2eeSessionSaltB64 === env.kdf.salt);
 }
 
 async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBadgeText, syncedBadgeClass, shouldApply = true) {
@@ -2041,7 +2337,7 @@ async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBad
     _latestRemoteEnvelope = rawBackupData;
     localStorage.setItem('ls_e2ee_enabled', 'true');
 
-    if (_e2eeSessionKey && _e2eeSessionSaltB64 === rawBackupData.kdf.salt) {
+    if (canSessionDecryptEnvelope(rawBackupData)) {
         try {
             const plainData = await decryptBackupWithKey(rawBackupData, _e2eeSessionKey);
             _pendingEncryptedRemote = null;
@@ -2649,12 +2945,24 @@ function isValidBackupPayload(data) {
     if (Array.isArray(data.thoughts)) return true;
     if (isEncryptedEnvelope(data)) {
         try {
+            const ivBytes = b64ToBytes(data.cipher.iv);
+            const cipherBytes = b64ToBytes(data.ciphertext);
+            if (ivBytes.length !== 12 || cipherBytes.length <= 16) return false;
+            if (data.version === 2) {
+                for (const slot of data.keySlots) {
+                    const iters = Number(slot && slot.kdf && slot.kdf.iterations);
+                    if (!Number.isInteger(iters) || iters < E2EE_MIN_ITERATIONS || iters > E2EE_MAX_ITERATIONS) return false;
+                    const sBytes = b64ToBytes(slot.kdf.salt);
+                    const sIv = b64ToBytes(slot.iv);
+                    const wBytes = b64ToBytes(slot.wrappedDek);
+                    if (sBytes.length < 8 || sIv.length !== 12 || wBytes.length < 32) return false;
+                }
+                return true;
+            }
             const iters = Number(data.kdf && data.kdf.iterations);
             if (!Number.isInteger(iters) || iters < E2EE_MIN_ITERATIONS || iters > E2EE_MAX_ITERATIONS) return false;
             const saltBytes = b64ToBytes(data.kdf.salt);
-            const ivBytes = b64ToBytes(data.cipher.iv);
-            const cipherBytes = b64ToBytes(data.ciphertext);
-            if (saltBytes.length < 8 || ivBytes.length !== 12 || cipherBytes.length <= 16) return false;
+            if (saltBytes.length < 8) return false;
             return true;
         } catch (e) {
             return false;
@@ -2665,7 +2973,7 @@ function isValidBackupPayload(data) {
 
 async function isUsableBackupCandidate(data) {
     if (!isValidBackupPayload(data)) return false;
-    if (isEncryptedEnvelope(data) && _e2eeSessionKey && _e2eeSessionSaltB64 === data.kdf.salt) {
+    if (isEncryptedEnvelope(data) && canSessionDecryptEnvelope(data)) {
         try {
             const plain = await decryptBackupWithKey(data, _e2eeSessionKey);
             return Boolean(plain && (Array.isArray(plain) || Array.isArray(plain.thoughts)));
@@ -3108,7 +3416,7 @@ async function importFromPi() {
                 _latestRemoteEnvelope = backupData;
                 localStorage.setItem('ls_e2ee_enabled', 'true');
                 updateE2eeSettingsUI();
-                if (_e2eeSessionKey && _e2eeSessionSaltB64 === backupData.kdf.salt) {
+                if (canSessionDecryptEnvelope(backupData)) {
                     try {
                         const plainData = await decryptBackupWithKey(backupData, _e2eeSessionKey);
                         if (confirm(`確定從樹莓派載入最新加密備份？${accLabel}\n備份檔名：${fileName}`)) {
@@ -3449,7 +3757,7 @@ function openBioIdb() {
     });
 }
 
-async function saveSessionKeyToBioIdb(aesKey, saltB64, iterations) {
+async function saveSessionKeyToBioIdb(aesKey, saltB64, iterations, keySlots = null, vaultId = '') {
     const db = await openBioIdb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(BIO_IDB_STORE, 'readwrite');
@@ -3459,6 +3767,8 @@ async function saveSessionKeyToBioIdb(aesKey, saltB64, iterations) {
             aesKey,
             saltB64,
             iterations,
+            keySlots: Array.isArray(keySlots) ? keySlots : null,
+            vaultId: vaultId || '',
             savedAt: Date.now()
         });
         tx.oncomplete = () => { db.close(); resolve(); };
@@ -3561,14 +3871,16 @@ async function registerBiometricCredentialWithPassphrase(passphrase) {
         throw new Error('綁定指紋前請先驗證主通行碼');
     }
 
-    // 確認目前記憶體金鑰已就緒且能與通行碼對應
-    if (!_e2eeSessionKey || !_e2eeSessionSaltB64) {
+    // 確認目前記憶體金鑰已就緒且能與通行碼對應（支援 V1 與 V2）
+    if (!_e2eeSessionKey || (!_e2eeSessionSaltB64 && !_e2eeSessionKeySlots)) {
         throw new Error('尚未解鎖 E2EE 金鑰');
     }
-    const verifyKey = await deriveE2eeAesKey(passphrase, b64ToBytes(_e2eeSessionSaltB64), _e2eeSessionIterations);
     const testEnv = _pendingEncryptedRemote?.envelope || _latestRemoteEnvelope;
     if (testEnv) {
-        await decryptBackupWithKey(testEnv, verifyKey);
+        await decryptBackupPayload(testEnv, passphrase);
+    } else if (Array.isArray(_e2eeSessionKeySlots)) {
+        const masterSlot = _e2eeSessionKeySlots.find(s => s.id === 'master') || _e2eeSessionKeySlots[0];
+        await unwrapDekFromSlot(masterSlot, passphrase, false);
     }
 
     const challenge = window.crypto.getRandomValues(new Uint8Array(32));
@@ -3650,7 +3962,7 @@ async function registerBiometricCredentialWithPassphrase(passphrase) {
     }
 
     // 降級模式：WebAuthn userVerification 閘門 + IndexedDB non-extractable CryptoKey
-    await saveSessionKeyToBioIdb(_e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations);
+    await saveSessionKeyToBioIdb(_e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations, _e2eeSessionKeySlots, _e2eeSessionVaultId);
     localStorage.removeItem(BIO_WRAPPED_SECRET_KEY);
     localStorage.setItem(BIO_CRED_META_KEY, JSON.stringify({
         credIdB64Url,
@@ -3758,7 +4070,9 @@ async function authenticateWithBiometrics() {
         mode: 'gate',
         aesKey: rec.aesKey,
         saltB64: rec.saltB64,
-        iterations: rec.iterations || E2EE_DEFAULT_ITERATIONS
+        iterations: rec.iterations || E2EE_DEFAULT_ITERATIONS,
+        keySlots: rec.keySlots || null,
+        vaultId: rec.vaultId || ''
     };
 }
 
@@ -3934,19 +4248,9 @@ async function unlockWithBiometricsInAppLock() {
 
         if (authRes.mode === 'prf') {
             if (targetEnv && isEncryptedEnvelope(targetEnv)) {
-                const iters = Number(targetEnv.kdf.iterations);
-                const saltBytes = b64ToBytes(targetEnv.kdf.salt);
-                const aesKey = await deriveE2eeAesKey(authRes.passphrase, saltBytes, iters);
-                await decryptBackupWithKey(targetEnv, aesKey);
-                _e2eeSessionKey = aesKey;
-                _e2eeSessionSaltB64 = targetEnv.kdf.salt;
-                _e2eeSessionIterations = iters;
+                await decryptBackupPayload(targetEnv, authRes.passphrase);
             } else {
-                const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
-                const saltB64 = bufToB64(saltBytes);
-                _e2eeSessionKey = await deriveE2eeAesKey(authRes.passphrase, saltBytes, E2EE_DEFAULT_ITERATIONS);
-                _e2eeSessionSaltB64 = saltB64;
-                _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+                await initializeV2SessionWithPassphrase(authRes.passphrase);
             }
         } else {
             // gate 模式
@@ -3956,6 +4260,8 @@ async function unlockWithBiometricsInAppLock() {
             _e2eeSessionKey = authRes.aesKey;
             _e2eeSessionSaltB64 = authRes.saltB64;
             _e2eeSessionIterations = authRes.iterations;
+            _e2eeSessionKeySlots = authRes.keySlots || (targetEnv && targetEnv.version === 2 ? targetEnv.keySlots : null);
+            _e2eeSessionVaultId = authRes.vaultId || (targetEnv && targetEnv.vaultId) || '';
         }
         await finishSessionUnlock({ fromBiometric: true });
     } catch (err) {
@@ -3975,7 +4281,7 @@ async function unlockWithPassphraseInAppLock() {
     const pass = passInput ? passInput.value : '';
     if (!pass || !pass.trim()) {
         if (errEl) {
-            errEl.textContent = '❌ 請輸入主通行碼！';
+            errEl.textContent = '❌ 請輸入主通行碼或緊急回復碼！';
             errEl.classList.remove('hidden');
         }
         return;
@@ -3992,28 +4298,18 @@ async function unlockWithPassphraseInAppLock() {
 
         const targetEnv = vaultEnv || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
         if (targetEnv && isEncryptedEnvelope(targetEnv)) {
-            const iters = Number(targetEnv.kdf.iterations);
-            const saltBytes = b64ToBytes(targetEnv.kdf.salt);
-            const aesKey = await deriveE2eeAesKey(pass, saltBytes, iters);
-            const decrypted = await decryptBackupWithKey(targetEnv, aesKey);
-            _e2eeSessionKey = aesKey;
-            _e2eeSessionSaltB64 = targetEnv.kdf.salt;
-            _e2eeSessionIterations = iters;
+            const decrypted = await decryptBackupPayload(targetEnv, pass);
             if (vaultEnv && targetEnv === vaultEnv) {
                 applyDecryptedLocalVault(decrypted);
             }
         } else {
-            const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
-            const saltB64 = bufToB64(saltBytes);
-            _e2eeSessionKey = await deriveE2eeAesKey(pass, saltBytes, E2EE_DEFAULT_ITERATIONS);
-            _e2eeSessionSaltB64 = saltB64;
-            _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+            await initializeV2SessionWithPassphrase(pass);
         }
         recordManualPassphraseUnlock();
         await finishSessionUnlock({ fromBiometric: false });
     } catch (err) {
         if (errEl) {
-            errEl.textContent = '❌ 通行碼錯誤或本機加密資料無法解開，請確認後重試！';
+            errEl.textContent = '❌ 通行碼 / 回復碼錯誤或本機加密資料無法解開，請確認後重試！';
             errEl.classList.remove('hidden');
         }
     } finally {
@@ -4030,23 +4326,25 @@ async function unlockE2eeModalWithBiometrics() {
         const authRes = await authenticateWithBiometrics();
         const targetEnvelope = _e2eeModalCustomEnvelope || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
 
+        if (!targetEnvelope) {
+            throw new Error('找不到待解鎖的加密備份封套');
+        }
+
         if (authRes.mode === 'prf') {
-            if (!targetEnvelope) {
-                throw new Error('找不到待解鎖的加密備份封套');
-            }
             const plainData = await decryptBackupPayload(targetEnvelope, authRes.passphrase);
             await completeE2eeModalUnlockSuccess(plainData, targetEnvelope, null);
         } else {
-            if (!targetEnvelope) {
-                throw new Error('找不到待解鎖的加密備份封套');
-            }
-            if (targetEnvelope.kdf && targetEnvelope.kdf.salt !== authRes.saltB64) {
+            const envSalt = typeof getEnvelopeSaltB64 === 'function' ? getEnvelopeSaltB64(targetEnvelope) : (targetEnvelope.kdf && targetEnvelope.kdf.salt);
+            const sameVault = Boolean(authRes.vaultId && targetEnvelope.vaultId && authRes.vaultId === targetEnvelope.vaultId);
+            if (!sameVault && envSalt && envSalt !== authRes.saltB64) {
                 throw new Error('偵測到雲端備份使用了新的鹽值（可能已在其他裝置更換通行碼），請改用主通行碼解鎖並重新綁定指紋');
             }
             const plainData = await decryptBackupWithKey(targetEnvelope, authRes.aesKey);
             _e2eeSessionKey = authRes.aesKey;
             _e2eeSessionSaltB64 = authRes.saltB64;
             _e2eeSessionIterations = authRes.iterations;
+            _e2eeSessionKeySlots = authRes.keySlots || (targetEnvelope.version === 2 ? targetEnvelope.keySlots : null);
+            _e2eeSessionVaultId = authRes.vaultId || targetEnvelope.vaultId || '';
             await completeE2eeModalUnlockSuccess(plainData, targetEnvelope, null);
         }
         if (isPassphraseReviewDue() && typeof showToast === 'function') {
@@ -4199,6 +4497,65 @@ function handleVisibilityChangeForAutoLock() {
         }
     }
 }
+
+// ---------- 🙈 公共場所財務金額一鍵模糊遮罩 (Privacy Blur) ----------
+const PRIVACY_BLUR_KEY = 'ls_privacy_blur';
+
+function isPrivacyBlurEnabled() {
+    try {
+        return localStorage.getItem(PRIVACY_BLUR_KEY) === 'true';
+    } catch (e) {
+        return false;
+    }
+}
+
+function applyPrivacyBlurState() {
+    const enabled = isPrivacyBlurEnabled();
+    if (document.body) {
+        document.body.classList.toggle('ls-privacy-blur', enabled);
+    }
+    const btn = document.getElementById('headerPrivacyBlurBtn');
+    const iconEl = document.getElementById('headerPrivacyBlurIcon');
+    const textEl = document.getElementById('headerPrivacyBlurText');
+    if (btn) {
+        if (enabled) {
+            btn.className = 'text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 px-3 py-1.5 rounded-xl border border-rose-300 dark:border-rose-800 font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer';
+            if (iconEl) iconEl.textContent = '🙈';
+            if (textEl) textEl.textContent = '金額已遮罩';
+        } else {
+            btn.className = 'text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-300 font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer';
+            if (iconEl) iconEl.textContent = '👁️';
+            if (textEl) textEl.textContent = '遮罩金額';
+        }
+    }
+}
+
+function togglePrivacyBlur() {
+    const next = !isPrivacyBlurEnabled();
+    try {
+        localStorage.setItem(PRIVACY_BLUR_KEY, String(next));
+    } catch (e) {}
+    applyPrivacyBlurState();
+    if (typeof showToast === 'function') {
+        showToast(next ? '🙈 已開啟財務金額模糊遮罩（公共場所防窺）' : '👁️ 已恢復顯示財務金額', 'info');
+    }
+}
+
+// ---------- 📱 手機單手快速記一筆浮動按鈕 (Mobile FAB) ----------
+function openMobileQuickAddThought() {
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+    if (typeof isFormOpen !== 'undefined' && !isFormOpen && typeof toggleForm === 'function') {
+        toggleForm();
+    }
+    const input = document.getElementById('thoughtInput');
+    if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => input.focus(), 180);
+    } else if (typeof scrollToPageTop === 'function') {
+        scrollToPageTop();
+    }
+}
+
 
 /* === [END MODULE: js/biometric_lock.js] === */
 
@@ -6996,7 +7353,7 @@ function updateContainerWidth() {
                 try {
                     const data = JSON.parse(evt.target.result);
                     if (isEncryptedEnvelope(data)) {
-                        if (_e2eeSessionKey && _e2eeSessionSaltB64 === data.kdf.salt) {
+                        if (canSessionDecryptEnvelope(data)) {
                             try {
                                 const plainData = await decryptBackupWithKey(data, _e2eeSessionKey);
                                 if (confirm("確定匯入此加密備份並覆蓋當前思緒、工時與財務資料？")) {
@@ -10645,6 +11002,7 @@ function bootstrapLifeScheduleApp() {
     if (typeof updateE2eeSettingsUI === 'function') updateE2eeSettingsUI();
     if (typeof updateBiometricSettingsUI === 'function') updateBiometricSettingsUI();
     if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
+    if (typeof applyPrivacyBlurState === 'function') applyPrivacyBlurState();
     if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) {
         if (typeof showAppLockOverlay === 'function') showAppLockOverlay();
         return;
@@ -10952,13 +11310,13 @@ window.addEventListener('resize', () => {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-1.5 font-black text-xs sm:text-sm text-purple-900 dark:text-purple-300">
                             <span>🔵 被動收入 (Passive)</span>
-                            <span id="finPassiveSubtotal" class="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full">$0</span>
+                            <span id="finPassiveSubtotal" class="ls-fin-amount text-xs font-mono font-bold text-purple-700 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full">$0</span>
                         </div>
                         <button type="button" onclick="addFinanceRow('passive')" class="text-[11px] font-bold text-purple-700 dark:text-purple-300 bg-white dark:bg-slate-800 hover:bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-300 dark:border-purple-700 shadow-2xs transition-colors cursor-pointer">
                             ➕ 新增被動項目
                         </button>
                     </div>
-                    <div id="finPassiveList" class="space-y-1.5"></div>
+                    <div id="finPassiveList" class="ls-fin-amount space-y-1.5"></div>
                 </div>
 
 
@@ -10967,13 +11325,13 @@ window.addEventListener('resize', () => {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-1.5 font-black text-xs sm:text-sm text-blue-900 dark:text-blue-300">
                             <span>🟢 主動收入 (Active)</span>
-                            <span id="finActiveSubtotal" class="text-xs font-mono font-bold text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded-full">$0</span>
+                            <span id="finActiveSubtotal" class="ls-fin-amount text-xs font-mono font-bold text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded-full">$0</span>
                         </div>
                         <button type="button" onclick="addFinanceRow('active')" class="text-[11px] font-bold text-blue-700 dark:text-blue-300 bg-white dark:bg-slate-800 hover:bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-300 dark:border-blue-700 shadow-2xs transition-colors cursor-pointer">
                             ➕ 新增主動項目
                         </button>
                     </div>
-                    <div id="finActiveList" class="space-y-1.5"></div>
+                    <div id="finActiveList" class="ls-fin-amount space-y-1.5"></div>
                 </div>
 
 
@@ -10982,13 +11340,13 @@ window.addEventListener('resize', () => {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-1.5 font-black text-xs sm:text-sm text-rose-900 dark:text-rose-300">
                             <span>🔴 總體支出 (Expenses)</span>
-                            <span id="finExpensesSubtotal" class="text-xs font-mono font-bold text-rose-700 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/60 px-2 py-0.5 rounded-full">$0</span>
+                            <span id="finExpensesSubtotal" class="ls-fin-amount text-xs font-mono font-bold text-rose-700 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/60 px-2 py-0.5 rounded-full">$0</span>
                         </div>
                         <button type="button" onclick="addFinanceRow('expenses')" class="text-[11px] font-bold text-rose-700 dark:text-rose-300 bg-white dark:bg-slate-800 hover:bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-300 dark:border-rose-700 shadow-2xs transition-colors cursor-pointer">
                             ➕ 新增支出項目
                         </button>
                     </div>
-                    <div id="finExpensesList" class="space-y-1.5"></div>
+                    <div id="finExpensesList" class="ls-fin-amount space-y-1.5"></div>
                 </div>
 
 
@@ -11003,15 +11361,15 @@ window.addEventListener('resize', () => {
             <!-- 即時總計與財務自由指標卡 -->
             <div class="p-3 bg-gradient-to-r from-slate-100 via-indigo-50/50 to-slate-100 dark:from-slate-900 dark:via-indigo-950/40 dark:to-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 flex-wrap shrink-0">
                 <div class="flex items-center gap-3 text-xs font-mono font-bold flex-wrap">
-                    <span class="text-slate-600 dark:text-slate-300">總收入: <span id="finModalTotalIncome" class="text-indigo-600 dark:text-indigo-400 font-black">$0</span></span>
+                    <span class="text-slate-600 dark:text-slate-300">總收入: <span id="finModalTotalIncome" class="ls-fin-amount text-indigo-600 dark:text-indigo-400 font-black">$0</span></span>
                     <span class="text-slate-400">|</span>
-                    <span class="text-slate-600 dark:text-slate-300">總支出: <span id="finModalTotalExpense" class="text-rose-600 dark:text-rose-400 font-black">$0</span></span>
+                    <span class="text-slate-600 dark:text-slate-300">總支出: <span id="finModalTotalExpense" class="ls-fin-amount text-rose-600 dark:text-rose-400 font-black">$0</span></span>
                     <span class="text-slate-400">|</span>
-                    <span class="text-slate-700 dark:text-slate-200">淨結餘: <span id="finModalNetSavings" class="font-black text-sm text-emerald-600">+$0</span></span>
+                    <span class="text-slate-700 dark:text-slate-200">淨結餘: <span id="finModalNetSavings" class="ls-fin-amount font-black text-sm text-emerald-600">+$0</span></span>
                 </div>
                 <div class="flex items-center gap-1.5 text-[11px] font-bold">
                     <span class="text-slate-500 dark:text-slate-400">🎯 被動收入覆蓋率:</span>
-                    <span id="finModalCoverage" class="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-mono font-black">0%</span>
+                    <span id="finModalCoverage" class="ls-fin-amount px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-mono font-black">0%</span>
                 </div>
             </div>
 

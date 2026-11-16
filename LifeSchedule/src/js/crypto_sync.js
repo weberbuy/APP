@@ -32,14 +32,16 @@ function generateBackupFileName(account = piAccount) {
 // 3. 雲端拉回加密封套但尚未解鎖時，嚴格維持 isInitialSyncCompleted = false，阻斷未解鎖新裝置覆蓋雲端。
 // ============================================================
 const E2EE_FORMAT_ID = 'lifeschedule_encrypted_backup';
-const E2EE_VERSION = 1;
+const E2EE_VERSION = 2;
 const E2EE_DEFAULT_ITERATIONS = 600000;
 const E2EE_MIN_ITERATIONS = 100000;
 const E2EE_MAX_ITERATIONS = 2000000;
 
-let _e2eeSessionKey = null;
+let _e2eeSessionKey = null; // 永遠為 extractable: false 的 DEK (V2) 或 V1 金鑰
 let _e2eeSessionSaltB64 = '';
 let _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+let _e2eeSessionKeySlots = null; // V2 KEK/DEK 金鑰槽陣列
+let _e2eeSessionVaultId = '';
 let _latestRemoteEnvelope = null;
 let _pendingEncryptedRemote = null;
 let _hasUnsavedCloudChanges = false;
@@ -47,7 +49,7 @@ let _e2eeModalMode = 'unlock';
 let _e2eeModalCustomEnvelope = null;
 let _e2eeModalOnSuccess = null;
 
-const E2EE_DEFAULT_HINT_HTML = '⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。一旦遺忘通行碼，任何人都無法還原您的財務與目標備份，請務必妥善保存於密碼管理器！';
+const E2EE_DEFAULT_HINT_HTML = '⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。建議於設定中產生一組「緊急回復碼」抄寫保存，以防遺忘主通行碼！';
 
 function isSecureCryptoAvailable() {
     return Boolean(typeof window !== 'undefined' && window.crypto && window.crypto.subtle);
@@ -62,15 +64,12 @@ function hasE2eeRemoteOrSession() {
 }
 
 function isEncryptedEnvelope(obj) {
-    return Boolean(
-        obj &&
-        typeof obj === 'object' &&
-        !Array.isArray(obj) &&
-        obj._format === E2EE_FORMAT_ID &&
-        typeof obj.ciphertext === 'string' &&
-        obj.kdf &&
-        obj.cipher
-    );
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return false;
+    if (obj._format !== E2EE_FORMAT_ID || typeof obj.ciphertext !== 'string' || !obj.cipher) return false;
+    if (obj.version === 2) {
+        return Array.isArray(obj.keySlots) && obj.keySlots.length > 0;
+    }
+    return Boolean(obj.kdf);
 }
 
 function bufToB64(buf) {
@@ -91,8 +90,27 @@ function b64ToBytes(b64) {
     return out;
 }
 
-// 將封套標頭欄位納入 AES-GCM additionalData (AAD)，任何對 version 或 kdf 參數的竄改都會在解密時觸發認證失敗
+// 將封套標頭欄位納入 AES-GCM additionalData (AAD)，任何對 version、keySlots 或 kdf 參數的竄改都會在解密時觸發認證失敗
 function buildEnvelopeAAD(envHeader) {
+    if (envHeader.version === 2) {
+        const canonicalV2 = JSON.stringify({
+            _format: envHeader._format,
+            version: 2,
+            vaultId: envHeader.vaultId || '',
+            cipher: {
+                algorithm: envHeader.cipher.algorithm,
+                iv: envHeader.cipher.iv
+            },
+            keySlots: (envHeader.keySlots || []).map(s => ({
+                id: s.id,
+                type: s.type,
+                kdf: s.kdf,
+                iv: s.iv,
+                wrappedDek: s.wrappedDek
+            }))
+        });
+        return new TextEncoder().encode(canonicalV2);
+    }
     const canonical = JSON.stringify({
         _format: envHeader._format,
         version: envHeader.version,
@@ -138,27 +156,137 @@ async function deriveE2eeAesKey(passphrase, saltBytes, iterations = E2EE_DEFAULT
     );
 }
 
-async function encryptBackupWithKey(plainObject, aesKey, saltB64, iterations = E2EE_DEFAULT_ITERATIONS) {
+async function deriveE2eeWrapKek(secretStr, saltBytes, iterations = E2EE_DEFAULT_ITERATIONS) {
     if (!isSecureCryptoAvailable()) {
         throw new Error('當前瀏覽環境不支援 Web Crypto API');
     }
-    // 每次加密強制重新產生 12-byte 隨機 IV，嚴禁重複使用
-    const ivBytes = window.crypto.getRandomValues(new Uint8Array(12));
-    const envelopeHeader = {
-        _format: E2EE_FORMAT_ID,
-        version: E2EE_VERSION,
-        appVersion: window.APP_VERSION,
+    const baseKey = await window.crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secretStr),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveKey']
+    );
+    return window.crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: saltBytes, iterations: Number(iterations), hash: 'SHA-256' },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['wrapKey', 'unwrapKey']
+    );
+}
+
+async function wrapDekIntoSlot(dekKey, secretStr, slotId = 'master', slotType = 'pbkdf2', iterations = E2EE_DEFAULT_ITERATIONS) {
+    const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
+    const slotIv = window.crypto.getRandomValues(new Uint8Array(12));
+    const kek = await deriveE2eeWrapKek(secretStr, saltBytes, iterations);
+    const wrappedBuf = await window.crypto.subtle.wrapKey(
+        'raw',
+        dekKey,
+        kek,
+        { name: 'AES-GCM', iv: slotIv }
+    );
+    return {
+        id: slotId,
+        type: slotType,
         kdf: {
             algorithm: 'PBKDF2',
             hash: 'SHA-256',
-            iterations: iterations,
-            salt: saltB64
+            iterations,
+            salt: bufToB64(saltBytes)
         },
-        cipher: {
-            algorithm: 'AES-GCM',
-            iv: bufToB64(ivBytes)
-        }
+        iv: bufToB64(slotIv),
+        wrappedDek: bufToB64(wrappedBuf)
     };
+}
+
+async function unwrapDekFromSlot(slot, secretStr, extractable = false) {
+    if (!slot || !slot.kdf || !slot.iv || !slot.wrappedDek) {
+        throw new Error('無效的金鑰槽格式');
+    }
+    const iters = Number(slot.kdf.iterations);
+    if (!Number.isInteger(iters) || iters < E2EE_MIN_ITERATIONS || iters > E2EE_MAX_ITERATIONS) {
+        throw new Error('不安全的金鑰槽疊代次數');
+    }
+    const saltBytes = b64ToBytes(slot.kdf.salt);
+    const slotIv = b64ToBytes(slot.iv);
+    const wrappedBytes = b64ToBytes(slot.wrappedDek);
+    const kek = await deriveE2eeWrapKek(secretStr, saltBytes, iters);
+    return window.crypto.subtle.unwrapKey(
+        'raw',
+        wrappedBytes,
+        kek,
+        { name: 'AES-GCM', iv: slotIv },
+        { name: 'AES-GCM', length: 256 },
+        extractable,
+        ['encrypt', 'decrypt']
+    );
+}
+
+async function initializeV2SessionWithPassphrase(passphrase, existingRecoverySlot = null) {
+    const extractableDek = await window.crypto.subtle.generateKey(
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+    );
+    const masterSlot = await wrapDekIntoSlot(extractableDek, passphrase, 'master', 'pbkdf2', E2EE_DEFAULT_ITERATIONS);
+    const nonExtractableDek = await unwrapDekFromSlot(masterSlot, passphrase, false);
+    const slots = [masterSlot];
+    if (existingRecoverySlot) slots.push(existingRecoverySlot);
+    _e2eeSessionKey = nonExtractableDek;
+    _e2eeSessionSaltB64 = masterSlot.kdf.salt;
+    _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+    _e2eeSessionKeySlots = slots;
+    _e2eeSessionVaultId = bufToB64(window.crypto.getRandomValues(new Uint8Array(12)));
+    return { dek: nonExtractableDek, keySlots: slots, vaultId: _e2eeSessionVaultId };
+}
+
+function generateReadableRecoveryCode() {
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const bytes = window.crypto.getRandomValues(new Uint8Array(20));
+    let raw = '';
+    for (let i = 0; i < bytes.length; i++) {
+        raw += alphabet[bytes[i] % alphabet.length];
+    }
+    return `LS-${raw.slice(0, 4)}-${raw.slice(4, 8)}-${raw.slice(8, 12)}-${raw.slice(12, 16)}-${raw.slice(16, 20)}`;
+}
+
+async function encryptBackupWithKey(plainObject, aesKey, saltB64, iterations = E2EE_DEFAULT_ITERATIONS, keySlotsOverride = null, vaultIdOverride = '') {
+    if (!isSecureCryptoAvailable()) {
+        throw new Error('當前瀏覽環境不支援 Web Crypto API');
+    }
+    const useSlots = Array.isArray(keySlotsOverride) && keySlotsOverride.length > 0
+        ? keySlotsOverride
+        : (Array.isArray(_e2eeSessionKeySlots) && _e2eeSessionKeySlots.length > 0 ? _e2eeSessionKeySlots : null);
+    // 每次加密強制重新產生 12-byte 隨機 IV，嚴禁重複使用
+    const ivBytes = window.crypto.getRandomValues(new Uint8Array(12));
+    const envelopeHeader = useSlots
+        ? {
+            _format: E2EE_FORMAT_ID,
+            version: 2,
+            vaultId: vaultIdOverride || _e2eeSessionVaultId || '',
+            appVersion: window.APP_VERSION,
+            cipher: {
+                algorithm: 'AES-GCM',
+                iv: bufToB64(ivBytes)
+            },
+            keySlots: useSlots
+        }
+        : {
+            _format: E2EE_FORMAT_ID,
+            version: 1,
+            appVersion: window.APP_VERSION,
+            kdf: {
+                algorithm: 'PBKDF2',
+                hash: 'SHA-256',
+                iterations: iterations,
+                salt: saltB64
+            },
+            cipher: {
+                algorithm: 'AES-GCM',
+                iv: bufToB64(ivBytes)
+            }
+        };
     const aadBytes = buildEnvelopeAAD(envelopeHeader);
     const rawBytes = new TextEncoder().encode(JSON.stringify(plainObject));
     const cipherBuf = await window.crypto.subtle.encrypt(
@@ -189,27 +317,50 @@ async function decryptBackupWithKey(envelope, aesKey) {
 }
 
 async function encryptBackupPayload(plainObject, passphrase) {
-    const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
-    const saltB64 = bufToB64(saltBytes);
-    const aesKey = await deriveE2eeAesKey(passphrase, saltBytes, E2EE_DEFAULT_ITERATIONS);
-    _e2eeSessionKey = aesKey;
-    _e2eeSessionSaltB64 = saltB64;
-    _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
-    return encryptBackupWithKey(plainObject, aesKey, saltB64, E2EE_DEFAULT_ITERATIONS);
+    const v2 = await initializeV2SessionWithPassphrase(passphrase);
+    return encryptBackupWithKey(plainObject, v2.dek, _e2eeSessionSaltB64, E2EE_DEFAULT_ITERATIONS, v2.keySlots, v2.vaultId);
 }
 
 async function decryptBackupPayload(envelope, passphrase) {
     if (!isEncryptedEnvelope(envelope)) {
         throw new Error('非有效的加密備份封套格式');
     }
+    if (envelope.version === 2 && Array.isArray(envelope.keySlots)) {
+        const normalized = String(passphrase || '').trim();
+        // 若輸入為 LS- 開頭回復碼，優先嘗試 recovery 金鑰槽；否則逐槽嘗試
+        const orderedSlots = normalized.toUpperCase().startsWith('LS-')
+            ? [...envelope.keySlots].sort((a, b) => (a.id === 'recovery' ? -1 : 1))
+            : envelope.keySlots;
+        let lastErr = null;
+        for (const slot of orderedSlots) {
+            try {
+                const candidate = slot.id === 'recovery' ? normalized.toUpperCase() : passphrase;
+                const dek = await unwrapDekFromSlot(slot, candidate, false);
+                const plainData = await decryptBackupWithKey(envelope, dek);
+                _e2eeSessionKey = dek;
+                _e2eeSessionKeySlots = envelope.keySlots;
+                _e2eeSessionVaultId = envelope.vaultId || '';
+                const masterSlot = envelope.keySlots.find(s => s.id === 'master') || envelope.keySlots[0];
+                _e2eeSessionSaltB64 = masterSlot?.kdf?.salt || '';
+                _e2eeSessionIterations = masterSlot?.kdf?.iterations || E2EE_DEFAULT_ITERATIONS;
+                return plainData;
+            } catch (e) {
+                lastErr = e;
+            }
+        }
+        throw lastErr || new Error('金鑰槽解鎖失敗');
+    }
+
+    // V1 向下相容解密
     const iters = Number(envelope.kdf && envelope.kdf.iterations);
     const saltBytes = b64ToBytes(envelope.kdf.salt);
     const aesKey = await deriveE2eeAesKey(passphrase, saltBytes, iters);
     const plainData = await decryptBackupWithKey(envelope, aesKey);
-    // 解密成功後將 { aesKey, salt } 快取於當前分頁記憶體，後續自動備份可直接靜默加密
     _e2eeSessionKey = aesKey;
     _e2eeSessionSaltB64 = envelope.kdf.salt;
     _e2eeSessionIterations = iters;
+    _e2eeSessionKeySlots = null;
+    _e2eeSessionVaultId = '';
     return plainData;
 }
 
@@ -220,10 +371,10 @@ async function prepareOutboundPayload(plainPayload) {
     if (!isSecureCryptoAvailable()) {
         throw new Error('已啟用備份加密，但當前非 HTTPS/localhost 安全環境，已中止上傳以防明文外洩！');
     }
-    if (!_e2eeSessionKey || !_e2eeSessionSaltB64) {
+    if (!_e2eeSessionKey || (!_e2eeSessionSaltB64 && !_e2eeSessionKeySlots)) {
         throw new Error('E2EE_KEY_LOCKED');
     }
-    const env = await encryptBackupWithKey(plainPayload, _e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations);
+    const env = await encryptBackupWithKey(plainPayload, _e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations, _e2eeSessionKeySlots, _e2eeSessionVaultId);
     _latestRemoteEnvelope = env;
     return env;
 }
@@ -523,15 +674,13 @@ async function confirmE2eePassphraseModal() {
 
     try {
         if (_e2eeModalMode === 'setup') {
-            const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
-            const saltB64 = bufToB64(saltBytes);
-            const aesKey = await deriveE2eeAesKey(pass1, saltBytes, E2EE_DEFAULT_ITERATIONS);
-            _e2eeSessionKey = aesKey;
-            _e2eeSessionSaltB64 = saltB64;
-            _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+            const existingRecovery = Array.isArray(_e2eeSessionKeySlots)
+                ? (_e2eeSessionKeySlots.find(s => s.id === 'recovery') || null)
+                : null;
+            await initializeV2SessionWithPassphrase(pass1, existingRecovery);
             localStorage.setItem('ls_e2ee_enabled', 'true');
             if (typeof recordManualPassphraseUnlock === 'function') recordManualPassphraseUnlock();
-            // 更換新通行碼時清除舊指紋綁定（因 Salt 已變更）
+            // 更換新通行碼時清除舊指紋綁定（因 Master Slot 已更新）
             if (typeof hasBioCredentialBound === 'function' && hasBioCredentialBound() && typeof clearBiometricBinding === 'function') {
                 await clearBiometricBinding(true);
             }
@@ -547,7 +696,7 @@ async function confirmE2eePassphraseModal() {
             if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
             if (!localStorage.getItem('ls_e2ee_cleaned_reminded')) {
                 localStorage.setItem('ls_e2ee_cleaned_reminded', 'true');
-                alert('🔐 已成功設定端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必妥善保存此通行碼（一旦遺忘將永久無法還原）。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
+                alert('🔐 已成功設定 V2 端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必妥善保存此通行碼，並建議於設定中產生「緊急回復碼」。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
             }
             if (cb) {
                 await cb(null, pass1);
@@ -566,6 +715,108 @@ async function confirmE2eePassphraseModal() {
         if (submitBtn) submitBtn.disabled = false;
         if (submitText) submitText.textContent = origBtnText;
     }
+}
+
+async function generateAndBindRecoveryCodeFlow() {
+    if (!isE2eeEnabled()) {
+        alert('請先啟用「端對端加密 (E2EE)」並設定主通行碼，再產生緊急回復碼。');
+        return;
+    }
+    openE2eePassphraseModal(
+        hasE2eeRemoteOrSession() ? 'unlock' : 'setup',
+        async (_plainData, verifiedPassphrase) => {
+            if (!verifiedPassphrase) {
+                alert('⚠️ 產生緊急回復碼屬於高敏感操作，請輸入主通行碼完成驗證。');
+                return;
+            }
+            try {
+                const recoveryCode = generateReadableRecoveryCode();
+                let tempExtractableDek = null;
+                if (Array.isArray(_e2eeSessionKeySlots)) {
+                    const masterSlot = _e2eeSessionKeySlots.find(s => s.id === 'master');
+                    if (masterSlot) {
+                        tempExtractableDek = await unwrapDekFromSlot(masterSlot, verifiedPassphrase, true);
+                    }
+                }
+                if (!tempExtractableDek) {
+                    // 若原為 V1，順勢無痛升級為 V2 雙層金鑰槽架構
+                    tempExtractableDek = await window.crypto.subtle.generateKey(
+                        { name: 'AES-GCM', length: 256 },
+                        true,
+                        ['encrypt', 'decrypt']
+                    );
+                    const masterSlot = await wrapDekIntoSlot(tempExtractableDek, verifiedPassphrase, 'master', 'pbkdf2', E2EE_DEFAULT_ITERATIONS);
+                    const recoverySlot = await wrapDekIntoSlot(tempExtractableDek, recoveryCode, 'recovery', 'recovery_pbkdf2', E2EE_DEFAULT_ITERATIONS);
+                    const nonExtractableDek = await unwrapDekFromSlot(masterSlot, verifiedPassphrase, false);
+                    _e2eeSessionKey = nonExtractableDek;
+                    _e2eeSessionSaltB64 = masterSlot.kdf.salt;
+                    _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+                    _e2eeSessionKeySlots = [masterSlot, recoverySlot];
+                    _e2eeSessionVaultId = bufToB64(window.crypto.getRandomValues(new Uint8Array(12)));
+                } else {
+                    const recoverySlot = await wrapDekIntoSlot(tempExtractableDek, recoveryCode, 'recovery', 'recovery_pbkdf2', E2EE_DEFAULT_ITERATIONS);
+                    _e2eeSessionKeySlots = [
+                        ..._e2eeSessionKeySlots.filter(s => s.id !== 'recovery'),
+                        recoverySlot
+                    ];
+                }
+                tempExtractableDek = null;
+
+                if (typeof persistEncryptedLocalVault === 'function' && typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                    await persistEncryptedLocalVault();
+                }
+                if (typeof triggerAutoSaveToPi === 'function') {
+                    triggerAutoSaveToPi();
+                }
+
+                const codeEl = document.getElementById('e2eeRecoveryCodeDisplay');
+                const modalEl = document.getElementById('e2eeRecoveryCodeModal');
+                if (codeEl) codeEl.textContent = recoveryCode;
+                if (modalEl) modalEl.classList.remove('hidden');
+            } catch (err) {
+                alert('❌ 產生緊急回復碼失敗：' + (err.message || err));
+            }
+        },
+        null,
+        '🆘 請輸入主通行碼驗證身分，驗證後將產生一組全新的 20 碼緊急回復碼（舊回復碼將自動失效）。'
+    );
+}
+
+function copyRecoveryCodeToClipboard() {
+    const codeEl = document.getElementById('e2eeRecoveryCodeDisplay');
+    const text = codeEl ? codeEl.textContent.trim() : '';
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            if (typeof showToast === 'function') showToast('📋 緊急回復碼已複製，請妥善離線保存！', 'success');
+        }).catch(() => {});
+    }
+}
+
+function closeRecoveryCodeModal() {
+    const codeEl = document.getElementById('e2eeRecoveryCodeDisplay');
+    const modalEl = document.getElementById('e2eeRecoveryCodeModal');
+    if (codeEl) codeEl.textContent = '';
+    if (modalEl) modalEl.classList.add('hidden');
+}
+
+function getEnvelopeSaltB64(env) {
+    if (!env) return '';
+    if (env.version === 2 && Array.isArray(env.keySlots)) {
+        const m = env.keySlots.find(s => s.id === 'master') || env.keySlots[0];
+        return (m && m.kdf && m.kdf.salt) || '';
+    }
+    return (env.kdf && env.kdf.salt) || '';
+}
+
+function canSessionDecryptEnvelope(env) {
+    if (!_e2eeSessionKey || !env) return false;
+    if (env.version === 2) {
+        if (_e2eeSessionVaultId && env.vaultId && _e2eeSessionVaultId === env.vaultId) return true;
+        const envSalt = getEnvelopeSaltB64(env);
+        return Boolean(envSalt && _e2eeSessionSaltB64 === envSalt);
+    }
+    return Boolean(env.kdf && _e2eeSessionSaltB64 === env.kdf.salt);
 }
 
 async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBadgeText, syncedBadgeClass, shouldApply = true) {
@@ -589,7 +840,7 @@ async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBad
     _latestRemoteEnvelope = rawBackupData;
     localStorage.setItem('ls_e2ee_enabled', 'true');
 
-    if (_e2eeSessionKey && _e2eeSessionSaltB64 === rawBackupData.kdf.salt) {
+    if (canSessionDecryptEnvelope(rawBackupData)) {
         try {
             const plainData = await decryptBackupWithKey(rawBackupData, _e2eeSessionKey);
             _pendingEncryptedRemote = null;
@@ -1197,12 +1448,24 @@ function isValidBackupPayload(data) {
     if (Array.isArray(data.thoughts)) return true;
     if (isEncryptedEnvelope(data)) {
         try {
+            const ivBytes = b64ToBytes(data.cipher.iv);
+            const cipherBytes = b64ToBytes(data.ciphertext);
+            if (ivBytes.length !== 12 || cipherBytes.length <= 16) return false;
+            if (data.version === 2) {
+                for (const slot of data.keySlots) {
+                    const iters = Number(slot && slot.kdf && slot.kdf.iterations);
+                    if (!Number.isInteger(iters) || iters < E2EE_MIN_ITERATIONS || iters > E2EE_MAX_ITERATIONS) return false;
+                    const sBytes = b64ToBytes(slot.kdf.salt);
+                    const sIv = b64ToBytes(slot.iv);
+                    const wBytes = b64ToBytes(slot.wrappedDek);
+                    if (sBytes.length < 8 || sIv.length !== 12 || wBytes.length < 32) return false;
+                }
+                return true;
+            }
             const iters = Number(data.kdf && data.kdf.iterations);
             if (!Number.isInteger(iters) || iters < E2EE_MIN_ITERATIONS || iters > E2EE_MAX_ITERATIONS) return false;
             const saltBytes = b64ToBytes(data.kdf.salt);
-            const ivBytes = b64ToBytes(data.cipher.iv);
-            const cipherBytes = b64ToBytes(data.ciphertext);
-            if (saltBytes.length < 8 || ivBytes.length !== 12 || cipherBytes.length <= 16) return false;
+            if (saltBytes.length < 8) return false;
             return true;
         } catch (e) {
             return false;
@@ -1213,7 +1476,7 @@ function isValidBackupPayload(data) {
 
 async function isUsableBackupCandidate(data) {
     if (!isValidBackupPayload(data)) return false;
-    if (isEncryptedEnvelope(data) && _e2eeSessionKey && _e2eeSessionSaltB64 === data.kdf.salt) {
+    if (isEncryptedEnvelope(data) && canSessionDecryptEnvelope(data)) {
         try {
             const plain = await decryptBackupWithKey(data, _e2eeSessionKey);
             return Boolean(plain && (Array.isArray(plain) || Array.isArray(plain.thoughts)));
@@ -1656,7 +1919,7 @@ async function importFromPi() {
                 _latestRemoteEnvelope = backupData;
                 localStorage.setItem('ls_e2ee_enabled', 'true');
                 updateE2eeSettingsUI();
-                if (_e2eeSessionKey && _e2eeSessionSaltB64 === backupData.kdf.salt) {
+                if (canSessionDecryptEnvelope(backupData)) {
                     try {
                         const plainData = await decryptBackupWithKey(backupData, _e2eeSessionKey);
                         if (confirm(`確定從樹莓派載入最新加密備份？${accLabel}\n備份檔名：${fileName}`)) {
