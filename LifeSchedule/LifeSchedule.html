@@ -309,12 +309,16 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.0.3 (2026-11-12)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.1.0 (2026-11-15)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap justify-end">
                 <div id="piSyncStatusBadge" onclick="handlePiBadgeClick()" class="text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 cursor-pointer hover:opacity-80 transition-all" title="點擊檢查樹莓派同步狀態或開啟設定">⚪ 未設定伺服器 (點擊設定)</div>
+                <button type="button" id="headerQuickLockBtn" onclick="lockE2eeSession()" class="hidden text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl border border-amber-300 font-bold transition-all flex items-center gap-1 shadow-2xs hover:shadow-xs cursor-pointer" title="立即鎖定金鑰與畫面 (公共場所防窺)">
+                    <span>🔒</span>
+                    <span>鎖定</span>
+                </button>
                 <button onclick="toggleDarkMode()" id="themeToggleBtn" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-300 font-bold transition-all flex items-center gap-1.5 shadow-2xs hover:shadow-xs cursor-pointer" title="切換日間/夜間模式">
                     <span id="themeIcon">🌙</span>
                     <span id="themeText">夜間模式</span>
@@ -484,6 +488,45 @@
                             <span>🔒 立即鎖定金鑰 (清除當前分頁記憶體快取)</span>
                         </button>
                     </div>
+
+                    <!-- 【v6.1.0 新增】：指紋 / Face ID 快速解鎖與最高防護 -->
+                    <div class="pt-2.5 mt-2 border-t border-indigo-200/80 dark:border-indigo-800/80 space-y-2.5">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-200">👆 指紋 / Face ID 快速解鎖</span>
+                            <span id="bioStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-700">⚪ 尚未綁定此裝置指紋</span>
+                        </div>
+                        <div id="bioPassphraseRemindBadge" class="hidden text-[10px] font-bold text-amber-800 bg-amber-100/90 border border-amber-300 rounded-lg px-2.5 py-1.5">
+                            💡 已超過 14 天未手動輸入主通行碼，建議點擊上方「已解鎖 (重新驗證)」測試記憶以免遺忘！
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button type="button" id="bioBindBtn" onclick="promptBindBiometricFlow()" class="flex-1 text-xs bg-white hover:bg-indigo-100 text-indigo-700 py-2 px-3 rounded-xl border border-indigo-300 font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                👆 綁定此裝置指紋 / Face ID
+                            </button>
+                            <button type="button" id="bioRemoveBtn" onclick="clearBiometricBinding(false)" class="hidden text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 py-2 px-3 rounded-xl border border-rose-200 font-bold transition-all cursor-pointer">
+                                🗑️ 移除指紋
+                            </button>
+                        </div>
+
+                        <div class="pt-2 border-t border-indigo-200/60 dark:border-indigo-800/60 space-y-2">
+                            <label class="flex items-start gap-2 cursor-pointer select-none">
+                                <input type="checkbox" id="appLockEnableToggle" onchange="onToggleAppLockSetting(this.checked)" class="w-4 h-4 mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">
+                                    🛡️ 最高防護：開頁鎖定遮罩 + 本機資料加密儲存
+                                    <span class="block text-[10px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">啟用後清除 localStorage 明文資料與 API 金鑰，每次開啟須通過指紋或主通行碼才會顯示內容。</span>
+                                </span>
+                            </label>
+                            <div class="flex items-center justify-between gap-2 pl-6">
+                                <label for="appLockTimeoutSelect" class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">切到背景自動上鎖：</label>
+                                <select id="appLockTimeoutSelect" onchange="onChangeAppLockTimeout(this.value)" class="text-[11px] font-bold px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                                    <option value="0">立即上鎖</option>
+                                    <option value="1">1 分鐘後</option>
+                                    <option value="3">3 分鐘後 (預設)</option>
+                                    <option value="10">10 分鐘後</option>
+                                    <option value="-1">不自動上鎖</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -636,7 +679,7 @@
         </div>
 
 
-        <!-- 🔐 【v6.0.0 新增】：端對端加密 (E2EE) 通行碼設定與解鎖專用彈窗 -->
+        <!-- 🔐 【v6.0.0 新增 / v6.1.0 升級指紋與表單】：端對端加密 (E2EE) 通行碼設定與解鎖專用彈窗 -->
         <div id="e2eePassphraseModal" style="z-index: 60;" class="fixed inset-0 bg-slate-900/70 flex items-center justify-center p-4 hidden transition-opacity duration-200" onclick="if(event.target && event.target.id === 'e2eePassphraseModal') closeE2eePassphraseModal()">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -651,14 +694,31 @@
                 </div>
 
                 <div id="e2eeModalHintBox" class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed">
-                    ⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。一旦遺忘通行碼，任何人都無法還原您的財務與目標備份，請務必妥善保存於密碼管理器！
+                    ⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。一旦遺忘通行碼，任何人都無法還原您的財務與目標備份，請務必妥善保存！
                 </div>
 
-                <div class="space-y-3">
+                <div id="e2eeModalRemindBanner" class="hidden bg-amber-100 border border-amber-300 rounded-xl p-2.5 text-[11px] font-bold text-amber-900">
+                    💡 您已超過 14 天未手動輸入主通行碼，建議本次直接輸入主通行碼驗證，順便複習記憶！
+                </div>
+
+                <div id="e2eeModalBioRow" class="hidden">
+                    <button type="button" id="e2eeModalBioBtn" onclick="unlockE2eeModalWithBiometrics()" class="w-full py-3 px-4 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                        <span class="text-lg">👆</span>
+                        <span>使用指紋 / Face ID 快速解鎖</span>
+                    </button>
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-slate-200"></div>
+                        <span class="flex-shrink mx-3 text-[10px] font-bold text-slate-400">或手動輸入主通行碼</span>
+                        <div class="flex-grow border-t border-slate-200"></div>
+                    </div>
+                </div>
+
+                <form onsubmit="event.preventDefault(); confirmE2eePassphraseModal();" class="space-y-3">
+                    <input type="text" name="username" autocomplete="username" value="LifeSchedule-E2EE" class="hidden" readonly tabindex="-1">
                     <div>
                         <label id="e2eeInput1Label" class="block text-xs font-bold text-slate-700 mb-1">請輸入備份加密通行碼：</label>
                         <div class="relative flex items-center">
-                            <input type="password" id="e2eePassphraseInput" placeholder="請輸入高強度通行碼..." onkeydown="if(event.key === 'Enter') confirmE2eePassphraseModal()" class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
+                            <input type="password" id="e2eePassphraseInput" autocomplete="current-password" placeholder="請輸入高強度通行碼..." class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
                             <button type="button" onclick="toggleE2eeInputVisibility('e2eePassphraseInput', 'e2eeEyeBtn1')" id="e2eeEyeBtn1" class="absolute right-2 px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">👁️ 顯示</button>
                         </div>
                     </div>
@@ -666,21 +726,56 @@
                     <div id="e2eeConfirmInputGroup" class="hidden">
                         <label class="block text-xs font-bold text-slate-700 mb-1">再次輸入確認通行碼：</label>
                         <div class="relative flex items-center">
-                            <input type="password" id="e2eePassphraseConfirmInput" placeholder="請再次輸入相同通行碼以防打錯..." onkeydown="if(event.key === 'Enter') confirmE2eePassphraseModal()" class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
+                            <input type="password" id="e2eePassphraseConfirmInput" autocomplete="new-password" placeholder="請再次輸入相同通行碼以防打錯..." class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
                             <button type="button" onclick="toggleE2eeInputVisibility('e2eePassphraseConfirmInput', 'e2eeEyeBtn2')" id="e2eeEyeBtn2" class="absolute right-2 px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">👁️ 顯示</button>
                         </div>
                     </div>
+
+                    <div id="e2eeModalErrorText" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5"></div>
+
+                    <div class="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
+                        <button type="button" onclick="closeE2eePassphraseModal()" class="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors cursor-pointer">取消</button>
+                        <button type="submit" id="e2eeModalSubmitBtn" class="px-5 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                            <span>🔓</span>
+                            <span id="e2eeModalSubmitText">確認解鎖</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- 🛡️ 【v6.1.0 最高防護】：全螢幕開頁鎖定遮罩 (App Lock Overlay) -->
+        <div id="appLockOverlay" style="z-index: 80;" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 text-center">
+                <div class="space-y-2">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-3xl shadow-inner">🛡️</div>
+                    <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">LifeSchedule 已安全鎖定</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        最高防護已啟用：本機目標、財務收支與 API 金鑰皆已加密保存，請驗證身分後檢視。
+                    </p>
                 </div>
 
-                <div id="e2eeModalErrorText" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5"></div>
+                <div id="appLockPassphraseReminder" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2.5 text-[11px] font-bold text-amber-900 text-left">
+                    💡 已超過 14 天未手動輸入主通行碼，建議偶爾改用下方主通行碼解鎖以複習記憶！
+                </div>
 
-                <div class="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
-                    <button type="button" onclick="closeE2eePassphraseModal()" class="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors cursor-pointer">取消</button>
-                    <button type="button" id="e2eeModalSubmitBtn" onclick="confirmE2eePassphraseModal()" class="px-5 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
-                        <span>🔓</span>
-                        <span id="e2eeModalSubmitText">確認解鎖</span>
+                <button type="button" id="appLockBioBtn" onclick="unlockWithBiometricsInAppLock()" class="hidden w-full py-3.5 px-4 text-sm bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-extrabold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+                    <span class="text-xl">👆</span>
+                    <span>使用指紋 / Face ID 解鎖</span>
+                </button>
+
+                <form onsubmit="event.preventDefault(); unlockWithPassphraseInAppLock();" class="space-y-3 text-left pt-1">
+                    <input type="text" name="username" autocomplete="username" value="LifeSchedule-AppLock" class="hidden" readonly tabindex="-1">
+                    <div>
+                        <label for="appLockPassphraseInput" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">🔑 使用主通行碼解鎖：</label>
+                        <input type="password" id="appLockPassphraseInput" autocomplete="current-password" placeholder="請輸入主通行碼..." class="w-full px-3.5 py-2.5 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                    </div>
+                    <div id="appLockErrorText" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5"></div>
+                    <button type="submit" id="appLockPassSubmitBtn" class="w-full py-2.5 px-4 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm cursor-pointer">
+                        🔓 驗證通行碼並解鎖
                     </button>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -1044,7 +1139,14 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.0.3 (2026-11-12)";
+window.APP_VERSION = "v6.1.0 (2026-11-15)";
+const _bootAppLockProtected = (function() {
+    try {
+        return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
+    } catch (e) {
+        return false;
+    }
+})();
 window.onerror = function(msg, url, line, col, error) {
 
 
@@ -1078,33 +1180,39 @@ function escapeAttr(str) {
 
 
 let thoughts = [];
-try { thoughts = JSON.parse(localStorage.getItem('my_thoughts_local')) || []; } catch(e) { thoughts = []; }
-if (!Array.isArray(thoughts) || thoughts.length === 0) {
-    thoughts = [
-        { id: Date.now(), category: "❤️ 健康", text: "規畫半馬跑步訓練計劃", detail: "每週固定跑步 3 次。", goal: "順利完賽 11 月半程馬拉松", goalDone: false, targetDate: "2026-11-30", targetTimeSlot: "上午", steps: [{ id: 1, text: "每週安排 3 次 5K 輕鬆跑", stepDate: "2026-08-10", stepTime: "1.5小時", stepTimeSlot: "上午", done: true }, { id: 2, text: "購買合適慢跑鞋", stepDate: "", stepTime: "", stepTimeSlot: "全天", done: false }] },
-        { id: Date.now() + 1, category: "💼 事業", text: "建立個人專案管理系統", detail: "支援總覽模式網格全覽一目瞭然與零左右滾動。", goal: "發布支援網格全覽的 App", goalDone: false, targetDate: "2026-12-31", targetTimeSlot: "全天", steps: [{ id: 1, text: "設計總覽模式響應式多欄網格與視圖切換", stepDate: "2026-08-08", stepTime: "2小時", stepTimeSlot: "下午", done: true }] }
-    ];
-}
-thoughts.forEach(t => {
-    if (!Array.isArray(t.steps)) t.steps = [];
-    if (t.goalDone === undefined) t.goalDone = false;
-    if (!t.category) t.category = '💼 事業';
-    if (!t.targetTimeSlot) t.targetTimeSlot = '全天';
-    if (t.isMainFocus === undefined) t.isMainFocus = false;
-    if (!t.createdAt && typeof t.id === 'number' && t.id > 1600000000000) t.createdAt = t.id;
-    t.steps.forEach(s => {
-        if (s.done === undefined) s.done = false;
-        if (!s.stepTimeSlot) s.stepTimeSlot = '全天';
-        if (!s.recurrence) s.recurrence = 'none';
+if (!_bootAppLockProtected) {
+    try { thoughts = JSON.parse(localStorage.getItem('my_thoughts_local')) || []; } catch(e) { thoughts = []; }
+    if (!Array.isArray(thoughts) || thoughts.length === 0) {
+        thoughts = [
+            { id: Date.now(), category: "❤️ 健康", text: "規畫半馬跑步訓練計劃", detail: "每週固定跑步 3 次。", goal: "順利完賽 11 月半程馬拉松", goalDone: false, targetDate: "2026-11-30", targetTimeSlot: "上午", steps: [{ id: 1, text: "每週安排 3 次 5K 輕鬆跑", stepDate: "2026-08-10", stepTime: "1.5小時", stepTimeSlot: "上午", done: true }, { id: 2, text: "購買合適慢跑鞋", stepDate: "", stepTime: "", stepTimeSlot: "全天", done: false }] },
+            { id: Date.now() + 1, category: "💼 事業", text: "建立個人專案管理系統", detail: "支援總覽模式網格全覽一目瞭然與零左右滾動。", goal: "發布支援網格全覽的 App", goalDone: false, targetDate: "2026-12-31", targetTimeSlot: "全天", steps: [{ id: 1, text: "設計總覽模式響應式多欄網格與視圖切換", stepDate: "2026-08-08", stepTime: "2小時", stepTimeSlot: "下午", done: true }] }
+        ];
+    }
+    thoughts.forEach(t => {
+        if (!Array.isArray(t.steps)) t.steps = [];
+        if (t.goalDone === undefined) t.goalDone = false;
+        if (!t.category) t.category = '💼 事業';
+        if (!t.targetTimeSlot) t.targetTimeSlot = '全天';
+        if (t.isMainFocus === undefined) t.isMainFocus = false;
+        if (!t.createdAt && typeof t.id === 'number' && t.id > 1600000000000) t.createdAt = t.id;
+        t.steps.forEach(s => {
+            if (s.done === undefined) s.done = false;
+            if (!s.stepTimeSlot) s.stepTimeSlot = '全天';
+            if (!s.recurrence) s.recurrence = 'none';
+        });
     });
-});
+}
 
 
 let blockedSlots = [];
-try { blockedSlots = JSON.parse(localStorage.getItem('my_blocked_slots')) || []; } catch(e) { blockedSlots = []; }
+if (!_bootAppLockProtected) {
+    try { blockedSlots = JSON.parse(localStorage.getItem('my_blocked_slots')) || []; } catch(e) { blockedSlots = []; }
+}
 let customTimelineDates = [];
 let categoryOrder = [];
-try { categoryOrder = JSON.parse(localStorage.getItem('my_category_order')) || []; } catch(e) { categoryOrder = []; }
+if (!_bootAppLockProtected) {
+    try { categoryOrder = JSON.parse(localStorage.getItem('my_category_order')) || []; } catch(e) { categoryOrder = []; }
+}
 let maxDailyHours = parseFloat(localStorage.getItem('my_max_daily_hours')) || 8;
 let maxWeeklyHours = parseFloat(localStorage.getItem('my_max_weekly_hours')) || 40;
 let storedTimelineMode = localStorage.getItem('my_timeline_start_mode'); // 'today' | 'custom' | 'all'
@@ -1144,7 +1252,7 @@ let draggedItemInfo = null;
 let pendingDropItem = null;
 const slotPriorityMap = { '全天': 0, '上午': 1, '下午': 2, '晚上': 3, '夜間': 4 };
 let piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-let piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+let piApiKey = _bootAppLockProtected ? '' : (localStorage.getItem('pi_api_key') || '').trim();
 let piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 let lastSyncedFileName = localStorage.getItem('pi_last_synced_file') || '';
 let autoSaveTimer = null;
@@ -1163,25 +1271,34 @@ const defaultFinancialTemplates = {
 
 
 let financialTemplates = defaultFinancialTemplates;
-try {
-    const savedT = localStorage.getItem('my_financial_templates');
-    if (savedT) financialTemplates = JSON.parse(savedT);
-} catch (e) { financialTemplates = defaultFinancialTemplates; }
+if (!_bootAppLockProtected) {
+    try {
+        const savedT = localStorage.getItem('my_financial_templates');
+        if (savedT) financialTemplates = JSON.parse(savedT);
+    } catch (e) { financialTemplates = defaultFinancialTemplates; }
+}
 
 
 let monthlyFinancials = {};
-try {
-    const savedF = localStorage.getItem('my_monthly_financials');
-    if (savedF) monthlyFinancials = JSON.parse(savedF);
-} catch (e) { monthlyFinancials = {}; }
+if (!_bootAppLockProtected) {
+    try {
+        const savedF = localStorage.getItem('my_monthly_financials');
+        if (savedF) monthlyFinancials = JSON.parse(savedF);
+    } catch (e) { monthlyFinancials = {}; }
+}
 
 
 let fortellerShowFinancials = localStorage.getItem('forteller_show_financials') !== 'false';
 
 
 function saveMonthlyFinancials() {
-    localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials));
-    localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates));
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+    if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+        if (typeof persistEncryptedLocalVault === 'function') persistEncryptedLocalVault();
+    } else {
+        localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials));
+        localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates));
+    }
     localStorage.setItem('forteller_show_financials', String(fortellerShowFinancials));
     saveData();
 }
@@ -1609,6 +1726,11 @@ function onToggleE2eeSetting(checked) {
             updateE2eeSettingsUI();
             return;
         }
+        if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+            alert('⚠️ 目前已開啟「最高防護（開頁鎖定 + 本機加密）」，請先於下方關閉最高防護後再關閉 E2EE。');
+            updateE2eeSettingsUI();
+            return;
+        }
         if (!confirm('⚠️ 確定要關閉端對端備份加密嗎？\n關閉後，後續匯出與上傳至雲端的備份將恢復為「明文 JSON」。')) {
             updateE2eeSettingsUI();
             return;
@@ -1616,7 +1738,11 @@ function onToggleE2eeSetting(checked) {
         localStorage.setItem('ls_e2ee_enabled', 'false');
         _e2eeSessionKey = null;
         _e2eeSessionSaltB64 = '';
+        if (typeof clearBiometricBinding === 'function') {
+            clearBiometricBinding(true);
+        }
         updateE2eeSettingsUI();
+        if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
     }
 }
 
@@ -1627,6 +1753,15 @@ function lockE2eeSession() {
     if (isE2eeEnabled()) {
         updatePiSyncBadge('🔒 金鑰已鎖定 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-300');
     }
+    if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+        if (typeof wipeInMemorySensitiveDataForLock === 'function') {
+            wipeInMemorySensitiveDataForLock();
+        }
+        if (typeof showAppLockOverlay === 'function') {
+            showAppLockOverlay();
+        }
+    }
+    if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
 }
 
 function toggleE2eeInputVisibility(inputId, btnId) {
@@ -1664,10 +1799,20 @@ function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelo
     const submitText = document.getElementById('e2eeModalSubmitText');
     const eyeBtn1 = document.getElementById('e2eeEyeBtn1');
     const eyeBtn2 = document.getElementById('e2eeEyeBtn2');
+    const bioRow = document.getElementById('e2eeModalBioRow');
+    const remindBanner = document.getElementById('e2eeModalRemindBanner');
     const hiddenType = ['pass', 'word'].join('');
 
-    if (input1) { input1.value = ''; input1.setAttribute('type', hiddenType); }
-    if (input2) { input2.value = ''; input2.setAttribute('type', hiddenType); }
+    if (input1) {
+        input1.value = '';
+        input1.setAttribute('type', hiddenType);
+        input1.setAttribute('autocomplete', effectiveMode === 'setup' ? 'new-password' : 'current-password');
+    }
+    if (input2) {
+        input2.value = '';
+        input2.setAttribute('type', hiddenType);
+        input2.setAttribute('autocomplete', 'new-password');
+    }
     if (eyeBtn1) eyeBtn1.textContent = '👁️ 顯示';
     if (eyeBtn2) eyeBtn2.textContent = '👁️ 顯示';
     if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
@@ -1678,6 +1823,24 @@ function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelo
         } else {
             hintBox.innerHTML = E2EE_DEFAULT_HINT_HTML;
             hintBox.className = 'bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed';
+        }
+    }
+
+    if (bioRow) {
+        const showBioBtn = effectiveMode === 'unlock'
+            && !customPromptHint.includes('綁定')
+            && typeof hasBioCredentialBound === 'function'
+            && hasBioCredentialBound()
+            && typeof isWebAuthnSupported === 'function'
+            && isWebAuthnSupported();
+        if (showBioBtn) bioRow.classList.remove('hidden');
+        else bioRow.classList.add('hidden');
+    }
+    if (remindBanner) {
+        if (effectiveMode === 'unlock' && typeof isPassphraseReviewDue === 'function' && isPassphraseReviewDue()) {
+            remindBanner.classList.remove('hidden');
+        } else {
+            remindBanner.classList.add('hidden');
         }
     }
 
@@ -1707,6 +1870,7 @@ function closeE2eePassphraseModal(fromSuccess = false) {
     if (input2) input2.value = '';
     if (modal) modal.classList.add('hidden');
     updateE2eeSettingsUI();
+    if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
     // 【v6.0.1 第三段防線】：若本機已有未上傳修改但使用者按了取消關閉彈窗，維持紅燈警示並彈出 Toast 提醒
     if (!fromSuccess && _hasUnsavedCloudChanges && isE2eeEnabled() && !_e2eeSessionKey) {
         updatePiSyncBadge('🚨 本機修改尚未上傳雲端 (點擊輸入通行碼)', 'bg-rose-100 text-rose-900 border-rose-400 animate-pulse');
@@ -1723,6 +1887,49 @@ function showE2eeModalError(msg) {
         errEl.classList.remove('hidden');
     } else {
         alert(msg);
+    }
+}
+
+async function completeE2eeModalUnlockSuccess(plainData, targetEnvelope, verifiedPassphrase = null) {
+    localStorage.setItem('ls_e2ee_enabled', 'true');
+    const cb = _e2eeModalOnSuccess;
+    _e2eeModalOnSuccess = null;
+    _e2eeModalCustomEnvelope = null;
+
+    // 若有待解鎖的雲端同步封套，檢查是否有本機未上傳修改衝突 (防後解鎖覆蓋)
+    if (_pendingEncryptedRemote && targetEnvelope === _pendingEncryptedRemote.envelope) {
+        const pending = _pendingEncryptedRemote;
+        _pendingEncryptedRemote = null;
+        if (pending.shouldApply && !_hasUnsavedCloudChanges) {
+            applyImportedData(plainData, pending.fileName);
+        } else if (pending.shouldApply && _hasUnsavedCloudChanges) {
+            const keepLocal = confirm('⚠️ 偵測到雲端有另一份備份，但您剛才已在本機進行了修改！\n\n點擊「確定」：保留您剛才在本機的修改，並立即加密上傳至雲端\n點擊「取消」：放棄剛才的修改，改為載入雲端備份');
+            if (!keepLocal) {
+                applyImportedData(plainData, pending.fileName);
+                _hasUnsavedCloudChanges = false;
+            }
+        }
+        isInitialSyncCompleted = true;
+        updatePiSyncBadge(pending.syncedBadgeText + ' 🔐', pending.syncedBadgeClass);
+    } else {
+        isInitialSyncCompleted = true;
+        updatePiSyncBadge('🟢 金鑰已解鎖 🔐', 'bg-emerald-100 text-emerald-900 border-emerald-300');
+    }
+
+    if (typeof persistEncryptedLocalVault === 'function' && typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+        await persistEncryptedLocalVault();
+    }
+
+    closeE2eePassphraseModal(true);
+    updateE2eeSettingsUI();
+    if (typeof updateBiometricSettingsUI === 'function') updateBiometricSettingsUI();
+    if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
+
+    if (cb) {
+        await cb(plainData, verifiedPassphrase);
+    } else if (_hasUnsavedCloudChanges) {
+        // 【v6.0.1 第二段防線】：解鎖後若本機有未上傳之修改，立即自動觸發加密上傳
+        triggerAutoSaveToPi();
     }
 }
 
@@ -1767,56 +1974,35 @@ async function confirmE2eePassphraseModal() {
             _e2eeSessionSaltB64 = saltB64;
             _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
             localStorage.setItem('ls_e2ee_enabled', 'true');
+            if (typeof recordManualPassphraseUnlock === 'function') recordManualPassphraseUnlock();
+            // 更換新通行碼時清除舊指紋綁定（因 Salt 已變更）
+            if (typeof hasBioCredentialBound === 'function' && hasBioCredentialBound() && typeof clearBiometricBinding === 'function') {
+                await clearBiometricBinding(true);
+            }
+            if (typeof persistEncryptedLocalVault === 'function' && typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                await persistEncryptedLocalVault();
+            }
             const cb = _e2eeModalOnSuccess;
             _e2eeModalOnSuccess = null;
             isInitialSyncCompleted = true;
             closeE2eePassphraseModal(true);
             updateE2eeSettingsUI();
+            if (typeof updateBiometricSettingsUI === 'function') updateBiometricSettingsUI();
+            if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
             if (!localStorage.getItem('ls_e2ee_cleaned_reminded')) {
                 localStorage.setItem('ls_e2ee_cleaned_reminded', 'true');
-                alert('🔐 已成功設定端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必將此通行碼存入密碼管理器（一旦遺忘將永久無法還原）。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
+                alert('🔐 已成功設定端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必妥善保存此通行碼（一旦遺忘將永久無法還原）。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
             }
             if (cb) {
-                await cb();
+                await cb(null, pass1);
             } else if (_hasUnsavedCloudChanges || (isInitialSyncCompleted && thoughts.length > 0)) {
                 triggerAutoSaveToPi();
             }
         } else {
             const targetEnvelope = _e2eeModalCustomEnvelope || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
             const plainData = await decryptBackupPayload(targetEnvelope, pass1);
-            localStorage.setItem('ls_e2ee_enabled', 'true');
-            const cb = _e2eeModalOnSuccess;
-            _e2eeModalOnSuccess = null;
-            _e2eeModalCustomEnvelope = null;
-
-            // 若有待解鎖的雲端同步封套，檢查是否有本機未上傳修改衝突 (防後解鎖覆蓋)
-            if (_pendingEncryptedRemote && targetEnvelope === _pendingEncryptedRemote.envelope) {
-                const pending = _pendingEncryptedRemote;
-                _pendingEncryptedRemote = null;
-                if (pending.shouldApply && !_hasUnsavedCloudChanges) {
-                    applyImportedData(plainData, pending.fileName);
-                } else if (pending.shouldApply && _hasUnsavedCloudChanges) {
-                    const keepLocal = confirm('⚠️ 偵測到雲端有另一份備份，但您剛才已在本機進行了修改！\n\n點擊「確定」：保留您剛才在本機的修改，並立即加密上傳至雲端\n點擊「取消」：放棄剛才的修改，改為載入雲端備份');
-                    if (!keepLocal) {
-                        applyImportedData(plainData, pending.fileName);
-                        _hasUnsavedCloudChanges = false;
-                    }
-                }
-                isInitialSyncCompleted = true;
-                updatePiSyncBadge(pending.syncedBadgeText + ' 🔐', pending.syncedBadgeClass);
-            } else {
-                isInitialSyncCompleted = true;
-                updatePiSyncBadge('🟢 金鑰已解鎖 🔐', 'bg-emerald-100 text-emerald-900 border-emerald-300');
-            }
-
-            closeE2eePassphraseModal(true);
-            updateE2eeSettingsUI();
-            if (cb) {
-                await cb(plainData);
-            } else if (_hasUnsavedCloudChanges) {
-                // 【v6.0.1 第二段防線】：解鎖後若本機有未上傳之修改，立即自動觸發加密上傳
-                triggerAutoSaveToPi();
-            }
+            if (typeof recordManualPassphraseUnlock === 'function') recordManualPassphraseUnlock();
+            await completeE2eeModalUnlockSuccess(plainData, targetEnvelope, pass1);
         }
     } catch (err) {
         showE2eeModalError('❌ 解密失敗：通行碼錯誤或加密封套已遭篡改！請確認後重試。');
@@ -1929,8 +2115,15 @@ function applyImportedData(backupData, fileName) {
         }
     });
     thoughts = importedThoughts;
-    if (backupData.categoryOrder) { categoryOrder = backupData.categoryOrder; localStorage.setItem('my_category_order', JSON.stringify(categoryOrder)); }
-    if (backupData.blockedSlots) { blockedSlots = backupData.blockedSlots; localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots)); }
+    const _useEncryptedVault = (typeof isAppLockEnabled === 'function' && isAppLockEnabled());
+    if (backupData.categoryOrder) {
+        categoryOrder = backupData.categoryOrder;
+        if (!_useEncryptedVault) localStorage.setItem('my_category_order', JSON.stringify(categoryOrder));
+    }
+    if (backupData.blockedSlots) {
+        blockedSlots = backupData.blockedSlots;
+        if (!_useEncryptedVault) localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots));
+    }
     if (backupData.maxDailyHours) { maxDailyHours = backupData.maxDailyHours; localStorage.setItem('my_max_daily_hours', maxDailyHours); }
     if (backupData.maxWeeklyHours) { maxWeeklyHours = backupData.maxWeeklyHours; localStorage.setItem('my_max_weekly_hours', maxWeeklyHours); }
     
@@ -1966,11 +2159,15 @@ function applyImportedData(backupData, fileName) {
     // 【v5.4.0 還原月度財務數據與範本】
     if (backupData.monthlyFinancials !== undefined) {
         monthlyFinancials = backupData.monthlyFinancials;
-        try { localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials)); } catch(e) {}
+        if (!_useEncryptedVault) {
+            try { localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials)); } catch(e) {}
+        }
     }
     if (backupData.financialTemplates !== undefined) {
         financialTemplates = backupData.financialTemplates;
-        try { localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates)); } catch(e) {}
+        if (!_useEncryptedVault) {
+            try { localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates)); } catch(e) {}
+        }
     }
     if (backupData.fortellerShowFinancials !== undefined) {
         fortellerShowFinancials = backupData.fortellerShowFinancials;
@@ -1979,7 +2176,11 @@ function applyImportedData(backupData, fileName) {
 
 
     syncLinkedData();
-    localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
+    if (_useEncryptedVault && typeof persistEncryptedLocalVault === 'function') {
+        persistEncryptedLocalVault();
+    } else {
+        localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
+    }
     if (fileName) {
         lastSyncedFileName = fileName;
         localStorage.setItem('pi_last_synced_file', fileName);
@@ -2002,10 +2203,10 @@ function handlePiBadgeClick() {
         return;
     }
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     if ((!piServerUrl || !piApiKey) && (!gasUrl || !gasKey)) openPiSettingsModal();
     else checkAndAutoSyncFromPi();
 }
@@ -2099,14 +2300,14 @@ function openPiSettingsModal() {
     const keyInput = document.getElementById('piApiKeyInput');
     const accInput = document.getElementById('piAccountInput');
     if (urlInput) urlInput.value = localStorage.getItem('pi_server_url') || '';
-    if (keyInput) keyInput.value = localStorage.getItem('pi_api_key') || '';
+    if (keyInput) keyInput.value = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || ''));
     if (accInput) accInput.value = localStorage.getItem('pi_account') || '';
     const gasUrlInput = document.getElementById('gasSyncUrlInput');
     const gasKeyInput = document.getElementById('gasApiKeyInput');
     if (gasUrlInput) gasUrlInput.value = localStorage.getItem('gas_sync_url') || '';
-    if (gasKeyInput) gasKeyInput.value = localStorage.getItem('gas_api_key') || '';
+    if (gasKeyInput) gasKeyInput.value = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || ''));
     const geminiKeyInput = document.getElementById('geminiApiKeyInput');
-    if (geminiKeyInput) geminiKeyInput.value = localStorage.getItem('gemini_api_key') || '';
+    if (geminiKeyInput) geminiKeyInput.value = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : (localStorage.getItem('gemini_api_key') || ''));
     const cachedModelsRaw = localStorage.getItem('gemini_cached_models');
     if (cachedModelsRaw) {
         try {
@@ -2399,7 +2600,7 @@ if (typeof window !== 'undefined') {
 // 【v5.3.5 Google Apps Script 雲端硬碟雙軌同步輔助函式】
 async function uploadPayloadToGas(fileName, payload) {
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const acc = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
     if (!gasUrl || !gasKey) return null;
     try {
@@ -2471,7 +2672,7 @@ async function isUsableBackupCandidate(data) {
 
 async function fetchLatestBackupFromGas(targetAccount) {
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const acc = (targetAccount || localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
     if (!gasUrl || !gasKey) return null;
     try {
@@ -2628,12 +2829,12 @@ async function savePiSettings() {
 
 
     localStorage.setItem('pi_server_url', piServerUrl);
-    localStorage.setItem('pi_api_key', piApiKey);
+    if (typeof setVaultedApiKey === 'function') setVaultedApiKey('pi_api_key', piApiKey); else localStorage.setItem('pi_api_key', piApiKey);
     localStorage.setItem('pi_account', piAccount);
     localStorage.setItem('gas_sync_url', newGasUrl);
-    localStorage.setItem('gas_api_key', newGasKey);
+    if (typeof setVaultedApiKey === 'function') setVaultedApiKey('gas_api_key', newGasKey); else localStorage.setItem('gas_api_key', newGasKey);
     const geminiKeyInput = document.getElementById('geminiApiKeyInput');
-    if (geminiKeyInput) localStorage.setItem('gemini_api_key', geminiKeyInput.value.trim());
+    if (geminiKeyInput) { if (typeof setVaultedApiKey === 'function') setVaultedApiKey('gemini_api_key', geminiKeyInput.value.trim()); else localStorage.setItem('gemini_api_key', geminiKeyInput.value.trim()); }
     closePiSettingsModal();
     if (oldAcc !== newAcc) {
         lastSyncedFileName = '';
@@ -2691,10 +2892,10 @@ async function savePiSettings() {
 
 function triggerAutoSaveToPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const hasPi = Boolean(piServerUrl && piApiKey);
     const hasGas = Boolean(gasUrl && gasKey);
 
@@ -2738,10 +2939,10 @@ async function performSilentAutoSave() {
 
 
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const hasPi = Boolean(piServerUrl && piApiKey);
     const hasGas = Boolean(gasUrl && gasKey);
     if (!hasPi && !hasGas) return;
@@ -2842,7 +3043,7 @@ if (typeof window !== 'undefined') {
 }
 async function exportToPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     if (!piServerUrl || !piApiKey) {
         alert("請先點擊「⚙️ 伺服器設定」設定樹莓派伺服器網址與 API 金鑰！");
@@ -2884,7 +3085,7 @@ async function exportToPi() {
 }
 async function importFromPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     if (!piServerUrl || !piApiKey) {
         alert("請先點擊「⚙️ 伺服器設定」設定樹莓派伺服器網址與 API 金鑰！");
@@ -2941,10 +3142,10 @@ async function importFromPi() {
 }
 async function checkAndAutoSyncFromPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const hasPi = Boolean(piServerUrl && piApiKey);
     const hasGas = Boolean(gasUrl && gasKey);
 
@@ -3046,6 +3247,952 @@ async function checkAndAutoSyncFromPi() {
 }
 
 /* === [END MODULE: js/crypto_sync.js] === */
+/* === [BUNDLED MODULE: js/biometric_lock.js] === */
+// ============================================================
+// 👆 【v6.1.0 生物辨識快速解鎖與最高防護核心 (WebAuthn PRF + Local Vault + App Lock)】
+// 設計原則：
+// 1. WebAuthn PRF 優先：透過平台指紋/Face ID 安全晶片產生高熵金鑰包裹主通行碼，絕不寫入明文。
+// 2. 自動降級相容：若瀏覽器/iOS 尚未支援 PRF，自動退回標準 WebAuthn (userVerification: 'required')
+//    搭配 IndexedDB 儲存不可匯出 (extractable: false) 之 CryptoKey。
+// 3. 最高防護 (App Lock + Local Vault)：啟用後開頁即顯示鎖定遮罩，本機敏感資料與 API Key
+//    全數以 AES-GCM-256 加密存於 ls_encrypted_local_vault，並清除 localStorage 明文殘留。
+// ============================================================
+
+const BIO_CRED_META_KEY = 'ls_bio_cred_meta';
+const BIO_WRAPPED_SECRET_KEY = 'ls_bio_wrapped_secret';
+const BIO_PRF_FORMAT_ID = 'ls_bio_prf_v1';
+const LOCAL_VAULT_KEY = 'ls_encrypted_local_vault';
+const LOCAL_VAULT_FORMAT_ID = 'lifeschedule_local_vault_v1';
+const APPLOCK_ENABLED_KEY = 'ls_applock_enabled';
+const APPLOCK_TIMEOUT_KEY = 'ls_applock_timeout_min';
+const LAST_PASSPHRASE_AT_KEY = 'ls_e2ee_last_passphrase_at';
+const PASSPHRASE_REMIND_DAYS = 14;
+
+const BIO_IDB_NAME = 'LifeScheduleBioVault';
+const BIO_IDB_STORE = 'keys';
+const BIO_IDB_RECORD_ID = 'session_key_record';
+
+let _unlockedApiKeys = {
+    pi_api_key: '',
+    gas_api_key: '',
+    gemini_api_key: ''
+};
+let _lastHiddenAt = 0;
+let _localVaultWriteChain = Promise.resolve();
+
+function isWebAuthnSupported() {
+    try {
+        return Boolean(
+            typeof window !== 'undefined' &&
+            window.isSecureContext &&
+            window.PublicKeyCredential &&
+            navigator.credentials &&
+            typeof navigator.credentials.create === 'function' &&
+            typeof navigator.credentials.get === 'function'
+        );
+    } catch (e) {
+        return false;
+    }
+}
+
+function bufToB64Url(buf) {
+    const bytes = new Uint8Array(buf);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+function b64UrlToBytes(b64u) {
+    const padLen = (4 - (b64u.length % 4)) % 4;
+    const b64 = b64u.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat(padLen);
+    const bin = atob(b64);
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) {
+        out[i] = bin.charCodeAt(i);
+    }
+    return out;
+}
+
+async function getBioPrfFixedInputBytes() {
+    const raw = new TextEncoder().encode('LifeSchedule-E2EE-PRF-v1');
+    const digest = await window.crypto.subtle.digest('SHA-256', raw);
+    return new Uint8Array(digest);
+}
+
+function getBioCredentialMeta() {
+    try {
+        const raw = localStorage.getItem(BIO_CRED_META_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed.credIdB64Url === 'string' && parsed.credIdB64Url.length > 0) {
+            return parsed;
+        }
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function hasBioCredentialBound() {
+    const meta = getBioCredentialMeta();
+    if (!meta) return false;
+    if (meta.mode === 'prf') {
+        try {
+            return Boolean(localStorage.getItem(BIO_WRAPPED_SECRET_KEY));
+        } catch (e) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function isAppLockEnabled() {
+    try {
+        return localStorage.getItem(APPLOCK_ENABLED_KEY) === 'true' && isE2eeEnabled();
+    } catch (e) {
+        return false;
+    }
+}
+
+function getAppLockTimeoutMinutes() {
+    try {
+        const raw = localStorage.getItem(APPLOCK_TIMEOUT_KEY);
+        if (raw === null || raw === '') return 3;
+        const n = Number(raw);
+        return Number.isFinite(n) ? n : 3;
+    } catch (e) {
+        return 3;
+    }
+}
+
+function isAppLockActiveAndLocked() {
+    return isAppLockEnabled() && !_e2eeSessionKey;
+}
+
+function getVaultedApiKey(keyName) {
+    if (isAppLockEnabled()) {
+        if (_e2eeSessionKey && Object.prototype.hasOwnProperty.call(_unlockedApiKeys, keyName)) {
+            return (_unlockedApiKeys[keyName] || '').trim();
+        }
+        return '';
+    }
+    try {
+        return (localStorage.getItem(keyName) || '').trim();
+    } catch (e) {
+        return '';
+    }
+}
+
+function setVaultedApiKey(keyName, value) {
+    const cleanVal = (value || '').trim();
+    if (Object.prototype.hasOwnProperty.call(_unlockedApiKeys, keyName)) {
+        _unlockedApiKeys[keyName] = cleanVal;
+    }
+    if (isAppLockEnabled()) {
+        try { localStorage.removeItem(keyName); } catch (e) {}
+        if (_e2eeSessionKey) {
+            persistEncryptedLocalVault();
+        }
+        return;
+    }
+    try {
+        localStorage.setItem(keyName, cleanVal);
+    } catch (e) {}
+}
+
+function recordManualPassphraseUnlock() {
+    try {
+        localStorage.setItem(LAST_PASSPHRASE_AT_KEY, String(Date.now()));
+    } catch (e) {}
+}
+
+function isPassphraseReviewDue() {
+    if (!hasBioCredentialBound()) return false;
+    try {
+        const raw = localStorage.getItem(LAST_PASSPHRASE_AT_KEY);
+        if (!raw) return false;
+        const ts = Number(raw);
+        if (!Number.isFinite(ts) || ts <= 0) return false;
+        const days = (Date.now() - ts) / (1000 * 60 * 60 * 24);
+        return days >= PASSPHRASE_REMIND_DAYS;
+    } catch (e) {
+        return false;
+    }
+}
+
+// ---------- IndexedDB Helper (for non-extractable CryptoKey fallback) ----------
+function openBioIdb() {
+    return new Promise((resolve, reject) => {
+        if (typeof indexedDB === 'undefined') {
+            reject(new Error('此瀏覽器不支援 IndexedDB'));
+            return;
+        }
+        const req = indexedDB.open(BIO_IDB_NAME, 1);
+        req.onupgradeneeded = (ev) => {
+            const db = ev.target.result;
+            if (!db.objectStoreNames.contains(BIO_IDB_STORE)) {
+                db.createObjectStore(BIO_IDB_STORE, { keyPath: 'id' });
+            }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error || new Error('開啟 IndexedDB 失敗'));
+    });
+}
+
+async function saveSessionKeyToBioIdb(aesKey, saltB64, iterations) {
+    const db = await openBioIdb();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(BIO_IDB_STORE, 'readwrite');
+        const store = tx.objectStore(BIO_IDB_STORE);
+        store.put({
+            id: BIO_IDB_RECORD_ID,
+            aesKey,
+            saltB64,
+            iterations,
+            savedAt: Date.now()
+        });
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onerror = () => { db.close(); reject(tx.error || new Error('寫入 IndexedDB 失敗')); };
+    });
+}
+
+async function loadSessionKeyFromBioIdb() {
+    const db = await openBioIdb();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(BIO_IDB_STORE, 'readonly');
+        const store = tx.objectStore(BIO_IDB_STORE);
+        const req = store.get(BIO_IDB_RECORD_ID);
+        req.onsuccess = () => { db.close(); resolve(req.result || null); };
+        req.onerror = () => { db.close(); reject(req.error || new Error('讀取 IndexedDB 失敗')); };
+    });
+}
+
+async function clearBioIdb() {
+    try {
+        const db = await openBioIdb();
+        await new Promise((resolve) => {
+            const tx = db.transaction(BIO_IDB_STORE, 'readwrite');
+            tx.objectStore(BIO_IDB_STORE).delete(BIO_IDB_RECORD_ID);
+            tx.oncomplete = () => { db.close(); resolve(); };
+            tx.onerror = () => { db.close(); resolve(); };
+        });
+    } catch (e) {}
+}
+
+// ---------- HKDF Wrap / Unwrap for WebAuthn PRF ----------
+async function derivePrfWrapKey(prfOutputBuf, saltBytes) {
+    const baseKey = await window.crypto.subtle.importKey(
+        'raw',
+        prfOutputBuf,
+        { name: 'HKDF' },
+        false,
+        ['deriveKey']
+    );
+    return window.crypto.subtle.deriveKey(
+        {
+            name: 'HKDF',
+            hash: 'SHA-256',
+            salt: saltBytes,
+            info: new TextEncoder().encode('LifeSchedule-Bio-Wrap-v1')
+        },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+    );
+}
+
+async function wrapPassphraseWithPrf(passphrase, prfOutputBuf, credIdB64Url) {
+    const hkdfSalt = window.crypto.getRandomValues(new Uint8Array(16));
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const wrapKey = await derivePrfWrapKey(prfOutputBuf, hkdfSalt);
+    const aadObj = { _format: BIO_PRF_FORMAT_ID, credIdB64Url, hkdfSalt: bufToB64Url(hkdfSalt), iv: bufToB64Url(iv) };
+    const aadBytes = new TextEncoder().encode(JSON.stringify(aadObj));
+    const cipherBuf = await window.crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv, additionalData: aadBytes },
+        wrapKey,
+        new TextEncoder().encode(passphrase)
+    );
+    return {
+        ...aadObj,
+        ciphertext: bufToB64Url(cipherBuf)
+    };
+}
+
+async function unwrapPassphraseWithPrf(wrappedObj, prfOutputBuf) {
+    if (!wrappedObj || wrappedObj._format !== BIO_PRF_FORMAT_ID) {
+        throw new Error('無效的指紋金鑰封套格式');
+    }
+    const hkdfSalt = b64UrlToBytes(wrappedObj.hkdfSalt);
+    const iv = b64UrlToBytes(wrappedObj.iv);
+    const cipherBytes = b64UrlToBytes(wrappedObj.ciphertext);
+    const wrapKey = await derivePrfWrapKey(prfOutputBuf, hkdfSalt);
+    const aadObj = {
+        _format: wrappedObj._format,
+        credIdB64Url: wrappedObj.credIdB64Url,
+        hkdfSalt: wrappedObj.hkdfSalt,
+        iv: wrappedObj.iv
+    };
+    const aadBytes = new TextEncoder().encode(JSON.stringify(aadObj));
+    const plainBuf = await window.crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv, additionalData: aadBytes },
+        wrapKey,
+        cipherBytes
+    );
+    return new TextDecoder().decode(plainBuf);
+}
+
+// ---------- 綁定 / 移除裝置指紋 ----------
+async function registerBiometricCredentialWithPassphrase(passphrase) {
+    if (!isWebAuthnSupported()) {
+        throw new Error('當前環境不支援 WebAuthn（請使用 HTTPS 網址並透過 Chrome / Safari 開啟）');
+    }
+    if (!passphrase || !passphrase.trim()) {
+        throw new Error('綁定指紋前請先驗證主通行碼');
+    }
+
+    // 確認目前記憶體金鑰已就緒且能與通行碼對應
+    if (!_e2eeSessionKey || !_e2eeSessionSaltB64) {
+        throw new Error('尚未解鎖 E2EE 金鑰');
+    }
+    const verifyKey = await deriveE2eeAesKey(passphrase, b64ToBytes(_e2eeSessionSaltB64), _e2eeSessionIterations);
+    const testEnv = _pendingEncryptedRemote?.envelope || _latestRemoteEnvelope;
+    if (testEnv) {
+        await decryptBackupWithKey(testEnv, verifyKey);
+    }
+
+    const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+    const userId = window.crypto.getRandomValues(new Uint8Array(16));
+    const prfInput = await getBioPrfFixedInputBytes();
+    const accLabel = (piAccount || 'weber').trim() || 'weber';
+
+    const credential = await navigator.credentials.create({
+        publicKey: {
+            challenge,
+            rp: {
+                name: 'LifeSchedule 思緒卡片',
+                id: window.location.hostname
+            },
+            user: {
+                id: userId,
+                name: `LifeSchedule (${accLabel})`,
+                displayName: `LifeSchedule (${accLabel})`
+            },
+            pubKeyCredParams: [
+                { type: 'public-key', alg: -7 },   // ES256
+                { type: 'public-key', alg: -257 }  // RS256
+            ],
+            authenticatorSelection: {
+                authenticatorAttachment: 'platform',
+                userVerification: 'required',
+                residentKey: 'preferred'
+            },
+            timeout: 60000,
+            extensions: {
+                prf: {
+                    eval: { first: prfInput }
+                }
+            }
+        }
+    });
+
+    if (!credential || !credential.rawId) {
+        throw new Error('使用者取消或裝置未回傳憑證');
+    }
+
+    const credIdB64Url = bufToB64Url(credential.rawId);
+    const extResults = typeof credential.getClientExtensionResults === 'function'
+        ? credential.getClientExtensionResults()
+        : {};
+
+    let prfOutputBuf = extResults?.prf?.results?.first || null;
+    if (!prfOutputBuf && extResults?.prf?.enabled === true) {
+        // 部分瀏覽器在 create 僅回傳 prf.enabled=true，需補一次 get 取得 PRF 輸出
+        const assertChallenge = window.crypto.getRandomValues(new Uint8Array(32));
+        const assertion = await navigator.credentials.get({
+            publicKey: {
+                challenge: assertChallenge,
+                allowCredentials: [{ type: 'public-key', id: new Uint8Array(credential.rawId) }],
+                userVerification: 'required',
+                timeout: 60000,
+                extensions: {
+                    prf: { eval: { first: prfInput } }
+                }
+            }
+        });
+        const assertExt = typeof assertion?.getClientExtensionResults === 'function'
+            ? assertion.getClientExtensionResults()
+            : {};
+        prfOutputBuf = assertExt?.prf?.results?.first || null;
+    }
+
+    if (prfOutputBuf) {
+        const wrapped = await wrapPassphraseWithPrf(passphrase, prfOutputBuf, credIdB64Url);
+        localStorage.setItem(BIO_WRAPPED_SECRET_KEY, JSON.stringify(wrapped));
+        localStorage.setItem(BIO_CRED_META_KEY, JSON.stringify({
+            credIdB64Url,
+            mode: 'prf',
+            rpId: window.location.hostname,
+            createdAt: Date.now()
+        }));
+        await clearBioIdb();
+        return 'prf';
+    }
+
+    // 降級模式：WebAuthn userVerification 閘門 + IndexedDB non-extractable CryptoKey
+    await saveSessionKeyToBioIdb(_e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations);
+    localStorage.removeItem(BIO_WRAPPED_SECRET_KEY);
+    localStorage.setItem(BIO_CRED_META_KEY, JSON.stringify({
+        credIdB64Url,
+        mode: 'gate',
+        rpId: window.location.hostname,
+        createdAt: Date.now()
+    }));
+    return 'gate';
+}
+
+async function clearBiometricBinding(silent = false) {
+    try { localStorage.removeItem(BIO_CRED_META_KEY); } catch (e) {}
+    try { localStorage.removeItem(BIO_WRAPPED_SECRET_KEY); } catch (e) {}
+    await clearBioIdb();
+    updateBiometricSettingsUI();
+    if (!silent && typeof showToast === 'function') {
+        showToast('🗑️ 已移除此裝置的指紋 / Face ID 綁定。', 'info');
+    }
+}
+
+async function promptBindBiometricFlow() {
+    if (!isWebAuthnSupported()) {
+        alert('❌ 當前瀏覽環境不支援 WebAuthn 生物辨識！\n請確認您是透過 HTTPS 線上網址，並使用手機系統瀏覽器（Chrome / Safari）開啟。');
+        return;
+    }
+    if (!isE2eeEnabled()) {
+        alert('請先啟用「端對端加密 (E2EE)」並設定主通行碼，再綁定指紋快速解鎖。');
+        return;
+    }
+    // 要求輸入一次主通行碼以驗證並進行指紋綁定
+    openE2eePassphraseModal(
+        hasE2eeRemoteOrSession() ? 'unlock' : 'setup',
+        async (_plainData, verifiedPassphrase) => {
+            if (!verifiedPassphrase) {
+                alert('⚠️ 請透過輸入主通行碼完成本次綁定驗證。');
+                return;
+            }
+            try {
+                const mode = await registerBiometricCredentialWithPassphrase(verifiedPassphrase);
+                updateBiometricSettingsUI();
+                const modeLabel = mode === 'prf'
+                    ? 'WebAuthn PRF 硬體金鑰保護（最高安全等級）'
+                    : '標準 WebAuthn 生物辨識 + IndexedDB 不可匯出金鑰（高相容模式）';
+                alert(`🎉 指紋 / Face ID 綁定成功！\n\n安全模式：${modeLabel}\n💡 請務必妥善記憶主通行碼，換手機或清除瀏覽器資料時仍須使用主通行碼還原。`);
+            } catch (err) {
+                alert(`❌ 指紋綁定失敗：${err.message || '操作已取消'}`);
+            }
+        },
+        null,
+        '👆 請輸入一次主通行碼以驗證身分，驗證成功後將立即呼叫系統指紋 / Face ID 完成綁定。'
+    );
+}
+
+// ---------- 指紋解鎖核心 ----------
+async function authenticateWithBiometrics() {
+    const meta = getBioCredentialMeta();
+    if (!meta || !isWebAuthnSupported()) {
+        throw new Error('尚未綁定指紋或當前環境不支援 WebAuthn');
+    }
+    const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+    const credIdBytes = b64UrlToBytes(meta.credIdB64Url);
+    const prfInput = await getBioPrfFixedInputBytes();
+
+    const getOpts = {
+        publicKey: {
+            challenge,
+            allowCredentials: [{ type: 'public-key', id: credIdBytes }],
+            userVerification: 'required',
+            timeout: 60000
+        }
+    };
+    if (meta.mode === 'prf') {
+        getOpts.publicKey.extensions = {
+            prf: { eval: { first: prfInput } }
+        };
+    }
+
+    const assertion = await navigator.credentials.get(getOpts);
+    if (!assertion) {
+        throw new Error('生物辨識驗證未完成');
+    }
+
+    if (meta.mode === 'prf') {
+        const ext = typeof assertion.getClientExtensionResults === 'function'
+            ? assertion.getClientExtensionResults()
+            : {};
+        const prfOutput = ext?.prf?.results?.first;
+        if (!prfOutput) {
+            throw new Error('裝置未回傳 PRF 金鑰結果，請改用主通行碼解鎖並重新綁定指紋');
+        }
+        const wrappedRaw = localStorage.getItem(BIO_WRAPPED_SECRET_KEY);
+        if (!wrappedRaw) {
+            throw new Error('找不到本機指紋包裹金鑰，請改用主通行碼解鎖');
+        }
+        const passphrase = await unwrapPassphraseWithPrf(JSON.parse(wrappedRaw), prfOutput);
+        return { mode: 'prf', passphrase };
+    }
+
+    // gate 模式：從 IndexedDB 取出 non-extractable CryptoKey
+    const rec = await loadSessionKeyFromBioIdb();
+    if (!rec || !rec.aesKey || !rec.saltB64) {
+        throw new Error('本機指紋金鑰快取已遺失，請改用主通行碼解鎖並重新綁定');
+    }
+    return {
+        mode: 'gate',
+        aesKey: rec.aesKey,
+        saltB64: rec.saltB64,
+        iterations: rec.iterations || E2EE_DEFAULT_ITERATIONS
+    };
+}
+
+// ---------- Local Vault (本機靜態資料加密 Encryption at Rest) ----------
+function clearPlaintextLocalStorage() {
+    const keysToClear = [
+        'my_thoughts_local',
+        'my_monthly_financials',
+        'my_financial_templates',
+        'my_blocked_slots',
+        'my_category_order',
+        'pi_api_key',
+        'gas_api_key',
+        'gemini_api_key'
+    ];
+    keysToClear.forEach((k) => {
+        try { localStorage.removeItem(k); } catch (e) {}
+    });
+}
+
+function buildLocalVaultPlainObject() {
+    return {
+        _format: LOCAL_VAULT_FORMAT_ID,
+        updatedAt: Date.now(),
+        thoughts: Array.isArray(thoughts) ? thoughts : [],
+        monthlyFinancials: monthlyFinancials || {},
+        financialTemplates: financialTemplates || { active: [], passive: [], expenses: [] },
+        blockedSlots: Array.isArray(blockedSlots) ? blockedSlots : [],
+        categoryOrder: Array.isArray(categoryOrder) ? categoryOrder : [],
+        apiKeys: {
+            pi_api_key: _unlockedApiKeys.pi_api_key || piApiKey || '',
+            gas_api_key: _unlockedApiKeys.gas_api_key || '',
+            gemini_api_key: _unlockedApiKeys.gemini_api_key || ''
+        }
+    };
+}
+
+function persistEncryptedLocalVault() {
+    if (!isAppLockEnabled() || !_e2eeSessionKey || !_e2eeSessionSaltB64) {
+        return Promise.resolve(false);
+    }
+    _localVaultWriteChain = _localVaultWriteChain.then(async () => {
+        if (!isAppLockEnabled() || !_e2eeSessionKey || !_e2eeSessionSaltB64) return false;
+        const payload = buildLocalVaultPlainObject();
+        const env = await encryptBackupWithKey(payload, _e2eeSessionKey, _e2eeSessionSaltB64, _e2eeSessionIterations);
+        localStorage.setItem(LOCAL_VAULT_KEY, JSON.stringify(env));
+        clearPlaintextLocalStorage();
+        return true;
+    }).catch((err) => {
+        console.warn('[LocalVault] 加密寫入失敗:', err);
+        return false;
+    });
+    return _localVaultWriteChain;
+}
+
+function applyDecryptedLocalVault(vaultData) {
+    if (!vaultData || typeof vaultData !== 'object') return false;
+    if (Array.isArray(vaultData.thoughts)) thoughts = vaultData.thoughts;
+    if (vaultData.monthlyFinancials && typeof vaultData.monthlyFinancials === 'object') {
+        monthlyFinancials = vaultData.monthlyFinancials;
+    }
+    if (vaultData.financialTemplates && typeof vaultData.financialTemplates === 'object') {
+        financialTemplates = vaultData.financialTemplates;
+    }
+    if (Array.isArray(vaultData.blockedSlots)) blockedSlots = vaultData.blockedSlots;
+    if (Array.isArray(vaultData.categoryOrder)) categoryOrder = vaultData.categoryOrder;
+    if (vaultData.apiKeys && typeof vaultData.apiKeys === 'object') {
+        _unlockedApiKeys = {
+            pi_api_key: (vaultData.apiKeys.pi_api_key || '').trim(),
+            gas_api_key: (vaultData.apiKeys.gas_api_key || '').trim(),
+            gemini_api_key: (vaultData.apiKeys.gemini_api_key || '').trim()
+        };
+        piApiKey = _unlockedApiKeys.pi_api_key;
+    }
+    return true;
+}
+
+async function decryptLocalVaultIfPresent() {
+    if (!_e2eeSessionKey) return false;
+    let raw = null;
+    try { raw = localStorage.getItem(LOCAL_VAULT_KEY); } catch (e) { raw = null; }
+    if (!raw) return false;
+    const env = JSON.parse(raw);
+    if (!isEncryptedEnvelope(env)) return false;
+    const plain = await decryptBackupWithKey(env, _e2eeSessionKey);
+    return applyDecryptedLocalVault(plain);
+}
+
+// ---------- App Lock 畫面控制與上鎖/解鎖流程 ----------
+function showAppLockOverlay(msg = '') {
+    const overlay = document.getElementById('appLockOverlay');
+    if (!overlay) return;
+    const bioBtn = document.getElementById('appLockBioBtn');
+    const errEl = document.getElementById('appLockErrorText');
+    const passInput = document.getElementById('appLockPassphraseInput');
+    const remindEl = document.getElementById('appLockPassphraseReminder');
+    if (bioBtn) {
+        if (hasBioCredentialBound() && isWebAuthnSupported()) bioBtn.classList.remove('hidden');
+        else bioBtn.classList.add('hidden');
+    }
+    if (errEl) {
+        if (msg) {
+            errEl.textContent = msg;
+            errEl.classList.remove('hidden');
+        } else {
+            errEl.textContent = '';
+            errEl.classList.add('hidden');
+        }
+    }
+    if (passInput) passInput.value = '';
+    if (remindEl) {
+        if (isPassphraseReviewDue()) remindEl.classList.remove('hidden');
+        else remindEl.classList.add('hidden');
+    }
+    overlay.classList.remove('hidden');
+    updateHeaderLockButtonUI();
+}
+
+function hideAppLockOverlay() {
+    const overlay = document.getElementById('appLockOverlay');
+    if (overlay) overlay.classList.add('hidden');
+    const passInput = document.getElementById('appLockPassphraseInput');
+    if (passInput) passInput.value = '';
+    updateHeaderLockButtonUI();
+}
+
+function wipeInMemorySensitiveDataForLock() {
+    thoughts = [];
+    monthlyFinancials = {};
+    financialTemplates = { active: ['本業薪資'], passive: ['股息現金流'], expenses: ['日常固定開銷'] };
+    blockedSlots = [];
+    categoryOrder = [];
+    _unlockedApiKeys = { pi_api_key: '', gas_api_key: '', gemini_api_key: '' };
+    piApiKey = '';
+    render();
+}
+
+async function finishSessionUnlock(options = {}) {
+    const { fromBiometric = false } = options;
+    try {
+        await decryptLocalVaultIfPresent();
+    } catch (e) {
+        // 若本機密文與當前金鑰不符（例如在別台換過密碼），先不中斷雲端解鎖
+        console.warn('[LocalVault] 本機加密資料解密略過:', e);
+    }
+    hideAppLockOverlay();
+    updateE2eeSettingsUI();
+    updateBiometricSettingsUI();
+    updateHeaderLockButtonUI();
+    render();
+    if (fromBiometric && isPassphraseReviewDue() && typeof showToast === 'function') {
+        showToast('💡 已超過 14 天未手動輸入主通行碼，建議偶爾至設定驗證一次以免遺忘！', 'info');
+    }
+    if (typeof checkAndAutoSyncFromPi === 'function') {
+        checkAndAutoSyncFromPi();
+    }
+}
+
+async function unlockWithBiometricsInAppLock() {
+    const bioBtn = document.getElementById('appLockBioBtn');
+    const errEl = document.getElementById('appLockErrorText');
+    if (errEl) errEl.classList.add('hidden');
+    if (bioBtn) bioBtn.disabled = true;
+    try {
+        const authRes = await authenticateWithBiometrics();
+        let vaultEnv = null;
+        try {
+            const rawVault = localStorage.getItem(LOCAL_VAULT_KEY);
+            if (rawVault) vaultEnv = JSON.parse(rawVault);
+        } catch (e) {}
+
+        const targetEnv = vaultEnv || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
+
+        if (authRes.mode === 'prf') {
+            if (targetEnv && isEncryptedEnvelope(targetEnv)) {
+                const iters = Number(targetEnv.kdf.iterations);
+                const saltBytes = b64ToBytes(targetEnv.kdf.salt);
+                const aesKey = await deriveE2eeAesKey(authRes.passphrase, saltBytes, iters);
+                await decryptBackupWithKey(targetEnv, aesKey);
+                _e2eeSessionKey = aesKey;
+                _e2eeSessionSaltB64 = targetEnv.kdf.salt;
+                _e2eeSessionIterations = iters;
+            } else {
+                const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
+                const saltB64 = bufToB64(saltBytes);
+                _e2eeSessionKey = await deriveE2eeAesKey(authRes.passphrase, saltBytes, E2EE_DEFAULT_ITERATIONS);
+                _e2eeSessionSaltB64 = saltB64;
+                _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+            }
+        } else {
+            // gate 模式
+            if (targetEnv && isEncryptedEnvelope(targetEnv)) {
+                await decryptBackupWithKey(targetEnv, authRes.aesKey);
+            }
+            _e2eeSessionKey = authRes.aesKey;
+            _e2eeSessionSaltB64 = authRes.saltB64;
+            _e2eeSessionIterations = authRes.iterations;
+        }
+        await finishSessionUnlock({ fromBiometric: true });
+    } catch (err) {
+        if (errEl) {
+            errEl.textContent = `❌ 指紋解鎖失敗：${err.message || '請改用主通行碼解鎖'}`;
+            errEl.classList.remove('hidden');
+        }
+    } finally {
+        if (bioBtn) bioBtn.disabled = false;
+    }
+}
+
+async function unlockWithPassphraseInAppLock() {
+    const passInput = document.getElementById('appLockPassphraseInput');
+    const submitBtn = document.getElementById('appLockPassSubmitBtn');
+    const errEl = document.getElementById('appLockErrorText');
+    const pass = passInput ? passInput.value : '';
+    if (!pass || !pass.trim()) {
+        if (errEl) {
+            errEl.textContent = '❌ 請輸入主通行碼！';
+            errEl.classList.remove('hidden');
+        }
+        return;
+    }
+    if (errEl) errEl.classList.add('hidden');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+        let vaultEnv = null;
+        try {
+            const rawVault = localStorage.getItem(LOCAL_VAULT_KEY);
+            if (rawVault) vaultEnv = JSON.parse(rawVault);
+        } catch (e) {}
+
+        const targetEnv = vaultEnv || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
+        if (targetEnv && isEncryptedEnvelope(targetEnv)) {
+            const iters = Number(targetEnv.kdf.iterations);
+            const saltBytes = b64ToBytes(targetEnv.kdf.salt);
+            const aesKey = await deriveE2eeAesKey(pass, saltBytes, iters);
+            const decrypted = await decryptBackupWithKey(targetEnv, aesKey);
+            _e2eeSessionKey = aesKey;
+            _e2eeSessionSaltB64 = targetEnv.kdf.salt;
+            _e2eeSessionIterations = iters;
+            if (vaultEnv && targetEnv === vaultEnv) {
+                applyDecryptedLocalVault(decrypted);
+            }
+        } else {
+            const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
+            const saltB64 = bufToB64(saltBytes);
+            _e2eeSessionKey = await deriveE2eeAesKey(pass, saltBytes, E2EE_DEFAULT_ITERATIONS);
+            _e2eeSessionSaltB64 = saltB64;
+            _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
+        }
+        recordManualPassphraseUnlock();
+        await finishSessionUnlock({ fromBiometric: false });
+    } catch (err) {
+        if (errEl) {
+            errEl.textContent = '❌ 通行碼錯誤或本機加密資料無法解開，請確認後重試！';
+            errEl.classList.remove('hidden');
+        }
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+    }
+}
+
+async function unlockE2eeModalWithBiometrics() {
+    const errEl = document.getElementById('e2eeModalErrorText');
+    const bioBtn = document.getElementById('e2eeModalBioBtn');
+    if (errEl) errEl.classList.add('hidden');
+    if (bioBtn) bioBtn.disabled = true;
+    try {
+        const authRes = await authenticateWithBiometrics();
+        const targetEnvelope = _e2eeModalCustomEnvelope || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
+
+        if (authRes.mode === 'prf') {
+            if (!targetEnvelope) {
+                throw new Error('找不到待解鎖的加密備份封套');
+            }
+            const plainData = await decryptBackupPayload(targetEnvelope, authRes.passphrase);
+            await completeE2eeModalUnlockSuccess(plainData, targetEnvelope, null);
+        } else {
+            if (!targetEnvelope) {
+                throw new Error('找不到待解鎖的加密備份封套');
+            }
+            if (targetEnvelope.kdf && targetEnvelope.kdf.salt !== authRes.saltB64) {
+                throw new Error('偵測到雲端備份使用了新的鹽值（可能已在其他裝置更換通行碼），請改用主通行碼解鎖並重新綁定指紋');
+            }
+            const plainData = await decryptBackupWithKey(targetEnvelope, authRes.aesKey);
+            _e2eeSessionKey = authRes.aesKey;
+            _e2eeSessionSaltB64 = authRes.saltB64;
+            _e2eeSessionIterations = authRes.iterations;
+            await completeE2eeModalUnlockSuccess(plainData, targetEnvelope, null);
+        }
+        if (isPassphraseReviewDue() && typeof showToast === 'function') {
+            showToast('💡 已超過 14 天未手動輸入主通行碼，建議偶爾驗證一次以免遺忘！', 'info');
+        }
+    } catch (err) {
+        showE2eeModalError(`❌ 指紋解鎖失敗：${err.message || '請改輸入主通行碼'}`);
+    } finally {
+        if (bioBtn) bioBtn.disabled = false;
+    }
+}
+
+// ---------- 最高防護切換與設定 UI ----------
+async function onToggleAppLockSetting(checked) {
+    if (checked) {
+        if (!isE2eeEnabled()) {
+            alert('⚠️ 請先啟用上方的「端對端加密 (E2EE)」並設定主通行碼，才能開啟最高防護（開頁鎖定 + 本機加密）！');
+            updateBiometricSettingsUI();
+            return;
+        }
+        if (!_e2eeSessionKey || !_e2eeSessionSaltB64) {
+            alert('請先解鎖 E2EE 金鑰後再開啟最高防護。');
+            updateBiometricSettingsUI();
+            openE2eePassphraseModal(hasE2eeRemoteOrSession() ? 'unlock' : 'setup');
+            return;
+        }
+        // 將當前記憶體中的敏感資料立即加密存入 ls_encrypted_local_vault 並清除明文
+        _unlockedApiKeys = {
+            pi_api_key: (localStorage.getItem('pi_api_key') || piApiKey || '').trim(),
+            gas_api_key: (localStorage.getItem('gas_api_key') || '').trim(),
+            gemini_api_key: (localStorage.getItem('gemini_api_key') || '').trim()
+        };
+        localStorage.setItem(APPLOCK_ENABLED_KEY, 'true');
+        await persistEncryptedLocalVault();
+        updateBiometricSettingsUI();
+        updateHeaderLockButtonUI();
+        alert('🛡️ 已開啟最高防護！\n\n1. 本機目標、財務收支與 API 金鑰已加密存於 ls_encrypted_local_vault，localStorage 明文已清除。\n2. 下次開啟頁面將先顯示鎖定畫面，需通過指紋或主通行碼才會載入內容。');
+    } else {
+        if (!confirm('⚠️ 確定要關閉「最高防護（開頁鎖定 + 本機加密）」嗎？\n關閉後本機資料將恢復以明文存於 localStorage（雲端備份仍維持 E2EE 加密）。')) {
+            updateBiometricSettingsUI();
+            return;
+        }
+        // 驗證主通行碼後再將本機資料寫回明文 localStorage
+        openE2eePassphraseModal(
+            'unlock',
+            () => {
+                localStorage.setItem(APPLOCK_ENABLED_KEY, 'false');
+                try {
+                    localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts || []));
+                    localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials || {}));
+                    localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates || {}));
+                    localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots || []));
+                    localStorage.setItem('my_category_order', JSON.stringify(categoryOrder || []));
+                    localStorage.setItem('pi_api_key', _unlockedApiKeys.pi_api_key || piApiKey || '');
+                    localStorage.setItem('gas_api_key', _unlockedApiKeys.gas_api_key || '');
+                    localStorage.setItem('gemini_api_key', _unlockedApiKeys.gemini_api_key || '');
+                    localStorage.removeItem(LOCAL_VAULT_KEY);
+                } catch (e) {}
+                updateBiometricSettingsUI();
+                updateHeaderLockButtonUI();
+                if (typeof showToast === 'function') {
+                    showToast('已關閉最高防護並還原本機儲存。', 'info');
+                }
+            },
+            null,
+            '🔑 關閉最高防護屬於高風險變更，請輸入主通行碼完成二次驗證。'
+        );
+    }
+}
+
+function onChangeAppLockTimeout(val) {
+    try {
+        localStorage.setItem(APPLOCK_TIMEOUT_KEY, String(val));
+    } catch (e) {}
+}
+
+function updateBiometricSettingsUI() {
+    const bioBadge = document.getElementById('bioStatusBadge');
+    const bindBtn = document.getElementById('bioBindBtn');
+    const removeBtn = document.getElementById('bioRemoveBtn');
+    const appLockToggle = document.getElementById('appLockEnableToggle');
+    const timeoutSelect = document.getElementById('appLockTimeoutSelect');
+    const remindBadge = document.getElementById('bioPassphraseRemindBadge');
+
+    const meta = getBioCredentialMeta();
+    const bound = hasBioCredentialBound();
+    const supported = isWebAuthnSupported();
+
+    if (bioBadge) {
+        if (!supported) {
+            bioBadge.textContent = '⛔ 不支援 WebAuthn (需 HTTPS 瀏覽器)';
+            bioBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-600';
+        } else if (bound && meta?.mode === 'prf') {
+            bioBadge.textContent = '🟢 已綁定指紋 (PRF 硬體金鑰)';
+            bioBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+        } else if (bound) {
+            bioBadge.textContent = '🟡 已綁定指紋 (WebAuthn 閘門)';
+            bioBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-300';
+        } else {
+            bioBadge.textContent = '⚪ 尚未綁定此裝置指紋';
+            bioBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-700';
+        }
+    }
+    if (bindBtn) {
+        bindBtn.disabled = !supported;
+        bindBtn.textContent = bound ? '🔄 重新綁定此裝置指紋' : '👆 綁定此裝置指紋 / Face ID';
+    }
+    if (removeBtn) {
+        if (bound) removeBtn.classList.remove('hidden');
+        else removeBtn.classList.add('hidden');
+    }
+    if (appLockToggle) {
+        appLockToggle.checked = isAppLockEnabled();
+    }
+    if (timeoutSelect) {
+        timeoutSelect.value = String(getAppLockTimeoutMinutes());
+    }
+    if (remindBadge) {
+        if (isPassphraseReviewDue()) remindBadge.classList.remove('hidden');
+        else remindBadge.classList.add('hidden');
+    }
+}
+
+function updateHeaderLockButtonUI() {
+    const btn = document.getElementById('headerQuickLockBtn');
+    if (!btn) return;
+    if (isE2eeEnabled() && (_e2eeSessionKey || isAppLockEnabled())) {
+        btn.classList.remove('hidden');
+    } else {
+        btn.classList.add('hidden');
+    }
+}
+
+function handleVisibilityChangeForAutoLock() {
+    if (document.visibilityState === 'hidden') {
+        _lastHiddenAt = Date.now();
+        return;
+    }
+    if (document.visibilityState === 'visible') {
+        const timeoutMin = getAppLockTimeoutMinutes();
+        if (isAppLockEnabled() && _e2eeSessionKey && timeoutMin >= 0 && _lastHiddenAt > 0) {
+            const elapsedMs = Date.now() - _lastHiddenAt;
+            if (timeoutMin === 0 || elapsedMs >= timeoutMin * 60 * 1000) {
+                lockE2eeSession();
+                return;
+            }
+        }
+        if (!isAppLockActiveAndLocked() && typeof checkAndAutoSyncFromPi === 'function') {
+            checkAndAutoSyncFromPi();
+        }
+    }
+}
+
+/* === [END MODULE: js/biometric_lock.js] === */
 
 
 function jumpToCardsCategory(cat) {
@@ -3965,7 +5112,16 @@ function updateContainerWidth() {
         function toggleBlockPanel() { isBlockPanelOpen = !isBlockPanelOpen; render(); }
 
 
-        function saveBlockedSlots() { localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots)); render(); triggerAutoSaveToPi(); }
+        function saveBlockedSlots() {
+            if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+            if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                if (typeof persistEncryptedLocalVault === 'function') persistEncryptedLocalVault();
+            } else {
+                localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots));
+            }
+            render();
+            triggerAutoSaveToPi();
+        }
 
 
         function addBlockedSlot() {
@@ -4164,15 +5320,25 @@ function updateContainerWidth() {
 
 
         function saveData() {
+            if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
             syncLinkedData();
-            localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
+            if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                if (typeof persistEncryptedLocalVault === 'function') persistEncryptedLocalVault();
+            } else {
+                localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
+            }
             render();
             triggerAutoSaveToPi();
         }
 
 
         function saveCategoryOrder() {
-            localStorage.setItem('my_category_order', JSON.stringify(categoryOrder));
+            if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+            if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                if (typeof persistEncryptedLocalVault === 'function') persistEncryptedLocalVault();
+            } else {
+                localStorage.setItem('my_category_order', JSON.stringify(categoryOrder));
+            }
             render();
             triggerAutoSaveToPi();
         }
@@ -7926,7 +9092,7 @@ let aiChatContext = [];
 
 
 function openAiCoachModal(thoughtId) {
-    const geminiKey = localStorage.getItem('gemini_api_key');
+    const geminiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : localStorage.getItem('gemini_api_key'));
     if (!geminiKey) {
         alert("請先在「⚙️ 設定 / 資料管理」中設定 Google Gemini API Key！");
         openPiSettingsModal();
@@ -8107,7 +9273,7 @@ function copyGeminiDetectedModels() {
 // 【v5.4.6 一鍵檢測按鈕】：於設定視窗即時檢驗 API Key 並填入自選下拉選單與可複製文字框
 async function testGeminiApiKey() {
     const input = document.getElementById('geminiApiKeyInput');
-    const key = (input ? input.value : localStorage.getItem('gemini_api_key'))?.trim();
+    const key = (input ? input.value : (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : localStorage.getItem('gemini_api_key')))?.trim();
     if (!key) {
         alert("請先輸入 Google Gemini API Key 再執行檢測！");
         if (input) input.focus();
@@ -8146,7 +9312,7 @@ async function testGeminiApiKey() {
 }
 
 async function invokeGeminiAPI() {
-    const rawKey = localStorage.getItem('gemini_api_key');
+    const rawKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : localStorage.getItem('gemini_api_key'));
     if (!rawKey || !rawKey.trim()) return;
     const apiKey = rawKey.trim();
     appendChatLoading();
@@ -9458,23 +10624,32 @@ function render() {
     else if (viewMode === 'timeline') renderTimelineMatrix(container);
     else renderCards(container);
 }
-if (document.readyState === 'loading') {
-    window.addEventListener('DOMContentLoaded', () => {
-        initTheme();
-        render();
-        checkAndAutoSyncFromPi();
-    });
-} else {
+function bootstrapLifeScheduleApp() {
     initTheme();
+    if (typeof updateE2eeSettingsUI === 'function') updateE2eeSettingsUI();
+    if (typeof updateBiometricSettingsUI === 'function') updateBiometricSettingsUI();
+    if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) {
+        if (typeof showAppLockOverlay === 'function') showAppLockOverlay();
+        return;
+    }
     render();
     checkAndAutoSyncFromPi();
 }
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', bootstrapLifeScheduleApp);
+} else {
+    bootstrapLifeScheduleApp();
+}
 window.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
+    if (typeof handleVisibilityChangeForAutoLock === 'function') {
+        handleVisibilityChangeForAutoLock();
+    } else if (document.visibilityState === 'visible') {
         checkAndAutoSyncFromPi();
     }
 });
 window.addEventListener('focus', () => {
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
     checkAndAutoSyncFromPi();
 });
 

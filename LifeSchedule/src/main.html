@@ -309,12 +309,16 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.0.3 (2026-11-12)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.1.0 (2026-11-15)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap justify-end">
                 <div id="piSyncStatusBadge" onclick="handlePiBadgeClick()" class="text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 cursor-pointer hover:opacity-80 transition-all" title="點擊檢查樹莓派同步狀態或開啟設定">⚪ 未設定伺服器 (點擊設定)</div>
+                <button type="button" id="headerQuickLockBtn" onclick="lockE2eeSession()" class="hidden text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl border border-amber-300 font-bold transition-all flex items-center gap-1 shadow-2xs hover:shadow-xs cursor-pointer" title="立即鎖定金鑰與畫面 (公共場所防窺)">
+                    <span>🔒</span>
+                    <span>鎖定</span>
+                </button>
                 <button onclick="toggleDarkMode()" id="themeToggleBtn" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-300 font-bold transition-all flex items-center gap-1.5 shadow-2xs hover:shadow-xs cursor-pointer" title="切換日間/夜間模式">
                     <span id="themeIcon">🌙</span>
                     <span id="themeText">夜間模式</span>
@@ -484,6 +488,45 @@
                             <span>🔒 立即鎖定金鑰 (清除當前分頁記憶體快取)</span>
                         </button>
                     </div>
+
+                    <!-- 【v6.1.0 新增】：指紋 / Face ID 快速解鎖與最高防護 -->
+                    <div class="pt-2.5 mt-2 border-t border-indigo-200/80 dark:border-indigo-800/80 space-y-2.5">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-200">👆 指紋 / Face ID 快速解鎖</span>
+                            <span id="bioStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-700">⚪ 尚未綁定此裝置指紋</span>
+                        </div>
+                        <div id="bioPassphraseRemindBadge" class="hidden text-[10px] font-bold text-amber-800 bg-amber-100/90 border border-amber-300 rounded-lg px-2.5 py-1.5">
+                            💡 已超過 14 天未手動輸入主通行碼，建議點擊上方「已解鎖 (重新驗證)」測試記憶以免遺忘！
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button type="button" id="bioBindBtn" onclick="promptBindBiometricFlow()" class="flex-1 text-xs bg-white hover:bg-indigo-100 text-indigo-700 py-2 px-3 rounded-xl border border-indigo-300 font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                👆 綁定此裝置指紋 / Face ID
+                            </button>
+                            <button type="button" id="bioRemoveBtn" onclick="clearBiometricBinding(false)" class="hidden text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 py-2 px-3 rounded-xl border border-rose-200 font-bold transition-all cursor-pointer">
+                                🗑️ 移除指紋
+                            </button>
+                        </div>
+
+                        <div class="pt-2 border-t border-indigo-200/60 dark:border-indigo-800/60 space-y-2">
+                            <label class="flex items-start gap-2 cursor-pointer select-none">
+                                <input type="checkbox" id="appLockEnableToggle" onchange="onToggleAppLockSetting(this.checked)" class="w-4 h-4 mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">
+                                    🛡️ 最高防護：開頁鎖定遮罩 + 本機資料加密儲存
+                                    <span class="block text-[10px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">啟用後清除 localStorage 明文資料與 API 金鑰，每次開啟須通過指紋或主通行碼才會顯示內容。</span>
+                                </span>
+                            </label>
+                            <div class="flex items-center justify-between gap-2 pl-6">
+                                <label for="appLockTimeoutSelect" class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">切到背景自動上鎖：</label>
+                                <select id="appLockTimeoutSelect" onchange="onChangeAppLockTimeout(this.value)" class="text-[11px] font-bold px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                                    <option value="0">立即上鎖</option>
+                                    <option value="1">1 分鐘後</option>
+                                    <option value="3">3 分鐘後 (預設)</option>
+                                    <option value="10">10 分鐘後</option>
+                                    <option value="-1">不自動上鎖</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -636,7 +679,7 @@
         </div>
 
 
-        <!-- 🔐 【v6.0.0 新增】：端對端加密 (E2EE) 通行碼設定與解鎖專用彈窗 -->
+        <!-- 🔐 【v6.0.0 新增 / v6.1.0 升級指紋與表單】：端對端加密 (E2EE) 通行碼設定與解鎖專用彈窗 -->
         <div id="e2eePassphraseModal" style="z-index: 60;" class="fixed inset-0 bg-slate-900/70 flex items-center justify-center p-4 hidden transition-opacity duration-200" onclick="if(event.target && event.target.id === 'e2eePassphraseModal') closeE2eePassphraseModal()">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -651,14 +694,31 @@
                 </div>
 
                 <div id="e2eeModalHintBox" class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed">
-                    ⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。一旦遺忘通行碼，任何人都無法還原您的財務與目標備份，請務必妥善保存於密碼管理器！
+                    ⚠️ <strong>零知識安全提醒</strong>：通行碼僅用於本機記憶體推導 AES-GCM 金鑰，伺服器與本機硬碟均不留存。一旦遺忘通行碼，任何人都無法還原您的財務與目標備份，請務必妥善保存！
                 </div>
 
-                <div class="space-y-3">
+                <div id="e2eeModalRemindBanner" class="hidden bg-amber-100 border border-amber-300 rounded-xl p-2.5 text-[11px] font-bold text-amber-900">
+                    💡 您已超過 14 天未手動輸入主通行碼，建議本次直接輸入主通行碼驗證，順便複習記憶！
+                </div>
+
+                <div id="e2eeModalBioRow" class="hidden">
+                    <button type="button" id="e2eeModalBioBtn" onclick="unlockE2eeModalWithBiometrics()" class="w-full py-3 px-4 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                        <span class="text-lg">👆</span>
+                        <span>使用指紋 / Face ID 快速解鎖</span>
+                    </button>
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-slate-200"></div>
+                        <span class="flex-shrink mx-3 text-[10px] font-bold text-slate-400">或手動輸入主通行碼</span>
+                        <div class="flex-grow border-t border-slate-200"></div>
+                    </div>
+                </div>
+
+                <form onsubmit="event.preventDefault(); confirmE2eePassphraseModal();" class="space-y-3">
+                    <input type="text" name="username" autocomplete="username" value="LifeSchedule-E2EE" class="hidden" readonly tabindex="-1">
                     <div>
                         <label id="e2eeInput1Label" class="block text-xs font-bold text-slate-700 mb-1">請輸入備份加密通行碼：</label>
                         <div class="relative flex items-center">
-                            <input type="password" id="e2eePassphraseInput" placeholder="請輸入高強度通行碼..." onkeydown="if(event.key === 'Enter') confirmE2eePassphraseModal()" class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
+                            <input type="password" id="e2eePassphraseInput" autocomplete="current-password" placeholder="請輸入高強度通行碼..." class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
                             <button type="button" onclick="toggleE2eeInputVisibility('e2eePassphraseInput', 'e2eeEyeBtn1')" id="e2eeEyeBtn1" class="absolute right-2 px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">👁️ 顯示</button>
                         </div>
                     </div>
@@ -666,21 +726,56 @@
                     <div id="e2eeConfirmInputGroup" class="hidden">
                         <label class="block text-xs font-bold text-slate-700 mb-1">再次輸入確認通行碼：</label>
                         <div class="relative flex items-center">
-                            <input type="password" id="e2eePassphraseConfirmInput" placeholder="請再次輸入相同通行碼以防打錯..." onkeydown="if(event.key === 'Enter') confirmE2eePassphraseModal()" class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
+                            <input type="password" id="e2eePassphraseConfirmInput" autocomplete="new-password" placeholder="請再次輸入相同通行碼以防打錯..." class="w-full pl-3 pr-16 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white text-slate-800">
                             <button type="button" onclick="toggleE2eeInputVisibility('e2eePassphraseConfirmInput', 'e2eeEyeBtn2')" id="e2eeEyeBtn2" class="absolute right-2 px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">👁️ 顯示</button>
                         </div>
                     </div>
+
+                    <div id="e2eeModalErrorText" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5"></div>
+
+                    <div class="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
+                        <button type="button" onclick="closeE2eePassphraseModal()" class="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors cursor-pointer">取消</button>
+                        <button type="submit" id="e2eeModalSubmitBtn" class="px-5 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                            <span>🔓</span>
+                            <span id="e2eeModalSubmitText">確認解鎖</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- 🛡️ 【v6.1.0 最高防護】：全螢幕開頁鎖定遮罩 (App Lock Overlay) -->
+        <div id="appLockOverlay" style="z-index: 80;" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 text-center">
+                <div class="space-y-2">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-3xl shadow-inner">🛡️</div>
+                    <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">LifeSchedule 已安全鎖定</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        最高防護已啟用：本機目標、財務收支與 API 金鑰皆已加密保存，請驗證身分後檢視。
+                    </p>
                 </div>
 
-                <div id="e2eeModalErrorText" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5"></div>
+                <div id="appLockPassphraseReminder" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2.5 text-[11px] font-bold text-amber-900 text-left">
+                    💡 已超過 14 天未手動輸入主通行碼，建議偶爾改用下方主通行碼解鎖以複習記憶！
+                </div>
 
-                <div class="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
-                    <button type="button" onclick="closeE2eePassphraseModal()" class="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors cursor-pointer">取消</button>
-                    <button type="button" id="e2eeModalSubmitBtn" onclick="confirmE2eePassphraseModal()" class="px-5 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
-                        <span>🔓</span>
-                        <span id="e2eeModalSubmitText">確認解鎖</span>
+                <button type="button" id="appLockBioBtn" onclick="unlockWithBiometricsInAppLock()" class="hidden w-full py-3.5 px-4 text-sm bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-extrabold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+                    <span class="text-xl">👆</span>
+                    <span>使用指紋 / Face ID 解鎖</span>
+                </button>
+
+                <form onsubmit="event.preventDefault(); unlockWithPassphraseInAppLock();" class="space-y-3 text-left pt-1">
+                    <input type="text" name="username" autocomplete="username" value="LifeSchedule-AppLock" class="hidden" readonly tabindex="-1">
+                    <div>
+                        <label for="appLockPassphraseInput" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">🔑 使用主通行碼解鎖：</label>
+                        <input type="password" id="appLockPassphraseInput" autocomplete="current-password" placeholder="請輸入主通行碼..." class="w-full px-3.5 py-2.5 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                    </div>
+                    <div id="appLockErrorText" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5"></div>
+                    <button type="submit" id="appLockPassSubmitBtn" class="w-full py-2.5 px-4 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm cursor-pointer">
+                        🔓 驗證通行碼並解鎖
                     </button>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -1044,7 +1139,14 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.0.3 (2026-11-12)";
+window.APP_VERSION = "v6.1.0 (2026-11-15)";
+const _bootAppLockProtected = (function() {
+    try {
+        return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
+    } catch (e) {
+        return false;
+    }
+})();
 window.onerror = function(msg, url, line, col, error) {
 
 
@@ -1078,33 +1180,39 @@ function escapeAttr(str) {
 
 
 let thoughts = [];
-try { thoughts = JSON.parse(localStorage.getItem('my_thoughts_local')) || []; } catch(e) { thoughts = []; }
-if (!Array.isArray(thoughts) || thoughts.length === 0) {
-    thoughts = [
-        { id: Date.now(), category: "❤️ 健康", text: "規畫半馬跑步訓練計劃", detail: "每週固定跑步 3 次。", goal: "順利完賽 11 月半程馬拉松", goalDone: false, targetDate: "2026-11-30", targetTimeSlot: "上午", steps: [{ id: 1, text: "每週安排 3 次 5K 輕鬆跑", stepDate: "2026-08-10", stepTime: "1.5小時", stepTimeSlot: "上午", done: true }, { id: 2, text: "購買合適慢跑鞋", stepDate: "", stepTime: "", stepTimeSlot: "全天", done: false }] },
-        { id: Date.now() + 1, category: "💼 事業", text: "建立個人專案管理系統", detail: "支援總覽模式網格全覽一目瞭然與零左右滾動。", goal: "發布支援網格全覽的 App", goalDone: false, targetDate: "2026-12-31", targetTimeSlot: "全天", steps: [{ id: 1, text: "設計總覽模式響應式多欄網格與視圖切換", stepDate: "2026-08-08", stepTime: "2小時", stepTimeSlot: "下午", done: true }] }
-    ];
-}
-thoughts.forEach(t => {
-    if (!Array.isArray(t.steps)) t.steps = [];
-    if (t.goalDone === undefined) t.goalDone = false;
-    if (!t.category) t.category = '💼 事業';
-    if (!t.targetTimeSlot) t.targetTimeSlot = '全天';
-    if (t.isMainFocus === undefined) t.isMainFocus = false;
-    if (!t.createdAt && typeof t.id === 'number' && t.id > 1600000000000) t.createdAt = t.id;
-    t.steps.forEach(s => {
-        if (s.done === undefined) s.done = false;
-        if (!s.stepTimeSlot) s.stepTimeSlot = '全天';
-        if (!s.recurrence) s.recurrence = 'none';
+if (!_bootAppLockProtected) {
+    try { thoughts = JSON.parse(localStorage.getItem('my_thoughts_local')) || []; } catch(e) { thoughts = []; }
+    if (!Array.isArray(thoughts) || thoughts.length === 0) {
+        thoughts = [
+            { id: Date.now(), category: "❤️ 健康", text: "規畫半馬跑步訓練計劃", detail: "每週固定跑步 3 次。", goal: "順利完賽 11 月半程馬拉松", goalDone: false, targetDate: "2026-11-30", targetTimeSlot: "上午", steps: [{ id: 1, text: "每週安排 3 次 5K 輕鬆跑", stepDate: "2026-08-10", stepTime: "1.5小時", stepTimeSlot: "上午", done: true }, { id: 2, text: "購買合適慢跑鞋", stepDate: "", stepTime: "", stepTimeSlot: "全天", done: false }] },
+            { id: Date.now() + 1, category: "💼 事業", text: "建立個人專案管理系統", detail: "支援總覽模式網格全覽一目瞭然與零左右滾動。", goal: "發布支援網格全覽的 App", goalDone: false, targetDate: "2026-12-31", targetTimeSlot: "全天", steps: [{ id: 1, text: "設計總覽模式響應式多欄網格與視圖切換", stepDate: "2026-08-08", stepTime: "2小時", stepTimeSlot: "下午", done: true }] }
+        ];
+    }
+    thoughts.forEach(t => {
+        if (!Array.isArray(t.steps)) t.steps = [];
+        if (t.goalDone === undefined) t.goalDone = false;
+        if (!t.category) t.category = '💼 事業';
+        if (!t.targetTimeSlot) t.targetTimeSlot = '全天';
+        if (t.isMainFocus === undefined) t.isMainFocus = false;
+        if (!t.createdAt && typeof t.id === 'number' && t.id > 1600000000000) t.createdAt = t.id;
+        t.steps.forEach(s => {
+            if (s.done === undefined) s.done = false;
+            if (!s.stepTimeSlot) s.stepTimeSlot = '全天';
+            if (!s.recurrence) s.recurrence = 'none';
+        });
     });
-});
+}
 
 
 let blockedSlots = [];
-try { blockedSlots = JSON.parse(localStorage.getItem('my_blocked_slots')) || []; } catch(e) { blockedSlots = []; }
+if (!_bootAppLockProtected) {
+    try { blockedSlots = JSON.parse(localStorage.getItem('my_blocked_slots')) || []; } catch(e) { blockedSlots = []; }
+}
 let customTimelineDates = [];
 let categoryOrder = [];
-try { categoryOrder = JSON.parse(localStorage.getItem('my_category_order')) || []; } catch(e) { categoryOrder = []; }
+if (!_bootAppLockProtected) {
+    try { categoryOrder = JSON.parse(localStorage.getItem('my_category_order')) || []; } catch(e) { categoryOrder = []; }
+}
 let maxDailyHours = parseFloat(localStorage.getItem('my_max_daily_hours')) || 8;
 let maxWeeklyHours = parseFloat(localStorage.getItem('my_max_weekly_hours')) || 40;
 let storedTimelineMode = localStorage.getItem('my_timeline_start_mode'); // 'today' | 'custom' | 'all'
@@ -1144,7 +1252,7 @@ let draggedItemInfo = null;
 let pendingDropItem = null;
 const slotPriorityMap = { '全天': 0, '上午': 1, '下午': 2, '晚上': 3, '夜間': 4 };
 let piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-let piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+let piApiKey = _bootAppLockProtected ? '' : (localStorage.getItem('pi_api_key') || '').trim();
 let piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 let lastSyncedFileName = localStorage.getItem('pi_last_synced_file') || '';
 let autoSaveTimer = null;
@@ -1163,25 +1271,34 @@ const defaultFinancialTemplates = {
 
 
 let financialTemplates = defaultFinancialTemplates;
-try {
-    const savedT = localStorage.getItem('my_financial_templates');
-    if (savedT) financialTemplates = JSON.parse(savedT);
-} catch (e) { financialTemplates = defaultFinancialTemplates; }
+if (!_bootAppLockProtected) {
+    try {
+        const savedT = localStorage.getItem('my_financial_templates');
+        if (savedT) financialTemplates = JSON.parse(savedT);
+    } catch (e) { financialTemplates = defaultFinancialTemplates; }
+}
 
 
 let monthlyFinancials = {};
-try {
-    const savedF = localStorage.getItem('my_monthly_financials');
-    if (savedF) monthlyFinancials = JSON.parse(savedF);
-} catch (e) { monthlyFinancials = {}; }
+if (!_bootAppLockProtected) {
+    try {
+        const savedF = localStorage.getItem('my_monthly_financials');
+        if (savedF) monthlyFinancials = JSON.parse(savedF);
+    } catch (e) { monthlyFinancials = {}; }
+}
 
 
 let fortellerShowFinancials = localStorage.getItem('forteller_show_financials') !== 'false';
 
 
 function saveMonthlyFinancials() {
-    localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials));
-    localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates));
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+    if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+        if (typeof persistEncryptedLocalVault === 'function') persistEncryptedLocalVault();
+    } else {
+        localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials));
+        localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates));
+    }
     localStorage.setItem('forteller_show_financials', String(fortellerShowFinancials));
     saveData();
 }
@@ -1325,6 +1442,7 @@ function toggleShowAddStepForm(thoughtId) {
 
 
 /* == INJECT: js/crypto_sync.js == */
+/* == INJECT: js/biometric_lock.js == */
 
 
 function jumpToCardsCategory(cat) {
@@ -2244,7 +2362,16 @@ function updateContainerWidth() {
         function toggleBlockPanel() { isBlockPanelOpen = !isBlockPanelOpen; render(); }
 
 
-        function saveBlockedSlots() { localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots)); render(); triggerAutoSaveToPi(); }
+        function saveBlockedSlots() {
+            if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+            if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                if (typeof persistEncryptedLocalVault === 'function') persistEncryptedLocalVault();
+            } else {
+                localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots));
+            }
+            render();
+            triggerAutoSaveToPi();
+        }
 
 
         function addBlockedSlot() {
@@ -2443,15 +2570,25 @@ function updateContainerWidth() {
 
 
         function saveData() {
+            if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
             syncLinkedData();
-            localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
+            if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                if (typeof persistEncryptedLocalVault === 'function') persistEncryptedLocalVault();
+            } else {
+                localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
+            }
             render();
             triggerAutoSaveToPi();
         }
 
 
         function saveCategoryOrder() {
-            localStorage.setItem('my_category_order', JSON.stringify(categoryOrder));
+            if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+            if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                if (typeof persistEncryptedLocalVault === 'function') persistEncryptedLocalVault();
+            } else {
+                localStorage.setItem('my_category_order', JSON.stringify(categoryOrder));
+            }
             render();
             triggerAutoSaveToPi();
         }
@@ -5420,23 +5557,32 @@ function render() {
     else if (viewMode === 'timeline') renderTimelineMatrix(container);
     else renderCards(container);
 }
-if (document.readyState === 'loading') {
-    window.addEventListener('DOMContentLoaded', () => {
-        initTheme();
-        render();
-        checkAndAutoSyncFromPi();
-    });
-} else {
+function bootstrapLifeScheduleApp() {
     initTheme();
+    if (typeof updateE2eeSettingsUI === 'function') updateE2eeSettingsUI();
+    if (typeof updateBiometricSettingsUI === 'function') updateBiometricSettingsUI();
+    if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) {
+        if (typeof showAppLockOverlay === 'function') showAppLockOverlay();
+        return;
+    }
     render();
     checkAndAutoSyncFromPi();
 }
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', bootstrapLifeScheduleApp);
+} else {
+    bootstrapLifeScheduleApp();
+}
 window.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
+    if (typeof handleVisibilityChangeForAutoLock === 'function') {
+        handleVisibilityChangeForAutoLock();
+    } else if (document.visibilityState === 'visible') {
         checkAndAutoSyncFromPi();
     }
 });
 window.addEventListener('focus', () => {
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
     checkAndAutoSyncFromPi();
 });
 

@@ -282,6 +282,11 @@ function onToggleE2eeSetting(checked) {
             updateE2eeSettingsUI();
             return;
         }
+        if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+            alert('⚠️ 目前已開啟「最高防護（開頁鎖定 + 本機加密）」，請先於下方關閉最高防護後再關閉 E2EE。');
+            updateE2eeSettingsUI();
+            return;
+        }
         if (!confirm('⚠️ 確定要關閉端對端備份加密嗎？\n關閉後，後續匯出與上傳至雲端的備份將恢復為「明文 JSON」。')) {
             updateE2eeSettingsUI();
             return;
@@ -289,7 +294,11 @@ function onToggleE2eeSetting(checked) {
         localStorage.setItem('ls_e2ee_enabled', 'false');
         _e2eeSessionKey = null;
         _e2eeSessionSaltB64 = '';
+        if (typeof clearBiometricBinding === 'function') {
+            clearBiometricBinding(true);
+        }
         updateE2eeSettingsUI();
+        if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
     }
 }
 
@@ -300,6 +309,15 @@ function lockE2eeSession() {
     if (isE2eeEnabled()) {
         updatePiSyncBadge('🔒 金鑰已鎖定 (點擊輸入通行碼)', 'bg-amber-100 text-amber-900 border-amber-300');
     }
+    if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+        if (typeof wipeInMemorySensitiveDataForLock === 'function') {
+            wipeInMemorySensitiveDataForLock();
+        }
+        if (typeof showAppLockOverlay === 'function') {
+            showAppLockOverlay();
+        }
+    }
+    if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
 }
 
 function toggleE2eeInputVisibility(inputId, btnId) {
@@ -337,10 +355,20 @@ function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelo
     const submitText = document.getElementById('e2eeModalSubmitText');
     const eyeBtn1 = document.getElementById('e2eeEyeBtn1');
     const eyeBtn2 = document.getElementById('e2eeEyeBtn2');
+    const bioRow = document.getElementById('e2eeModalBioRow');
+    const remindBanner = document.getElementById('e2eeModalRemindBanner');
     const hiddenType = ['pass', 'word'].join('');
 
-    if (input1) { input1.value = ''; input1.setAttribute('type', hiddenType); }
-    if (input2) { input2.value = ''; input2.setAttribute('type', hiddenType); }
+    if (input1) {
+        input1.value = '';
+        input1.setAttribute('type', hiddenType);
+        input1.setAttribute('autocomplete', effectiveMode === 'setup' ? 'new-password' : 'current-password');
+    }
+    if (input2) {
+        input2.value = '';
+        input2.setAttribute('type', hiddenType);
+        input2.setAttribute('autocomplete', 'new-password');
+    }
     if (eyeBtn1) eyeBtn1.textContent = '👁️ 顯示';
     if (eyeBtn2) eyeBtn2.textContent = '👁️ 顯示';
     if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
@@ -351,6 +379,24 @@ function openE2eePassphraseModal(mode = 'unlock', onSuccess = null, customEnvelo
         } else {
             hintBox.innerHTML = E2EE_DEFAULT_HINT_HTML;
             hintBox.className = 'bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed';
+        }
+    }
+
+    if (bioRow) {
+        const showBioBtn = effectiveMode === 'unlock'
+            && !customPromptHint.includes('綁定')
+            && typeof hasBioCredentialBound === 'function'
+            && hasBioCredentialBound()
+            && typeof isWebAuthnSupported === 'function'
+            && isWebAuthnSupported();
+        if (showBioBtn) bioRow.classList.remove('hidden');
+        else bioRow.classList.add('hidden');
+    }
+    if (remindBanner) {
+        if (effectiveMode === 'unlock' && typeof isPassphraseReviewDue === 'function' && isPassphraseReviewDue()) {
+            remindBanner.classList.remove('hidden');
+        } else {
+            remindBanner.classList.add('hidden');
         }
     }
 
@@ -380,6 +426,7 @@ function closeE2eePassphraseModal(fromSuccess = false) {
     if (input2) input2.value = '';
     if (modal) modal.classList.add('hidden');
     updateE2eeSettingsUI();
+    if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
     // 【v6.0.1 第三段防線】：若本機已有未上傳修改但使用者按了取消關閉彈窗，維持紅燈警示並彈出 Toast 提醒
     if (!fromSuccess && _hasUnsavedCloudChanges && isE2eeEnabled() && !_e2eeSessionKey) {
         updatePiSyncBadge('🚨 本機修改尚未上傳雲端 (點擊輸入通行碼)', 'bg-rose-100 text-rose-900 border-rose-400 animate-pulse');
@@ -396,6 +443,49 @@ function showE2eeModalError(msg) {
         errEl.classList.remove('hidden');
     } else {
         alert(msg);
+    }
+}
+
+async function completeE2eeModalUnlockSuccess(plainData, targetEnvelope, verifiedPassphrase = null) {
+    localStorage.setItem('ls_e2ee_enabled', 'true');
+    const cb = _e2eeModalOnSuccess;
+    _e2eeModalOnSuccess = null;
+    _e2eeModalCustomEnvelope = null;
+
+    // 若有待解鎖的雲端同步封套，檢查是否有本機未上傳修改衝突 (防後解鎖覆蓋)
+    if (_pendingEncryptedRemote && targetEnvelope === _pendingEncryptedRemote.envelope) {
+        const pending = _pendingEncryptedRemote;
+        _pendingEncryptedRemote = null;
+        if (pending.shouldApply && !_hasUnsavedCloudChanges) {
+            applyImportedData(plainData, pending.fileName);
+        } else if (pending.shouldApply && _hasUnsavedCloudChanges) {
+            const keepLocal = confirm('⚠️ 偵測到雲端有另一份備份，但您剛才已在本機進行了修改！\n\n點擊「確定」：保留您剛才在本機的修改，並立即加密上傳至雲端\n點擊「取消」：放棄剛才的修改，改為載入雲端備份');
+            if (!keepLocal) {
+                applyImportedData(plainData, pending.fileName);
+                _hasUnsavedCloudChanges = false;
+            }
+        }
+        isInitialSyncCompleted = true;
+        updatePiSyncBadge(pending.syncedBadgeText + ' 🔐', pending.syncedBadgeClass);
+    } else {
+        isInitialSyncCompleted = true;
+        updatePiSyncBadge('🟢 金鑰已解鎖 🔐', 'bg-emerald-100 text-emerald-900 border-emerald-300');
+    }
+
+    if (typeof persistEncryptedLocalVault === 'function' && typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+        await persistEncryptedLocalVault();
+    }
+
+    closeE2eePassphraseModal(true);
+    updateE2eeSettingsUI();
+    if (typeof updateBiometricSettingsUI === 'function') updateBiometricSettingsUI();
+    if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
+
+    if (cb) {
+        await cb(plainData, verifiedPassphrase);
+    } else if (_hasUnsavedCloudChanges) {
+        // 【v6.0.1 第二段防線】：解鎖後若本機有未上傳之修改，立即自動觸發加密上傳
+        triggerAutoSaveToPi();
     }
 }
 
@@ -440,56 +530,35 @@ async function confirmE2eePassphraseModal() {
             _e2eeSessionSaltB64 = saltB64;
             _e2eeSessionIterations = E2EE_DEFAULT_ITERATIONS;
             localStorage.setItem('ls_e2ee_enabled', 'true');
+            if (typeof recordManualPassphraseUnlock === 'function') recordManualPassphraseUnlock();
+            // 更換新通行碼時清除舊指紋綁定（因 Salt 已變更）
+            if (typeof hasBioCredentialBound === 'function' && hasBioCredentialBound() && typeof clearBiometricBinding === 'function') {
+                await clearBiometricBinding(true);
+            }
+            if (typeof persistEncryptedLocalVault === 'function' && typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+                await persistEncryptedLocalVault();
+            }
             const cb = _e2eeModalOnSuccess;
             _e2eeModalOnSuccess = null;
             isInitialSyncCompleted = true;
             closeE2eePassphraseModal(true);
             updateE2eeSettingsUI();
+            if (typeof updateBiometricSettingsUI === 'function') updateBiometricSettingsUI();
+            if (typeof updateHeaderLockButtonUI === 'function') updateHeaderLockButtonUI();
             if (!localStorage.getItem('ls_e2ee_cleaned_reminded')) {
                 localStorage.setItem('ls_e2ee_cleaned_reminded', 'true');
-                alert('🔐 已成功設定端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必將此通行碼存入密碼管理器（一旦遺忘將永久無法還原）。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
+                alert('🔐 已成功設定端對端加密金鑰！\n\n💡 重要安全提醒：\n1. 請務必妥善保存此通行碼（一旦遺忘將永久無法還原）。\n2. 若樹莓派或 Google Drive 上曾存有早期的「明文 .json 備份檔」，請記得手動刪除舊明文檔（含雲端硬碟垃圾桶），確保隱私徹底清零！');
             }
             if (cb) {
-                await cb();
+                await cb(null, pass1);
             } else if (_hasUnsavedCloudChanges || (isInitialSyncCompleted && thoughts.length > 0)) {
                 triggerAutoSaveToPi();
             }
         } else {
             const targetEnvelope = _e2eeModalCustomEnvelope || (_pendingEncryptedRemote && _pendingEncryptedRemote.envelope) || _latestRemoteEnvelope;
             const plainData = await decryptBackupPayload(targetEnvelope, pass1);
-            localStorage.setItem('ls_e2ee_enabled', 'true');
-            const cb = _e2eeModalOnSuccess;
-            _e2eeModalOnSuccess = null;
-            _e2eeModalCustomEnvelope = null;
-
-            // 若有待解鎖的雲端同步封套，檢查是否有本機未上傳修改衝突 (防後解鎖覆蓋)
-            if (_pendingEncryptedRemote && targetEnvelope === _pendingEncryptedRemote.envelope) {
-                const pending = _pendingEncryptedRemote;
-                _pendingEncryptedRemote = null;
-                if (pending.shouldApply && !_hasUnsavedCloudChanges) {
-                    applyImportedData(plainData, pending.fileName);
-                } else if (pending.shouldApply && _hasUnsavedCloudChanges) {
-                    const keepLocal = confirm('⚠️ 偵測到雲端有另一份備份，但您剛才已在本機進行了修改！\n\n點擊「確定」：保留您剛才在本機的修改，並立即加密上傳至雲端\n點擊「取消」：放棄剛才的修改，改為載入雲端備份');
-                    if (!keepLocal) {
-                        applyImportedData(plainData, pending.fileName);
-                        _hasUnsavedCloudChanges = false;
-                    }
-                }
-                isInitialSyncCompleted = true;
-                updatePiSyncBadge(pending.syncedBadgeText + ' 🔐', pending.syncedBadgeClass);
-            } else {
-                isInitialSyncCompleted = true;
-                updatePiSyncBadge('🟢 金鑰已解鎖 🔐', 'bg-emerald-100 text-emerald-900 border-emerald-300');
-            }
-
-            closeE2eePassphraseModal(true);
-            updateE2eeSettingsUI();
-            if (cb) {
-                await cb(plainData);
-            } else if (_hasUnsavedCloudChanges) {
-                // 【v6.0.1 第二段防線】：解鎖後若本機有未上傳之修改，立即自動觸發加密上傳
-                triggerAutoSaveToPi();
-            }
+            if (typeof recordManualPassphraseUnlock === 'function') recordManualPassphraseUnlock();
+            await completeE2eeModalUnlockSuccess(plainData, targetEnvelope, pass1);
         }
     } catch (err) {
         showE2eeModalError('❌ 解密失敗：通行碼錯誤或加密封套已遭篡改！請確認後重試。');
@@ -602,8 +671,15 @@ function applyImportedData(backupData, fileName) {
         }
     });
     thoughts = importedThoughts;
-    if (backupData.categoryOrder) { categoryOrder = backupData.categoryOrder; localStorage.setItem('my_category_order', JSON.stringify(categoryOrder)); }
-    if (backupData.blockedSlots) { blockedSlots = backupData.blockedSlots; localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots)); }
+    const _useEncryptedVault = (typeof isAppLockEnabled === 'function' && isAppLockEnabled());
+    if (backupData.categoryOrder) {
+        categoryOrder = backupData.categoryOrder;
+        if (!_useEncryptedVault) localStorage.setItem('my_category_order', JSON.stringify(categoryOrder));
+    }
+    if (backupData.blockedSlots) {
+        blockedSlots = backupData.blockedSlots;
+        if (!_useEncryptedVault) localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots));
+    }
     if (backupData.maxDailyHours) { maxDailyHours = backupData.maxDailyHours; localStorage.setItem('my_max_daily_hours', maxDailyHours); }
     if (backupData.maxWeeklyHours) { maxWeeklyHours = backupData.maxWeeklyHours; localStorage.setItem('my_max_weekly_hours', maxWeeklyHours); }
     
@@ -639,11 +715,15 @@ function applyImportedData(backupData, fileName) {
     // 【v5.4.0 還原月度財務數據與範本】
     if (backupData.monthlyFinancials !== undefined) {
         monthlyFinancials = backupData.monthlyFinancials;
-        try { localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials)); } catch(e) {}
+        if (!_useEncryptedVault) {
+            try { localStorage.setItem('my_monthly_financials', JSON.stringify(monthlyFinancials)); } catch(e) {}
+        }
     }
     if (backupData.financialTemplates !== undefined) {
         financialTemplates = backupData.financialTemplates;
-        try { localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates)); } catch(e) {}
+        if (!_useEncryptedVault) {
+            try { localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates)); } catch(e) {}
+        }
     }
     if (backupData.fortellerShowFinancials !== undefined) {
         fortellerShowFinancials = backupData.fortellerShowFinancials;
@@ -652,7 +732,11 @@ function applyImportedData(backupData, fileName) {
 
 
     syncLinkedData();
-    localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
+    if (_useEncryptedVault && typeof persistEncryptedLocalVault === 'function') {
+        persistEncryptedLocalVault();
+    } else {
+        localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
+    }
     if (fileName) {
         lastSyncedFileName = fileName;
         localStorage.setItem('pi_last_synced_file', fileName);
@@ -675,10 +759,10 @@ function handlePiBadgeClick() {
         return;
     }
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     if ((!piServerUrl || !piApiKey) && (!gasUrl || !gasKey)) openPiSettingsModal();
     else checkAndAutoSyncFromPi();
 }
@@ -772,14 +856,14 @@ function openPiSettingsModal() {
     const keyInput = document.getElementById('piApiKeyInput');
     const accInput = document.getElementById('piAccountInput');
     if (urlInput) urlInput.value = localStorage.getItem('pi_server_url') || '';
-    if (keyInput) keyInput.value = localStorage.getItem('pi_api_key') || '';
+    if (keyInput) keyInput.value = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || ''));
     if (accInput) accInput.value = localStorage.getItem('pi_account') || '';
     const gasUrlInput = document.getElementById('gasSyncUrlInput');
     const gasKeyInput = document.getElementById('gasApiKeyInput');
     if (gasUrlInput) gasUrlInput.value = localStorage.getItem('gas_sync_url') || '';
-    if (gasKeyInput) gasKeyInput.value = localStorage.getItem('gas_api_key') || '';
+    if (gasKeyInput) gasKeyInput.value = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || ''));
     const geminiKeyInput = document.getElementById('geminiApiKeyInput');
-    if (geminiKeyInput) geminiKeyInput.value = localStorage.getItem('gemini_api_key') || '';
+    if (geminiKeyInput) geminiKeyInput.value = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : (localStorage.getItem('gemini_api_key') || ''));
     const cachedModelsRaw = localStorage.getItem('gemini_cached_models');
     if (cachedModelsRaw) {
         try {
@@ -1072,7 +1156,7 @@ if (typeof window !== 'undefined') {
 // 【v5.3.5 Google Apps Script 雲端硬碟雙軌同步輔助函式】
 async function uploadPayloadToGas(fileName, payload) {
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const acc = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
     if (!gasUrl || !gasKey) return null;
     try {
@@ -1144,7 +1228,7 @@ async function isUsableBackupCandidate(data) {
 
 async function fetchLatestBackupFromGas(targetAccount) {
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const acc = (targetAccount || localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
     if (!gasUrl || !gasKey) return null;
     try {
@@ -1301,12 +1385,12 @@ async function savePiSettings() {
 
 
     localStorage.setItem('pi_server_url', piServerUrl);
-    localStorage.setItem('pi_api_key', piApiKey);
+    if (typeof setVaultedApiKey === 'function') setVaultedApiKey('pi_api_key', piApiKey); else localStorage.setItem('pi_api_key', piApiKey);
     localStorage.setItem('pi_account', piAccount);
     localStorage.setItem('gas_sync_url', newGasUrl);
-    localStorage.setItem('gas_api_key', newGasKey);
+    if (typeof setVaultedApiKey === 'function') setVaultedApiKey('gas_api_key', newGasKey); else localStorage.setItem('gas_api_key', newGasKey);
     const geminiKeyInput = document.getElementById('geminiApiKeyInput');
-    if (geminiKeyInput) localStorage.setItem('gemini_api_key', geminiKeyInput.value.trim());
+    if (geminiKeyInput) { if (typeof setVaultedApiKey === 'function') setVaultedApiKey('gemini_api_key', geminiKeyInput.value.trim()); else localStorage.setItem('gemini_api_key', geminiKeyInput.value.trim()); }
     closePiSettingsModal();
     if (oldAcc !== newAcc) {
         lastSyncedFileName = '';
@@ -1364,10 +1448,10 @@ async function savePiSettings() {
 
 function triggerAutoSaveToPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const hasPi = Boolean(piServerUrl && piApiKey);
     const hasGas = Boolean(gasUrl && gasKey);
 
@@ -1411,10 +1495,10 @@ async function performSilentAutoSave() {
 
 
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const hasPi = Boolean(piServerUrl && piApiKey);
     const hasGas = Boolean(gasUrl && gasKey);
     if (!hasPi && !hasGas) return;
@@ -1515,7 +1599,7 @@ if (typeof window !== 'undefined') {
 }
 async function exportToPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     if (!piServerUrl || !piApiKey) {
         alert("請先點擊「⚙️ 伺服器設定」設定樹莓派伺服器網址與 API 金鑰！");
@@ -1557,7 +1641,7 @@ async function exportToPi() {
 }
 async function importFromPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     if (!piServerUrl || !piApiKey) {
         alert("請先點擊「⚙️ 伺服器設定」設定樹莓派伺服器網址與 API 金鑰！");
@@ -1614,10 +1698,10 @@ async function importFromPi() {
 }
 async function checkAndAutoSyncFromPi() {
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
-    piApiKey = (localStorage.getItem('pi_api_key') || '').trim();
+    piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
     const gasUrl = (localStorage.getItem('gas_sync_url') || '').trim();
-    const gasKey = (localStorage.getItem('gas_api_key') || '').trim();
+    const gasKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gas_api_key') : (localStorage.getItem('gas_api_key') || '').trim());
     const hasPi = Boolean(piServerUrl && piApiKey);
     const hasGas = Boolean(gasUrl && gasKey);
 

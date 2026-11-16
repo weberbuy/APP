@@ -6,7 +6,7 @@ let aiChatContext = [];
 
 
 function openAiCoachModal(thoughtId) {
-    const geminiKey = localStorage.getItem('gemini_api_key');
+    const geminiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : localStorage.getItem('gemini_api_key'));
     if (!geminiKey) {
         alert("請先在「⚙️ 設定 / 資料管理」中設定 Google Gemini API Key！");
         openPiSettingsModal();
@@ -187,7 +187,7 @@ function copyGeminiDetectedModels() {
 // 【v5.4.6 一鍵檢測按鈕】：於設定視窗即時檢驗 API Key 並填入自選下拉選單與可複製文字框
 async function testGeminiApiKey() {
     const input = document.getElementById('geminiApiKeyInput');
-    const key = (input ? input.value : localStorage.getItem('gemini_api_key'))?.trim();
+    const key = (input ? input.value : (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : localStorage.getItem('gemini_api_key')))?.trim();
     if (!key) {
         alert("請先輸入 Google Gemini API Key 再執行檢測！");
         if (input) input.focus();
@@ -226,7 +226,7 @@ async function testGeminiApiKey() {
 }
 
 async function invokeGeminiAPI() {
-    const rawKey = localStorage.getItem('gemini_api_key');
+    const rawKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : localStorage.getItem('gemini_api_key'));
     if (!rawKey || !rawKey.trim()) return;
     const apiKey = rawKey.trim();
     appendChatLoading();
