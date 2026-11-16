@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Weber Vault · 零知識雙軌加密私人雲端保險箱</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Weber Vault" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <script>
@@ -27,6 +33,40 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
+  <!-- 🛡️ 【v1.1.0 最高防護】：全螢幕開頁鎖定遮罩 (App Lock Overlay) -->
+  <div id="vaultAppLockOverlay" style="z-index: 80;" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-5 text-center">
+      <div class="space-y-2">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-3xl shadow-inner">🛡️</div>
+        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Weber Vault 已安全鎖定</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          最高防護已啟用：本機 API 金鑰與保險箱目錄皆受保護，請驗證身分後進入。
+        </p>
+      </div>
+
+      <div id="vaultAppLockPassphraseReminder" class="hidden bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 rounded-xl p-2.5 text-[11px] font-bold text-amber-900 dark:text-amber-200 text-left">
+        💡 已超過 14 天未手動輸入主通行碼，建議偶爾改用下方主通行碼解鎖以複習記憶（離線救援必備）！
+      </div>
+
+      <button type="button" id="vaultAppLockBioBtn" onclick="unlockVaultWithBiometricsInAppLock()" class="hidden w-full py-3.5 px-4 text-sm bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-extrabold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+        <span class="text-xl">👆</span>
+        <span>使用指紋 / Face ID 解鎖</span>
+      </button>
+
+      <form onsubmit="event.preventDefault(); unlockVaultWithPassphraseInAppLock();" class="space-y-3 text-left pt-1">
+        <input type="text" name="username" autocomplete="username" value="WeberVault-AppLock" class="hidden" readonly tabindex="-1" />
+        <div>
+          <label for="vaultAppLockPassInput" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">🔑 使用主通行碼解鎖：</label>
+          <input type="password" id="vaultAppLockPassInput" autocomplete="current-password" placeholder="請輸入保險箱主通行碼..." class="w-full px-3.5 py-2.5 text-xs border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white dark:bg-slate-800 text-slate-800 dark:text-white" />
+        </div>
+        <div id="vaultAppLockErrorText" class="hidden text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 rounded-xl p-2.5"></div>
+        <button type="submit" id="vaultAppLockPassSubmitBtn" class="w-full py-2.5 px-4 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-sm cursor-pointer">
+          🔓 驗證通行碼並解鎖
+        </button>
+      </form>
+    </div>
+  </div>
+
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
     <!-- 頂部導覽列 -->
     <header class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 mb-6">
@@ -38,7 +78,7 @@
           <div>
             <div class="flex flex-wrap items-center gap-2">
               <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Weber Vault 私人加密雲端保險箱</h1>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-bold" id="appVersionBadge">v1.0.0 · WBVLT1</span>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-bold" id="appVersionBadge">v1.1.0 · WBVLT1</span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               瀏覽器端 PBKDF2 (600,000 次) + AES-256-GCM 零知識加密 · 檔名與內容雙重隱匿 · 🍓 樹莓派 + ☁️ Google Drive 雙軌自癒備份
@@ -51,6 +91,11 @@
           <button id="vaultLockBtn" onclick="handleVaultLockBtnClick()" class="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:opacity-90">
             <i class="fa-solid fa-lock" id="vaultLockIcon"></i>
             <span id="vaultLockText">尚未解鎖通行碼 (點擊輸入)</span>
+          </button>
+
+          <!-- 立即鎖定按鈕 (最高防護或已解鎖時可用) -->
+          <button id="headerVaultQuickLockBtn" onclick="triggerVaultManualLock()" class="hidden px-3 py-2 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition-all flex items-center gap-1.5" title="立即清除記憶體金鑰並鎖定畫面">
+            <span>🔒 鎖定</span>
           </button>
 
           <!-- 雙軌狀態徽章 -->
@@ -241,6 +286,10 @@
       </div>
 
       <form onsubmit="submitPassphraseModal(event)" class="space-y-3.5">
+        <button type="button" id="passModalBioBtn" onclick="unlockVaultModalWithBiometrics()" class="hidden w-full py-2.5 px-4 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-extrabold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+          <span class="text-base">👆</span>
+          <span>改用指紋 / Face ID 快速解鎖</span>
+        </button>
         <div>
           <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">加密主通行碼 (建議 8 碼以上)</label>
           <input type="password" id="masterPassInput" required autocomplete="current-password" placeholder="請輸入您的私人保險箱通行碼..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -312,6 +361,31 @@
             <input type="password" id="cfgGasKey" placeholder="對應 gas-vault.gs 的 GAS_API_KEY" class="w-full px-3 py-2 font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl" />
           </div>
           <p id="gasTestStatus" class="text-[11px] font-mono text-slate-500"></p>
+        </div>
+
+        <!-- 👆 【v1.1.0】指紋 / Face ID 與 🛡️ 最高防護 (App Lock + 本機金鑰加密) -->
+        <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-bold text-emerald-950 dark:text-emerald-200">👆 生物辨識 (指紋 / Face ID) 與 🛡️ 最高防護</span>
+            <span id="vaultBioStatusBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">未綁定</span>
+          </div>
+          <p class="text-[11px] text-emerald-900/80 dark:text-emerald-200/80 leading-relaxed">
+            綁定裝置生物辨識後，在公共場合只需指紋 / Face ID 即可快速解鎖保險箱目錄；啟用最高防護會一併加密本機儲存的 API 金鑰，並在開頁或背景閒置 3 分鐘後自動上鎖。
+          </p>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" id="vaultBindBioBtn" onclick="registerVaultBiometricsFlow()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs transition-all cursor-pointer">
+              👆 綁定此裝置指紋 / Face ID
+            </button>
+            <button type="button" id="vaultRemoveBioBtn" onclick="removeVaultBiometrics()" class="hidden px-3 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 dark:hover:bg-rose-900 text-rose-700 dark:text-rose-300 font-bold border border-rose-200 dark:border-rose-800 transition-all cursor-pointer">
+              🗑️ 移除指紋
+            </button>
+          </div>
+          <label class="flex items-start gap-2 pt-2 border-t border-emerald-200/70 dark:border-emerald-800/60 cursor-pointer select-none">
+            <input type="checkbox" id="cfgVaultAppLockCheckbox" onchange="toggleVaultAppLockSetting(this.checked)" class="mt-0.5 rounded border-emerald-400 text-emerald-600 focus:ring-emerald-500" />
+            <span class="text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed">
+              <strong class="text-emerald-900 dark:text-emerald-200">啟用最高防護 (App Lock + 本機金鑰加密)</strong>：開啟頁面必須先驗證指紋或主通行碼，且 <code class="font-mono">pi_api_key</code> / <code class="font-mono">gas_vault_key</code> 將加密封存於本機保險庫。
+            </span>
+          </label>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -392,7 +466,7 @@
     // ============================================================
     // 🔐 Weber Vault 前端核心邏輯 (WBVLT1 與雙軌同步引擎)
     // ============================================================
-    window.APP_VERSION = 'v1.0.0 (2026-11-14)';
+    window.APP_VERSION = 'v1.1.0 (2026-11-16)';
     const VAULT_MAGIC_STR = 'WBVLT1';
     const VAULT_FORMAT_ID = 'weber_vault_v1';
     const VAULT_VERSION = 1;
@@ -416,18 +490,29 @@
     let _passModalCallback = null;
     let _activePreviewUrl = null;
 
-    // 讀取連線設定（與 LifeSchedule 共用 pi_server_url / pi_api_key / pi_account）
+    let _decryptedLocalVaultSecrets = null;
+    function safeLsGet(k, fallback = '') {
+      try { const v = localStorage.getItem(k); return v === null ? fallback : v; } catch (e) { return fallback; }
+    }
+    function safeLsSet(k, v) {
+      try { localStorage.setItem(k, String(v)); } catch (e) {}
+    }
+    function safeLsRemove(k) {
+      try { localStorage.removeItem(k); } catch (e) {}
+    }
+
+    // 讀取連線設定（與 LifeSchedule 共用 pi_server_url / pi_api_key / pi_account；啟用最高防護時優先讀記憶體解密保險庫）
     function getConnConfig() {
-      let defaultPiUrl = (localStorage.getItem('pi_server_url') || '').trim().replace(/\/+$/, '');
+      let defaultPiUrl = safeLsGet('pi_server_url', '').trim().replace(/\/+$/, '');
       const loc = (typeof window !== 'undefined' && window.location) ? window.location : {};
       const proto = String(loc.protocol || '');
       if (!defaultPiUrl && proto.startsWith('http') && (loc.pathname === '/vault' || String(loc.port || '') === '3000')) {
         defaultPiUrl = loc.origin || '';
       }
-      const piKey = (localStorage.getItem('pi_api_key') || '').trim();
-      const account = (localStorage.getItem('pi_account') || 'weber').trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
-      const gasUrl = (localStorage.getItem('gas_vault_url') || localStorage.getItem('gas_sync_url') || '').trim();
-      const gasKey = (localStorage.getItem('gas_vault_key') || localStorage.getItem('gas_api_key') || '').trim();
+      const piKey = (_decryptedLocalVaultSecrets?.piKey ?? safeLsGet('pi_api_key', '')).trim();
+      const account = (safeLsGet('pi_account', 'weber') || 'weber').trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
+      const gasUrl = (safeLsGet('gas_vault_url', '') || safeLsGet('gas_sync_url', '')).trim();
+      const gasKey = (_decryptedLocalVaultSecrets?.gasKey ?? (safeLsGet('gas_vault_key', '') || safeLsGet('gas_api_key', ''))).trim();
       return {
         piUrl: defaultPiUrl,
         piKey,
@@ -1331,6 +1416,11 @@
       const btn = document.getElementById('vaultLockBtn');
       const icon = document.getElementById('vaultLockIcon');
       const text = document.getElementById('vaultLockText');
+      const quickLockBtn = document.getElementById('headerVaultQuickLockBtn');
+      if (quickLockBtn) {
+        if (_memoryPassphrase || isVaultAppLockEnabled()) quickLockBtn.classList.remove('hidden');
+        else quickLockBtn.classList.add('hidden');
+      }
       if (!btn || !icon || !text) return;
 
       if (_memoryPassphrase) {
@@ -1354,10 +1444,15 @@
       const input = document.getElementById('masterPassInput');
       const errEl = document.getElementById('passModalError');
       const lockNowBtn = document.getElementById('lockNowBtnInModal');
+      const bioBtn = document.getElementById('passModalBioBtn');
       if (errEl) errEl.classList.add('hidden');
       if (lockNowBtn) {
         if (_memoryPassphrase) lockNowBtn.classList.remove('hidden');
         else lockNowBtn.classList.add('hidden');
+      }
+      if (bioBtn) {
+        if (isVaultBioBound()) bioBtn.classList.remove('hidden');
+        else bioBtn.classList.add('hidden');
       }
       if (input) input.value = _memoryPassphrase || '';
       modal.classList.remove('hidden');
@@ -1386,6 +1481,10 @@
       try {
         _memoryPassphrase = pass;
         _derivedKeyCache.clear();
+        markVaultPassphraseVerified();
+        if (isVaultAppLockEnabled() && safeLsGet('vt_encrypted_local_vault', '')) {
+          try { await decryptLocalSecretsWithPassphrase(pass); } catch (err) {}
+        }
         if (_vaultItems.length > 0) {
           await decryptAllLoadedHeaders(_memoryPassphrase);
         }
@@ -1407,6 +1506,9 @@
     function lockVaultSession() {
       _memoryPassphrase = '';
       _derivedKeyCache.clear();
+      if (isVaultAppLockEnabled()) {
+        _decryptedLocalVaultSecrets = null;
+      }
       for (const it of _vaultItems) {
         it.decryptedMeta = null;
         it.decryptFailed = false;
@@ -1414,6 +1516,9 @@
       updateLockBadgeUI();
       renderVaultList();
       closePassphraseModal();
+      if (isVaultAppLockEnabled()) {
+        showVaultAppLockOverlay();
+      }
       showToast('🔒 已清除記憶體金鑰並鎖定所有真實檔名', 'info');
     }
 
@@ -1427,6 +1532,7 @@
       document.getElementById('cfgGasKey').value = cfg.gasKey;
       document.getElementById('piTestStatus').textContent = '';
       document.getElementById('gasTestStatus').textContent = '';
+      updateVaultBioSettingsUI();
       document.getElementById('settingsModal').classList.remove('hidden');
     }
 
@@ -1434,18 +1540,23 @@
       document.getElementById('settingsModal').classList.add('hidden');
     }
 
-    function saveSettingsModal() {
+    async function saveSettingsModal() {
       const acc = document.getElementById('cfgAccount').value.trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'weber';
       const piUrl = document.getElementById('cfgPiUrl').value.trim().replace(/\/+$/, '');
       const piKey = document.getElementById('cfgPiKey').value.trim();
       const gasUrl = document.getElementById('cfgGasUrl').value.trim();
       const gasKey = document.getElementById('cfgGasKey').value.trim();
 
-      localStorage.setItem('pi_account', acc);
-      localStorage.setItem('pi_server_url', piUrl);
-      localStorage.setItem('pi_api_key', piKey);
-      localStorage.setItem('gas_vault_url', gasUrl);
-      localStorage.setItem('gas_vault_key', gasKey);
+      safeLsSet('pi_account', acc);
+      safeLsSet('pi_server_url', piUrl);
+      safeLsSet('gas_vault_url', gasUrl);
+
+      if (isVaultAppLockEnabled() && _memoryPassphrase) {
+        await encryptAndSaveLocalSecrets(_memoryPassphrase, { piKey, gasKey });
+      } else {
+        safeLsSet('pi_api_key', piKey);
+        safeLsSet('gas_vault_key', gasKey);
+      }
 
       closeSettingsModal();
       showToast('✅ 雙軌雲端設定已儲存！', 'success');
@@ -1588,12 +1699,12 @@
     // 深色模式 (與首頁及 LifeSchedule 共用 weber_theme)
     function toggleDarkMode() {
       const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('weber_theme', isDark ? 'dark' : 'light');
+      safeLsSet('weber_theme', isDark ? 'dark' : 'light');
       updateThemeIcon(isDark);
     }
 
     function initTheme() {
-      const saved = localStorage.getItem('weber_theme');
+      const saved = safeLsGet('weber_theme', '');
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       const isDark = saved === 'dark' || (!saved && prefersDark);
       document.documentElement.classList.toggle('dark', isDark);
@@ -1605,10 +1716,448 @@
       if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-400 text-xs' : 'fa-solid fa-moon text-xs';
     }
 
+    // ============================================================
+    // 👆 【v1.1.0】WebAuthn 指紋 / Face ID (PRF + Gate/IDB 降級) & 🛡️ 最高防護
+    // ============================================================
+    const VT_BIO_CRED_ID_KEY = 'vt_bio_cred_id';
+    const VT_BIO_MODE_KEY = 'vt_bio_mode';
+    const VT_APPLOCK_ENABLED_KEY = 'vt_applock_enabled';
+    const VT_ENC_LOCAL_VAULT_KEY = 'vt_encrypted_local_vault';
+    const VT_LAST_PASS_TS_KEY = 'vt_last_passphrase_ts';
+    const VT_BIO_IDB_NAME = 'WeberVaultBioDB';
+    const VT_BIO_IDB_STORE = 'bio_keys';
+    const VT_AUTO_LOCK_IDLE_MS = 3 * 60 * 1000;
+    const VT_PASS_REMIND_MS = 14 * 24 * 60 * 60 * 1000;
+    let _vtHiddenAtTs = 0;
+
+    function isVaultBioSupported() {
+      return Boolean(window.PublicKeyCredential && navigator.credentials && window.crypto && window.crypto.subtle && window.indexedDB);
+    }
+    function isVaultBioBound() {
+      return Boolean(safeLsGet(VT_BIO_CRED_ID_KEY, ''));
+    }
+    function isVaultAppLockEnabled() {
+      return safeLsGet(VT_APPLOCK_ENABLED_KEY, '') === 'true';
+    }
+    function markVaultPassphraseVerified() {
+      safeLsSet(VT_LAST_PASS_TS_KEY, String(Date.now()));
+    }
+    function shouldShowVaultPassphraseReminder() {
+      const last = Number(safeLsGet(VT_LAST_PASS_TS_KEY, '0'));
+      return last > 0 && (Date.now() - last) >= VT_PASS_REMIND_MS;
+    }
+
+    function openVaultBioIdb() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(VT_BIO_IDB_NAME, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(VT_BIO_IDB_STORE)) {
+            db.createObjectStore(VT_BIO_IDB_STORE);
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error || new Error('IndexedDB 開啟失敗'));
+      });
+    }
+
+    async function saveVaultBioRecordToIdb(rec) {
+      const db = await openVaultBioIdb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(VT_BIO_IDB_STORE, 'readwrite');
+        tx.objectStore(VT_BIO_IDB_STORE).put(rec, 'primary');
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onerror = () => { db.close(); reject(tx.error); };
+      });
+    }
+
+    async function loadVaultBioRecordFromIdb() {
+      const db = await openVaultBioIdb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(VT_BIO_IDB_STORE, 'readonly');
+        const req = tx.objectStore(VT_BIO_IDB_STORE).get('primary');
+        req.onsuccess = () => { db.close(); resolve(req.result || null); };
+        req.onerror = () => { db.close(); reject(req.error); };
+      });
+    }
+
+    async function clearVaultBioIdb() {
+      try {
+        const db = await openVaultBioIdb();
+        await new Promise((resolve) => {
+          const tx = db.transaction(VT_BIO_IDB_STORE, 'readwrite');
+          tx.objectStore(VT_BIO_IDB_STORE).delete('primary');
+          tx.oncomplete = () => { db.close(); resolve(); };
+          tx.onerror = () => { db.close(); resolve(); };
+        });
+      } catch (e) {}
+    }
+
+    async function derivePrfAesWrappingKey(prfOutputBytes, saltBytes) {
+      const hkdfKey = await window.crypto.subtle.importKey('raw', prfOutputBytes, 'HKDF', false, ['deriveKey']);
+      return window.crypto.subtle.deriveKey(
+        { name: 'HKDF', hash: 'SHA-256', salt: saltBytes, info: new TextEncoder().encode('WeberVault-WebAuthn-PRF-v1') },
+        hkdfKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    }
+
+    async function encryptAndSaveLocalSecrets(passphrase, secretsObj) {
+      const salt = window.crypto.getRandomValues(new Uint8Array(16));
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const aesKey = await deriveAesKey(passphrase, salt, PBKDF2_ITERATIONS);
+      const raw = new TextEncoder().encode(JSON.stringify({
+        piKey: String(secretsObj.piKey || ''),
+        gasKey: String(secretsObj.gasKey || '')
+      }));
+      const ctBuf = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, raw);
+      const envelope = {
+        v: 1,
+        iterations: PBKDF2_ITERATIONS,
+        salt: bytesToB64(salt),
+        iv: bytesToB64(iv),
+        ct: bytesToB64(new Uint8Array(ctBuf))
+      };
+      safeLsSet(VT_ENC_LOCAL_VAULT_KEY, JSON.stringify(envelope));
+      _decryptedLocalVaultSecrets = { piKey: String(secretsObj.piKey || ''), gasKey: String(secretsObj.gasKey || '') };
+      safeLsRemove('pi_api_key');
+      safeLsRemove('gas_vault_key');
+      return envelope;
+    }
+
+    async function decryptLocalSecretsWithPassphrase(passphrase) {
+      const rawEnv = safeLsGet(VT_ENC_LOCAL_VAULT_KEY, '');
+      if (!rawEnv) return null;
+      const env = JSON.parse(rawEnv);
+      const salt = b64ToBytes(env.salt);
+      const iv = b64ToBytes(env.iv);
+      const ct = b64ToBytes(env.ct);
+      const aesKey = await deriveAesKey(passphrase, salt, Number(env.iterations) || PBKDF2_ITERATIONS);
+      const ptBuf = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, ct);
+      const parsed = JSON.parse(new TextDecoder().decode(ptBuf));
+      _decryptedLocalVaultSecrets = { piKey: parsed.piKey || '', gasKey: parsed.gasKey || '' };
+      return _decryptedLocalVaultSecrets;
+    }
+
+    async function registerVaultBiometricsFlow() {
+      if (!isVaultBioSupported()) {
+        showToast('❌ 當前瀏覽器或非 HTTPS 環境不支援 WebAuthn 指紋驗證', 'error');
+        return;
+      }
+      let pass = _memoryPassphrase;
+      if (!pass) {
+        openPassphraseModal(() => registerVaultBiometricsFlow());
+        showToast('💡 請先輸入並驗證保險箱主通行碼，再綁定指紋', 'info');
+        return;
+      }
+
+      const btn = document.getElementById('vaultBindBioBtn');
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ 等待指紋 / Face ID 驗證...'; }
+      try {
+        const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+        const userId = window.crypto.getRandomValues(new Uint8Array(16));
+        const prfSalt = window.crypto.getRandomValues(new Uint8Array(32));
+
+        const cred = await navigator.credentials.create({
+          publicKey: {
+            challenge,
+            rp: { name: 'Weber Vault' },
+            user: { id: userId, name: 'weber-vault-owner', displayName: 'Weber Vault Owner' },
+            pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
+            authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' },
+            timeout: 60000,
+            extensions: { prf: { eval: { first: prfSalt } } }
+          }
+        });
+        if (!cred) throw new Error('未建立生物辨識憑證');
+
+        const credIdB64 = bytesToB64(new Uint8Array(cred.rawId));
+        const extResults = typeof cred.getClientExtensionResults === 'function' ? cred.getClientExtensionResults() : {};
+        const prfFirst = extResults?.prf?.results?.first;
+        const passBytes = new TextEncoder().encode(pass);
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+        if (prfFirst) {
+          const hkdfSalt = window.crypto.getRandomValues(new Uint8Array(16));
+          const wrapKey = await derivePrfAesWrappingKey(new Uint8Array(prfFirst), hkdfSalt);
+          const ct = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, wrapKey, passBytes);
+          await saveVaultBioRecordToIdb({
+            mode: 'prf',
+            prfSalt: bytesToB64(prfSalt),
+            hkdfSalt: bytesToB64(hkdfSalt),
+            iv: bytesToB64(iv),
+            wrappedPass: bytesToB64(new Uint8Array(ct))
+          });
+          safeLsSet(VT_BIO_MODE_KEY, 'prf');
+          showToast('✅ 已綁定指紋 (硬體 PRF 金鑰模式)！', 'success');
+        } else {
+          // 降級模式：產生本機不可匯出 AES-GCM 金鑰存入 IndexedDB，搭配 WebAuthn 驗證閘門保護主通行碼
+          const deviceKey = await window.crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+          const ct = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, deviceKey, passBytes);
+          await saveVaultBioRecordToIdb({
+            mode: 'gate',
+            deviceKey,
+            iv: bytesToB64(iv),
+            wrappedPass: bytesToB64(new Uint8Array(ct))
+          });
+          safeLsSet(VT_BIO_MODE_KEY, 'gate');
+          showToast('✅ 已綁定指紋 (裝置安全匣降級模式)！', 'success');
+        }
+
+        safeLsSet(VT_BIO_CRED_ID_KEY, credIdB64);
+        markVaultPassphraseVerified();
+        updateVaultBioSettingsUI();
+      } catch (err) {
+        showToast(`❌ 指紋綁定失敗：${err.message || err}`, 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '👆 綁定此裝置指紋 / Face ID'; }
+      }
+    }
+
+    async function authenticateVaultWithBiometrics() {
+      const credIdB64 = safeLsGet(VT_BIO_CRED_ID_KEY, '');
+      if (!credIdB64) throw new Error('尚未綁定指紋憑證');
+      const rec = await loadVaultBioRecordFromIdb();
+      if (!rec) throw new Error('本機指紋金鑰紀錄遺失，請改用主通行碼並重新綁定');
+
+      const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+      const publicKey = {
+        challenge,
+        allowCredentials: [{ id: b64ToBytes(credIdB64), type: 'public-key' }],
+        userVerification: 'required',
+        timeout: 60000
+      };
+      if (rec.mode === 'prf' && rec.prfSalt) {
+        publicKey.extensions = { prf: { eval: { first: b64ToBytes(rec.prfSalt) } } };
+      }
+
+      const assertion = await navigator.credentials.get({ publicKey });
+      if (!assertion) throw new Error('生物辨識驗證取消');
+
+      let passPlainBuf;
+      if (rec.mode === 'prf') {
+        const ext = typeof assertion.getClientExtensionResults === 'function' ? assertion.getClientExtensionResults() : {};
+        const prfOut = ext?.prf?.results?.first;
+        if (!prfOut) throw new Error('裝置未回傳 PRF 金鑰結果');
+        const wrapKey = await derivePrfAesWrappingKey(new Uint8Array(prfOut), b64ToBytes(rec.hkdfSalt));
+        passPlainBuf = await window.crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: b64ToBytes(rec.iv) },
+          wrapKey,
+          b64ToBytes(rec.wrappedPass)
+        );
+      } else {
+        if (!rec.deviceKey) throw new Error('本機裝置金鑰不存在');
+        passPlainBuf = await window.crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: b64ToBytes(rec.iv) },
+          rec.deviceKey,
+          b64ToBytes(rec.wrappedPass)
+        );
+      }
+      return new TextDecoder().decode(passPlainBuf);
+    }
+
+    async function removeVaultBiometrics() {
+      if (!confirm('確定移除此裝置的指紋 / Face ID 快速解鎖設定？')) return;
+      safeLsRemove(VT_BIO_CRED_ID_KEY);
+      safeLsRemove(VT_BIO_MODE_KEY);
+      await clearVaultBioIdb();
+      updateVaultBioSettingsUI();
+      showToast('🗑️ 已移除指紋解鎖綁定', 'info');
+    }
+
+    function updateVaultBioSettingsUI() {
+      const badge = document.getElementById('vaultBioStatusBadge');
+      const removeBtn = document.getElementById('vaultRemoveBioBtn');
+      const cb = document.getElementById('cfgVaultAppLockCheckbox');
+      const bound = isVaultBioBound();
+      const mode = safeLsGet(VT_BIO_MODE_KEY, '');
+      if (badge) {
+        if (bound) {
+          badge.textContent = mode === 'prf' ? '已綁定 (PRF)' : '已綁定 (裝置匣)';
+          badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+        } else {
+          badge.textContent = '未綁定';
+          badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
+        }
+      }
+      if (removeBtn) {
+        if (bound) removeBtn.classList.remove('hidden');
+        else removeBtn.classList.add('hidden');
+      }
+      if (cb) cb.checked = isVaultAppLockEnabled();
+    }
+
+    async function toggleVaultAppLockSetting(enabled) {
+      if (enabled) {
+        if (!_memoryPassphrase) {
+          const cb = document.getElementById('cfgVaultAppLockCheckbox');
+          if (cb) cb.checked = false;
+          openPassphraseModal(() => {
+            const cb2 = document.getElementById('cfgVaultAppLockCheckbox');
+            if (cb2) cb2.checked = true;
+            toggleVaultAppLockSetting(true);
+          });
+          showToast('💡 請先輸入主通行碼以封存本機 API 金鑰', 'info');
+          return;
+        }
+        const cfg = getConnConfig();
+        safeLsSet(VT_APPLOCK_ENABLED_KEY, 'true');
+        await encryptAndSaveLocalSecrets(_memoryPassphrase, { piKey: cfg.piKey, gasKey: cfg.gasKey });
+        showToast('🛡️ 已啟用最高防護！本機 API 金鑰已加密封存', 'success');
+      } else {
+        const cfg = getConnConfig();
+        safeLsRemove(VT_APPLOCK_ENABLED_KEY);
+        safeLsRemove(VT_ENC_LOCAL_VAULT_KEY);
+        if (cfg.piKey) safeLsSet('pi_api_key', cfg.piKey);
+        if (cfg.gasKey) safeLsSet('gas_vault_key', cfg.gasKey);
+        _decryptedLocalVaultSecrets = null;
+        showToast('已關閉最高防護 App Lock', 'info');
+      }
+      updateLockBadgeUI();
+    }
+
+    function showVaultAppLockOverlay() {
+      const overlay = document.getElementById('vaultAppLockOverlay');
+      const bioBtn = document.getElementById('vaultAppLockBioBtn');
+      const rem = document.getElementById('vaultAppLockPassphraseReminder');
+      const err = document.getElementById('vaultAppLockErrorText');
+      if (err) err.classList.add('hidden');
+      if (bioBtn) {
+        if (isVaultBioBound()) bioBtn.classList.remove('hidden');
+        else bioBtn.classList.add('hidden');
+      }
+      if (rem) {
+        if (shouldShowVaultPassphraseReminder()) rem.classList.remove('hidden');
+        else rem.classList.add('hidden');
+      }
+      if (overlay) overlay.classList.remove('hidden');
+    }
+
+    function hideVaultAppLockOverlay() {
+      const overlay = document.getElementById('vaultAppLockOverlay');
+      const input = document.getElementById('vaultAppLockPassInput');
+      if (input) input.value = '';
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    async function unlockVaultWithBiometricsInAppLock() {
+      const err = document.getElementById('vaultAppLockErrorText');
+      if (err) err.classList.add('hidden');
+      try {
+        const pass = await authenticateVaultWithBiometrics();
+        _memoryPassphrase = pass;
+        _derivedKeyCache.clear();
+        if (safeLsGet(VT_ENC_LOCAL_VAULT_KEY, '')) {
+          await decryptLocalSecretsWithPassphrase(pass);
+        }
+        hideVaultAppLockOverlay();
+        updateLockBadgeUI();
+        await refreshVaultList();
+        showToast('👆 指紋驗證成功，已解鎖 Weber Vault！', 'success');
+      } catch (e) {
+        if (err) {
+          err.textContent = `❌ 指紋解鎖失敗：${e.message || e}`;
+          err.classList.remove('hidden');
+        }
+      }
+    }
+
+    async function unlockVaultWithPassphraseInAppLock() {
+      const input = document.getElementById('vaultAppLockPassInput');
+      const err = document.getElementById('vaultAppLockErrorText');
+      const btn = document.getElementById('vaultAppLockPassSubmitBtn');
+      const pass = input ? input.value : '';
+      if (err) err.classList.add('hidden');
+      if (!pass || pass.length < 4) {
+        if (err) { err.textContent = '❌ 請輸入正確的保險箱主通行碼'; err.classList.remove('hidden'); }
+        return;
+      }
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ 驗證中...'; }
+      try {
+        if (safeLsGet(VT_ENC_LOCAL_VAULT_KEY, '')) {
+          await decryptLocalSecretsWithPassphrase(pass);
+        }
+        _memoryPassphrase = pass;
+        _derivedKeyCache.clear();
+        markVaultPassphraseVerified();
+        hideVaultAppLockOverlay();
+        updateLockBadgeUI();
+        await refreshVaultList();
+        showToast('🔓 主通行碼驗證成功，已解鎖 Weber Vault！', 'success');
+      } catch (e) {
+        if (err) {
+          err.textContent = '❌ 主通行碼錯誤，無法解開本機加密保險庫';
+          err.classList.remove('hidden');
+        }
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '🔓 驗證通行碼並解鎖'; }
+      }
+    }
+
+    async function unlockVaultModalWithBiometrics() {
+      const errEl = document.getElementById('passModalError');
+      if (errEl) errEl.classList.add('hidden');
+      try {
+        const pass = await authenticateVaultWithBiometrics();
+        _memoryPassphrase = pass;
+        _derivedKeyCache.clear();
+        if (isVaultAppLockEnabled() && safeLsGet(VT_ENC_LOCAL_VAULT_KEY, '')) {
+          try { await decryptLocalSecretsWithPassphrase(pass); } catch (e) {}
+        }
+        if (_vaultItems.length > 0) {
+          await decryptAllLoadedHeaders(_memoryPassphrase);
+        }
+        updateLockBadgeUI();
+        renderVaultList();
+        closePassphraseModal();
+        showToast('👆 指紋快速解鎖成功！', 'success');
+        if (typeof _passModalCallback === 'function') {
+          const cb = _passModalCallback;
+          _passModalCallback = null;
+          await cb();
+        }
+      } catch (e) {
+        if (errEl) {
+          errEl.textContent = `❌ 指紋解鎖失敗：${e.message || e}`;
+          errEl.classList.remove('hidden');
+        }
+      }
+    }
+
+    function triggerVaultManualLock() {
+      lockVaultSession();
+    }
+
+    function registerVaultPWA() {
+      try {
+        if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && window.location && /^https?:$/.test(window.location.protocol)) {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
+      } catch (e) {}
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        _vtHiddenAtTs = Date.now();
+      } else if (document.visibilityState === 'visible') {
+        if (isVaultAppLockEnabled() && _vtHiddenAtTs > 0 && (Date.now() - _vtHiddenAtTs) >= VT_AUTO_LOCK_IDLE_MS) {
+          _vtHiddenAtTs = 0;
+          lockVaultSession();
+        }
+      }
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
+      registerVaultPWA();
       updateLockBadgeUI();
-      refreshVaultList();
+      if (isVaultAppLockEnabled()) {
+        showVaultAppLockOverlay();
+      } else {
+        refreshVaultList();
+      }
     });
   </script>
 </body>

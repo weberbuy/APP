@@ -1,0 +1,25 @@
+{
+  "name": "Weber Vault 私人加密雲端保險箱",
+  "short_name": "Vault",
+  "description": "零知識雙軌加密私人雲端保險箱 · 支援指紋 / Face ID 解鎖與最高防護",
+  "start_url": "./Vault.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
