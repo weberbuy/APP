@@ -323,7 +323,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.2.0 (2026-11-16)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.2.1 (2026-11-16)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1192,7 +1192,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.2.0 (2026-11-16)";
+window.APP_VERSION = "v6.2.1 (2026-11-16)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
@@ -1270,8 +1270,8 @@ let maxDailyHours = parseFloat(localStorage.getItem('my_max_daily_hours')) || 8;
 let maxWeeklyHours = parseFloat(localStorage.getItem('my_max_weekly_hours')) || 40;
 let storedTimelineMode = localStorage.getItem('my_timeline_start_mode'); // 'today' | 'custom' | 'all'
 let storedTimelineStart = localStorage.getItem('my_timeline_start_date');
-const todayObj = new Date();
-const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+let todayObj = new Date();
+let todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 
 
 // 【v5.4.2 時間軸動態起始模式跨日自動對齊】：預設為 'today'，且當模式為 'today' 時強制對齊當日 todayStr，徹底消除跨日快取殘留舊日期問題
@@ -1279,6 +1279,22 @@ let timelineStartMode = storedTimelineMode || (storedTimelineStart === '' ? 'all
 let timelineStartDate = (timelineStartMode === 'today') ? todayStr : (timelineStartMode === 'all' ? '' : (storedTimelineStart || todayStr));
 if (timelineStartMode === 'today' && storedTimelineStart !== todayStr) {
     try { localStorage.setItem('my_timeline_start_date', todayStr); } catch(e) {}
+}
+
+
+function refreshTodayDate() {
+    const now = new Date();
+    const newTodayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    if (newTodayStr !== todayStr) {
+        todayObj = now;
+        todayStr = newTodayStr;
+        if (timelineStartMode === 'today' && timelineStartDate !== todayStr) {
+            timelineStartDate = todayStr;
+            try { localStorage.setItem('my_timeline_start_date', todayStr); } catch(e) {}
+        }
+        return true;
+    }
+    return false;
 }
 
 
@@ -3058,6 +3074,7 @@ async function fetchLatestBackupForAccount(targetAccount) {
     try {
         let response = await fetch(`${piServerUrl}/api/liveschedule/latest?account=${encodeURIComponent(acc)}`, {
             method: 'GET',
+            cache: 'no-store',
             headers: { 'x-api-key': piApiKey, 'x-account': encodeURIComponent(acc) }
         });
         if (response.status === 401 || response.status === 403 || response.status === 429) {
@@ -3082,7 +3099,7 @@ async function fetchLatestBackupForAccount(targetAccount) {
         }
     } catch (e) {}
     try {
-        const filesRes = await fetch(`${piServerUrl}/files?path=LiveSchedule`, { headers: { 'x-api-key': piApiKey } });
+        const filesRes = await fetch(`${piServerUrl}/files?path=LiveSchedule`, { cache: 'no-store', headers: { 'x-api-key': piApiKey } });
         if (filesRes.status === 401 || filesRes.status === 403 || filesRes.status === 429) {
             return { backupData: null, fileName: '', skippedCorrupt };
         }
@@ -3096,7 +3113,7 @@ async function fetchLatestBackupForAccount(targetAccount) {
                 .slice(0, MAX_BACKUP_FALLBACK_SCAN);
             for (const fileName of jsonFiles) {
                 try {
-                    const downRes = await fetch(`${piServerUrl}/download/LiveSchedule%2F${encodeURIComponent(fileName)}`, { headers: { 'x-api-key': piApiKey } });
+                    const downRes = await fetch(`${piServerUrl}/download/LiveSchedule%2F${encodeURIComponent(fileName)}`, { cache: 'no-store', headers: { 'x-api-key': piApiKey } });
                     if (downRes.status === 401 || downRes.status === 403 || downRes.status === 429) break;
                     if (!downRes.ok) {
                         skippedCorrupt.push(fileName);
@@ -3456,7 +3473,18 @@ async function importFromPi() {
         alert(`❌ 連線樹莓派失敗：${e.message}`);
     }
 }
+let _isSyncCheckInFlight = false;
+let _pendingSyncRecheck = false;
+
 async function checkAndAutoSyncFromPi() {
+    if (typeof refreshTodayDate === 'function' && refreshTodayDate()) {
+        if (typeof render === 'function') render();
+    }
+    if (_isSyncCheckInFlight) {
+        _pendingSyncRecheck = true;
+        return;
+    }
+    _isSyncCheckInFlight = true;
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -3469,6 +3497,7 @@ async function checkAndAutoSyncFromPi() {
     if (!hasPi && !hasGas) {
         updatePiSyncBadge('⚪ 未設定伺服器 (點擊設定)', 'bg-slate-100 text-slate-600 border-slate-200');
         isInitialSyncCompleted = true; // 無設定伺服器，解鎖本機自動儲存
+        _isSyncCheckInFlight = false;
         return;
     }
     updatePiSyncBadge('🔍 雙軌檢查同步中...', 'bg-indigo-50 text-indigo-700 border-indigo-200 animate-pulse');
@@ -3559,6 +3588,12 @@ async function checkAndAutoSyncFromPi() {
     } catch (e) {
         updatePiSyncBadge('⚠️ 連線失敗 (點擊重試)', 'bg-rose-50 text-rose-700 border-rose-200');
         if (!_pendingEncryptedRemote) isInitialSyncCompleted = true;
+    } finally {
+        _isSyncCheckInFlight = false;
+        if (_pendingSyncRecheck) {
+            _pendingSyncRecheck = false;
+            setTimeout(() => checkAndAutoSyncFromPi(), 150);
+        }
     }
 }
 
@@ -10974,6 +11009,7 @@ const card = document.createElement('div');
 
 
 function render() {
+    refreshTodayDate();
             updateCategoryQuickSelectors();
     syncLinkedData();
     updateContainerWidth();

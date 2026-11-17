@@ -1561,6 +1561,7 @@ async function fetchLatestBackupForAccount(targetAccount) {
     try {
         let response = await fetch(`${piServerUrl}/api/liveschedule/latest?account=${encodeURIComponent(acc)}`, {
             method: 'GET',
+            cache: 'no-store',
             headers: { 'x-api-key': piApiKey, 'x-account': encodeURIComponent(acc) }
         });
         if (response.status === 401 || response.status === 403 || response.status === 429) {
@@ -1585,7 +1586,7 @@ async function fetchLatestBackupForAccount(targetAccount) {
         }
     } catch (e) {}
     try {
-        const filesRes = await fetch(`${piServerUrl}/files?path=LiveSchedule`, { headers: { 'x-api-key': piApiKey } });
+        const filesRes = await fetch(`${piServerUrl}/files?path=LiveSchedule`, { cache: 'no-store', headers: { 'x-api-key': piApiKey } });
         if (filesRes.status === 401 || filesRes.status === 403 || filesRes.status === 429) {
             return { backupData: null, fileName: '', skippedCorrupt };
         }
@@ -1599,7 +1600,7 @@ async function fetchLatestBackupForAccount(targetAccount) {
                 .slice(0, MAX_BACKUP_FALLBACK_SCAN);
             for (const fileName of jsonFiles) {
                 try {
-                    const downRes = await fetch(`${piServerUrl}/download/LiveSchedule%2F${encodeURIComponent(fileName)}`, { headers: { 'x-api-key': piApiKey } });
+                    const downRes = await fetch(`${piServerUrl}/download/LiveSchedule%2F${encodeURIComponent(fileName)}`, { cache: 'no-store', headers: { 'x-api-key': piApiKey } });
                     if (downRes.status === 401 || downRes.status === 403 || downRes.status === 429) break;
                     if (!downRes.ok) {
                         skippedCorrupt.push(fileName);
@@ -1959,7 +1960,18 @@ async function importFromPi() {
         alert(`❌ 連線樹莓派失敗：${e.message}`);
     }
 }
+let _isSyncCheckInFlight = false;
+let _pendingSyncRecheck = false;
+
 async function checkAndAutoSyncFromPi() {
+    if (typeof refreshTodayDate === 'function' && refreshTodayDate()) {
+        if (typeof render === 'function') render();
+    }
+    if (_isSyncCheckInFlight) {
+        _pendingSyncRecheck = true;
+        return;
+    }
+    _isSyncCheckInFlight = true;
     piServerUrl = (localStorage.getItem('pi_server_url') || '').trim();
     piApiKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('pi_api_key') : (localStorage.getItem('pi_api_key') || '').trim());
     piAccount = (localStorage.getItem('pi_account') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -1972,6 +1984,7 @@ async function checkAndAutoSyncFromPi() {
     if (!hasPi && !hasGas) {
         updatePiSyncBadge('⚪ 未設定伺服器 (點擊設定)', 'bg-slate-100 text-slate-600 border-slate-200');
         isInitialSyncCompleted = true; // 無設定伺服器，解鎖本機自動儲存
+        _isSyncCheckInFlight = false;
         return;
     }
     updatePiSyncBadge('🔍 雙軌檢查同步中...', 'bg-indigo-50 text-indigo-700 border-indigo-200 animate-pulse');
@@ -2062,5 +2075,11 @@ async function checkAndAutoSyncFromPi() {
     } catch (e) {
         updatePiSyncBadge('⚠️ 連線失敗 (點擊重試)', 'bg-rose-50 text-rose-700 border-rose-200');
         if (!_pendingEncryptedRemote) isInitialSyncCompleted = true;
+    } finally {
+        _isSyncCheckInFlight = false;
+        if (_pendingSyncRecheck) {
+            _pendingSyncRecheck = false;
+            setTimeout(() => checkAndAutoSyncFromPi(), 150);
+        }
     }
 }
