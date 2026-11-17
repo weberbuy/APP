@@ -3,9 +3,14 @@
         // ==========================================
 
 
+        function getCurrentFortellerMonthKey() {
+            const now = (typeof todayObj !== 'undefined' && todayObj instanceof Date && !isNaN(todayObj)) ? todayObj : new Date();
+            return `${now.getFullYear()}/${now.getMonth() + 1}`;
+        }
+
         // 動態計算 Forteller 戰略推演盤月份欄位清單 (自動延伸至遠期目標月份，支援 2027/1 及跨年度)
         function getFortellerMonthCols() {
-            const currentMonthKey = '2026/10';
+            const currentMonthKey = getCurrentFortellerMonthKey();
             const prevMonthKey = getRelativeMonthKey(currentMonthKey, -1);
             const startSetting = getFortellerStartMonthSetting();
 
@@ -192,8 +197,8 @@
 
         // 輔助函式：將日期字串精準轉為所屬月份 Key (支援動態月份清單，保證 2027/1 落點在 2027/1)
         function getFortellerMonthKey(dateStr, fallbackMonthKey, availableCols = null) {
-            if (!dateStr || dateStr === '未指定日期' || dateStr.length < 7) return fallbackMonthKey || '2026/10';
-            let key = fallbackMonthKey || '2026/10';
+            if (!dateStr || dateStr === '未指定日期' || dateStr.length < 7) return fallbackMonthKey || getCurrentFortellerMonthKey();
+            let key = fallbackMonthKey || getCurrentFortellerMonthKey();
             try {
                 const p = dateStr.replace(/\//g, '-').split('-');
                 const y = parseInt(p[0]);
@@ -220,7 +225,8 @@
 
         function scrollFortellerToCurrentMonth() {
             const el = document.getElementById('fortellerTableContainer');
-            const target = document.getElementById('forteller-th-2026-10') || (el ? el.querySelector('[data-month-col="2026/10"]') : null);
+            const curKey = getCurrentFortellerMonthKey();
+            const target = document.getElementById('forteller-th-' + curKey.replace('/', '-')) || (el ? el.querySelector(`[data-month-col="${curKey}"]`) : null);
             if (el && target) {
                 const offsetLeft = target.offsetLeft - el.offsetLeft - 120;
                 el.scrollTo({ left: Math.max(0, offsetLeft), behavior: 'smooth' });
@@ -388,7 +394,7 @@
 // 渲染 Forteller 戰略推演矩陣 (整合領域模式與目標模式)
         function renderFortellerMatrixHtml() {
             const monthCols = getFortellerMonthCols();
-            const currentMonthKey = '2026/10';
+            const currentMonthKey = getCurrentFortellerMonthKey();
 
 
             // 取得看板分頁中的領域清單 (【v5.3.0】：完全依據看板模式下的領域分頁，不擅自混入未使用的預設領域)
@@ -565,7 +571,7 @@
                                 <button type="button" onclick="scrollFortellerTable(-280)" class="px-2.5 py-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center gap-1" title="向左平移 (亦可滑鼠滾輪上下滾動直接左右平移)">
                                     <span>◀</span> <span class="hidden sm:inline">往左</span>
                                 </button>
-                                <button type="button" onclick="scrollFortellerToCurrentMonth()" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 transition-all cursor-pointer flex items-center gap-1" title="一鍵對齊當前月份 (2026/10)">
+                                <button type="button" onclick="scrollFortellerToCurrentMonth()" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 transition-all cursor-pointer flex items-center gap-1" title="一鍵對齊當前月份 (${currentMonthKey})">
                                     <span>📍</span> <span>當月</span>
                                 </button>
                                 <button type="button" onclick="scrollFortellerTable(280)" class="px-2.5 py-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center gap-1" title="向右平移 (亦可滑鼠滾輪上下滾動直接左右平移)">
@@ -758,7 +764,7 @@
                                             if (col.type === 'month') {
                                                 const isCurrent = (col.monthKey === currentMonthKey);
                                                 return `
-                                                    <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
+                                                    <th id="forteller-th-${col.monthKey.replace('/', '-')}" data-month-col="${col.monthKey}" class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
                                                         <div>${col.monthKey}${isCurrent ? ' (當月)' : ''}</div>
                                                         ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(col.monthKey) : ''}
                                                     </th>
@@ -781,7 +787,7 @@
                                         ${monthCols.map(mKey => {
                                             const isCurrent = (mKey === currentMonthKey);
                                             return `
-                                                <th class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
+                                                <th id="forteller-th-${mKey.replace('/', '-')}" data-month-col="${mKey}" class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
                                                     <div>${mKey}${isCurrent ? ' (當月)' : ''}</div>
                                                     ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(mKey) : ''}
                                                 </th>

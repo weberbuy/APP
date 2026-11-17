@@ -7,7 +7,8 @@ let currentEditingFinanceData = null;
 
 function openMonthlyFinanceModal(mKey, e) {
     if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
-    currentEditingFinanceMonthKey = mKey || (todayStr ? todayStr.slice(0, 7).replace('-', '/') : '2026/10');
+    const nowFin = (typeof todayObj !== 'undefined' && todayObj instanceof Date && !isNaN(todayObj)) ? todayObj : new Date();
+    currentEditingFinanceMonthKey = mKey || `${nowFin.getFullYear()}/${nowFin.getMonth() + 1}`;
     
     // 如果當月已有資料，載入深拷貝；若無，以預設範本初始化
     const existing = monthlyFinancials[currentEditingFinanceMonthKey];

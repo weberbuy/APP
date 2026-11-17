@@ -323,7 +323,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.2.1 (2026-11-16)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.2.2 (2026-11-17)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1192,7 +1192,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.2.1 (2026-11-16)";
+window.APP_VERSION = "v6.2.2 (2026-11-17)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
@@ -2776,7 +2776,11 @@ function updateContainerWidth() {
 
         // 輔助函式：計算相對月度 Key (如當前月前一個月)
         function getRelativeMonthKey(baseMonthKey, offsetMonths) {
-            if (!baseMonthKey || !baseMonthKey.includes('/')) return '2026/9';
+            if (!baseMonthKey || !baseMonthKey.includes('/')) {
+                const now = new Date();
+                const d = new Date(now.getFullYear(), now.getMonth() + offsetMonths, 1);
+                return `${d.getFullYear()}/${d.getMonth() + 1}`;
+            }
             const [y, m] = baseMonthKey.split('/').map(Number);
             const d = new Date(y, m - 1 + offsetMonths, 1);
             return `${d.getFullYear()}/${d.getMonth() + 1}`;
@@ -3597,7 +3601,8 @@ function updateContainerWidth() {
 
 
             // 【v5.4.0 每月財務結算提醒】：檢查當月是否需要提醒記帳
-            const currentFinMonthKey = todayStr ? todayStr.slice(0, 7).replace('-', '/') : '2026/10';
+            const _finNow = (typeof todayObj !== 'undefined' && todayObj instanceof Date && !isNaN(todayObj)) ? todayObj : new Date();
+            const currentFinMonthKey = `${_finNow.getFullYear()}/${_finNow.getMonth() + 1}`;
             const currentMonthFinData = monthlyFinancials[currentFinMonthKey];
             const finReminderDay = (currentMonthFinData && currentMonthFinData.reminderDay) || 5;
             const isFinKeyed = currentMonthFinData && currentMonthFinData.hasData;
