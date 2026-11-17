@@ -78,7 +78,7 @@
           <div>
             <div class="flex flex-wrap items-center gap-2">
               <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Weber Vault 私人加密雲端保險箱</h1>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-bold" id="appVersionBadge">v1.1.0 · WBVLT1</span>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-bold" id="appVersionBadge">v1.2.0 · WBVLT1</span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               瀏覽器端 PBKDF2 (600,000 次) + AES-256-GCM 零知識加密 · 檔名與內容雙重隱匿 · 🍓 樹莓派 + ☁️ Google Drive 雙軌自癒備份
@@ -158,20 +158,46 @@
                ondragover="handleDragOver(event)"
                ondragleave="handleDragLeave(event)"
                ondrop="handleDrop(event)"
-               class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer transition-all bg-slate-50/60 dark:bg-slate-800/40">
+               class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl p-5 text-center cursor-pointer transition-all bg-slate-50/60 dark:bg-slate-800/40">
             <input type="file" id="fileInput" multiple class="hidden" onchange="handleFileSelect(event)" />
-            <div class="w-12 h-12 rounded-2xl bg-indigo-100/80 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
+            <input type="file" id="folderInput" webkitdirectory directory multiple class="hidden" onchange="handleFolderSelect(event)" />
+            <div class="w-12 h-12 rounded-2xl bg-indigo-100/80 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-2.5">
               <i class="fa-solid fa-file-shield text-xl"></i>
             </div>
-            <p class="text-sm font-bold text-slate-700 dark:text-slate-200">點擊選擇手機/電腦檔案，或拖曳至此</p>
-            <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">支援照片、PDF、證件、合約、壓縮檔（可多選）</p>
+            <p class="text-sm font-bold text-slate-700 dark:text-slate-200">點擊選擇手機/電腦檔案，或將檔案/資料夾拖曳至此</p>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">支援照片、PDF、證件、合約、壓縮檔（自動去重與新舊比對）</p>
+            <div class="mt-3 flex flex-wrap items-center justify-center gap-2" onclick="event.stopPropagation()">
+              <button type="button" onclick="document.getElementById('fileInput').click()" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-slate-700 dark:text-slate-200 shadow-2xs transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-file-circle-plus text-indigo-500"></i>
+                <span>選取多檔</span>
+              </button>
+              <button type="button" onclick="document.getElementById('folderInput').click()" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-amber-400 text-slate-700 dark:text-slate-200 shadow-2xs transition-all flex items-center gap-1.5" title="選擇整個本機資料夾並保留目錄結構加密上傳">
+                <i class="fa-solid fa-folder-Tree text-amber-500 fa-folder-open"></i>
+                <span>上傳整個資料夾</span>
+              </button>
+            </div>
           </div>
 
           <!-- 已選檔案預覽列表 -->
           <div id="selectedFilesBox" class="hidden mt-4 space-y-2 max-h-48 overflow-y-auto pr-1"></div>
 
+          <!-- 加密虛擬資料夾路徑設定 -->
+          <div class="mt-4">
+            <div class="flex items-center justify-between mb-1">
+              <label for="uploadFolderPath" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                📁 存放加密資料夾路徑 <span class="font-normal text-slate-400">(封裝於 WBVLT1 加密標頭，雲端零洩漏)</span>
+              </label>
+              <button type="button" onclick="document.getElementById('uploadFolderPath').value = ''; syncUploadFolderHint();" class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">設回根目錄</button>
+            </div>
+            <div class="relative">
+              <i class="fa-solid fa-folder text-amber-500 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+              <input type="text" id="uploadFolderPath" list="vaultFolderDatalist" oninput="syncUploadFolderHint()" placeholder="留空代表根目錄 (/)，或輸入如：2026報稅/收據" class="w-full pl-8 pr-3 py-2 text-xs font-mono bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <datalist id="vaultFolderDatalist"></datalist>
+            </div>
+          </div>
+
           <!-- 分類與加密備註 -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
             <div>
               <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">機密分類 (加密保護)</label>
               <select id="uploadCategory" class="w-full px-3 py-2 text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -230,7 +256,7 @@
       <div class="lg:col-span-7">
         <section class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 min-h-[520px] flex flex-col">
           <!-- 清單標題與篩選列 -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
             <div class="flex items-center gap-2">
               <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <i class="fa-solid fa-vault text-indigo-600"></i>
@@ -240,9 +266,9 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <div class="relative flex-1 sm:w-48">
+              <div class="relative flex-1 sm:w-44">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="vaultSearchInput" oninput="renderVaultList()" placeholder="搜尋檔名、備註或代號..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <input type="text" id="vaultSearchInput" oninput="renderVaultList()" placeholder="搜尋檔名、資料夾、備註..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
               <select id="vaultCategoryFilter" onchange="renderVaultList()" class="px-2.5 py-1.5 text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="all">全部分類</option>
@@ -256,6 +282,26 @@
               <button onclick="refreshVaultList()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1">
                 <i class="fa-solid fa-rotate" id="refreshSpinIcon"></i>
                 <span>重整</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 📁 加密虛擬資料夾導覽列 (麵包屑 + 新增資料夾 + 檢視模式切換) -->
+          <div id="vaultFolderNavBar" class="mb-3.5 px-3.5 py-2.5 rounded-2xl bg-slate-50/90 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 flex flex-wrap items-center justify-between gap-2">
+            <div id="vaultBreadcrumbContainer" class="flex flex-wrap items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-200 min-w-0">
+              <button type="button" onclick="navigateToVaultFolder('')" class="px-2 py-1 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-all flex items-center gap-1 text-indigo-600 dark:text-indigo-400">
+                <i class="fa-solid fa-house-lock"></i>
+                <span>根目錄</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" onclick="createNewVaultFolderPrompt()" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/70 transition-all flex items-center gap-1" title="在當前位置新增加密虛擬資料夾">
+                <i class="fa-solid fa-folder-plus text-amber-500"></i>
+                <span>新增資料夾</span>
+              </button>
+              <button type="button" id="vaultViewModeToggleBtn" onclick="toggleVaultFlatViewMode()" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1" title="切換「資料夾階層瀏覽」或「展開全部檔案平鋪檢視」">
+                <i class="fa-solid fa-folder-tree text-indigo-500" id="vaultViewModeIcon"></i>
+                <span id="vaultViewModeText">資料夾階層</span>
               </button>
             </div>
           </div>
@@ -459,6 +505,67 @@
     </div>
   </div>
 
+  <!-- ================= Modal 5：重複檔案新舊比對與覆蓋確認 ================= -->
+  <div id="duplicateConflictModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-code-compare text-amber-500"></i>
+          <span>偵測到同名檔案 · 新舊版本比對</span>
+        </h3>
+        <span id="dupComparisonVerdictBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300">比對中</span>
+      </div>
+
+      <p id="dupConflictSubtext" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+
+      <!-- 新舊檔案並排比對卡片 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div id="dupExistingCard" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-500 dark:text-slate-400">☁️ 雲端現有版本</span>
+            <span id="dupExistingTag" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">舊檔</span>
+          </div>
+          <div id="dupExistingName" class="font-extrabold text-slate-800 dark:text-slate-100 truncate"></div>
+          <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400 space-y-0.5">
+            <div id="dupExistingTime">🕒 -</div>
+            <div id="dupExistingSize">📦 -</div>
+            <div id="dupExistingHash">🛡️ -</div>
+          </div>
+        </div>
+
+        <div id="dupIncomingCard" class="p-3.5 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/70 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-indigo-600 dark:text-indigo-300">📤 本次準備上傳</span>
+            <span id="dupIncomingTag" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200">新檔</span>
+          </div>
+          <div id="dupIncomingName" class="font-extrabold text-slate-800 dark:text-slate-100 truncate"></div>
+          <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400 space-y-0.5">
+            <div id="dupIncomingTime">🕒 -</div>
+            <div id="dupIncomingSize">📦 -</div>
+            <div id="dupIncomingHash">🛡️ -</div>
+          </div>
+        </div>
+      </div>
+
+      <label id="dupApplyAllWrap" class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer select-none pt-1">
+        <input type="checkbox" id="dupApplyToAllCheckbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+        <span>套用相同決定至本次佇列後續所有重複檔案</span>
+      </label>
+
+      <div class="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" onclick="resolveDuplicateModalChoice('skip')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all">
+          ⏭️ 略過不傳
+        </button>
+        <button type="button" onclick="resolveDuplicateModalChoice('keep_both')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/70 dark:hover:bg-amber-900/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 transition-all">
+          📑 保留兩份
+        </button>
+        <button type="button" onclick="resolveDuplicateModalChoice('overwrite')" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition-all">
+          🔄 安全覆蓋舊檔 (先傳新檔再刪舊檔)
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast 通知容器 -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 max-w-sm"></div>
 
@@ -466,12 +573,13 @@
     // ============================================================
     // 🔐 Weber Vault 前端核心邏輯 (WBVLT1 與雙軌同步引擎)
     // ============================================================
-    window.APP_VERSION = 'v1.1.0 (2026-11-16)';
+    window.APP_VERSION = 'v1.2.0 (2026-11-16)';
     const VAULT_MAGIC_STR = 'WBVLT1';
     const VAULT_FORMAT_ID = 'weber_vault_v1';
     const VAULT_VERSION = 1;
     const PBKDF2_ITERATIONS = 600000;
     const GAS_MAX_SAFE_BYTES = 25 * 1024 * 1024; // GAS Web App 單次請求建議上限 25MB
+    const VT_ENC_FOLDERS_KEY = 'vt_encrypted_folders_v1';
 
     const CATEGORY_META = {
       id_doc:   { label: '🪪 證件', cls: 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800' },
@@ -485,10 +593,14 @@
     // ⚠️ 零知識安全設計：主通行碼與衍生 CryptoKey 僅駐留於當前分頁記憶體，絕不寫入 localStorage / sessionStorage
     let _memoryPassphrase = '';
     const _derivedKeyCache = new Map(); // key: `${saltB64}:${iterations}` -> CryptoKey (non-extractable)
-    let _selectedFiles = [];
+    let _selectedFiles = []; // items: { file: File, relFolder: string }
     let _vaultItems = []; // merged items: { fileName, size, createdAt, header, onPi, onGas, decryptedMeta, decryptFailed }
+    let _currentFolderPath = ''; // '' 代表根目錄，子目錄如 '2026報稅' 或 '2026報稅/收據'
+    let _isFlatViewMode = false; // false: 資料夾階層瀏覽, true: 展開全部檔案平鋪檢視
+    let _customFolders = new Set(); // 使用者建立之空資料夾或自訂資料夾路徑（以主通行碼加密存於本機）
     let _passModalCallback = null;
     let _activePreviewUrl = null;
+    let _dupModalResolver = null;
 
     let _decryptedLocalVaultSecrets = null;
     function safeLsGet(k, fallback = '') {
@@ -499,6 +611,162 @@
     }
     function safeLsRemove(k) {
       try { localStorage.removeItem(k); } catch (e) {}
+    }
+
+    // 正規化虛擬資料夾路徑（去除首尾斜線、連續斜線與非法字元，防止路徑混淆）
+    function normalizeVaultFolderPath(rawPath) {
+      return String(rawPath || '')
+        .replace(/\\/g, '/')
+        .split('/')
+        .map(seg => seg.trim().replace(/^\.+|\.+$/g, ''))
+        .filter(Boolean)
+        .join('/');
+    }
+
+    function joinVaultFolderPath(basePath, subPath) {
+      const a = normalizeVaultFolderPath(basePath);
+      const b = normalizeVaultFolderPath(subPath);
+      if (!a) return b;
+      if (!b) return a;
+      return `${a}/${b}`;
+    }
+
+    // 加密儲存與讀取自訂虛擬資料夾清單（即使查看 localStorage 也無法得知資料夾名稱）
+    async function saveEncryptedCustomFolders(passphrase) {
+      if (!passphrase) return;
+      try {
+        const salt = window.crypto.getRandomValues(new Uint8Array(16));
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const aesKey = await deriveAesKey(passphrase, salt, PBKDF2_ITERATIONS);
+        const raw = new TextEncoder().encode(JSON.stringify(Array.from(_customFolders)));
+        const ctBuf = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, raw);
+        safeLsSet(VT_ENC_FOLDERS_KEY, JSON.stringify({
+          v: 1,
+          iterations: PBKDF2_ITERATIONS,
+          salt: bytesToB64(salt),
+          iv: bytesToB64(iv),
+          ct: bytesToB64(new Uint8Array(ctBuf))
+        }));
+      } catch (e) {}
+    }
+
+    async function loadEncryptedCustomFolders(passphrase) {
+      if (!passphrase) return;
+      const rawEnv = safeLsGet(VT_ENC_FOLDERS_KEY, '');
+      if (!rawEnv) return;
+      try {
+        const env = JSON.parse(rawEnv);
+        const salt = b64ToBytes(env.salt);
+        const iv = b64ToBytes(env.iv);
+        const ct = b64ToBytes(env.ct);
+        const aesKey = await deriveAesKey(passphrase, salt, Number(env.iterations) || PBKDF2_ITERATIONS);
+        const ptBuf = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, ct);
+        const arr = JSON.parse(new TextDecoder().decode(ptBuf));
+        if (Array.isArray(arr)) {
+          for (const p of arr) {
+            const norm = normalizeVaultFolderPath(p);
+            if (norm) _customFolders.add(norm);
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 彙整目前已存在的所有資料夾路徑（含檔案內含路徑與自訂空資料夾）
+    function getAllKnownVaultFolders() {
+      const set = new Set();
+      for (const f of _customFolders) {
+        const norm = normalizeVaultFolderPath(f);
+        if (!norm) continue;
+        const parts = norm.split('/');
+        for (let i = 1; i <= parts.length; i++) {
+          set.add(parts.slice(0, i).join('/'));
+        }
+      }
+      for (const it of _vaultItems) {
+        const fp = normalizeVaultFolderPath(it.decryptedMeta && it.decryptedMeta.folderPath);
+        if (!fp) continue;
+        const parts = fp.split('/');
+        for (let i = 1; i <= parts.length; i++) {
+          set.add(parts.slice(0, i).join('/'));
+        }
+      }
+      return Array.from(set).sort((a, b) => a.localeCompare(b, 'zh-TW'));
+    }
+
+    function updateFolderDatalistUI() {
+      const dl = document.getElementById('vaultFolderDatalist');
+      if (!dl) return;
+      const folders = getAllKnownVaultFolders();
+      dl.innerHTML = folders.map(f => `<option value="${escapeHtml(f)}"></option>`).join('');
+    }
+
+    function syncUploadFolderHint() {
+      renderSelectedFiles();
+    }
+
+    function navigateToVaultFolder(folderPath) {
+      _currentFolderPath = normalizeVaultFolderPath(folderPath);
+      const uploadInput = document.getElementById('uploadFolderPath');
+      if (uploadInput) {
+        uploadInput.value = _currentFolderPath;
+      }
+      renderSelectedFiles();
+      renderVaultList();
+    }
+
+    function toggleVaultFlatViewMode() {
+      _isFlatViewMode = !_isFlatViewMode;
+      const icon = document.getElementById('vaultViewModeIcon');
+      const text = document.getElementById('vaultViewModeText');
+      if (icon && text) {
+        if (_isFlatViewMode) {
+          icon.className = 'fa-solid fa-list-ul text-indigo-500';
+          text.textContent = '平鋪展開全部';
+        } else {
+          icon.className = 'fa-solid fa-folder-tree text-indigo-500';
+          text.textContent = '資料夾階層';
+        }
+      }
+      renderVaultList();
+    }
+
+    async function createNewVaultFolderPrompt() {
+      if (!_memoryPassphrase) {
+        openPassphraseModal(() => createNewVaultFolderPrompt());
+        showToast('💡 請先解鎖主通行碼以建立加密資料夾', 'info');
+        return;
+      }
+      const prefixHint = _currentFolderPath ? `（將於「${_currentFolderPath}/」底下建立，或可輸入多層如 收據/醫療）` : '（可輸入單層如「2026報稅」或多層如「2026報稅/收據」）';
+      const raw = prompt(`📁 請輸入新加密資料夾名稱 ${prefixHint}：`);
+      if (raw === null) return;
+      const sub = normalizeVaultFolderPath(raw);
+      if (!sub) {
+        showToast('資料夾名稱不可為空', 'error');
+        return;
+      }
+      const fullPath = joinVaultFolderPath(_currentFolderPath, sub);
+      _customFolders.add(fullPath);
+      await saveEncryptedCustomFolders(_memoryPassphrase);
+      updateFolderDatalistUI();
+      navigateToVaultFolder(fullPath);
+      showToast(`📁 已建立並切換至加密資料夾：${fullPath}`, 'success');
+    }
+
+    async function deleteEmptyCustomFolder(folderPath, e) {
+      if (e) e.stopPropagation();
+      const target = normalizeVaultFolderPath(folderPath);
+      if (!target) return;
+      for (const p of Array.from(_customFolders)) {
+        if (p === target || p.startsWith(`${target}/`)) {
+          _customFolders.delete(p);
+        }
+      }
+      if (_memoryPassphrase) {
+        await saveEncryptedCustomFolders(_memoryPassphrase);
+      }
+      updateFolderDatalistUI();
+      renderVaultList();
+      showToast(`🗑️ 已移除空資料夾「${target}」`, 'info');
     }
 
     // 讀取連線設定（與 LifeSchedule 共用 pi_server_url / pi_api_key / pi_account；啟用最高防護時優先讀記憶體解密保險庫）
@@ -625,11 +893,22 @@
       return aesKey;
     }
 
-    async function encryptFileToWbvlt(file, passphrase, { account, category, note }) {
+    async function computeFilePlainBytesAndSha256(file) {
       const plainBuf = await file.arrayBuffer();
       const plainBytes = new Uint8Array(plainBuf);
       const hashBuf = await window.crypto.subtle.digest('SHA-256', plainBytes);
       const sha256Hex = bufToHex(hashBuf);
+      return { plainBytes, sha256Hex };
+    }
+
+    async function encryptFileToWbvlt(file, passphrase, { account, category, note, folderPath, precomputedPlainBytes, precomputedSha256 }) {
+      let plainBytes = precomputedPlainBytes;
+      let sha256Hex = precomputedSha256;
+      if (!plainBytes || !sha256Hex) {
+        const res = await computeFilePlainBytesAndSha256(file);
+        plainBytes = res.plainBytes;
+        sha256Hex = res.sha256Hex;
+      }
 
       const now = Date.now();
       const d = new Date(now);
@@ -645,13 +924,18 @@
       const bodyIvBytes = window.crypto.getRandomValues(new Uint8Array(12));
       const aesKey = await deriveAesKey(passphrase, saltBytes, PBKDF2_ITERATIONS);
 
+      const normFolder = normalizeVaultFolderPath(folderPath);
+      const fileLastModified = Number(file.lastModified) || now;
+
       const metadata = {
         originalName: file.name,
+        folderPath: normFolder,
         mimeType: file.type || 'application/octet-stream',
         originalSize: plainBytes.byteLength,
         sha256: sha256Hex,
         category: category || 'general',
         note: note || '',
+        fileLastModified,
         createdAt: now
       };
 
@@ -958,8 +1242,10 @@
         _vaultItems = Array.from(map.values()).sort((a, b) => b.createdAt - a.createdAt);
 
         if (_memoryPassphrase) {
+          await loadEncryptedCustomFolders(_memoryPassphrase);
           await decryptAllLoadedHeaders(_memoryPassphrase);
         }
+        updateFolderDatalistUI();
         updateSelfHealBanner(piOk, gasOk);
         renderVaultList();
       } finally {
@@ -1043,7 +1329,7 @@
     }
 
     // ============================================================
-    // 📤 選檔、加密與雙軌上傳流程
+    // 📤 選檔、資料夾拖曳解析、重複檔案比對與雙軌上傳流程
     // ============================================================
     function handleDragOver(e) {
       e.preventDefault();
@@ -1053,13 +1339,74 @@
       e.preventDefault();
       document.getElementById('dropZone').classList.remove('drop-active');
     }
-    function handleDrop(e) {
+
+    async function readDroppedEntriesRecursive(entry, parentPath = '') {
+      if (!entry) return [];
+      if (entry.isFile) {
+        return new Promise((resolve) => {
+          entry.file(
+            f => resolve([{ file: f, relFolder: normalizeVaultFolderPath(parentPath) }]),
+            () => resolve([])
+          );
+        });
+      }
+      if (entry.isDirectory) {
+        const dirReader = entry.createReader();
+        const entries = [];
+        const readBatch = () => new Promise((resolve) => {
+          dirReader.readEntries(batch => {
+            if (!batch || batch.length === 0) resolve();
+            else {
+              entries.push(...batch);
+              readBatch().then(resolve);
+            }
+          }, () => resolve());
+        });
+        await readBatch();
+        const nextParent = joinVaultFolderPath(parentPath, entry.name);
+        const results = [];
+        for (const child of entries) {
+          const sub = await readDroppedEntriesRecursive(child, nextParent);
+          results.push(...sub);
+        }
+        return results;
+      }
+      return [];
+    }
+
+    async function handleDrop(e) {
       e.preventDefault();
       document.getElementById('dropZone').classList.remove('drop-active');
-      if (e.dataTransfer && e.dataTransfer.files) {
+      if (!e.dataTransfer) return;
+
+      // 優先檢查是否拖曳包含資料夾 (webkitGetAsEntry)
+      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+        const entries = [];
+        for (let i = 0; i < e.dataTransfer.items.length; i++) {
+          const item = e.dataTransfer.items[i];
+          if (item && typeof item.webkitGetAsEntry === 'function') {
+            const entry = item.webkitGetAsEntry();
+            if (entry) entries.push(entry);
+          }
+        }
+        if (entries.some(en => en.isDirectory)) {
+          const collected = [];
+          for (const en of entries) {
+            const items = await readDroppedEntriesRecursive(en, '');
+            collected.push(...items);
+          }
+          if (collected.length > 0) {
+            addSelectedFiles(collected);
+            return;
+          }
+        }
+      }
+
+      if (e.dataTransfer.files) {
         addSelectedFiles(Array.from(e.dataTransfer.files));
       }
     }
+
     function handleFileSelect(e) {
       if (e.target && e.target.files) {
         addSelectedFiles(Array.from(e.target.files));
@@ -1067,9 +1414,49 @@
       }
     }
 
-    function addSelectedFiles(files) {
-      for (const f of files) {
-        _selectedFiles.push(f);
+    function handleFolderSelect(e) {
+      if (e.target && e.target.files) {
+        const rawFiles = Array.from(e.target.files);
+        const wrapped = rawFiles.map(f => {
+          const rel = String(f.webkitRelativePath || '');
+          const parts = rel.split('/').filter(Boolean);
+          const relFolder = parts.length > 1 ? normalizeVaultFolderPath(parts.slice(0, -1).join('/')) : '';
+          return { file: f, relFolder };
+        });
+        addSelectedFiles(wrapped);
+        e.target.value = '';
+      }
+    }
+
+    function resolveTargetFolderForSelectedEntry(entry) {
+      const baseInput = document.getElementById('uploadFolderPath');
+      const baseFolder = normalizeVaultFolderPath(baseInput ? baseInput.value : _currentFolderPath);
+      return joinVaultFolderPath(baseFolder, entry.relFolder || '');
+    }
+
+    function addSelectedFiles(filesOrEntries) {
+      let skippedInQueue = 0;
+      for (const raw of filesOrEntries) {
+        const file = raw && raw.file instanceof File ? raw.file : raw;
+        if (!file || !file.name) continue;
+        // 略過系統隱藏垃圾檔
+        if (file.name === '.DS_Store' || file.name === 'Thumbs.db') continue;
+        const relFolder = raw && typeof raw.relFolder === 'string' ? normalizeVaultFolderPath(raw.relFolder) : '';
+
+        // 檢查佇列內是否已有同路徑+同檔名檔案
+        const existingIdx = _selectedFiles.findIndex(
+          x => x.file.name === file.name && x.relFolder === relFolder
+        );
+        if (existingIdx !== -1) {
+          // 若同一批佇列重複選入同名檔，直接以較新或剛選入的替換，避免佇列內重複
+          _selectedFiles[existingIdx] = { file, relFolder };
+          skippedInQueue++;
+        } else {
+          _selectedFiles.push({ file, relFolder });
+        }
+      }
+      if (skippedInQueue > 0) {
+        showToast(`ℹ️ 已自動合併佇列內 ${skippedInQueue} 個重複選取的同名檔案`, 'info');
       }
       renderSelectedFiles();
     }
@@ -1088,18 +1475,109 @@
         return;
       }
       box.classList.remove('hidden');
-      box.innerHTML = _selectedFiles.map((f, idx) => `
-        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700 text-xs">
-          <div class="flex items-center gap-2 min-w-0">
-            <i class="fa-solid fa-file text-indigo-500 shrink-0"></i>
-            <span class="font-semibold truncate">${escapeHtml(f.name)}</span>
-            <span class="text-[11px] font-mono text-slate-400 shrink-0">(${formatBytes(f.size)})</span>
+      box.innerHTML = _selectedFiles.map((entry, idx) => {
+        const f = entry.file;
+        const targetFolder = resolveTargetFolderForSelectedEntry(entry);
+        const folderBadge = targetFolder
+          ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-100/80 dark:bg-amber-950 text-amber-800 dark:text-amber-300 shrink-0">📁 ${escapeHtml(targetFolder)}</span>`
+          : '';
+        return `
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700 text-xs">
+            <div class="flex items-center gap-2 min-w-0">
+              <i class="fa-solid fa-file text-indigo-500 shrink-0"></i>
+              ${folderBadge}
+              <span class="font-semibold truncate">${escapeHtml(f.name)}</span>
+              <span class="text-[11px] font-mono text-slate-400 shrink-0">(${formatBytes(f.size)})</span>
+            </div>
+            <button onclick="removeSelectedFile(${idx})" class="text-slate-400 hover:text-rose-500 ml-2">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
           </div>
-          <button onclick="removeSelectedFile(${idx})" class="text-slate-400 hover:text-rose-500 ml-2">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+    }
+
+    // 彈出重複檔案新舊比對確認視窗
+    function promptDuplicateConflictModal({ existingItem, incomingFile, incomingSha256, targetFolder, hasMultipleInQueue }) {
+      return new Promise((resolve) => {
+        _dupModalResolver = resolve;
+        const modal = document.getElementById('duplicateConflictModal');
+        const badge = document.getElementById('dupComparisonVerdictBadge');
+        const subtext = document.getElementById('dupConflictSubtext');
+        const applyWrap = document.getElementById('dupApplyAllWrap');
+        const applyCb = document.getElementById('dupApplyToAllCheckbox');
+
+        if (applyCb) applyCb.checked = false;
+        if (applyWrap) {
+          if (hasMultipleInQueue) applyWrap.classList.remove('hidden');
+          else applyWrap.classList.add('hidden');
+        }
+
+        const exMeta = existingItem.decryptedMeta || {};
+        const exTimeMs = Number(exMeta.fileLastModified || exMeta.createdAt || existingItem.createdAt || 0);
+        const inTimeMs = Number(incomingFile.lastModified || Date.now());
+        const exSize = Number(exMeta.originalSize ?? existingItem.size ?? 0);
+        const inSize = Number(incomingFile.size || 0);
+        const exHash = String(exMeta.sha256 || '');
+        const isSameContent = Boolean(exHash && incomingSha256 && exHash === incomingSha256);
+
+        const folderDisplay = targetFolder ? `📁 ${targetFolder}/` : '🏠 根目錄/';
+        document.getElementById('dupExistingName').textContent = `${folderDisplay}${exMeta.originalName || incomingFile.name}`;
+        document.getElementById('dupIncomingName').textContent = `${folderDisplay}${incomingFile.name}`;
+
+        const fmtTime = ms => ms ? new Date(ms).toLocaleString('zh-TW', { hour12: false }) : '未知時間';
+        document.getElementById('dupExistingTime').textContent = `🕒 修改/建立：${fmtTime(exTimeMs)}`;
+        document.getElementById('dupIncomingTime').textContent = `🕒 本機修改：${fmtTime(inTimeMs)}`;
+        document.getElementById('dupExistingSize').textContent = `📦 大小：${formatBytes(exSize)}`;
+        document.getElementById('dupIncomingSize').textContent = `📦 大小：${formatBytes(inSize)}`;
+        document.getElementById('dupExistingHash').textContent = `🛡️ SHA256：${exHash ? exHash.slice(0, 12) + '...' : '未知'}`;
+        document.getElementById('dupIncomingHash').textContent = `🛡️ SHA256：${incomingSha256 ? incomingSha256.slice(0, 12) + '...' : '未知'}`;
+
+        const exTag = document.getElementById('dupExistingTag');
+        const inTag = document.getElementById('dupIncomingTag');
+
+        // 允許 1 秒內誤差視為同時間
+        const diffMs = inTimeMs - exTimeMs;
+        if (isSameContent) {
+          badge.textContent = '🟢 SHA-256 內容 100% 相同';
+          badge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300';
+          subtext.textContent = `「${incomingFile.name}」已經存在於「${targetFolder || '根目錄'}」，且經 SHA-256 比對內容與雲端舊檔完全相同！建議可略過不重複上傳，或選擇覆蓋更新時間戳記。`;
+          exTag.textContent = '內容相同';
+          inTag.textContent = '內容相同';
+        } else if (diffMs > 1000) {
+          badge.textContent = '🆕 本次上傳檔案較新';
+          badge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300';
+          subtext.textContent = `雲端「${targetFolder || '根目錄'}」已有同名檔案「${incomingFile.name}」，但您本次上傳的本機檔案修改時間較新，請問是否要覆蓋舊檔？`;
+          exTag.textContent = '較舊版本';
+          inTag.textContent = '🔥 較新版本';
+        } else if (diffMs < -1000) {
+          badge.textContent = '⚠️ 雲端現有檔案較新';
+          badge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300';
+          subtext.textContent = `注意！雲端「${targetFolder || '根目錄'}」上的同名檔案「${incomingFile.name}」比您準備上傳的本機檔案還要新，請確認是否仍要覆蓋？`;
+          exTag.textContent = '🔥 較新版本';
+          inTag.textContent = '較舊版本';
+        } else {
+          badge.textContent = '🔄 同時間不同內容';
+          badge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300';
+          subtext.textContent = `雲端「${targetFolder || '根目錄'}」已有同名檔案「${incomingFile.name}」（時間相近但 SHA-256 內容不同），請問是否覆蓋？`;
+          exTag.textContent = '現有版本';
+          inTag.textContent = '準備上傳';
+        }
+
+        modal.classList.remove('hidden');
+      });
+    }
+
+    function resolveDuplicateModalChoice(action) {
+      const modal = document.getElementById('duplicateConflictModal');
+      const applyCb = document.getElementById('dupApplyToAllCheckbox');
+      const applyAll = Boolean(applyCb && applyCb.checked);
+      if (modal) modal.classList.add('hidden');
+      if (typeof _dupModalResolver === 'function') {
+        const fn = _dupModalResolver;
+        _dupModalResolver = null;
+        fn({ action, applyAll });
+      }
     }
 
     async function startEncryptAndUpload(localOnly = false) {
@@ -1119,8 +1597,16 @@
         return;
       }
 
+      // 確保目前已載入之雲端清單都已解密標頭，才能精準比對同資料夾同名檔案
+      if (!localOnly && _vaultItems.some(it => !it.decryptedMeta && !it.decryptFailed)) {
+        await decryptAllLoadedHeaders(_memoryPassphrase);
+      }
+
       const category = document.getElementById('uploadCategory').value;
       const note = document.getElementById('uploadNote').value.trim();
+      const baseFolderInput = document.getElementById('uploadFolderPath');
+      const baseFolder = normalizeVaultFolderPath(baseFolderInput ? baseFolderInput.value : _currentFolderPath);
+
       const progBox = document.getElementById('uploadProgressList');
       progBox.classList.remove('hidden');
       progBox.innerHTML = '';
@@ -1128,32 +1614,90 @@
       const btn = document.getElementById('encryptUploadBtn');
       if (btn) btn.disabled = true;
 
+      let batchDuplicatePolicy = null; // 'overwrite' | 'skip' | 'keep_both'
+
       try {
         const queue = [..._selectedFiles];
         _selectedFiles = [];
         renderSelectedFiles();
         document.getElementById('uploadNote').value = '';
 
-        for (const file of queue) {
+        for (let idx = 0; idx < queue.length; idx++) {
+          const entry = queue[idx];
+          const file = entry.file;
+          const targetFolder = joinVaultFolderPath(baseFolder, entry.relFolder || '');
+
           const row = document.createElement('div');
           row.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1';
+          const displayPathName = targetFolder ? `${targetFolder}/${file.name}` : file.name;
           row.innerHTML = `
             <div class="flex items-center justify-between font-bold">
-              <span class="truncate max-w-[200px]">🔐 ${escapeHtml(file.name)}</span>
-              <span class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400" data-role="step">PBKDF2 + AES-GCM 加密中...</span>
+              <span class="truncate max-w-[220px]">🔐 ${escapeHtml(displayPathName)}</span>
+              <span class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400" data-role="step">計算雜湊與檢查重複...</span>
             </div>
-            <div class="text-[11px] text-slate-500 font-mono" data-role="detail">正在計算 SHA-256 並封裝 WBVLT1 容器...</div>
+            <div class="text-[11px] text-slate-500 font-mono" data-role="detail">正在計算 SHA-256...</div>
           `;
           progBox.prepend(row);
           const stepEl = row.querySelector('[data-role="step"]');
           const detailEl = row.querySelector('[data-role="detail"]');
 
           try {
+            const { plainBytes, sha256Hex } = await computeFilePlainBytesAndSha256(file);
+
+            // 比對雲端同一加密虛擬資料夾底下是否已有同名檔案
+            let duplicates = [];
+            if (!localOnly) {
+              duplicates = _vaultItems.filter(it => {
+                if (!it.decryptedMeta) return false;
+                const itFolder = normalizeVaultFolderPath(it.decryptedMeta.folderPath);
+                return itFolder === targetFolder && it.decryptedMeta.originalName === file.name;
+              });
+            }
+
+            let chosenAction = 'keep_both';
+            if (duplicates.length > 0) {
+              // 以最新的一筆既有檔案作為比對基準
+              const newestExisting = duplicates[0];
+              if (batchDuplicatePolicy) {
+                chosenAction = batchDuplicatePolicy;
+              } else {
+                stepEl.textContent = '⏸️ 等待確認是否覆蓋同名檔案...';
+                const decision = await promptDuplicateConflictModal({
+                  existingItem: newestExisting,
+                  incomingFile: file,
+                  incomingSha256: sha256Hex,
+                  targetFolder,
+                  hasMultipleInQueue: (queue.length - idx) > 1
+                });
+                chosenAction = decision.action;
+                if (decision.applyAll) {
+                  batchDuplicatePolicy = decision.action;
+                }
+              }
+
+              if (chosenAction === 'skip') {
+                stepEl.textContent = '⏭️ 已略過 (保留雲端原檔)';
+                stepEl.className = 'text-[11px] font-mono text-slate-500 font-bold';
+                detailEl.textContent = `未重複上傳 ${displayPathName}`;
+                continue;
+              }
+            }
+
+            stepEl.textContent = 'PBKDF2 + AES-GCM 加密中...';
+            detailEl.textContent = '正在封裝 WBVLT1 零知識容器...';
+
             const { containerBytes, header, vaultId } = await encryptFileToWbvlt(file, _memoryPassphrase, {
               account,
               category,
-              note
+              note,
+              folderPath: targetFolder,
+              precomputedPlainBytes: plainBytes,
+              precomputedSha256: sha256Hex
             });
+
+            if (targetFolder) {
+              _customFolders.add(targetFolder);
+            }
 
             if (localOnly) {
               triggerBrowserDownload(containerBytes, vaultId, 'application/octet-stream');
@@ -1174,13 +1718,26 @@
             const piMsg = !hasPi ? '🍓 略過' : (piOk ? '🍓 樹莓派: ✅ 成功' : `🍓 樹莓派: ❌ ${piRes.reason.message}`);
             const gasMsg = !hasGas ? '☁️ 略過' : (gasOk ? '☁️ GDrive: ✅ 成功' : `☁️ GDrive: ❌ ${gasRes.reason.message}`);
 
-            detailEl.textContent = `${piMsg} ｜ ${gasMsg}`;
             if (piOk || gasOk) {
-              stepEl.textContent = (piOk && gasOk) ? '🟢 雙軌備份完成' : '🟡 單軌備份成功 (可稍後補同步)';
+              // Copy-on-Write 安全覆蓋：確認新加密容器已成功上傳後，才移除舊的同名重複檔案
+              if (duplicates.length > 0 && chosenAction === 'overwrite') {
+                stepEl.textContent = '🧹 正在清理被覆蓋的舊版加密檔...';
+                for (const oldItem of duplicates) {
+                  await Promise.allSettled([
+                    oldItem.onPi ? deleteWbvltFromPi(oldItem.fileName) : Promise.resolve(),
+                    oldItem.onGas ? deleteWbvltFromGas(oldItem.fileName) : Promise.resolve()
+                  ]);
+                }
+                stepEl.textContent = (piOk && gasOk) ? '🟢 安全覆蓋並完成雙軌備份' : '🟡 安全覆蓋完成 (單軌成功)';
+              } else {
+                stepEl.textContent = (piOk && gasOk) ? '🟢 雙軌備份完成' : '🟡 單軌備份成功 (可稍後補同步)';
+              }
               stepEl.className = `text-[11px] font-mono font-bold ${piOk && gasOk ? 'text-emerald-600' : 'text-amber-600'}`;
+              detailEl.textContent = `${piMsg} ｜ ${gasMsg}`;
             } else {
-              stepEl.textContent = '❌ 雙軌皆上傳失敗';
+              stepEl.textContent = '❌ 雙軌皆上傳失敗 (舊檔完好保留)';
               stepEl.className = 'text-[11px] font-mono font-bold text-rose-600';
+              detailEl.textContent = `${piMsg} ｜ ${gasMsg}`;
             }
           } catch (err) {
             stepEl.textContent = '❌ 加密或上傳異常';
@@ -1189,6 +1746,9 @@
           }
         }
 
+        if (_memoryPassphrase) {
+          await saveEncryptedCustomFolders(_memoryPassphrase);
+        }
         if (!localOnly) await refreshVaultList();
       } finally {
         if (btn) btn.disabled = false;
@@ -1196,7 +1756,7 @@
     }
 
     // ============================================================
-    // 📥 從雲端解密下載、安全預覽與刪除
+    // 📥 從雲端解密下載、安全預覽、移動資料夾與刪除
     // ============================================================
     async function fetchContainerBytesSmart(item) {
       if (item.onPi) {
@@ -1214,6 +1774,88 @@
         return await downloadWbvltFromGas(item.fileName);
       }
       throw new Error('找不到可用的儲存來源');
+    }
+
+    // 修改已上傳檔案的加密虛擬資料夾（僅重新封裝 WBVLT1 Header Metadata，保留原本 Body 密文，並採 Copy-on-Write 替換）
+    async function moveVaultItemFolderPrompt(fileName) {
+      const item = _vaultItems.find(x => x.fileName === fileName);
+      if (!item) return;
+      if (!_memoryPassphrase) {
+        openPassphraseModal(() => moveVaultItemFolderPrompt(fileName));
+        return;
+      }
+      const currentFolder = normalizeVaultFolderPath(item.decryptedMeta && item.decryptedMeta.folderPath);
+      const rawNew = prompt(
+        `📁 移動「${item.decryptedMeta ? item.decryptedMeta.originalName : fileName}」至加密資料夾：\n（留空代表移回「根目錄」，或輸入如 2026報稅/收據）`,
+        currentFolder
+      );
+      if (rawNew === null) return;
+      const targetFolder = normalizeVaultFolderPath(rawNew);
+      if (targetFolder === currentFolder) return;
+
+      const { hasPi, hasGas } = getConnConfig();
+      try {
+        showToast(`⏳ 正在更新加密標頭並移動至「${targetFolder || '根目錄'}」...`, 'info');
+        const oldContainer = await fetchContainerBytesSmart(item);
+        const { header, bodyCipherBytes } = parseWbvltContainer(oldContainer);
+        const metadata = await decryptHeaderMetadata(header, _memoryPassphrase);
+        metadata.folderPath = targetFolder;
+
+        const saltBytes = b64ToBytes(header.kdf.salt);
+        const newMetaIv = window.crypto.getRandomValues(new Uint8Array(12));
+        const aesKey = await deriveAesKey(_memoryPassphrase, saltBytes, header.kdf.iterations);
+
+        const updatedHeader = JSON.parse(JSON.stringify(header));
+        updatedHeader.metaCipher.iv = bytesToB64(newMetaIv);
+        const metaPlainBytes = new TextEncoder().encode(JSON.stringify(metadata));
+        const metaCipherBuf = await window.crypto.subtle.encrypt(
+          { name: 'AES-GCM', iv: newMetaIv, additionalData: buildMetaAAD(updatedHeader), tagLength: 128 },
+          aesKey,
+          metaPlainBytes
+        );
+        updatedHeader.metaCipher.ciphertext = bytesToB64(new Uint8Array(metaCipherBuf));
+
+        // 因為 Body AAD 綁定了 metaCiphertext，需以同一把金鑰重新封裝 Body Ciphertext
+        const plainBuf = await window.crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: b64ToBytes(header.bodyCipher.iv), additionalData: buildBodyAAD(header), tagLength: 128 },
+          aesKey,
+          bodyCipherBytes
+        );
+        const newBodyIv = window.crypto.getRandomValues(new Uint8Array(12));
+        updatedHeader.bodyCipher.iv = bytesToB64(newBodyIv);
+        const newBodyCipherBuf = await window.crypto.subtle.encrypt(
+          { name: 'AES-GCM', iv: newBodyIv, additionalData: buildBodyAAD(updatedHeader), tagLength: 128 },
+          aesKey,
+          new Uint8Array(plainBuf)
+        );
+
+        const headerBytes = new TextEncoder().encode(JSON.stringify(updatedHeader));
+        const newBodyBytes = new Uint8Array(newBodyCipherBuf);
+        const newContainer = new Uint8Array(10 + headerBytes.byteLength + newBodyBytes.byteLength);
+        for (let i = 0; i < 6; i++) newContainer[i] = VAULT_MAGIC_STR.charCodeAt(i);
+        new DataView(newContainer.buffer).setUint32(6, headerBytes.byteLength, false);
+        newContainer.set(headerBytes, 10);
+        newContainer.set(newBodyBytes, 10 + headerBytes.byteLength);
+
+        // 先刪除舊容器再寫入同名容器（或雙軌更新）
+        if (hasPi && item.onPi) {
+          await deleteWbvltFromPi(fileName);
+          await uploadWbvltToPi(fileName, newContainer);
+        }
+        if (hasGas && item.onGas) {
+          await deleteWbvltFromGas(fileName);
+          await uploadWbvltToGas(fileName, newContainer, updatedHeader);
+        }
+
+        if (targetFolder) {
+          _customFolders.add(targetFolder);
+          await saveEncryptedCustomFolders(_memoryPassphrase);
+        }
+        showToast(`✅ 已移動至「${targetFolder || '根目錄'}」`, 'success');
+        await refreshVaultList();
+      } catch (e) {
+        showToast(`❌ 移動資料夾失敗：${e.message}`, 'error');
+      }
     }
 
     async function decryptAndDownloadItem(fileName, previewMode = false) {
@@ -1296,13 +1938,72 @@
     }
 
     // ============================================================
-    // 🖥️ 畫面渲染與互動輔助
+    // 🖥️ 畫面渲染與加密虛擬資料夾導覽
     // ============================================================
+    function renderVaultBreadcrumbs() {
+      const bc = document.getElementById('vaultBreadcrumbContainer');
+      if (!bc) return;
+      const parts = _currentFolderPath ? _currentFolderPath.split('/') : [];
+      let html = `
+        <button type="button" onclick="navigateToVaultFolder('')" class="px-2 py-1 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-all flex items-center gap-1 ${parts.length === 0 && !_isFlatViewMode ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60' : 'text-slate-600 dark:text-slate-300'}">
+          <i class="fa-solid fa-house-lock"></i>
+          <span>根目錄</span>
+        </button>
+      `;
+      let accum = '';
+      for (let i = 0; i < parts.length; i++) {
+        accum = accum ? `${accum}/${parts[i]}` : parts[i];
+        const isLast = i === parts.length - 1;
+        html += `
+          <span class="text-slate-300 dark:text-slate-600">/</span>
+          <button type="button" onclick="navigateToVaultFolder('${escapeJs(accum)}')" class="px-2 py-1 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-all truncate max-w-[140px] ${isLast && !_isFlatViewMode ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60' : 'text-slate-600 dark:text-slate-300'}">
+            📁 ${escapeHtml(parts[i])}
+          </button>
+        `;
+      }
+      if (_isFlatViewMode) {
+        html += `<span class="ml-1 text-[11px] font-mono px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">🔍 平鋪檢視全部檔案</span>`;
+      }
+      bc.innerHTML = html;
+    }
+
     function renderVaultList() {
       const container = document.getElementById('vaultListContainer');
       const countBadge = document.getElementById('vaultCountBadge');
       const q = (document.getElementById('vaultSearchInput').value || '').trim().toLowerCase();
       const catFilter = document.getElementById('vaultCategoryFilter').value;
+
+      renderVaultBreadcrumbs();
+
+      const isSearchingOrFiltering = Boolean(q || catFilter !== 'all' || _isFlatViewMode || !_memoryPassphrase);
+
+      // 收集當前資料夾底下的直接子資料夾（僅於已解鎖且非搜尋/平鋪模式時顯示資料夾卡片）
+      const childFolderStats = new Map(); // childFullPath -> { name, fullPath, fileCount }
+      if (!isSearchingOrFiltering) {
+        const prefix = _currentFolderPath ? `${_currentFolderPath}/` : '';
+        const allFolders = getAllKnownVaultFolders();
+        for (const fp of allFolders) {
+          if (!fp.startsWith(prefix) || fp === _currentFolderPath) continue;
+          const rest = fp.slice(prefix.length);
+          const firstSeg = rest.split('/')[0];
+          if (!firstSeg) continue;
+          const childFullPath = prefix + firstSeg;
+          if (!childFolderStats.has(childFullPath)) {
+            childFolderStats.set(childFullPath, { name: firstSeg, fullPath: childFullPath, fileCount: 0 });
+          }
+        }
+        for (const it of _vaultItems) {
+          if (!it.decryptedMeta) continue;
+          const itemFp = normalizeVaultFolderPath(it.decryptedMeta.folderPath);
+          if (!itemFp.startsWith(prefix) || itemFp === _currentFolderPath) continue;
+          const rest = itemFp.slice(prefix.length);
+          const firstSeg = rest.split('/')[0];
+          const childFullPath = prefix + firstSeg;
+          if (childFolderStats.has(childFullPath)) {
+            childFolderStats.get(childFullPath).fileCount++;
+          }
+        }
+      }
 
       const filtered = _vaultItems.filter(it => {
         const meta = it.decryptedMeta;
@@ -1313,22 +2014,28 @@
           const hay = [
             it.fileName,
             meta ? meta.originalName : '',
+            meta ? meta.folderPath : '',
             meta ? meta.note : '',
             meta ? meta.category : ''
           ].join(' ').toLowerCase();
           if (!hay.includes(q)) return false;
+        } else if (!isSearchingOrFiltering && meta) {
+          const itemFp = normalizeVaultFolderPath(meta.folderPath);
+          if (itemFp !== _currentFolderPath) return false;
         }
         return true;
       });
 
-      if (countBadge) countBadge.textContent = String(filtered.length);
+      if (countBadge) countBadge.textContent = String(_vaultItems.length);
 
-      if (filtered.length === 0) {
+      const childFolders = Array.from(childFolderStats.values()).sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
+
+      if (childFolders.length === 0 && filtered.length === 0) {
         container.innerHTML = `
           <div class="h-72 flex flex-col items-center justify-center text-center text-slate-400 dark:text-slate-500 p-6">
-            <i class="fa-solid fa-box-open text-3xl mb-3 text-slate-300 dark:text-slate-700"></i>
-            <p class="text-sm font-bold text-slate-600 dark:text-slate-400">目前尚無符合條件的加密檔案</p>
-            <p class="text-xs mt-1">從左側選取私人檔案即可加密上傳至 🍓 樹莓派與 ☁️ Google 雲端硬碟</p>
+            <i class="fa-solid fa-folder-open text-3xl mb-3 text-slate-300 dark:text-slate-700"></i>
+            <p class="text-sm font-bold text-slate-600 dark:text-slate-400">${_currentFolderPath ? `加密資料夾「${escapeHtml(_currentFolderPath)}」目前為空` : '目前尚無符合條件的加密檔案'}</p>
+            <p class="text-xs mt-1">從左側選取檔案或整個資料夾，即可直接加密上傳至此目錄</p>
           </div>
         `;
         return;
@@ -1336,13 +2043,39 @@
 
       const { hasPi, hasGas } = getConnConfig();
 
-      container.innerHTML = filtered.map(it => {
+      const folderCardsHtml = childFolders.map(fd => `
+        <div onclick="navigateToVaultFolder('${escapeJs(fd.fullPath)}')" class="p-3.5 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/60 hover:border-amber-400 dark:hover:border-amber-600 cursor-pointer transition-all flex items-center justify-between">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-folder text-lg"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-sm font-extrabold text-slate-900 dark:text-white truncate">${escapeHtml(fd.name)}</div>
+              <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400">加密子資料夾 · 包含 ${fd.fileCount} 個加密檔案</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            ${fd.fileCount === 0 ? `
+              <button type="button" onclick="deleteEmptyCustomFolder('${escapeJs(fd.fullPath)}', event)" class="px-2.5 py-1 rounded-lg text-xs text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all" title="移除此空資料夾">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            ` : ''}
+            <span class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/80 dark:bg-slate-800 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+              進入 <i class="fa-solid fa-chevron-right ml-0.5 text-[10px]"></i>
+            </span>
+          </div>
+        </div>
+      `).join('');
+
+      const fileCardsHtml = filtered.map(it => {
         const meta = it.decryptedMeta;
         const catInfo = CATEGORY_META[(meta && meta.category) || 'general'] || CATEGORY_META.general;
-        const dateStr = new Date(it.createdAt).toLocaleString('zh-TW', { hour12: false });
+        const displayTimeMs = (meta && meta.fileLastModified) || it.createdAt;
+        const dateStr = new Date(displayTimeMs).toLocaleString('zh-TW', { hour12: false });
         const canPreview = meta && /^(image\/|text\/|application\/pdf|application\/json)/i.test(meta.mimeType || '');
         const needsSyncToGas = hasGas && it.onPi && !it.onGas;
         const needsSyncToPi = hasPi && it.onGas && !it.onPi;
+        const itemFolder = normalizeVaultFolderPath(meta && meta.folderPath);
 
         return `
           <div class="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
@@ -1351,9 +2084,10 @@
                 <div class="flex flex-wrap items-center gap-2 mb-1">
                   ${meta
                     ? `<span class="text-[11px] px-2 py-0.5 rounded-lg border font-bold ${catInfo.cls}">${catInfo.label}</span>
+                       ${itemFolder ? `<button type="button" onclick="navigateToVaultFolder('${escapeJs(itemFolder)}')" class="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 font-bold hover:underline" title="切換至此加密資料夾">📁 ${escapeHtml(itemFolder)}</button>` : ''}
                        <span class="text-sm font-extrabold text-slate-900 dark:text-white truncate">${escapeHtml(meta.originalName)}</span>`
                     : `<span class="text-[11px] px-2 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 font-bold">
-                         ${it.decryptFailed ? '❌ 通行碼不符' : '🔒 檔名已加密隱藏'}
+                         ${it.decryptFailed ? '❌ 通行碼不符' : '🔒 檔名與資料夾已加密隱藏'}
                        </span>
                        <span class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 truncate">${escapeHtml(it.fileName)}</span>`
                   }
@@ -1363,7 +2097,7 @@
 
                 <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400 dark:text-slate-500 font-mono">
                   <span>📦 ${formatBytes(meta ? meta.originalSize : it.size)}</span>
-                  <span>🕒 ${dateStr}</span>
+                  <span title="檔案最後修改時間">🕒 ${dateStr}</span>
                   <span class="truncate max-w-[190px]" title="${escapeHtml(it.fileName)}">🆔 ${escapeHtml(it.fileName)}</span>
                   ${meta && meta.sha256 ? `<span title="SHA-256: ${escapeHtml(meta.sha256)}">🛡️ SHA256:${escapeHtml(meta.sha256.slice(0, 8))}</span>` : ''}
                 </div>
@@ -1381,6 +2115,12 @@
                 ${(needsSyncToGas || needsSyncToPi) ? `
                   <button onclick="syncSingleTrack('${escapeJs(it.fileName)}')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 dark:bg-amber-950 dark:text-amber-300 transition-all" title="將密文原封補傳至另一軌">
                     🔄 補傳${needsSyncToGas ? '☁️' : '🍓'}
+                  </button>
+                ` : ''}
+
+                ${meta ? `
+                  <button onclick="moveVaultItemFolderPrompt('${escapeJs(it.fileName)}')" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 text-amber-700 dark:text-amber-300 border border-amber-200/70 dark:border-amber-800 transition-all" title="移動至其他加密資料夾">
+                    <i class="fa-solid fa-folder-tree"></i>
                   </button>
                 ` : ''}
 
@@ -1407,6 +2147,8 @@
           </div>
         `;
       }).join('');
+
+      container.innerHTML = folderCardsHtml + fileCardsHtml;
     }
 
     // ============================================================
@@ -1485,13 +2227,15 @@
         if (isVaultAppLockEnabled() && safeLsGet('vt_encrypted_local_vault', '')) {
           try { await decryptLocalSecretsWithPassphrase(pass); } catch (err) {}
         }
+        await loadEncryptedCustomFolders(pass);
         if (_vaultItems.length > 0) {
           await decryptAllLoadedHeaders(_memoryPassphrase);
         }
+        updateFolderDatalistUI();
         updateLockBadgeUI();
         renderVaultList();
         closePassphraseModal();
-        showToast('🔓 通行碼已載入記憶體並完成目錄解密！', 'success');
+        showToast('🔓 通行碼已載入記憶體並完成目錄與資料夾解密！', 'success');
         if (typeof _passModalCallback === 'function') {
           const cb = _passModalCallback;
           _passModalCallback = null;
@@ -1506,6 +2250,8 @@
     function lockVaultSession() {
       _memoryPassphrase = '';
       _derivedKeyCache.clear();
+      _customFolders.clear();
+      _currentFolderPath = '';
       if (isVaultAppLockEnabled()) {
         _decryptedLocalVaultSecrets = null;
       }
@@ -1513,13 +2259,14 @@
         it.decryptedMeta = null;
         it.decryptFailed = false;
       }
+      updateFolderDatalistUI();
       updateLockBadgeUI();
       renderVaultList();
       closePassphraseModal();
       if (isVaultAppLockEnabled()) {
         showVaultAppLockOverlay();
       }
-      showToast('🔒 已清除記憶體金鑰並鎖定所有真實檔名', 'info');
+      showToast('🔒 已清除記憶體金鑰並鎖定所有真實檔名與資料夾', 'info');
     }
 
     // 雙軌設定 Modal
@@ -2106,9 +2853,11 @@
         if (isVaultAppLockEnabled() && safeLsGet(VT_ENC_LOCAL_VAULT_KEY, '')) {
           try { await decryptLocalSecretsWithPassphrase(pass); } catch (e) {}
         }
+        await loadEncryptedCustomFolders(pass);
         if (_vaultItems.length > 0) {
           await decryptAllLoadedHeaders(_memoryPassphrase);
         }
+        updateFolderDatalistUI();
         updateLockBadgeUI();
         renderVaultList();
         closePassphraseModal();
