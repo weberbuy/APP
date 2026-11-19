@@ -323,7 +323,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.2.3 (2026-11-18)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.3.0 (2026-11-19)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1192,7 +1192,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.2.3 (2026-11-18)";
+window.APP_VERSION = "v6.3.0 (2026-11-19)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
@@ -1414,9 +1414,16 @@ function formatMoneyCompact(num) {
 }
 
 
-function renderFortellerHeaderFinanceBadge(mKey) {
+function renderFortellerHeaderFinanceBadge(mKey, compact = false) {
     const summary = getMonthlyFinanceSummary(mKey);
     if (!summary || !summary.hasData) {
+        if (compact) {
+            return `
+                <div onclick="openMonthlyFinanceModal('${mKey}', event)" class="mt-0.5 inline-flex items-center text-[9px] font-bold px-1 py-0 rounded bg-slate-200/70 dark:bg-slate-750 text-slate-500 dark:text-slate-400 hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-slate-700 cursor-pointer transition-all" title="點擊設定 ${mKey} 收支與被動收入">
+                    <span>+記</span>
+                </div>
+            `;
+        }
         return `
             <div onclick="openMonthlyFinanceModal('${mKey}', event)" class="mt-1 inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200/70 dark:bg-slate-750 text-slate-500 dark:text-slate-400 hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-slate-700 cursor-pointer transition-all border border-transparent hover:border-indigo-300" title="點擊設定 ${mKey} 收支與被動收入">
                 <span>➕ 記帳</span>
@@ -1426,6 +1433,14 @@ function renderFortellerHeaderFinanceBadge(mKey) {
     const { activeTotal, passiveTotal, expensesTotal, netSavings } = summary;
     const netColor = netSavings >= 0 ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 border-emerald-200 dark:border-emerald-800' : 'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/70 border-rose-200 dark:border-rose-800';
     const netSign = netSavings >= 0 ? '+' : '';
+
+    if (compact) {
+        return `
+            <div onclick="openMonthlyFinanceModal('${mKey}', event)" class="mt-0.5 inline-flex items-center justify-center px-1.5 py-0 rounded-full border text-[9px] font-mono font-black cursor-pointer hover:opacity-85 transition-all select-none ls-fin-amount ${netColor}" title="主動: $${activeTotal.toLocaleString()} | 被動: $${passiveTotal.toLocaleString()} | 支出: $${expensesTotal.toLocaleString()} | 結餘: ${netSign}$${netSavings.toLocaleString()} (點擊編輯)">
+                ${netSign}${formatMoneyCompact(netSavings)}
+            </div>
+        `;
+    }
     
     return `
         <div onclick="openMonthlyFinanceModal('${mKey}', event)" class="mt-1 flex flex-col items-center gap-0.5 p-1 rounded-lg bg-white/95 dark:bg-slate-800/95 border border-slate-200 dark:border-slate-700 shadow-2xs hover:border-indigo-400 hover:shadow-xs cursor-pointer transition-all text-[10px] leading-tight select-none" title="點擊檢視/編輯 ${mKey} 收支細項明細">
@@ -1744,6 +1759,10 @@ function jumpToCardsCategory(cat) {
 
 
         function toggleOverviewSubMode(subMode) {
+            if (subMode !== 'forteller' && typeof isFortellerFullscreen !== 'undefined' && isFortellerFullscreen) {
+                isFortellerFullscreen = false;
+                if (typeof document !== 'undefined' && document.body) document.body.style.overflow = '';
+            }
             overviewSubMode = subMode;
             render();
         }
@@ -1868,9 +1887,9 @@ function updateContainerWidth() {
             const container = document.getElementById('appContainer');
             if (!container) return;
             if (viewMode === 'overview') {
-                // 【v5.3.11 解除寬螢幕寬度上限卡死】：Forteller 模式下釋放寬度至 98%，隨螢幕尺寸充分延展，其餘子視圖維持 max-w-6xl
+                // 【v6.3.0 Forteller 滿寬釋放】：最大限度釋放水平可視寬度，不浪費兩側留白
                 if (typeof overviewSubMode !== 'undefined' && overviewSubMode === 'forteller') {
-                    container.className = "max-w-[98%] 2xl:max-w-[96%] mx-auto w-full transition-all duration-300";
+                    container.className = "max-w-full px-1 sm:px-2 mx-auto w-full transition-all duration-300";
                 } else {
                     container.className = "max-w-6xl mx-auto w-full transition-all duration-300";
                 }
@@ -2596,6 +2615,10 @@ function updateContainerWidth() {
 
 
         function setViewMode(mode) {
+            if (mode !== 'overview' && typeof isFortellerFullscreen !== 'undefined' && isFortellerFullscreen) {
+                isFortellerFullscreen = false;
+                if (typeof document !== 'undefined' && document.body) document.body.style.overflow = '';
+            }
             if (navigationReturnState && mode !== 'cards' && mode !== navigationReturnState.viewMode) {
                 navigationReturnState = null;
             }
@@ -4790,6 +4813,78 @@ function renderTimelineMatrix(container) {
             fortellerSelectedGoalIds = [];
         }
         let isFortellerGoalDropdownOpen = false; // 目標篩選下拉開關
+        // 【v6.3.0 Forteller 畫面空間最大化狀態管理】
+        let fortellerCompactMode = true; // 預設緊湊密度模式，最大化可視欄位與列數
+        try {
+            const savedCompact = localStorage.getItem('my_forteller_compact_mode');
+            if (savedCompact !== null) fortellerCompactMode = (savedCompact !== 'false');
+        } catch (e) {
+            fortellerCompactMode = true;
+        }
+        let isFortellerSettingsOpen = false; // 篩選與設定抽屜預設收折，維持極簡單行工具列
+        let isFortellerLegendOpen = false; // 圖例與說明彈窗開關
+        let isFortellerFullscreen = false; // 一鍵滿版戰情室模式
+        let isFortellerDashboardExpanded = false; // Forteller 模式下上方圓環儀表板預設收折
+
+        function toggleFortellerCompactMode() {
+            fortellerCompactMode = !fortellerCompactMode;
+            try {
+                localStorage.setItem('my_forteller_compact_mode', String(fortellerCompactMode));
+            } catch (e) {}
+            render();
+            if (typeof showToast === 'function') {
+                showToast(fortellerCompactMode ? '🗜️ 已切換為緊湊密度（顯示更多月份與列數）' : '📐 已切換為標準寬鬆密度', 'info');
+            }
+        }
+
+        function toggleFortellerSettings(e) {
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+            isFortellerSettingsOpen = !isFortellerSettingsOpen;
+            if (isFortellerSettingsOpen) isFortellerLegendOpen = false;
+            render();
+        }
+
+        function toggleFortellerLegend(e) {
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+            isFortellerLegendOpen = !isFortellerLegendOpen;
+            render();
+        }
+
+        function closeFortellerLegend(e) {
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+            isFortellerLegendOpen = false;
+            render();
+        }
+
+        function toggleFortellerFullscreen(forceState) {
+            isFortellerFullscreen = (typeof forceState === 'boolean') ? forceState : !isFortellerFullscreen;
+            if (typeof document !== 'undefined' && document.body) {
+                document.body.style.overflow = isFortellerFullscreen ? 'hidden' : '';
+            }
+            render();
+        }
+
+        function toggleFortellerDashboard() {
+            isFortellerDashboardExpanded = !isFortellerDashboardExpanded;
+            render();
+        }
+
+        if (typeof window !== 'undefined' && !window._fortellerEscBound) {
+            window._fortellerEscBound = true;
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (isFortellerLegendOpen) {
+                        isFortellerLegendOpen = false;
+                        render();
+                    } else if (isFortellerGoalDropdownOpen) {
+                        isFortellerGoalDropdownOpen = false;
+                        render();
+                    } else if (isFortellerFullscreen) {
+                        toggleFortellerFullscreen(false);
+                    }
+                }
+            });
+        }
 
 
         // 切換 Forteller 檢視模式 (領域模式 vs 目標模式)

@@ -228,9 +228,40 @@
             const curKey = getCurrentFortellerMonthKey();
             const target = document.getElementById('forteller-th-' + curKey.replace('/', '-')) || (el ? el.querySelector(`[data-month-col="${curKey}"]`) : null);
             if (el && target) {
-                const offsetLeft = target.offsetLeft - el.offsetLeft - 120;
+                const offsetLeft = target.offsetLeft - el.offsetLeft - 48;
                 el.scrollTo({ left: Math.max(0, offsetLeft), behavior: 'smooth' });
             }
+        }
+
+
+        // 【v6.3.0 NO. 欄領域識別輔助】：提取領域 Emoji 與專屬色條，解除領域欄凍結後仍一目了然
+        function getFortellerDomainBadgeMeta(domain, allDomains) {
+            const str = String(domain || '').trim();
+            const firstToken = str.split(/\s+/)[0] || '';
+            const emoji = (firstToken && firstToken.length <= 4 && !/^[A-Za-z0-9]+$/.test(firstToken))
+                ? firstToken
+                : (str.slice(0, 1) || '•');
+            const palette = [
+                'border-l-indigo-500',
+                'border-l-emerald-500',
+                'border-l-amber-500',
+                'border-l-rose-500',
+                'border-l-sky-500',
+                'border-l-purple-500',
+                'border-l-teal-500',
+                'border-l-orange-500'
+            ];
+            const idx = Array.isArray(allDomains) ? allDomains.indexOf(domain) : -1;
+            const borderClass = palette[(idx >= 0 ? idx : 0) % palette.length];
+            return { emoji, borderClass };
+        }
+
+        function formatFortellerShortMonth(mKey) {
+            const parts = String(mKey || '').split('/');
+            if (parts.length === 2 && parts[0].length === 4) {
+                return `${parts[0].slice(2)}/${parts[1]}`;
+            }
+            return mKey;
         }
 
 
@@ -309,16 +340,17 @@
         }
 
 
-        function renderFortellerCellContent(items) {
+        function renderFortellerCellContent(items, compact = false) {
             if (!items || items.length === 0) return '';
+            const cardPad = compact ? 'py-0.5 px-1' : 'p-1 px-1.5';
             return `
-                <div class="space-y-1.5 leading-snug">
+                <div class="${compact ? 'space-y-1' : 'space-y-1.5'} leading-snug">
                     ${items.map(item => {
                         if (item.type === 'milestone') {
                             // 【v5.3.1 多棒次專屬色彩目標塊】：第 1, 2, 3, 4, 5... 棒各自擁有鮮明對應色系，完成則呈現翠綠底色
                             const stageStyle = item.stageStyle || getMilestoneStageStyle(item.milestoneStageIndex, item.done);
                             return `
-                                <div class="p-1 px-1.5 rounded-md ${stageStyle.className} border font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往卡片目標：${escapeHtml(item.text)}">
+                                <div class="${cardPad} rounded-md ${stageStyle.className} border font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往卡片目標：${escapeAttr(item.text)}">
                                     <span class="shrink-0 select-none">${stageStyle.icon}</span>
                                     <span class="break-words ${item.done ? 'line-through opacity-85' : 'font-extrabold'}">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-75 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
                                 </div>
@@ -326,7 +358,7 @@
                         } else if (item.type === 'card_goal') {
                             const stageStyle = item.stageStyle || getMilestoneStageStyle(item.milestoneStageIndex || 0, false);
                             return `
-                                <div class="p-1 px-1.5 rounded-md ${stageStyle.className} border font-extrabold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往卡片目標">
+                                <div class="${cardPad} rounded-md ${stageStyle.className} border font-extrabold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往卡片目標">
                                     <span class="shrink-0 select-none">${stageStyle.icon}</span>
                                     <span class="break-words font-black">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-75 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
                                 </div>
@@ -334,21 +366,21 @@
                         } else if (item.type === 'future_goal') {
                             const stageStyle = item.stageStyle || getMilestoneStageStyle(item.milestoneStageIndex || 1, false);
                             return `
-                                <div class="p-1 px-1.5 rounded-md ${stageStyle.className} border font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往接力目標卡片">
+                                <div class="${cardPad} rounded-md ${stageStyle.className} border font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往接力目標卡片">
                                     <span class="shrink-0 select-none">${stageStyle.icon}</span>
                                     <span class="break-words font-black">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-75 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
                                 </div>
                             `;
                         } else if (item.type === 'subgoal') {
                             return `
-                                <div class="p-1 px-1.5 rounded-md bg-sky-100 dark:bg-sky-950/70 border border-sky-300 dark:border-sky-700 text-sky-950 dark:text-sky-200 font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往拆解目標卡片">
+                                <div class="${cardPad} rounded-md bg-sky-100 dark:bg-sky-950/70 border border-sky-300 dark:border-sky-700 text-sky-950 dark:text-sky-200 font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊前往拆解目標卡片">
                                     <span class="shrink-0 select-none">🔷</span>
                                     <span class="break-words font-black">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-75 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
                                 </div>
                             `;
                         } else if (item.type === 'subgoal_link') {
                             return `
-                                <div class="p-1 px-1.5 rounded-md bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 text-sky-900 dark:text-sky-200 text-[11px] cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊跳轉至已拆解之獨立子目標卡片">
+                                <div class="${cardPad} rounded-md bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 text-sky-900 dark:text-sky-200 text-[11px] cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊跳轉至已拆解之獨立子目標卡片">
                                     <span class="shrink-0 select-none">🔷</span>
                                     <span class="break-words font-semibold">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-75 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
                                 </div>
@@ -356,7 +388,7 @@
                         } else if (item.type === 'goal_done') {
                             const stageStyle = item.stageStyle || getMilestoneStageStyle(item.milestoneStageIndex || 0, true);
                             return `
-                                <div class="p-1 px-1.5 rounded-md ${stageStyle.className} border font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊查看已完成目標">
+                                <div class="${cardPad} rounded-md ${stageStyle.className} border font-bold text-[11px] shadow-2xs cursor-pointer hover:underline flex items-start gap-1 leading-tight" onclick="jumpToGoalCard(${item.thoughtId})" title="點擊查看已完成目標">
                                     <span class="shrink-0 select-none">${stageStyle.icon}</span>
                                     <span class="line-through opacity-85 break-words">${escapeHtml(item.text)}${item.dateBadge ? ` <span class="text-[9px] opacity-75 font-mono font-normal">(${item.dateBadge})</span>` : ''}</span>
                                 </div>
@@ -365,17 +397,20 @@
                             // 未完成步驟 (> 單步, o> 循環) -> 結構化流式排版，前綴左側錨定，文字自然換行不破碎
                             const prefixColor = item.prefix === 'o>' ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400';
                             const stepStageStyle = item.stageStyle || getMilestoneStageStyle(item.milestoneStageIndex || 0, item.milestoneDone);
+                            const stageNum = (item.milestoneStageIndex || 0) + 1;
                             return `
-                                <div class="text-[11px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer flex items-start gap-1.5 leading-snug ${item.depth > 0 ? 'pl-1.5' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="${escapeAttr(item.milestoneTitle ? `專屬【${item.milestoneTitle}】的步驟` : '點擊跳轉至卡片進行編輯')}">
+                                <div class="text-[11px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer flex items-start ${compact ? 'gap-1' : 'gap-1.5'} leading-snug ${item.depth > 0 ? 'pl-1.5' : ''}" onclick="jumpToGoalCard(${item.thoughtId})" title="${escapeAttr(item.milestoneTitle ? `專屬【第${stageNum}棒：${item.milestoneTitle}】的步驟` : '點擊跳轉至卡片進行編輯')}">
                                     <span class="font-mono font-bold ${prefixColor} shrink-0 select-none mt-0.5">${item.prefix}</span>
                                     <div class="min-w-0 flex-1 break-words">
-                                        ${item.milestoneBadge ? `
-                                            <span class="inline-block text-[9px] font-mono font-bold px-1 py-0.2 rounded ${stepStageStyle.className} border shrink-0 select-none mr-1 align-baseline" title="此步驟屬於：第${(item.milestoneStageIndex || 0) + 1}棒【${escapeHtml(item.milestoneTitle || '')}】">
+                                        ${item.milestoneBadge ? (compact ? `
+                                            <span class="inline-flex items-center justify-center min-w-[15px] h-[15px] px-0.5 text-[9px] font-mono font-black rounded ${stepStageStyle.className} border shrink-0 select-none mr-1 align-middle" title="此步驟屬於：第${stageNum}棒【${escapeAttr(item.milestoneTitle || '')}】">${stageNum}</span>
+                                        ` : `
+                                            <span class="inline-block text-[9px] font-mono font-bold px-1 py-0.2 rounded ${stepStageStyle.className} border shrink-0 select-none mr-1 align-baseline" title="此步驟屬於：第${stageNum}棒【${escapeAttr(item.milestoneTitle || '')}】">
                                                 ${stepStageStyle.icon} ${escapeHtml(item.milestoneBadge)}
                                             </span>
-                                        ` : ''}
+                                        `) : ''}
                                         ${item.goalTitle ? `
-                                            <span class="inline-block text-[9px] font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-750 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shrink-0 select-none mr-1 align-baseline" title="所屬目標：${escapeHtml(item.goalTitle)}">
+                                            <span class="inline-block text-[9px] font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-750 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shrink-0 select-none mr-1 align-baseline" title="所屬目標：${escapeAttr(item.goalTitle)}">
                                                 📌 ${escapeHtml(item.goalTitle)}
                                             </span>
                                         ` : ''}
@@ -549,166 +584,351 @@
             }
 
 
+            // ==========================================
+            // 【v6.3.0 預先計算各列月份項目與空白月份偵測】
+            // ==========================================
+            const populatedMonthsSet = new Set();
+
+            if (fortellerMode === 'domain') {
+                domainRows.forEach(row => {
+                    const t = row.thought;
+                    const itemsByMonth = {};
+                    function addDomainItem(mKey, item) {
+                        if (!itemsByMonth[mKey]) itemsByMonth[mKey] = [];
+                        itemsByMonth[mKey].push(item);
+                        populatedMonthsSet.add(mKey);
+                    }
+                    if (t) {
+                        const tMilestones = getThoughtMilestones(t);
+                        tMilestones.forEach((m, mIdx) => {
+                            const mTargetM = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
+                            const mDateBadge = (m.targetDate && m.targetDate !== '未指定日期') ? m.targetDate.slice(5) : '';
+                            const stageStyle = getMilestoneStageStyle(mIdx, m.done);
+                            addDomainItem(mTargetM, {
+                                type: 'milestone',
+                                text: m.title,
+                                thoughtId: t.id,
+                                dateBadge: mDateBadge,
+                                done: m.done,
+                                milestoneStageIndex: mIdx,
+                                stageStyle: stageStyle
+                            });
+                        });
+                        (t.steps || []).filter(s => !s.done).forEach(s => {
+                            const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
+                            const isRec = (s.recurrence && s.recurrence !== 'none');
+                            const sDateBadge = (s.stepDate && s.stepDate !== '未指定日期') ? s.stepDate.slice(5) : '';
+
+                            let childThought = null;
+                            if (s.linkedThoughtId) childThought = thoughts.find(x => x.id === s.linkedThoughtId);
+                            if (!childThought) childThought = thoughts.find(x => x.parentStepInfo && x.parentStepInfo.parentThoughtId === t.id && x.parentStepInfo.parentStepId === s.id);
+
+                            if (childThought) {
+                                addDomainItem(mKey, {
+                                    type: 'subgoal_link',
+                                    text: `${s.text} ➔ [${childThought.category || '領域'}] ${childThought.goal || childThought.text}`,
+                                    thoughtId: childThought.id,
+                                    dateBadge: sDateBadge,
+                                    prefix: '🔷'
+                                });
+                            } else {
+                                let mIdx = -1;
+                                if (s.milestoneId !== undefined && s.milestoneId !== null) {
+                                    mIdx = tMilestones.findIndex(m => String(m.id) === String(s.milestoneId));
+                                }
+                                if (mIdx === -1) {
+                                    mIdx = tMilestones.findIndex(m => !m.done);
+                                    if (mIdx === -1) mIdx = 0;
+                                }
+                                const currentM = tMilestones[mIdx];
+                                const isDone = currentM ? currentM.done : false;
+                                const stageStyle = getMilestoneStageStyle(mIdx, isDone);
+
+                                addDomainItem(mKey, {
+                                    type: 'step',
+                                    prefix: isRec ? 'o>' : '>',
+                                    text: s.text,
+                                    stepDate: s.stepDate,
+                                    dateBadge: sDateBadge,
+                                    thoughtId: t.id,
+                                    stepId: s.id,
+                                    depth: 0,
+                                    milestoneBadge: `第${mIdx + 1}棒`,
+                                    milestoneTitle: currentM ? currentM.title : '',
+                                    milestoneStageIndex: mIdx,
+                                    milestoneDone: isDone,
+                                    stageStyle: stageStyle
+                                });
+                            }
+                        });
+                    }
+                    row.itemsByMonth = itemsByMonth;
+                });
+            } else {
+                goalModeRows.forEach(row => {
+                    const tr = row.track;
+                    const branchItemsByMonth = {};
+                    function addBranchItem(mKey, item) {
+                        if (!branchItemsByMonth[mKey]) branchItemsByMonth[mKey] = [];
+                        branchItemsByMonth[mKey].push(item);
+                        populatedMonthsSet.add(mKey);
+                    }
+                    const tMilestones = getThoughtMilestones(tr.thought);
+                    tMilestones.forEach((m, mIdx) => {
+                        const mTargetM = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
+                        const mDateBadge = (m.targetDate && m.targetDate !== '未指定日期') ? m.targetDate.slice(5) : '';
+                        const stageStyle = getMilestoneStageStyle(mIdx, m.done);
+                        addBranchItem(mTargetM, {
+                            type: 'milestone',
+                            text: m.title,
+                            thoughtId: tr.thought.id,
+                            dateBadge: mDateBadge,
+                            done: m.done,
+                            milestoneStageIndex: mIdx,
+                            stageStyle: stageStyle
+                        });
+                    });
+                    (tr.directSteps || []).forEach(s => {
+                        const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
+                        const isRec = (s.recurrence && s.recurrence !== 'none');
+                        const sDateBadge = (s.stepDate && s.stepDate !== '未指定日期') ? s.stepDate.slice(5) : '';
+
+                        let milestoneBadge = '';
+                        let milestoneTitle = '';
+                        let mIdx = -1;
+                        if (tMilestones.length > 0) {
+                            if (s.milestoneId !== undefined && s.milestoneId !== null) {
+                                mIdx = tMilestones.findIndex(m => String(m.id) === String(s.milestoneId));
+                            }
+                            if (mIdx === -1) mIdx = tMilestones.findIndex(m => !m.done);
+                            if (mIdx === -1) mIdx = 0;
+                            if (mIdx >= 0 && mIdx < tMilestones.length) {
+                                milestoneBadge = `第${mIdx + 1}棒`;
+                                milestoneTitle = tMilestones[mIdx].title;
+                            }
+                        }
+                        const currentM = (mIdx >= 0 && mIdx < tMilestones.length) ? tMilestones[mIdx] : null;
+                        const isDone = currentM ? currentM.done : false;
+                        const stageStyle = getMilestoneStageStyle(mIdx >= 0 ? mIdx : 0, isDone);
+
+                        addBranchItem(mKey, {
+                            type: 'step',
+                            prefix: isRec ? 'o>' : '>',
+                            text: s.text,
+                            stepDate: s.stepDate,
+                            dateBadge: sDateBadge,
+                            thoughtId: tr.thought.id,
+                            stepId: s.id,
+                            depth: 0,
+                            milestoneBadge: milestoneBadge,
+                            milestoneTitle: milestoneTitle,
+                            milestoneStageIndex: mIdx >= 0 ? mIdx : 0,
+                            milestoneDone: isDone,
+                            stageStyle: stageStyle
+                        });
+                    });
+                    row.branchItemsByMonth = branchItemsByMonth;
+                });
+            }
+
+            const isCompact = (typeof fortellerCompactMode !== 'undefined') ? fortellerCompactMode : true;
+            const isFullscreen = (typeof isFortellerFullscreen !== 'undefined') && isFortellerFullscreen;
+            const isSettingsOpen = (typeof isFortellerSettingsOpen !== 'undefined') && isFortellerSettingsOpen;
+            const isLegendOpen = (typeof isFortellerLegendOpen !== 'undefined') && isFortellerLegendOpen;
+
+            const isEmptyNarrowMonth = (mKey) => {
+                if (mKey === currentMonthKey) return false;
+                if (populatedMonthsSet.has(mKey)) return false;
+                if (fortellerShowFinancials && typeof getMonthlyFinanceSummary === 'function') {
+                    const fin = getMonthlyFinanceSummary(mKey);
+                    if (fin && fin.hasData) return false;
+                }
+                return true;
+            };
+
+            const activeFilterCount = (isAllGoalsSelected ? 0 : 1) + (fortellerFilterDomain !== 'all' ? 1 : 0);
+            const noColClass = isCompact ? 'w-9 min-w-[36px]' : 'w-11 min-w-[44px]';
+            const domainColClass = isCompact ? 'w-24 min-w-[88px]' : 'w-28 min-w-[104px]';
+            const monthColWidthClass = isCompact ? 'w-36 min-w-[130px]' : 'w-44 min-w-[160px]';
+            const narrowMonthColClass = 'w-14 min-w-[52px] max-w-[64px]';
+            const milestoneColWidthClass = isCompact ? 'w-40 min-w-[148px]' : 'w-52 min-w-[180px]';
+            const cellPadClass = isCompact ? 'py-1 px-1.5' : 'py-2 px-2.5';
+            const milestonePadClass = isCompact ? 'py-1.5 px-2' : 'py-2.5 px-3';
+
+
             return `
-                <div class="space-y-3.5 text-slate-800 dark:text-slate-100">
-                    <!-- 頂部精簡控制列：模式切換、目標篩選與符號說明 -->
-                    <div class="flex items-center justify-between gap-3 flex-wrap bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xs">
-                        <!-- 左側：視圖模式切換 (領域模式 vs 目標模式) -->
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="text-sm font-extrabold flex items-center gap-1.5 text-indigo-950 dark:text-indigo-200">
-                                <span>🔮 Forteller 戰略推演盤</span>
-                            </span>
-                            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
-                                <button type="button" onclick="setFortellerMode('domain')" class="px-3 py-1 rounded-lg transition-all cursor-pointer ${fortellerMode === 'domain' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'}">
-                                    📂 領域模式
-                                </button>
-                                <button type="button" onclick="setFortellerMode('goal')" class="px-3 py-1 rounded-lg transition-all cursor-pointer ${fortellerMode === 'goal' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'}">
-                                    🎯 目標模式
-                                </button>
-                            </div>
-                            <!-- 【v5.3.1 橫向快速捲動快捷列】：免拉橫軸快速平移與對齊 -->
-                            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
-                                <button type="button" onclick="scrollFortellerTable(-280)" class="px-2.5 py-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center gap-1" title="向左平移 (亦可滑鼠滾輪上下滾動直接左右平移)">
-                                    <span>◀</span> <span class="hidden sm:inline">往左</span>
-                                </button>
-                                <button type="button" onclick="scrollFortellerToCurrentMonth()" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 transition-all cursor-pointer flex items-center gap-1" title="一鍵對齊當前月份 (${currentMonthKey})">
-                                    <span>📍</span> <span>當月</span>
-                                </button>
-                                <button type="button" onclick="scrollFortellerTable(280)" class="px-2.5 py-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center gap-1" title="向右平移 (亦可滑鼠滾輪上下滾動直接左右平移)">
-                                    <span class="hidden sm:inline">往右</span> <span>▶</span>
-                                </button>
+                <div class="${isFullscreen ? 'fixed inset-0 z-50 bg-slate-50 dark:bg-slate-950 p-2 flex flex-col gap-1.5 overflow-hidden' : 'space-y-2'} text-slate-800 dark:text-slate-100">
+                    <!-- 【v6.3.0 極簡單行工具列】：收折非高頻設定，最大化表格可視面積 -->
+                    <div class="shrink-0 bg-white dark:bg-slate-800 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs space-y-2">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <!-- 左側：標題、模式切換、橫向快速導航 -->
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-xs sm:text-sm font-extrabold flex items-center gap-1 text-indigo-950 dark:text-indigo-200 select-none">
+                                    <span>🔮</span>
+                                    <span class="hidden md:inline">Forteller</span>
+                                </span>
+                                <div class="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-bold">
+                                    <button type="button" onclick="setFortellerMode('domain')" class="px-2 py-0.5 rounded-md transition-all cursor-pointer ${fortellerMode === 'domain' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'}">
+                                        📂 領域
+                                    </button>
+                                    <button type="button" onclick="setFortellerMode('goal')" class="px-2 py-0.5 rounded-md transition-all cursor-pointer ${fortellerMode === 'goal' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'}">
+                                        🎯 目標
+                                    </button>
+                                </div>
+                                <div class="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-bold">
+                                    <button type="button" onclick="scrollFortellerTable(-260)" class="px-2 py-0.5 rounded-md hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-all cursor-pointer" title="向左平移 (亦可用滑鼠拖曳平移)">◀</button>
+                                    <button type="button" onclick="scrollFortellerToCurrentMonth()" class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 transition-all cursor-pointer" title="一鍵對齊當前月份 (${currentMonthKey})">📍 當月</button>
+                                    <button type="button" onclick="scrollFortellerTable(260)" class="px-2 py-0.5 rounded-md hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-all cursor-pointer" title="向右平移 (亦可用滑鼠拖曳平移)">▶</button>
+                                </div>
                             </div>
 
-
-                            <!-- 【v5.3.2 自訂起始月份】：預設從當月前1個月開始，歷史過多亦可隨時切換 -->
-                            <div class="flex items-center gap-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-                                <span class="text-slate-600 dark:text-slate-300 whitespace-nowrap pl-1">📅 起始:</span>
-                                <select onchange="setFortellerStartMonth(this.value)" class="text-xs font-bold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-slate-600 cursor-pointer focus:outline-none" title="設定戰略推演盤的最早起始月份">
-                                    <option value="prev_month" ${getFortellerStartMonthSetting() === 'prev_month' ? 'selected' : ''}>前1個月 (${getRelativeMonthKey(currentMonthKey, -1)}) · 預設</option>
-                                    <option value="current_month" ${getFortellerStartMonthSetting() === 'current_month' ? 'selected' : ''}>當月 (${currentMonthKey})</option>
-                                    <option value="year_start" ${getFortellerStartMonthSetting() === 'year_start' ? 'selected' : ''}>今年初 (${currentMonthKey.split('/')[0]}/1)</option>
-                                    <option value="all" ${getFortellerStartMonthSetting() === 'all' ? 'selected' : ''}>全部歷史月份</option>
-                                </select>
-                            </div>
-
-
-                            <!-- 【v5.3.10 自適應螢幕跨度 / 顯示月份資料量切換】：寬螢幕自動展現更多，免滾輪滑來滑去 -->
-                            <div class="flex items-center gap-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-                                <span class="text-slate-600 dark:text-slate-300 whitespace-nowrap pl-1">🔭 跨度:</span>
-                                <select onchange="setFortellerSpan(this.value)" class="text-xs font-bold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-slate-600 cursor-pointer focus:outline-none" title="設定顯示月份跨度：依螢幕寬度自動適配，或自訂月份數量">
-                                    <option value="auto" ${getFortellerSpanSetting() === 'auto' ? 'selected' : ''}>🌐 依螢幕自適應 · 預設</option>
-                                    <option value="3" ${getFortellerSpanSetting() === '3' ? 'selected' : ''}>3 個月 (聚焦近期)</option>
-                                    <option value="6" ${getFortellerSpanSetting() === '6' ? 'selected' : ''}>半年 (6 個月)</option>
-                                    <option value="12" ${getFortellerSpanSetting() === '12' ? 'selected' : ''}>1 年 (12 個月)</option>
-                                    <option value="18" ${getFortellerSpanSetting() === '18' ? 'selected' : ''}>1.5 年 (18 個月)</option>
-                                    <option value="all" ${getFortellerSpanSetting() === 'all' ? 'selected' : ''}>全部時程</option>
-                                </select>
-                            </div>
-
-
-                            <!-- 【v5.2.0 全人生領域檢視切換按鈕】 -->
-                            <button type="button" onclick="toggleFortellerShowAllDomains()" class="px-2.5 py-1 rounded-xl transition-all cursor-pointer border text-xs font-bold flex items-center gap-1 shadow-2xs ${fortellerShowAllDomains ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border-teal-300 dark:border-teal-700' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-slate-800'}" title="在推演盤最下方顯示所有人生領域，即便尚未規劃目標亦完整展現，助您省思並激發其他領域的 Action">
-                                <span>🌐</span>
-                                <span>${fortellerShowAllDomains ? '全領域已展開' : '僅顯示有目標領域'}</span>
-                            </button>
-
-
-                            <!-- 【v5.4.0 月度財務收支顯示切換按鈕】 -->
-                            <button type="button" onclick="toggleFortellerFinancials()" class="px-2.5 py-1 rounded-xl transition-all cursor-pointer border text-xs font-bold flex items-center gap-1 shadow-2xs ${fortellerShowFinancials ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-slate-800'}" title="在各月份表頭下方切換顯示主動收入、被動收入、支出與結餘微型條">
-                                <span>💰</span>
-                                <span>${fortellerShowFinancials ? '財務概況已展開' : '財務概況已收折'}</span>
-                            </button>
-                        </div>
-
-
-                        <!-- 中間與右側：目標卡片篩選、領域篩選與色彩符號圖例 -->
-                        <div class="flex items-center gap-2 flex-wrap text-xs">
-                            <!-- 目標卡片多選下拉容器 (relative) -->
-                            <div class="relative">
-                                <button type="button" onclick="toggleFortellerGoalDropdown(event)" class="px-2.5 py-1.5 rounded-lg border border-indigo-300 dark:border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/50 text-indigo-900 dark:text-indigo-200 font-bold flex items-center gap-1 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/60">
-                                    <span>🎯 目標卡片：</span>
-                                    <span class="underline">${isAllGoalsSelected ? '全部目標' : `已選 ${selectedGoalCount} 個`}</span>
-                                    <span class="text-[10px]">▼</span>
+                            <!-- 右側：密度切換、篩選與設定抽屜、圖例彈窗、一鍵滿版 -->
+                            <div class="flex items-center gap-1.5 flex-wrap text-xs">
+                                <button type="button" onclick="toggleFortellerCompactMode()" class="px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer flex items-center gap-1 ${isCompact ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border-teal-300 dark:border-teal-700' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'}" title="切換緊湊 / 標準顯示密度（緊湊模式會精簡內距、棒次標記與表頭財務條）">
+                                    <span>${isCompact ? '🗜️ 緊湊' : '📐 標準'}</span>
                                 </button>
 
+                                <button type="button" onclick="toggleFortellerSettings(event)" class="px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer flex items-center gap-1 ${isSettingsOpen || activeFilterCount > 0 ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-200 border-indigo-300 dark:border-indigo-700' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50'}" title="展開或收折起始月份、跨度、領域與目標篩選設定">
+                                    <span>⚙️ 設定</span>
+                                    ${activeFilterCount > 0 ? `<span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-indigo-600 text-white text-[10px] font-mono">${activeFilterCount}</span>` : ''}
+                                    <span class="text-[10px] opacity-75">${isSettingsOpen ? '▲' : '▼'}</span>
+                                </button>
 
-                                ${isFortellerGoalDropdownOpen ? `
-                                    <!-- 【v5.3.6 手機自適應遮罩與彈窗】：手機端置中彈窗，桌機端為按鈕下方下拉選單 -->
-                                    <div class="fixed inset-0 z-40 bg-slate-900/40 sm:bg-transparent cursor-default" onclick="closeFortellerGoalDropdown(event)"></div>
-
-
-                                    <div class="fixed sm:absolute left-4 right-4 sm:left-0 sm:right-auto top-28 sm:top-full mt-1.5 w-auto sm:w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-800 rounded-2xl sm:rounded-xl border border-slate-300 dark:border-slate-700 shadow-2xl sm:shadow-xl p-3 sm:p-2.5 z-50 space-y-2 text-xs max-h-[75vh] flex flex-col" onclick="event.stopPropagation()">
-                                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
-                                            <span class="font-extrabold text-slate-800 dark:text-slate-200 text-sm sm:text-xs">🎯 目標卡片篩選</span>
-                                            <div class="flex items-center gap-2">
-                                                <button type="button" onclick="setFortellerAllGoals(true, event)" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline cursor-pointer">全選</button>
-                                                <span class="text-slate-300">|</span>
-                                                <button type="button" onclick="setFortellerAllGoals(false, event)" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-bold cursor-pointer">清空</button>
+                                <!-- 圖例與操作說明彈窗按鈕 -->
+                                <div class="relative">
+                                    <button type="button" onclick="toggleFortellerLegend(event)" class="px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer flex items-center gap-1 ${isLegendOpen ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'}" title="檢視色彩圖例與操作說明">
+                                        <span>❓</span>
+                                        <span class="hidden sm:inline">圖例</span>
+                                    </button>
+                                    ${isLegendOpen ? `
+                                        <div class="fixed inset-0 z-40 bg-slate-900/20 sm:bg-transparent cursor-default" onclick="closeFortellerLegend(event)"></div>
+                                        <div class="fixed sm:absolute right-4 sm:right-0 top-24 sm:top-full mt-1.5 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 shadow-xl p-3 z-50 space-y-2.5 text-xs" onclick="event.stopPropagation()">
+                                            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-1.5">
+                                                <span class="font-extrabold text-slate-800 dark:text-slate-100">❓ 色彩圖例與視圖說明</span>
+                                                <button type="button" onclick="closeFortellerLegend(event)" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-bold cursor-pointer">✕</button>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 flex-wrap text-[11px]">
+                                                <span class="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 font-bold">🎯 卡片目標</span>
+                                                <span class="px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-950/70 text-sky-950 dark:text-sky-200 border border-sky-300 dark:border-sky-700 font-bold">🔷 拆解目標</span>
+                                                <span class="px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-950/70 text-purple-950 dark:text-purple-200 border border-purple-300 dark:border-purple-700 font-bold">🔮 遠期接力</span>
+                                                <span class="px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold">✅ 已完成</span>
+                                                <span class="text-amber-600 dark:text-amber-400 font-mono font-bold px-1">&gt; 單步</span>
+                                                <span class="text-teal-600 dark:text-teal-400 font-mono font-bold px-1">o&gt; 循環</span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                                                ${fortellerMode === 'domain'
+                                                    ? '📂 <strong>領域模式</strong>：依看板領域動態展開各目標與未完成步驟。'
+                                                    : '🎯 <strong>目標模式</strong>：各階段「段落目標」依時間月份穿插標示，步驟與拆解目標座落於各段落目標之間。'}
+                                            </p>
+                                            <div class="text-[10px] text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-700 pt-1.5 space-y-0.5">
+                                                <div>• 點擊文字直接前往卡片編輯 · 滑鼠拖曳可全方位平移</div>
+                                                <div>• 左側僅凍結 NO.（附領域色條與圖示），無資料月份自動窄化</div>
                                             </div>
                                         </div>
-                                        <div class="overflow-y-auto space-y-1 pr-1 grow max-h-64 sm:max-h-52">
-                                            ${thoughts.map(t => {
-                                                const checked = isAllGoalsSelected || fortellerSelectedGoalIds.includes(t.id);
-                                                return `
-                                                    <label class="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-slate-50 dark:hover:bg-slate-700/60 cursor-pointer select-none">
-                                                        <input type="checkbox" onchange="toggleFortellerGoalSelection(${t.id}, event)" ${checked ? 'checked' : ''} class="w-3.5 h-3.5 text-indigo-600 rounded">
-                                                        <span class="truncate ${t.goalDone ? 'line-through text-slate-400' : 'text-slate-800 dark:text-slate-200 font-medium'}">
-                                                            ${t.isMainFocus ? '⭐ ' : ''}${escapeHtml(t.text)}
-                                                        </span>
-                                                    </label>
-                                                `;
-                                            }).join('')}
-                                        </div>
-                                        <div class="pt-2 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-                                            <button type="button" onclick="closeFortellerGoalDropdown(event)" class="w-full sm:w-auto px-4 py-1.5 sm:px-3 sm:py-0.5 text-xs sm:text-[11px] font-bold bg-indigo-600 text-white rounded-lg sm:rounded-md cursor-pointer hover:bg-indigo-700 transition-colors shadow-2xs">完成</button>
-                                        </div>
-                                    </div>
-                                ` : ''}
-                            </div>
+                                    ` : ''}
+                                </div>
 
-
-                            <!-- 領域下拉篩選 -->
-                            <select onchange="setFortellerDomain(this.value)" class="text-xs font-bold px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none">
-                                <option value="all" ${fortellerFilterDomain === 'all' ? 'selected' : ''}>📁 全部領域</option>
-                                ${domains.map(d => `<option value="${d}" ${fortellerFilterDomain === d ? 'selected' : ''}>${d}</option>`).join('')}
-                            </select>
-
-
-                            <!-- 色彩與符號對照 (完全對齊 Forteller 試算表) -->
-                            <div class="hidden sm:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-[11px] font-medium flex-wrap">
-                                <span class="px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 font-bold">🎯 卡片目標</span>
-                                <span class="px-1.5 py-0.2 rounded bg-sky-100 dark:bg-sky-950/70 text-sky-950 dark:text-sky-200 border border-sky-300 dark:border-sky-700 font-bold">🔷 拆解目標</span>
-                                <span class="px-1.5 py-0.2 rounded bg-purple-100 dark:bg-purple-950/70 text-purple-950 dark:text-purple-200 border border-purple-300 dark:border-purple-700 font-bold">🔮 遠期接力</span>
-                                <span class="px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold">✅ 已完成</span>
-                                <span class="text-amber-600 dark:text-amber-400 font-mono font-bold">&gt; 單步</span>
-                                <span class="text-teal-600 dark:text-teal-400 font-mono font-bold">o&gt; 循環</span>
+                                <button type="button" onclick="toggleFortellerFullscreen()" class="px-2.5 py-1 rounded-lg border font-bold transition-all cursor-pointer flex items-center gap-1 ${isFullscreen ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-600 shadow-2xs' : 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-2xs'}" title="${isFullscreen ? '退出滿版戰情室模式 (Esc)' : '一鍵進入滿版戰情室模式，最大化表格視野'}">
+                                    <span>${isFullscreen ? '✕ 退出滿版' : '⛶ 滿版'}</span>
+                                </button>
                             </div>
                         </div>
-                    </div>
 
+                        <!-- 可收折之篩選與設定抽屜 -->
+                        ${isSettingsOpen ? `
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-700 flex items-center gap-2 flex-wrap text-xs">
+                                <!-- 自訂起始月份 -->
+                                <div class="flex items-center gap-1 font-bold bg-slate-100 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                                    <span class="text-slate-600 dark:text-slate-300 whitespace-nowrap pl-1">📅 起始:</span>
+                                    <select onchange="setFortellerStartMonth(this.value)" class="text-xs font-bold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded-md border border-slate-300 dark:border-slate-600 cursor-pointer focus:outline-none">
+                                        <option value="prev_month" ${getFortellerStartMonthSetting() === 'prev_month' ? 'selected' : ''}>前1個月 (${getRelativeMonthKey(currentMonthKey, -1)}) · 預設</option>
+                                        <option value="current_month" ${getFortellerStartMonthSetting() === 'current_month' ? 'selected' : ''}>當月 (${currentMonthKey})</option>
+                                        <option value="year_start" ${getFortellerStartMonthSetting() === 'year_start' ? 'selected' : ''}>今年初 (${currentMonthKey.split('/')[0]}/1)</option>
+                                        <option value="all" ${getFortellerStartMonthSetting() === 'all' ? 'selected' : ''}>全部歷史月份</option>
+                                    </select>
+                                </div>
 
-                    <!-- 模式說明提示條 -->
-                    <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between px-1">
-                        <span>
-                            ${fortellerMode === 'domain' 
-                                ? '📂 目前為「領域模式」：依看板領域動態展開目標與未完成步驟。' 
-                                : '🎯 目前為「目標模式」：步驟有拆解目標改顯示拆解最終目標（帶顏色管理），各階段「段落目標」依時間月份穿插標示，步驟與拆解目標座落於各段落目標之間月份。'}
-                        </span>
-                        <span class="text-[10px] text-slate-400 font-mono">點擊文字直接前往卡片</span>
+                                <!-- 自適應螢幕跨度 -->
+                                <div class="flex items-center gap-1 font-bold bg-slate-100 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                                    <span class="text-slate-600 dark:text-slate-300 whitespace-nowrap pl-1">🔭 跨度:</span>
+                                    <select onchange="setFortellerSpan(this.value)" class="text-xs font-bold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded-md border border-slate-300 dark:border-slate-600 cursor-pointer focus:outline-none">
+                                        <option value="auto" ${getFortellerSpanSetting() === 'auto' ? 'selected' : ''}>🌐 依螢幕自適應 · 預設</option>
+                                        <option value="3" ${getFortellerSpanSetting() === '3' ? 'selected' : ''}>3 個月 (聚焦近期)</option>
+                                        <option value="6" ${getFortellerSpanSetting() === '6' ? 'selected' : ''}>半年 (6 個月)</option>
+                                        <option value="12" ${getFortellerSpanSetting() === '12' ? 'selected' : ''}>1 年 (12 個月)</option>
+                                        <option value="18" ${getFortellerSpanSetting() === '18' ? 'selected' : ''}>1.5 年 (18 個月)</option>
+                                        <option value="all" ${getFortellerSpanSetting() === 'all' ? 'selected' : ''}>全部時程</option>
+                                    </select>
+                                </div>
+
+                                <!-- 全人生領域檢視切換按鈕 -->
+                                <button type="button" onclick="toggleFortellerShowAllDomains()" class="px-2.5 py-1 rounded-lg transition-all cursor-pointer border font-bold flex items-center gap-1 ${fortellerShowAllDomains ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border-teal-300 dark:border-teal-700' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-slate-800'}" title="在推演盤最下方顯示所有人生領域">
+                                    <span>🌐</span>
+                                    <span>${fortellerShowAllDomains ? '全領域已展開' : '僅顯示有目標領域'}</span>
+                                </button>
+
+                                <!-- 月度財務收支顯示切換按鈕 -->
+                                <button type="button" onclick="toggleFortellerFinancials()" class="px-2.5 py-1 rounded-lg transition-all cursor-pointer border font-bold flex items-center gap-1 ${fortellerShowFinancials ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-slate-800'}" title="在各月份表頭下方切換顯示收支概況">
+                                    <span>💰</span>
+                                    <span>${fortellerShowFinancials ? '財務概況已展開' : '財務概況已收折'}</span>
+                                </button>
+
+                                <!-- 目標卡片多選下拉容器 -->
+                                <div class="relative">
+                                    <button type="button" onclick="toggleFortellerGoalDropdown(event)" class="px-2.5 py-1 rounded-lg border border-indigo-300 dark:border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/50 text-indigo-900 dark:text-indigo-200 font-bold flex items-center gap-1 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/60">
+                                        <span>🎯 目標：</span>
+                                        <span class="underline">${isAllGoalsSelected ? '全部' : `已選 ${selectedGoalCount} 個`}</span>
+                                        <span class="text-[10px]">▼</span>
+                                    </button>
+                                    ${isFortellerGoalDropdownOpen ? `
+                                        <div class="fixed inset-0 z-40 bg-slate-900/40 sm:bg-transparent cursor-default" onclick="closeFortellerGoalDropdown(event)"></div>
+                                        <div class="fixed sm:absolute left-4 right-4 sm:left-0 sm:right-auto top-28 sm:top-full mt-1.5 w-auto sm:w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-800 rounded-2xl sm:rounded-xl border border-slate-300 dark:border-slate-700 shadow-2xl sm:shadow-xl p-3 sm:p-2.5 z-50 space-y-2 text-xs max-h-[75vh] flex flex-col" onclick="event.stopPropagation()">
+                                            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
+                                                <span class="font-extrabold text-slate-800 dark:text-slate-200 text-sm sm:text-xs">🎯 目標卡片篩選</span>
+                                                <div class="flex items-center gap-2">
+                                                    <button type="button" onclick="setFortellerAllGoals(true, event)" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline cursor-pointer">全選</button>
+                                                    <span class="text-slate-300">|</span>
+                                                    <button type="button" onclick="setFortellerAllGoals(false, event)" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-bold cursor-pointer">清空</button>
+                                                </div>
+                                            </div>
+                                            <div class="overflow-y-auto space-y-1 pr-1 grow max-h-64 sm:max-h-52">
+                                                ${thoughts.map(t => {
+                                                    const checked = isAllGoalsSelected || fortellerSelectedGoalIds.includes(t.id);
+                                                    return `
+                                                        <label class="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-slate-50 dark:hover:bg-slate-700/60 cursor-pointer select-none">
+                                                            <input type="checkbox" onchange="toggleFortellerGoalSelection(${t.id}, event)" ${checked ? 'checked' : ''} class="w-3.5 h-3.5 text-indigo-600 rounded">
+                                                            <span class="truncate ${t.goalDone ? 'line-through text-slate-400' : 'text-slate-800 dark:text-slate-200 font-medium'}">
+                                                                ${t.isMainFocus ? '⭐ ' : ''}${escapeHtml(t.text)}
+                                                            </span>
+                                                        </label>
+                                                    `;
+                                                }).join('')}
+                                            </div>
+                                            <div class="pt-2 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+                                                <button type="button" onclick="closeFortellerGoalDropdown(event)" class="w-full sm:w-auto px-4 py-1.5 sm:px-3 sm:py-0.5 text-xs sm:text-[11px] font-bold bg-indigo-600 text-white rounded-lg sm:rounded-md cursor-pointer hover:bg-indigo-700 transition-colors shadow-2xs">完成</button>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+
+                                <!-- 領域下拉篩選 -->
+                                <select onchange="setFortellerDomain(this.value)" class="text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none">
+                                    <option value="all" ${fortellerFilterDomain === 'all' ? 'selected' : ''}>📁 全部領域</option>
+                                    ${domains.map(d => `<option value="${escapeAttr(d)}" ${fortellerFilterDomain === d ? 'selected' : ''}>${escapeHtml(d)}</option>`).join('')}
+                                </select>
+                            </div>
+                        ` : ''}
                     </div>
 
 
                     <!-- 【v5.3.8 Forteller 目標模式動態欄位計算】：以母卡片里程碑為基準，於對應預期達成月份後緊鄰插入「段落目標」欄位 -->
                     ${(() => {
-                        // 收集目前目標模式可見之所有母卡片中，落在可視月份內之接力里程碑落點月份
                         const milestoneMonthsSet = new Set();
                         let hasFarFutureMilestones = false;
-
 
                         const lastVisibleMonth = monthCols[monthCols.length - 1];
                         const [lvY, lvM] = lastVisibleMonth.split('/').map(Number);
                         const lastVisibleVal = lvY * 12 + lvM;
-
 
                         if (fortellerMode === 'goal') {
                             rootThoughts.forEach(root => {
@@ -728,8 +948,6 @@
                             });
                         }
 
-
-                        // 建構目標模式專屬交錯欄位清單 (月份 + 緊接之段落目標)
                         window._fortellerGoalTableCols = [];
                         monthCols.forEach(mKey => {
                             window._fortellerGoalTableCols.push({ type: 'month', monthKey: mKey, label: mKey });
@@ -738,8 +956,6 @@
                             }
                         });
 
-
-                        // 【v5.4.1 遠期接力目標分離】：若有超出當前可視跨度的遠期接力目標，在最右側獨立呈現「🔮 遠期接力目標」欄位
                         if (fortellerMode === 'goal') {
                             if (hasFarFutureMilestones) {
                                 window._fortellerGoalTableCols.push({ type: 'future_milestone', label: '🔮 遠期接力目標' });
@@ -752,32 +968,41 @@
                     })()}
 
 
-                    <!-- Forteller 核心表格 (【v5.3.10】：支援 2D 全方位滑鼠拖曳平移、手機雙向觸控手勢、凍結表頭與凍結左側欄) -->
-                    <div id="fortellerTableContainer" class="max-h-[75vh] overflow-auto rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs select-none cursor-grab active:cursor-grabbing touch-pan-x touch-pan-y" style="-webkit-overflow-scrolling: touch;">
+                    <!-- Forteller 核心表格 (【v6.3.0】：僅凍結 NO. 欄附領域識別、空白月份自動窄化、支援滿版戰情室與 2D 拖曳平移) -->
+                    <div id="fortellerTableContainer" class="${isFullscreen ? 'flex-1 min-h-0' : 'max-h-[calc(100vh-140px)]'} overflow-auto rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs select-none cursor-grab active:cursor-grabbing touch-pan-x touch-pan-y" style="-webkit-overflow-scrolling: touch;">
                         <table class="w-full border-collapse text-left text-xs table-auto relative">
                             <thead>
                                 <tr class="sticky top-0 z-30 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-b border-slate-300 dark:border-slate-700 select-none shadow-xs">
-                                    <th class="sticky left-0 top-0 z-40 bg-slate-100 dark:bg-slate-900 py-2.5 px-2 text-center font-extrabold w-12 min-w-[48px] border-r border-slate-300 dark:border-slate-700 whitespace-nowrap shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">NO.</th>
-                                    <th class="sticky left-[48px] top-0 z-40 bg-slate-100 dark:bg-slate-900 py-2.5 px-2.5 font-extrabold w-32 min-w-[120px] border-r border-slate-300 dark:border-slate-700 whitespace-nowrap shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]">領域</th>
+                                    <th class="sticky left-0 top-0 z-40 bg-slate-100 dark:bg-slate-900 ${isCompact ? 'py-1.5 px-1' : 'py-2.5 px-2'} text-center font-extrabold ${noColClass} border-r border-slate-300 dark:border-slate-700 whitespace-nowrap shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]">NO.</th>
+                                    <th class="bg-slate-100 dark:bg-slate-900 ${isCompact ? 'py-1.5 px-2' : 'py-2.5 px-2.5'} font-extrabold ${domainColClass} border-r border-slate-300 dark:border-slate-700 whitespace-nowrap">領域</th>
                                     ${fortellerMode === 'goal' ? `
                                         ${(window._fortellerGoalTableCols || []).map(col => {
                                             if (col.type === 'month') {
                                                 const isCurrent = (col.monthKey === currentMonthKey);
+                                                const isNarrow = isEmptyNarrowMonth(col.monthKey);
+                                                if (isNarrow) {
+                                                    return `
+                                                        <th id="forteller-th-${col.monthKey.replace('/', '-')}" data-month-col="${col.monthKey}" class="${isCompact ? 'py-1.5 px-1' : 'py-2 px-1'} font-bold border-r border-slate-200 dark:border-slate-700 bg-slate-100/70 dark:bg-slate-900/70 text-slate-400 dark:text-slate-500 whitespace-nowrap text-center ${narrowMonthColClass} align-top text-[10px]" title="${col.monthKey}（目前篩選下無項目，已自動窄化）">
+                                                            <div>${formatFortellerShortMonth(col.monthKey)}</div>
+                                                            ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(col.monthKey, true) : ''}
+                                                        </th>
+                                                    `;
+                                                }
                                                 return `
-                                                    <th id="forteller-th-${col.monthKey.replace('/', '-')}" data-month-col="${col.monthKey}" class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
-                                                        <div>${col.monthKey}${isCurrent ? ' (當月)' : ''}</div>
-                                                        ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(col.monthKey) : ''}
+                                                    <th id="forteller-th-${col.monthKey.replace('/', '-')}" data-month-col="${col.monthKey}" class="${isCompact ? 'py-1.5 px-1.5' : 'py-2 px-2.5'} font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center ${monthColWidthClass} align-top">
+                                                        <div>${col.monthKey}${isCurrent ? (isCompact ? ' ★' : ' (當月)') : ''}</div>
+                                                        ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(col.monthKey, isCompact) : ''}
                                                     </th>
                                                 `;
                                             } else if (col.type === 'future_milestone') {
                                                 return `
-                                                    <th class="py-2 px-3 font-extrabold bg-purple-50/80 dark:bg-purple-950/50 text-purple-950 dark:text-purple-200 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap text-center w-52 min-w-[180px]">
+                                                    <th class="${isCompact ? 'py-1.5 px-2' : 'py-2 px-3'} font-extrabold bg-purple-50/80 dark:bg-purple-950/50 text-purple-950 dark:text-purple-200 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap text-center ${milestoneColWidthClass}">
                                                         🔮 遠期接力目標
                                                     </th>
                                                 `;
                                             } else {
                                                 return `
-                                                    <th class="py-2 px-3 font-extrabold bg-amber-50/80 dark:bg-amber-950/50 text-amber-950 dark:text-amber-200 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap text-center w-52 min-w-[180px]">
+                                                    <th class="${isCompact ? 'py-1.5 px-2' : 'py-2 px-3'} font-extrabold bg-amber-50/80 dark:bg-amber-950/50 text-amber-950 dark:text-amber-200 border-r border-slate-300 dark:border-slate-700 whitespace-nowrap text-center ${milestoneColWidthClass}">
                                                         🎯 段落目標
                                                     </th>
                                                 `;
@@ -786,14 +1011,23 @@
                                     ` : `
                                         ${monthCols.map(mKey => {
                                             const isCurrent = (mKey === currentMonthKey);
+                                            const isNarrow = isEmptyNarrowMonth(mKey);
+                                            if (isNarrow) {
+                                                return `
+                                                    <th id="forteller-th-${mKey.replace('/', '-')}" data-month-col="${mKey}" class="${isCompact ? 'py-1.5 px-1' : 'py-2 px-1'} font-bold border-r border-slate-200 dark:border-slate-700 bg-slate-100/70 dark:bg-slate-900/70 text-slate-400 dark:text-slate-500 whitespace-nowrap text-center ${narrowMonthColClass} align-top text-[10px]" title="${mKey}（目前篩選下無項目，已自動窄化）">
+                                                        <div>${formatFortellerShortMonth(mKey)}</div>
+                                                        ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(mKey, true) : ''}
+                                                    </th>
+                                                `;
+                                            }
                                             return `
-                                                <th id="forteller-th-${mKey.replace('/', '-')}" data-month-col="${mKey}" class="py-2 px-2.5 font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center w-44 min-w-[160px] align-top">
-                                                    <div>${mKey}${isCurrent ? ' (當月)' : ''}</div>
-                                                    ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(mKey) : ''}
+                                                <th id="forteller-th-${mKey.replace('/', '-')}" data-month-col="${mKey}" class="${isCompact ? 'py-1.5 px-1.5' : 'py-2 px-2.5'} font-extrabold border-r ${isCurrent ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200' : 'border-slate-300 dark:border-slate-700'} whitespace-nowrap text-center ${monthColWidthClass} align-top">
+                                                    <div>${mKey}${isCurrent ? (isCompact ? ' ★' : ' (當月)') : ''}</div>
+                                                    ${fortellerShowFinancials ? renderFortellerHeaderFinanceBadge(mKey, isCompact) : ''}
                                                 </th>
                                             `;
                                         }).join('')}
-                                        <th class="py-2 px-3 font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap text-center w-52 min-w-[180px]">🎯 終局目標 / 結案時間</th>
+                                        <th class="${isCompact ? 'py-1.5 px-2' : 'py-2 px-3'} font-extrabold bg-amber-50/70 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 whitespace-nowrap text-center ${milestoneColWidthClass}">🎯 終局目標 / 結案時間</th>
                                     `}
                                 </tr>
                             </thead>
@@ -802,109 +1036,35 @@
                                     <!-- =================== 領域模式列表 =================== -->
                                     ${domainRows.map(row => {
                                         const t = row.thought;
-                                        const itemsByMonth = {};
-                                        function addDomainItem(mKey, item) {
-                                            if (!itemsByMonth[mKey]) itemsByMonth[mKey] = [];
-                                            itemsByMonth[mKey].push(item);
-                                        }
-
-
-                                        // 【v5.3.1 領域模式重構】：目標落點其所屬領域，卡片自身各棒次接力目標與專屬步驟
-                                        if (t) {
-                                            const tMilestones = getThoughtMilestones(t);
-                                            tMilestones.forEach((m, mIdx) => {
-                                                const mTargetM = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
-                                                const mDateBadge = (m.targetDate && m.targetDate !== '未指定日期') ? m.targetDate.slice(5) : '';
-                                                const stageStyle = getMilestoneStageStyle(mIdx, m.done);
-
-
-                                                addDomainItem(mTargetM, {
-                                                    type: 'milestone',
-                                                    text: m.title,
-                                                    thoughtId: t.id,
-                                                    dateBadge: mDateBadge,
-                                                    done: m.done,
-                                                    milestoneStageIndex: mIdx,
-                                                    stageStyle: stageStyle
-                                                });
-                                            });
-
-
-                                            // 步驟落點：直接待辦步驟呈現所屬棒次色彩；若步驟已拆解為子目標，則標記導向獨立子目標卡片
-                                            (t.steps || []).filter(s => !s.done).forEach(s => {
-                                                const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
-                                                const isRec = (s.recurrence && s.recurrence !== 'none');
-                                                const sDateBadge = (s.stepDate && s.stepDate !== '未指定日期') ? s.stepDate.slice(5) : '';
-
-
-                                                let childThought = null;
-                                                if (s.linkedThoughtId) childThought = thoughts.find(x => x.id === s.linkedThoughtId);
-                                                if (!childThought) childThought = thoughts.find(x => x.parentStepInfo && x.parentStepInfo.parentThoughtId === t.id && x.parentStepInfo.parentStepId === s.id);
-
-
-                                                if (childThought) {
-                                                    addDomainItem(mKey, {
-                                                        type: 'subgoal_link',
-                                                        text: `${s.text} ➔ [${childThought.category || '領域'}] ${childThought.goal || childThought.text}`,
-                                                        thoughtId: childThought.id,
-                                                        dateBadge: sDateBadge,
-                                                        prefix: '🔷'
-                                                    });
-                                                } else {
-                                                    let mIdx = -1;
-                                                    if (s.milestoneId !== undefined && s.milestoneId !== null) {
-                                                        mIdx = tMilestones.findIndex(m => String(m.id) === String(s.milestoneId));
-                                                    }
-                                                    if (mIdx === -1) {
-                                                        mIdx = tMilestones.findIndex(m => !m.done);
-                                                        if (mIdx === -1) mIdx = 0;
-                                                    }
-                                                    const currentM = tMilestones[mIdx];
-                                                    const isDone = currentM ? currentM.done : false;
-                                                    const stageStyle = getMilestoneStageStyle(mIdx, isDone);
-
-
-                                                    addDomainItem(mKey, {
-                                                        type: 'step',
-                                                        prefix: isRec ? 'o>' : '>',
-                                                        text: s.text,
-                                                        stepDate: s.stepDate,
-                                                        dateBadge: sDateBadge,
-                                                        thoughtId: t.id,
-                                                        stepId: s.id,
-                                                        depth: 0,
-                                                        milestoneBadge: `第${mIdx + 1}棒`,
-                                                        milestoneTitle: currentM ? currentM.title : '',
-                                                        milestoneStageIndex: mIdx,
-                                                        milestoneDone: isDone,
-                                                        stageStyle: stageStyle
-                                                    });
-                                                }
-                                            });
-                                        }
-
+                                        const itemsByMonth = row.itemsByMonth || {};
+                                        const domMeta = getFortellerDomainBadgeMeta(row.domain, domains);
 
                                         return `
                                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
-                                                <td class="sticky left-0 z-20 bg-white dark:bg-slate-800 py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap w-12 min-w-[48px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
-                                                    ${row.no}
+                                                <td class="sticky left-0 z-20 bg-white dark:bg-slate-800 ${isCompact ? 'py-1 px-0.5' : 'py-2 px-1'} text-center font-mono font-black text-slate-500 dark:text-slate-400 border-l-[3px] ${domMeta.borderClass} border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap ${noColClass} shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]" title="${escapeAttr(row.domain)}">
+                                                    <div class="leading-none">${row.no}</div>
+                                                    <div class="text-[10px] mt-0.5 leading-none opacity-85 select-none">${escapeHtml(domMeta.emoji)}</div>
                                                 </td>
-                                                <td class="sticky left-[48px] z-20 bg-white dark:bg-slate-800 py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap w-32 min-w-[120px] shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]">
-                                                    ${row.domain}
+                                                <td class="bg-white dark:bg-slate-800 ${isCompact ? 'py-1 px-2' : 'py-2 px-2.5'} font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap ${domainColClass}">
+                                                    ${escapeHtml(row.domain)}
                                                 </td>
                                                 ${monthCols.map(mKey => {
                                                     const items = itemsByMonth[mKey] || [];
                                                     const isCurrent = (mKey === currentMonthKey);
+                                                    const isNarrow = isEmptyNarrowMonth(mKey);
+                                                    if (isNarrow) {
+                                                        return `<td class="py-1 px-1 border-r border-slate-200/70 dark:border-slate-700/70 align-middle text-center text-slate-300 dark:text-slate-600 bg-slate-50/40 dark:bg-slate-900/20 ${narrowMonthColClass} select-none">·</td>`;
+                                                    }
                                                     if (items.length === 0) {
-                                                        return `<td class="py-2 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top w-44 min-w-[160px] ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
+                                                        return `<td class="${cellPadClass} border-r border-slate-200 dark:border-slate-700 align-top ${monthColWidthClass} ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
                                                     }
                                                     return `
-                                                        <td class="py-2 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top w-44 min-w-[160px] ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
-                                                            ${renderFortellerCellContent(items)}
+                                                        <td class="${cellPadClass} border-r border-slate-200 dark:border-slate-700 align-top ${monthColWidthClass} ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
+                                                            ${renderFortellerCellContent(items, isCompact)}
                                                         </td>
                                                     `;
                                                 }).join('')}
-                                                <td class="py-2.5 px-3 bg-amber-50/30 dark:bg-amber-950/20 text-slate-800 dark:text-slate-200 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
+                                                <td class="${milestonePadClass} bg-amber-50/30 dark:bg-amber-950/20 text-slate-800 dark:text-slate-200 align-middle text-xs border-b border-slate-200 dark:border-slate-700">
                                                     ${t ? (() => {
                                                         const tAllM = getThoughtMilestones(t);
                                                         const tDates = tAllM.map(x => x.targetDate).filter(d => d && d !== '未指定日期').sort();
@@ -914,10 +1074,9 @@
                                                         const tActiveIdx = tAllM.findIndex(x => !x.done);
                                                         const activeMilestone = (tActiveIdx >= 0) ? tAllM[tActiveIdx] : tAllM[tAllM.length - 1];
 
-
                                                         const parentThought = (t && t.parentStepInfo) ? thoughts.find(x => x.id === t.parentStepInfo.parentThoughtId) : null;
                                                         return `
-                                                            <div class="space-y-1.5">
+                                                            <div class="${isCompact ? 'space-y-1' : 'space-y-1.5'}">
                                                                 ${parentThought ? `
                                                                     <div class="text-[10px] font-bold text-sky-700 dark:text-sky-300 flex items-center gap-1 cursor-pointer hover:underline" onclick="jumpToGoalCard(${parentThought.id})" title="點擊前往母卡片：${escapeAttr(parentThought.text)}">
                                                                         <span>🔷 拆解自母目標：${escapeHtml(parentThought.text)}</span>
@@ -929,7 +1088,7 @@
                                                                 <div class="text-[11px] font-bold text-slate-700 dark:text-slate-300">
                                                                     ${escapeHtml(activeMilestone ? activeMilestone.title : (t.goal || '未設定'))}
                                                                 </div>
-                                                                <div class="flex items-center gap-1.5 flex-wrap">
+                                                                <div class="flex items-center gap-1 flex-wrap">
                                                                     <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 font-mono">
                                                                         📅 ${minTargetDate && maxTargetDate && minTargetDate !== maxTargetDate ? `${minTargetDate.slice(0, 7)} ➔ ${maxTargetDate.slice(0, 7)}` : (maxTargetDate || '2026/12/31')}
                                                                     </span>
@@ -952,118 +1111,45 @@
                                         `;
                                     }).join('')}
                                 ` : `
-                                    <!-- =================== 目標模式列表 (v5.3.8 月份目標回歸 + 段落目標母卡片合併儲存格) =================== -->
+                                    <!-- =================== 目標模式列表 (v6.3.0 僅凍結NO. + 空白月窄化 + 緊湊密度) =================== -->
                                     ${goalModeRows.map(row => {
-                                        const tr = row.track;
                                         const root = row.rootGoal;
-                                        const branchItemsByMonth = {};
-                                        function addBranchItem(mKey, item) {
-                                            if (!branchItemsByMonth[mKey]) branchItemsByMonth[mKey] = [];
-                                            branchItemsByMonth[mKey].push(item);
-                                        }
-
-
-                                        // A. 【母/子/孫目標落點月度】：將本軌道對應卡片之接力里程碑目標按 targetDate 顯示在數字月份欄位內
-                                        const tMilestones = getThoughtMilestones(tr.thought);
-                                        tMilestones.forEach((m, mIdx) => {
-                                            const mTargetM = getFortellerMonthKey(m.targetDate, currentMonthKey, monthCols);
-                                            const mDateBadge = (m.targetDate && m.targetDate !== '未指定日期') ? m.targetDate.slice(5) : '';
-                                            const stageStyle = getMilestoneStageStyle(mIdx, m.done);
-
-
-                                            addBranchItem(mTargetM, {
-                                                type: 'milestone',
-                                                text: m.title,
-                                                thoughtId: tr.thought.id,
-                                                dateBadge: mDateBadge,
-                                                done: m.done,
-                                                milestoneStageIndex: mIdx,
-                                                stageStyle: stageStyle
-                                            });
-                                        });
-
-
-                                        // B. 放置未拆解的待辦步驟 (乾淨文字，> 單步，o> 循環，並關聯所屬接力棒次專屬色彩)
-                                        (tr.directSteps || []).forEach(s => {
-                                            const mKey = getFortellerMonthKey(s.stepDate, currentMonthKey, monthCols);
-                                            const isRec = (s.recurrence && s.recurrence !== 'none');
-                                            const sDateBadge = (s.stepDate && s.stepDate !== '未指定日期') ? s.stepDate.slice(5) : '';
-
-
-                                            let milestoneBadge = '';
-                                            let milestoneTitle = '';
-                                            let mIdx = -1;
-                                            if (tMilestones.length > 0) {
-                                                if (s.milestoneId !== undefined && s.milestoneId !== null) {
-                                                    mIdx = tMilestones.findIndex(m => String(m.id) === String(s.milestoneId));
-                                                }
-                                                if (mIdx === -1) {
-                                                    mIdx = tMilestones.findIndex(m => !m.done);
-                                                }
-                                                if (mIdx === -1) {
-                                                    mIdx = 0;
-                                                }
-                                                if (mIdx >= 0 && mIdx < tMilestones.length) {
-                                                    milestoneBadge = `第${mIdx + 1}棒`;
-                                                    milestoneTitle = tMilestones[mIdx].title;
-                                                }
-                                            }
-                                            const currentM = (mIdx >= 0 && mIdx < tMilestones.length) ? tMilestones[mIdx] : null;
-                                            const isDone = currentM ? currentM.done : false;
-                                            const stageStyle = getMilestoneStageStyle(mIdx >= 0 ? mIdx : 0, isDone);
-
-
-                                            addBranchItem(mKey, {
-                                                type: 'step',
-                                                prefix: isRec ? 'o>' : '>',
-                                                text: s.text,
-                                                stepDate: s.stepDate,
-                                                dateBadge: sDateBadge,
-                                                thoughtId: tr.thought.id,
-                                                stepId: s.id,
-                                                depth: 0,
-                                                milestoneBadge: milestoneBadge,
-                                                milestoneTitle: milestoneTitle,
-                                                milestoneStageIndex: mIdx >= 0 ? mIdx : 0,
-                                                milestoneDone: isDone,
-                                                stageStyle: stageStyle
-                                            });
-                                        });
-
-
-                                        // 【v5.3.9 拆解目標去重優化】：若母卡片步驟已有拆解目標，則本軌道僅顯示該拆解子/孫卡片自身的目標與步驟，不重複顯示母卡片原步驟
+                                        const branchItemsByMonth = row.branchItemsByMonth || {};
+                                        const domMeta = getFortellerDomainBadgeMeta(row.domain, domains);
                                         const goalTableCols = window._fortellerGoalTableCols || [];
-
 
                                         return `
                                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-750 transition-colors">
-                                                <td class="sticky left-0 z-20 bg-white dark:bg-slate-800 py-2 px-1 text-center font-mono font-black text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap w-12 min-w-[48px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
-                                                    ${row.no}
+                                                <td class="sticky left-0 z-20 bg-white dark:bg-slate-800 ${isCompact ? 'py-1 px-0.5' : 'py-2 px-1'} text-center font-mono font-black text-slate-500 dark:text-slate-400 border-l-[3px] ${domMeta.borderClass} border-r border-slate-200 dark:border-slate-700 align-top text-[11px] whitespace-nowrap ${noColClass} shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]" title="${escapeAttr(row.domain)}">
+                                                    <div class="leading-none">${row.no}</div>
+                                                    <div class="text-[10px] mt-0.5 leading-none opacity-85 select-none">${escapeHtml(domMeta.emoji)}</div>
                                                 </td>
-                                                <td class="sticky left-[48px] z-20 bg-white dark:bg-slate-800 py-2 px-2.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap w-32 min-w-[120px] shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]">
-                                                    ${row.domain}
+                                                <td class="bg-white dark:bg-slate-800 ${isCompact ? 'py-1 px-2' : 'py-2 px-2.5'} font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 align-top text-xs whitespace-nowrap ${domainColClass}">
+                                                    ${escapeHtml(row.domain)}
                                                 </td>
                                                 ${goalTableCols.map((col, cIdx) => {
                                                     if (col.type === 'month') {
                                                         const items = branchItemsByMonth[col.monthKey] || [];
                                                         const isCurrent = (col.monthKey === currentMonthKey);
+                                                        const isNarrow = isEmptyNarrowMonth(col.monthKey);
+                                                        if (isNarrow) {
+                                                            return `<td class="py-1 px-1 border-r border-slate-200/70 dark:border-slate-700/70 align-middle text-center text-slate-300 dark:text-slate-600 bg-slate-50/40 dark:bg-slate-900/20 ${narrowMonthColClass} select-none">·</td>`;
+                                                        }
                                                         if (items.length === 0) {
-                                                            return `<td class="py-2 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top w-44 min-w-[160px] ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
+                                                            return `<td class="${cellPadClass} border-r border-slate-200 dark:border-slate-700 align-top ${monthColWidthClass} ${isCurrent ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : ''}"></td>`;
                                                         }
                                                         return `
-                                                            <td class="py-2 px-2.5 border-r border-slate-200 dark:border-slate-700 align-top w-44 min-w-[160px] ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
-                                                                ${renderFortellerCellContent(items)}
+                                                            <td class="${cellPadClass} border-r border-slate-200 dark:border-slate-700 align-top ${monthColWidthClass} ${isCurrent ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''}">
+                                                                ${renderFortellerCellContent(items, isCompact)}
                                                             </td>
                                                         `;
                                                     } else if (col.type === 'future_milestone') {
-                                                        // 【v5.4.1 遠期接力目標單元格】：展示落在可視月份之後的接力棒次 (真實年份，不再與近期棒次擠在同一個月)
                                                         if (!row.isFirstInRoot) {
                                                             return '';
                                                         }
                                                         const lastVisibleMonth = monthCols[monthCols.length - 1];
                                                         const [lvY, lvM] = lastVisibleMonth.split('/').map(Number);
                                                         const lastVisibleVal = lvY * 12 + lvM;
-
 
                                                         const rootMilestones = getThoughtMilestones(root);
                                                         const futureMilestones = [];
@@ -1077,15 +1163,13 @@
                                                             }
                                                         });
 
-
                                                         if (futureMilestones.length === 0) {
-                                                            return `<td rowspan="${row.rootRowspan}" class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-middle bg-slate-50/20 dark:bg-slate-850/10 text-center text-slate-300 dark:text-slate-600 font-mono text-xs select-none">·</td>`;
+                                                            return `<td rowspan="${row.rootRowspan}" class="py-1.5 px-1.5 border-r border-slate-200 dark:border-slate-700 align-middle bg-slate-50/20 dark:bg-slate-850/10 text-center text-slate-300 dark:text-slate-600 font-mono text-xs select-none">·</td>`;
                                                         }
 
-
                                                         return `
-                                                            <td rowspan="${row.rootRowspan}" class="py-2.5 px-3 border-r border-slate-300 dark:border-slate-600 align-middle bg-purple-50/30 dark:bg-purple-950/20 text-slate-800 dark:text-slate-200 min-w-[150px] max-w-[220px] shadow-2xs">
-                                                                <div class="space-y-2">
+                                                            <td rowspan="${row.rootRowspan}" class="${milestonePadClass} border-r border-slate-300 dark:border-slate-600 align-middle bg-purple-50/30 dark:bg-purple-950/20 text-slate-800 dark:text-slate-200 ${isCompact ? 'min-w-[138px] max-w-[190px]' : 'min-w-[150px] max-w-[220px]'} shadow-2xs">
+                                                                <div class="${isCompact ? 'space-y-1.5' : 'space-y-2'}">
                                                                     <div class="font-extrabold text-purple-950 dark:text-purple-200 leading-snug cursor-pointer hover:underline text-xs flex items-center gap-1" onclick="jumpToGoalCard(${root.id})" title="點擊前往母目標卡片：${escapeAttr(root.text)}">
                                                                         <span class="select-none text-sm">🔮</span>
                                                                         <span class="break-words font-black">${escapeHtml(root.text)}</span>
@@ -1095,12 +1179,12 @@
                                                                         const badgeClass = stageStyle.paletteClass || stageStyle.className;
                                                                         const isDone = m.done;
                                                                         return `
-                                                                            <div class="p-2 rounded-xl border font-bold ${badgeClass} shadow-2xs cursor-pointer hover:opacity-95 transition-all text-xs leading-snug flex flex-col gap-1" onclick="jumpToGoalCard(${root.id})" title="點擊跳轉至母目標卡片：${escapeAttr(m.title)}">
+                                                                            <div class="${isCompact ? 'p-1.5 rounded-lg' : 'p-2 rounded-xl'} border font-bold ${badgeClass} shadow-2xs cursor-pointer hover:opacity-95 transition-all text-xs leading-snug flex flex-col gap-0.5" onclick="jumpToGoalCard(${root.id})" title="點擊跳轉至母目標卡片：${escapeAttr(m.title)}">
                                                                                 <div class="flex items-center justify-between gap-1 text-[10px] font-mono">
                                                                                     <span class="font-black">${stageStyle.icon} 第 ${mIdx + 1} 棒</span>
                                                                                     <span class="text-[9px] opacity-90 font-bold bg-white/60 dark:bg-black/30 px-1 py-0.2 rounded">${m.targetDate && m.targetDate !== '未指定日期' ? m.targetDate.slice(0, 7).replace('-', '/') : '未指定'}</span>
                                                                                 </div>
-                                                                                <div class="${isDone ? 'line-through opacity-70 font-normal' : 'font-black text-[12px]'} break-words">
+                                                                                <div class="${isDone ? 'line-through opacity-70 font-normal' : 'font-black text-[11px]'} break-words">
                                                                                     ${escapeHtml(m.title)}
                                                                                 </div>
                                                                                 ${m.done ? `
@@ -1115,12 +1199,9 @@
                                                             </td>
                                                         `;
                                                     } else {
-                                                        // 【v5.3.8 段落目標單元格】：只放母卡片的目標資訊，且跨 NO. 合併儲存格 (含所有同一母卡片下的子孫步驟)
                                                         if (!row.isFirstInRoot) {
-                                                            // 非母卡片第一軌道，由首軌道之 rowspan 涵蓋，此處不渲染 td
                                                             return '';
                                                         }
-
 
                                                         const matchedMilestones = [];
                                                         const rootMilestones = getThoughtMilestones(root);
@@ -1134,15 +1215,13 @@
                                                             }
                                                         });
 
-
                                                         if (matchedMilestones.length === 0) {
-                                                            return `<td rowspan="${row.rootRowspan}" class="py-2 px-2 border-r border-slate-200 dark:border-slate-700 align-middle bg-slate-50/20 dark:bg-slate-850/10 text-center text-slate-300 dark:text-slate-600 font-mono text-xs select-none">·</td>`;
+                                                            return `<td rowspan="${row.rootRowspan}" class="py-1.5 px-1.5 border-r border-slate-200 dark:border-slate-700 align-middle bg-slate-50/20 dark:bg-slate-850/10 text-center text-slate-300 dark:text-slate-600 font-mono text-xs select-none">·</td>`;
                                                         }
 
-
                                                         return `
-                                                            <td rowspan="${row.rootRowspan}" class="py-2.5 px-3 border-r border-slate-300 dark:border-slate-600 align-middle bg-amber-50/40 dark:bg-amber-950/25 text-slate-800 dark:text-slate-200 min-w-[150px] max-w-[220px] shadow-2xs">
-                                                                <div class="space-y-2">
+                                                            <td rowspan="${row.rootRowspan}" class="${milestonePadClass} border-r border-slate-300 dark:border-slate-600 align-middle bg-amber-50/40 dark:bg-amber-950/25 text-slate-800 dark:text-slate-200 ${isCompact ? 'min-w-[138px] max-w-[190px]' : 'min-w-[150px] max-w-[220px]'} shadow-2xs">
+                                                                <div class="${isCompact ? 'space-y-1.5' : 'space-y-2'}">
                                                                     <div class="font-extrabold text-amber-950 dark:text-amber-200 leading-snug cursor-pointer hover:underline text-xs flex items-center gap-1" onclick="jumpToGoalCard(${root.id})" title="點擊前往母目標卡片：${escapeAttr(root.text)}">
                                                                         <span class="select-none text-sm">🎯</span>
                                                                         <span class="break-words font-black">${escapeHtml(root.text)}</span>
@@ -1152,12 +1231,12 @@
                                                                         const badgeClass = stageStyle.paletteClass || stageStyle.className;
                                                                         const isDone = m.done;
                                                                         return `
-                                                                            <div class="p-2 rounded-xl border font-bold ${badgeClass} shadow-2xs cursor-pointer hover:opacity-95 transition-all text-xs leading-snug flex flex-col gap-1" onclick="jumpToGoalCard(${root.id})" title="點擊跳轉至母目標卡片：${escapeAttr(m.title)}">
+                                                                            <div class="${isCompact ? 'p-1.5 rounded-lg' : 'p-2 rounded-xl'} border font-bold ${badgeClass} shadow-2xs cursor-pointer hover:opacity-95 transition-all text-xs leading-snug flex flex-col gap-0.5" onclick="jumpToGoalCard(${root.id})" title="點擊跳轉至母目標卡片：${escapeAttr(m.title)}">
                                                                                 <div class="flex items-center justify-between gap-1 text-[10px] font-mono">
                                                                                     <span class="font-black">${stageStyle.icon} 第 ${mIdx + 1} 棒</span>
                                                                                     <span class="text-[9px] opacity-80">${m.targetDate && m.targetDate !== '未指定日期' ? m.targetDate.slice(5) : ''}</span>
                                                                                 </div>
-                                                                                <div class="${isDone ? 'line-through opacity-70 font-normal' : 'font-black text-[12px]'} break-words">
+                                                                                <div class="${isDone ? 'line-through opacity-70 font-normal' : 'font-black text-[11px]'} break-words">
                                                                                     ${escapeHtml(m.title)}
                                                                                 </div>
                                                                                 ${m.done ? `
@@ -1186,16 +1265,16 @@
                                         if (emptyDomains.length === 0) return '';
                                         const goalTableCols = window._fortellerGoalTableCols || monthCols;
 
-
                                         return emptyDomains.map(dom => {
+                                            const domMeta = getFortellerDomainBadgeMeta(dom, domains);
                                             return `
                                                 <tr class="bg-slate-50/40 dark:bg-slate-800/25 border-b border-slate-200/70 dark:border-slate-700/70 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
-                                                    <td class="sticky left-0 z-20 bg-slate-50/90 dark:bg-slate-800/90 py-2.5 px-1 text-center font-mono text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-700 align-middle text-[11px] whitespace-nowrap select-none w-12 min-w-[48px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
-                                                        -
+                                                    <td class="sticky left-0 z-20 bg-slate-50/95 dark:bg-slate-800/95 ${isCompact ? 'py-1.5 px-0.5' : 'py-2.5 px-1'} text-center font-mono text-slate-400 dark:text-slate-500 border-l-[3px] ${domMeta.borderClass} border-r border-slate-200 dark:border-slate-700 align-middle text-[11px] whitespace-nowrap select-none ${noColClass} shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]" title="${escapeAttr(dom)}">
+                                                        ${escapeHtml(domMeta.emoji)}
                                                     </td>
-                                                    <td class="sticky left-[48px] z-20 bg-slate-50/90 dark:bg-slate-800/90 py-2.5 px-2.5 font-bold text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-middle text-xs whitespace-nowrap w-32 min-w-[120px] shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]">
+                                                    <td class="bg-slate-50/90 dark:bg-slate-800/90 ${isCompact ? 'py-1.5 px-2' : 'py-2.5 px-2.5'} font-bold text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 align-middle text-xs whitespace-nowrap ${domainColClass}">
                                                         <div class="flex items-center justify-between gap-1.5">
-                                                            <span>${dom}</span>
+                                                            <span>${escapeHtml(dom)}</span>
                                                             <button type="button" onclick="quickAddGoalForDomain('${escapeAttr(dom)}')" class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-colors cursor-pointer" title="為此領域快速建立新目標">
                                                                 <span>➕</span>
                                                             </button>
@@ -1205,8 +1284,9 @@
                                                         const mKey = col.monthKey || col.afterMonth || '';
                                                         const isCurrent = (mKey === currentMonthKey);
                                                         const isMilestone = (col.type === 'milestone');
+                                                        const isNarrow = (col.type === 'month') && isEmptyNarrowMonth(mKey);
                                                         return `
-                                                            <td class="py-2 px-2 border-r border-slate-200/60 dark:border-slate-700/60 align-middle text-center text-slate-300 dark:text-slate-600 text-xs ${isCurrent ? 'bg-indigo-50/15 dark:bg-indigo-950/10' : ''} ${isMilestone ? 'bg-amber-50/20 dark:bg-amber-950/10' : ''}">
+                                                            <td class="${isNarrow ? 'py-1 px-1 ' + narrowMonthColClass : 'py-1.5 px-2'} border-r border-slate-200/60 dark:border-slate-700/60 align-middle text-center text-slate-300 dark:text-slate-600 text-xs ${isCurrent ? 'bg-indigo-50/15 dark:bg-indigo-950/10' : ''} ${isMilestone ? 'bg-amber-50/20 dark:bg-amber-950/10' : ''}">
                                                                 ·
                                                             </td>
                                                         `;
@@ -1216,7 +1296,7 @@
                                         }).join('');
                                     })()}
                                 `}
-</tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
