@@ -323,7 +323,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.3.0 (2026-11-19)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.3.1 (2026-11-20)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1192,7 +1192,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.3.0 (2026-11-19)";
+window.APP_VERSION = "v6.3.1 (2026-11-20)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
@@ -1544,10 +1544,42 @@ function jumpToCardsCategory(cat) {
         let navigationReturnState = null;
 
 
+        // 【v6.3.1 內部捲動容器位置擷取與精準還原輔助】：支援 Forteller / 時間軸 / 對照矩陣之垂直與水平捲動
+        function captureContainerScroll(elementId) {
+            if (typeof document === 'undefined') return null;
+            const el = document.getElementById(elementId);
+            if (!el) return null;
+            return {
+                top: el.scrollTop || 0,
+                left: el.scrollLeft || 0
+            };
+        }
+
+        function restoreContainerScroll(elementId, pos) {
+            if (typeof document === 'undefined' || !pos) return;
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const targetTop = Math.max(0, Number(pos.top) || 0);
+            const targetLeft = Math.max(0, Number(pos.left) || 0);
+            const prevBehavior = el.style.scrollBehavior;
+            el.style.scrollBehavior = 'auto';
+            el.scrollTop = targetTop;
+            el.scrollLeft = targetLeft;
+            el.style.scrollBehavior = prevBehavior;
+        }
+
+
         function recordNavigationReturnPoint(customLabel = '') {
             // 僅在非看板模式 (總覽/Forteller/時間軸) 跳轉至看板時記錄來源；但若明確指定 customLabel (如今日習慣打卡專區)，即使在看板模式亦記錄，以保證能精準返回
             if (!customLabel && typeof viewMode !== 'undefined' && viewMode === 'cards') return;
 
+            const wasFortellerFullscreen = Boolean(
+                viewMode === 'overview' &&
+                typeof overviewSubMode !== 'undefined' &&
+                overviewSubMode === 'forteller' &&
+                typeof isFortellerFullscreen !== 'undefined' &&
+                isFortellerFullscreen
+            );
 
             let label = customLabel;
             if (!label) {
@@ -1555,7 +1587,7 @@ function jumpToCardsCategory(cat) {
                     label = '時間軸模式';
                 } else if (viewMode === 'overview') {
                     if (typeof overviewSubMode !== 'undefined') {
-                        if (overviewSubMode === 'forteller') label = 'Forteller 模式';
+                        if (overviewSubMode === 'forteller') label = wasFortellerFullscreen ? 'Forteller 滿版' : 'Forteller 模式';
                         else if (overviewSubMode === 'mindmap') label = '心智圖模式';
                         else if (overviewSubMode === 'matrix') label = '對照矩陣';
                         else label = '總覽模式';
@@ -1572,6 +1604,11 @@ function jumpToCardsCategory(cat) {
                 viewMode: viewMode,
                 overviewSubMode: typeof overviewSubMode !== 'undefined' ? overviewSubMode : 'grid',
                 scrollY: (typeof window !== 'undefined') ? (window.scrollY || window.pageYOffset || 0) : 0,
+                scrollX: (typeof window !== 'undefined') ? (window.scrollX || window.pageXOffset || 0) : 0,
+                fortellerFullscreen: wasFortellerFullscreen,
+                fortellerScroll: captureContainerScroll('fortellerTableContainer'),
+                timelineScroll: captureContainerScroll('timelineTableContainer'),
+                matrixScroll: captureContainerScroll('matrixScrollContainer'),
                 activeCategory: typeof activeCategory !== 'undefined' ? activeCategory : '全部',
                 label: label,
                 timestamp: Date.now()
@@ -1625,6 +1662,19 @@ function jumpToCardsCategory(cat) {
                 activeCategory = state.activeCategory;
             }
 
+            // 【v6.3.1 還原 Forteller 滿版戰情室狀態】
+            const shouldRestoreFortellerFullscreen = Boolean(
+                state.fortellerFullscreen &&
+                state.viewMode === 'overview' &&
+                state.overviewSubMode === 'forteller'
+            );
+            if (typeof isFortellerFullscreen !== 'undefined') {
+                isFortellerFullscreen = shouldRestoreFortellerFullscreen;
+                if (typeof document !== 'undefined' && document.body) {
+                    document.body.style.overflow = isFortellerFullscreen ? 'hidden' : '';
+                }
+            }
+
 
             // 重設編輯狀態
             editingId = null;
@@ -1635,12 +1685,33 @@ function jumpToCardsCategory(cat) {
             setViewMode(state.viewMode);
 
 
-            // 平滑捲動回跳轉前的精確高度
-            setTimeout(() => {
+            // 【v6.3.1 精準還原視窗與內部捲動容器 (Forteller / 時間軸 / 對照矩陣) 至跳轉前點擊位置】
+            const applyScrollRestore = () => {
                 if (typeof window !== 'undefined' && window.scrollTo) {
-                    window.scrollTo({ top: state.scrollY || 0, behavior: 'smooth' });
+                    window.scrollTo({
+                        top: state.scrollY || 0,
+                        left: state.scrollX || 0,
+                        behavior: 'auto'
+                    });
                 }
-            }, 80);
+                if (state.fortellerScroll) {
+                    restoreContainerScroll('fortellerTableContainer', state.fortellerScroll);
+                }
+                if (state.timelineScroll) {
+                    restoreContainerScroll('timelineTableContainer', state.timelineScroll);
+                }
+                if (state.matrixScroll) {
+                    restoreContainerScroll('matrixScrollContainer', state.matrixScroll);
+                }
+            };
+            if (typeof requestAnimationFrame === 'function') {
+                requestAnimationFrame(() => {
+                    applyScrollRestore();
+                    setTimeout(applyScrollRestore, 80);
+                });
+            } else {
+                setTimeout(applyScrollRestore, 80);
+            }
 
 
             showToast(`↩️ 已返回至「${state.label}」！`, 'info');
@@ -1662,13 +1733,13 @@ function jumpToCardsCategory(cat) {
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
+            recordNavigationReturnPoint();
             activeCategory = t.category || '💼 事業';
             if (t.goalDone && hideCompletedGoalsCards) {
                 hideCompletedGoalsCards = false;
                 localStorage.setItem('hide_completed_goals_cards', 'false');
             }
             editingId = null;
-            recordNavigationReturnPoint();
             editingStepIdKey = null;
             setViewMode('cards');
             setTimeout(() => {
@@ -1691,13 +1762,13 @@ function jumpToCardsCategory(cat) {
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
+            recordNavigationReturnPoint();
             activeCategory = t.category || '💼 事業';
             if (t.goalDone && hideCompletedGoalsCards) {
                 hideCompletedGoalsCards = false;
                 localStorage.setItem('hide_completed_goals_cards', 'false');
             }
             editingId = thoughtId;
-            recordNavigationReturnPoint();
             editingStepIdKey = null;
             setViewMode('cards');
             setTimeout(() => {
@@ -1714,6 +1785,7 @@ function jumpToCardsCategory(cat) {
 
             const t = thoughts.find(x => x.id === thoughtId);
             if (!t) return;
+            recordNavigationReturnPoint(customLabel); // 【v5.3.15 補足步驟編輯跳轉來源記錄】
             activeCategory = t.category || '💼 事業';
             if (t.goalDone && hideCompletedGoalsCards) {
                 hideCompletedGoalsCards = false;
@@ -1725,7 +1797,6 @@ function jumpToCardsCategory(cat) {
             if (step && step.done) {
                 showCompletedStepsMap[thoughtId] = true;
             }
-            recordNavigationReturnPoint(customLabel); // 【v5.3.15 補足步驟編輯跳轉來源記錄】
             editingId = null;
             editingStepIdKey = `${thoughtId}-${stepId}`;
             setViewMode('cards');
