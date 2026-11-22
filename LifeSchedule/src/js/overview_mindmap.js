@@ -289,7 +289,7 @@ function renderOverview(container) {
 
             const categoriesList = getOrderedCategories();
             const isFortellerView = (overviewSubMode === 'forteller');
-            const showFullDashboard = !isFortellerView || (typeof isFortellerDashboardExpanded !== 'undefined' && isFortellerDashboardExpanded);
+            const showFullDashboard = (typeof isFortellerDashboardExpanded !== 'undefined' && isFortellerDashboardExpanded);
             const dashboardBox = document.createElement('div');
             dashboardBox.className = showFullDashboard
                 ? "bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-6 space-y-3"
@@ -332,11 +332,9 @@ function renderOverview(container) {
                         </h2>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">即時統計各領域之目標達成率與工時完成狀況</p>
                     </div>
-                    ${isFortellerView ? `
-                        <button type="button" onclick="toggleFortellerDashboard()" class="shrink-0 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors cursor-pointer">
-                            收折儀表板 ▲
-                        </button>
-                    ` : ''}
+                    <button type="button" onclick="toggleFortellerDashboard()" class="shrink-0 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors cursor-pointer">
+                        收折儀表板 ▲
+                    </button>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     ${categoriesList.map(cat => {
