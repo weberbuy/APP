@@ -607,7 +607,8 @@ async function completeE2eeModalUnlockSuccess(plainData, targetEnvelope, verifie
     if (_pendingEncryptedRemote && targetEnvelope === _pendingEncryptedRemote.envelope) {
         const pending = _pendingEncryptedRemote;
         _pendingEncryptedRemote = null;
-        if (pending.shouldApply && !_hasUnsavedCloudChanges) {
+        const contentDiff = !_hasUnsavedCloudChanges && pending.fileName !== _lastAppliedRemoteFileName && hasRemoteBackupContentDiff(plainData);
+        if ((pending.shouldApply || contentDiff) && !_hasUnsavedCloudChanges) {
             applyImportedData(plainData, pending.fileName);
         } else if (pending.shouldApply && _hasUnsavedCloudChanges) {
             const keepLocal = confirm('⚠️ 偵測到雲端有另一份備份，但您剛才已在本機進行了修改！\n\n點擊「確定」：保留您剛才在本機的修改，並立即加密上傳至雲端\n點擊「取消」：放棄剛才的修改，改為載入雲端備份');
@@ -819,6 +820,34 @@ function canSessionDecryptEnvelope(env) {
     return Boolean(env.kdf && _e2eeSessionSaltB64 === env.kdf.salt);
 }
 
+let _lastAppliedRemoteFileName = '';
+
+// 【v6.3.3 內容指紋比對自癒】：防止本機快取與 pi_last_synced_file 脫鉤或跨裝置時鐘微偏時，
+// 明明已拉回新版遠端備份卻因檔名字串比對為 false 而略過覆蓋並誤報「已是最新」。
+function hasRemoteBackupContentDiff(remoteData) {
+    if (!remoteData || typeof remoteData !== 'object') return false;
+    try {
+        const remoteThoughts = Array.isArray(remoteData) ? remoteData : remoteData.thoughts;
+        if (!Array.isArray(remoteThoughts)) return false;
+        if (JSON.stringify(remoteThoughts) !== JSON.stringify(thoughts || [])) return true;
+        if (remoteData.monthlyFinancials !== undefined &&
+            JSON.stringify(remoteData.monthlyFinancials) !== JSON.stringify(monthlyFinancials || {})) {
+            return true;
+        }
+        if (remoteData.categoryOrder !== undefined &&
+            JSON.stringify(remoteData.categoryOrder) !== JSON.stringify(categoryOrder || [])) {
+            return true;
+        }
+        if (remoteData.blockedSlots !== undefined &&
+            JSON.stringify(remoteData.blockedSlots) !== JSON.stringify(blockedSlots || [])) {
+            return true;
+        }
+        return false;
+    } catch (e) {
+        return false;
+    }
+}
+
 async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBadgeText, syncedBadgeClass, shouldApply = true) {
     if (!rawBackupData) {
         isInitialSyncCompleted = true;
@@ -827,12 +856,18 @@ async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBad
     const isRemoteNewer = Boolean(shouldApply || thoughts.length === 0);
     if (!isEncryptedEnvelope(rawBackupData)) {
         _pendingEncryptedRemote = null;
+        const contentDiff = !_hasUnsavedCloudChanges && fileName !== _lastAppliedRemoteFileName && hasRemoteBackupContentDiff(rawBackupData);
         let applied = false;
-        if (isRemoteNewer && !_hasUnsavedCloudChanges) {
+        if ((isRemoteNewer || contentDiff) && !_hasUnsavedCloudChanges) {
             applied = applyImportedData(rawBackupData, fileName);
         }
         isInitialSyncCompleted = true;
-        updatePiSyncBadge(syncedBadgeText, syncedBadgeClass);
+        if (isRemoteNewer && _hasUnsavedCloudChanges) {
+            updatePiSyncBadge('⚠️ 雲端有新版 (本機尚有未上傳修改)', 'bg-amber-100 text-amber-900 border-amber-400');
+        } else {
+            const finalText = (applied && contentDiff && !isRemoteNewer) ? '🟢 已自動自癒同步最新' : syncedBadgeText;
+            updatePiSyncBadge(finalText, syncedBadgeClass);
+        }
         return { unlocked: true, applied };
     }
 
@@ -844,12 +879,18 @@ async function applyRemoteBackupOrQueueUnlock(rawBackupData, fileName, syncedBad
         try {
             const plainData = await decryptBackupWithKey(rawBackupData, _e2eeSessionKey);
             _pendingEncryptedRemote = null;
+            const contentDiff = !_hasUnsavedCloudChanges && fileName !== _lastAppliedRemoteFileName && hasRemoteBackupContentDiff(plainData);
             let applied = false;
-            if (isRemoteNewer && !_hasUnsavedCloudChanges) {
+            if ((isRemoteNewer || contentDiff) && !_hasUnsavedCloudChanges) {
                 applied = applyImportedData(plainData, fileName);
             }
             isInitialSyncCompleted = true;
-            updatePiSyncBadge(syncedBadgeText + ' 🔐', syncedBadgeClass);
+            if (isRemoteNewer && _hasUnsavedCloudChanges) {
+                updatePiSyncBadge('⚠️ 雲端有新版 (本機尚有未上傳修改) 🔐', 'bg-amber-100 text-amber-900 border-amber-400');
+            } else {
+                const finalText = (applied && contentDiff && !isRemoteNewer) ? '🟢 已自動自癒同步最新' : syncedBadgeText;
+                updatePiSyncBadge(finalText + ' 🔐', syncedBadgeClass);
+            }
             updateE2eeSettingsUI();
             return { unlocked: true, applied };
         } catch (e) {
@@ -983,14 +1024,23 @@ function applyImportedData(backupData, fileName) {
 
 
     syncLinkedData();
+    if (fileName) {
+        _lastAppliedRemoteFileName = fileName;
+        lastSyncedFileName = fileName;
+    }
     if (_useEncryptedVault && typeof persistEncryptedLocalVault === 'function') {
-        persistEncryptedLocalVault();
+        // 【v6.3.3 防脫鉤】：啟用加密保險箱時，待非同步加密寫入成功後才將 pi_last_synced_file 落盤，
+        // 避免寫入中斷導致「檔名已是最新但本機保險箱仍為舊資料」。
+        persistEncryptedLocalVault().then((ok) => {
+            if (ok && fileName) {
+                try { localStorage.setItem('pi_last_synced_file', fileName); } catch (e) {}
+            }
+        });
     } else {
         localStorage.setItem('my_thoughts_local', JSON.stringify(thoughts));
-    }
-    if (fileName) {
-        lastSyncedFileName = fileName;
-        localStorage.setItem('pi_last_synced_file', fileName);
+        if (fileName) {
+            localStorage.setItem('pi_last_synced_file', fileName);
+        }
     }
     // 【v5.3.18 記錄最新已知總步驟數】：作為防縮水熔斷基準
     const totalStepsInImported = (thoughts || []).reduce((acc, t) => acc + (Array.isArray(t.steps) ? t.steps.length : 0), 0);
