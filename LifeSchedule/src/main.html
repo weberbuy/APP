@@ -323,7 +323,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.3.3 (2026-11-23)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.3.4 (2026-11-23)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1192,7 +1192,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.3.3 (2026-11-23)";
+window.APP_VERSION = "v6.3.4 (2026-11-23)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
@@ -2304,11 +2304,152 @@ function updateContainerWidth() {
         }
 
 
+        // ============================================================
+        // 【v6.3.4 目標與步驟完成硬卡關引擎 (Completion Gatekeeping Engine)】
+        // 設計理由 (Why)：防止尚有未完成步驟、未取消循環步驟或未完成多層拆解子目標時，誤將母目標或拆解步驟結案。
+        // ============================================================
+        function getStepEffectiveMilestoneId(thought, step) {
+            const tMilestones = getThoughtMilestones(thought);
+            if (!tMilestones || tMilestones.length === 0) return null;
+            let mIndex = -1;
+            if (step.milestoneId !== undefined && step.milestoneId !== null) {
+                mIndex = tMilestones.findIndex(m => String(m.id) === String(step.milestoneId));
+            }
+            if (mIndex === -1) {
+                mIndex = tMilestones.findIndex(m => !m.done);
+                if (mIndex === -1) mIndex = 0;
+            }
+            return tMilestones[mIndex] ? tMilestones[mIndex].id : null;
+        }
+
+        function findLinkedChildThoughtForStep(parentThought, step) {
+            if (!parentThought || !step) return null;
+            if (step.linkedThoughtId) {
+                const byLink = thoughts.find(x => x.id === step.linkedThoughtId);
+                if (byLink) return byLink;
+            }
+            return thoughts.find(x =>
+                x.parentStepInfo &&
+                x.parentStepInfo.parentThoughtId === parentThought.id &&
+                x.parentStepInfo.parentStepId === step.id
+            ) || null;
+        }
+
+        function collectIncompleteBlockersForThought(thought, options = {}) {
+            const { milestoneId = null, visited = new Set(), depth = 0 } = options;
+            if (!thought || visited.has(thought.id)) return [];
+            visited.add(thought.id);
+
+            const blockers = [];
+            const steps = Array.isArray(thought.steps) ? thought.steps : [];
+            steps.forEach(s => {
+                if (depth === 0 && milestoneId !== null && milestoneId !== undefined) {
+                    const effMId = getStepEffectiveMilestoneId(thought, s);
+                    if (String(effMId) !== String(milestoneId)) return;
+                }
+                const childThought = findLinkedChildThoughtForStep(thought, s);
+                if (childThought) {
+                    const childBlockers = collectIncompleteBlockersForThought(childThought, { visited, depth: depth + 1 });
+                    if (!childThought.goalDone || childBlockers.length > 0) {
+                        blockers.push({
+                            type: 'subgoal',
+                            thoughtId: childThought.id,
+                            label: childThought.goal || childThought.text || s.text || '未命名子目標',
+                            isRecurring: false,
+                            depth
+                        });
+                        childBlockers.forEach(cb => blockers.push(cb));
+                    }
+                } else if (!s.done) {
+                    const isRecurring = Boolean(s.recurrence && s.recurrence !== 'none');
+                    blockers.push({
+                        type: 'step',
+                        thoughtId: thought.id,
+                        stepId: s.id,
+                        label: s.text || '未命名步驟',
+                        isRecurring,
+                        depth
+                    });
+                }
+            });
+            return blockers;
+        }
+
+        function collectIncompleteBlockersForStep(thought, step) {
+            const childThought = findLinkedChildThoughtForStep(thought, step);
+            if (!childThought) return [];
+            const childBlockers = collectIncompleteBlockersForThought(childThought, { visited: new Set([thought.id]), depth: 1 });
+            if (!childThought.goalDone || childBlockers.length > 0) {
+                return [
+                    {
+                        type: 'subgoal',
+                        thoughtId: childThought.id,
+                        label: childThought.goal || childThought.text || step.text || '未命名子目標',
+                        isRecurring: false,
+                        depth: 0
+                    },
+                    ...childBlockers
+                ];
+            }
+            return [];
+        }
+
+        function promptCompletionBlockedAndMaybeJump(targetTitle, blockers) {
+            if (!Array.isArray(blockers) || blockers.length === 0) return false;
+            const maxPreview = 6;
+            const lines = blockers.slice(0, maxPreview).map(item => {
+                const indent = item.depth > 0 ? `${'  '.repeat(Math.min(item.depth, 3))}↳ ` : '• ';
+                if (item.type === 'subgoal') {
+                    return `${indent}🎯 [拆解子目標] ${item.label}`;
+                }
+                if (item.isRecurring) {
+                    return `${indent}🔄 [循環步驟｜需先取消循環或刪除] ${item.label}`;
+                }
+                return `${indent}📌 [未完成步驟] ${item.label}`;
+            });
+            if (blockers.length > maxPreview) {
+                lines.push(`...等共 ${blockers.length} 項未完成項目`);
+            }
+            const hasRecurring = blockers.some(b => b.isRecurring);
+            const recurringHint = hasRecurring
+                ? '\n\n⚠️ 偵測到「循環步驟」，請先手動取消循環或刪除該步驟後再結案。'
+                : '';
+            const msg = `🚫 無法將「${targetTitle}」標記為完成！\n\n尚有以下未完成項目（共 ${blockers.length} 項）：\n${lines.join('\n')}${recurringHint}\n\n按「確定」立即跳轉至第一個未完成項目，按「取消」留在此處。`;
+            const shouldJump = confirm(msg);
+            if (shouldJump) {
+                const first = blockers[0];
+                if (first.type === 'subgoal') {
+                    jumpToGoalCard(first.thoughtId);
+                } else {
+                    jumpToStepEdit(first.thoughtId, first.stepId, '卡關檢查');
+                }
+            } else {
+                render();
+            }
+            return true;
+        }
+
         function toggleGoalDone(thoughtId) {
-
-
             const t = thoughts.find(x => x.id === thoughtId);
-            if (t) { t.goalDone = !t.goalDone; saveData(); }
+            if (!t) return;
+            if (!t.goalDone) {
+                const blockers = collectIncompleteBlockersForThought(t);
+                if (blockers.length > 0) {
+                    promptCompletionBlockedAndMaybeJump(t.goal || t.text || '此目標', blockers);
+                    return;
+                }
+            }
+            const nextDone = !t.goalDone;
+            t.goalDone = nextDone;
+            ensureThoughtMilestones(t);
+            if (Array.isArray(t.milestones) && t.milestones.length > 0) {
+                t.milestones.forEach(m => {
+                    m.done = nextDone;
+                    m.completedDate = nextDone ? (m.completedDate || todayStr) : '';
+                });
+                syncMilestonesToLegacy(t);
+            }
+            saveData();
         }
 
 
@@ -3280,6 +3421,13 @@ function updateContainerWidth() {
             const m = t.milestones.find(x => x.id === milestoneId);
             if (!m) return;
 
+            if (!m.done) {
+                const blockers = collectIncompleteBlockersForThought(t, { milestoneId: m.id });
+                if (blockers.length > 0) {
+                    promptCompletionBlockedAndMaybeJump(m.title || t.goal || t.text || '此里程碑目標', blockers);
+                    return;
+                }
+            }
 
             m.done = !m.done;
             m.completedDate = m.done ? todayStr : '';
@@ -4193,6 +4341,11 @@ function updateContainerWidth() {
 
 
             if (!s.done) {
+                const blockers = collectIncompleteBlockersForStep(t, s);
+                if (blockers.length > 0) {
+                    promptCompletionBlockedAndMaybeJump(s.text || '此步驟', blockers);
+                    return;
+                }
                 s.done = true;
                 s.completedDate = todayStr;
                 t.lastCompletedDate = todayStr;
