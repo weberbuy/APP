@@ -1,0 +1,116 @@
+{
+  "packId": "streak",
+  "items": [
+    {
+      "id": "head_streak_sprout",
+      "slot": "head",
+      "name": "🌱 連續3天小嫩芽",
+      "icon": "🌱",
+      "desc": "【連續學習 3 天免費】頭頂冒出元氣小嫩芽，代表單字種子發芽啦！",
+      "unlockType": "streak",
+      "price": 0,
+      "reqLevel": 1,
+      "reqStreak": 3,
+      "releaseDate": "2026-11-25",
+      "tags": [
+        "連續學習",
+        "限定"
+      ],
+      "reaction": "喵嗚～連續 3 天背單字！頭頂長出可愛的小嫩芽了，我們一起茁壯成長吧！🌱✨",
+      "svg": "<g id=\"acc_head_streak_sprout\"><path fill=\"none\" stroke=\"#15803d\" stroke-linecap=\"round\" stroke-width=\"2.2\" d=\"M60 28q-1-10 0-16\"/><path fill=\"#4ade80\" stroke=\"#15803d\" stroke-width=\".9\" d=\"M60 14c-10-8-16 0-8 6 4 2 7-2 8-6Z\"/><path fill=\"#22c55e\" stroke=\"#15803d\" stroke-width=\".9\" d=\"M60 14c10-8 16 0 8 6-4 2-7-2-8-6Z\"/><path fill=\"none\" stroke=\"#bbf7d0\" stroke-linecap=\"round\" stroke-width=\".8\" d=\"M58 15q-4-2-7 1\"/><path fill=\"none\" stroke=\"#bbf7d0\" stroke-linecap=\"round\" stroke-width=\".8\" d=\"M62 15q4-2 7 1\"/></g>"
+    },
+    {
+      "id": "neck_streak_flame",
+      "slot": "neck",
+      "name": "🔥 連續7天元氣領巾",
+      "icon": "🔥",
+      "desc": "【連續學習 7 天免費】燃燒學習熱情的烈焰橘領巾，一週全勤榮耀！",
+      "unlockType": "streak",
+      "price": 0,
+      "reqLevel": 1,
+      "reqStreak": 7,
+      "releaseDate": "2026-11-25",
+      "tags": [
+        "連續學習",
+        "限定"
+      ],
+      "reaction": "連續 7 天全勤！戴上這條熱血元氣領巾，本喵的背單字火力全開啦喵！🔥🐾",
+      "svg": "<g id=\"acc_neck_streak_flame\"><path fill=\"#ea580c\" stroke=\"#9a3412\" stroke-width=\".9\" d=\"M38 76q22 8 44 0l-2 7q-20 8-40 0Z\"/><path fill=\"#f97316\" stroke=\"#9a3412\" stroke-width=\".9\" d=\"m46 82 14 17 14-17q-14 6-28 0Z\"/><path fill=\"#fde047\" d=\"M55 86q5 9 10 0-5 3-10 0\"/><circle cx=\"60\" cy=\"83\" r=\"3\" fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\".8\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "烈焰橘",
+          "swatch": "#f97316",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "blueflame",
+          "name": "蒼藍星火",
+          "swatch": "#0ea5e9",
+          "price": 15,
+          "replace": {
+            "#ea580c": "#0284c7",
+            "#f97316": "#38bdf8",
+            "#9a3412": "#075985"
+          }
+        }
+      ]
+    },
+    {
+      "id": "outfit_streak_star_cape",
+      "slot": "outfit",
+      "name": "⭐ 連續14天星辰學霸披風",
+      "icon": "⭐",
+      "desc": "【連續學習 14 天免費】深邃星空藍雙週全勤披風，綴滿耀眼金星！",
+      "unlockType": "streak",
+      "price": 0,
+      "reqLevel": 1,
+      "reqStreak": 14,
+      "releaseDate": "2026-11-25",
+      "tags": [
+        "連續學習",
+        "限定"
+      ],
+      "reaction": "太強了！連續 14 天不間斷學習！披上星辰學霸披風，妳就是最閃亮的單字王者喵！⭐👑",
+      "svg": "<g id=\"acc_outfit_streak_star_cape\"><path fill=\"#1e3a8a\" stroke=\"#172554\" d=\"M33 76c-15 14-18 38-6 42 11 2 17-12 20-22 8-3 18-3 26 0 3 10 9 24 20 22 12-4 9-28-6-42Z\"/><path fill=\"none\" stroke=\"#facc15\" stroke-width=\"1.8\" d=\"M27 118c11 2 17-12 20-22\"/><path fill=\"none\" stroke=\"#facc15\" stroke-width=\"1.8\" d=\"M73 96c3 10 9 24 20 22\"/><circle cx=\"32\" cy=\"102\" r=\"1.5\" fill=\"#fde047\"/><circle cx=\"88\" cy=\"102\" r=\"1.5\" fill=\"#fde047\"/><circle cx=\"28\" cy=\"111\" r=\"1.2\" fill=\"#fef08a\"/><circle cx=\"92\" cy=\"111\" r=\"1.2\" fill=\"#fef08a\"/><polygon fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\".7\" points=\"60,72 62,76 66,76 63,79 64,83 60,80.5 56,83 57,79 54,76 58,76\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "午夜星藍",
+          "swatch": "#1e3a8a",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "aurora",
+          "name": "極光紫羅蘭",
+          "swatch": "#7c3aed",
+          "price": 20,
+          "replace": {
+            "#1e3a8a": "#6d28d9",
+            "#172554": "#4c1d95"
+          }
+        }
+      ]
+    },
+    {
+      "id": "aura_streak_constellation",
+      "slot": "aura",
+      "name": "🌌 連續30天傳說星軌光環",
+      "icon": "🌌",
+      "desc": "【連續學習 30 天免費】整整一個月堅持不懈的傳奇象徵，銀河星軌環繞身旁！",
+      "unlockType": "streak",
+      "price": 0,
+      "reqLevel": 1,
+      "reqStreak": 30,
+      "releaseDate": "2026-11-25",
+      "tags": [
+        "連續學習",
+        "傳奇"
+      ],
+      "reaction": "喵嗚嗚～整整 30 天連續打卡！傳說星軌光環為妳閃耀，咪咪以妳為榮喵！🌌🏆",
+      "svg": "<g id=\"acc_aura_streak_constellation\" pointer-events=\"none\"><ellipse cx=\"60\" cy=\"64\" fill=\"none\" stroke=\"#818cf8\" stroke-dasharray=\"4 4\" stroke-width=\"1.4\" opacity=\".75\" rx=\"52\" ry=\"44\"/><ellipse cx=\"60\" cy=\"64\" fill=\"none\" stroke=\"#facc15\" stroke-dasharray=\"2 6\" opacity=\".65\" rx=\"46\" ry=\"38\"/><circle cx=\"14\" cy=\"48\" r=\"2.2\" fill=\"#fde047\"/><circle cx=\"106\" cy=\"48\" r=\"2.2\" fill=\"#fde047\"/><circle cx=\"22\" cy=\"96\" r=\"1.8\" fill=\"#38bdf8\"/><circle cx=\"98\" cy=\"96\" r=\"1.8\" fill=\"#38bdf8\"/><path fill=\"#facc15\" d=\"m60 8 1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5Z\"/></g>"
+    }
+  ]
+}

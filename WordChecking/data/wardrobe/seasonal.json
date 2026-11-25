@@ -1,0 +1,159 @@
+{
+  "packId": "seasonal",
+  "items": [
+    {
+      "id": "head_winter_beanie",
+      "slot": "head",
+      "name": "🧶 暖冬毛球針織帽",
+      "icon": "🧶",
+      "desc": "厚實軟綿的毛線編織帽，頂部還有蓬鬆雪白毛球，冬天背單字超保暖！",
+      "unlockType": "fish",
+      "price": 30,
+      "reqLevel": 1,
+      "releaseDate": "2026-11-25",
+      "tags": [
+        "冬季",
+        "新品"
+      ],
+      "reaction": "戴上暖呼呼的針織毛球帽～耳朵暖綿綿的，冬天也能精神飽滿背單字喵！🧶❄️",
+      "svg": "<g id=\"acc_head_winter_beanie\" transform=\"translate(60 26)\"><circle cy=\"-16\" r=\"5.5\" fill=\"#fff\" stroke=\"#e2e8f0\" stroke-width=\".8\"/><path fill=\"#e11d48\" stroke=\"#9f1239\" stroke-width=\".9\" d=\"M-23 4c1-18 45-18 46 0Z\"/><path fill=\"none\" stroke=\"#be123c\" stroke-width=\".9\" d=\"M-14-6q2 6 0 10m9-14q1 8 0 14M5-10Q4-2 5 4m9-10q-2 6 0 10\"/><rect width=\"50\" height=\"7\" x=\"-25\" y=\"1\" fill=\"#fda4af\" stroke=\"#be123c\" stroke-width=\".8\" rx=\"3.5\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "莓果紅",
+          "swatch": "#e11d48",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "oat",
+          "name": "燕麥奶",
+          "swatch": "#d97706",
+          "price": 12,
+          "replace": {
+            "#e11d48": "#d97706",
+            "#9f1239": "#92400e",
+            "#be123c": "#b45309",
+            "#fda4af": "#fde68a"
+          }
+        },
+        {
+          "id": "nordic",
+          "name": "北歐藍",
+          "swatch": "#2563eb",
+          "price": 12,
+          "replace": {
+            "#e11d48": "#2563eb",
+            "#9f1239": "#1e3a8a",
+            "#be123c": "#1d4ed8",
+            "#fda4af": "#93c5fd"
+          }
+        }
+      ]
+    },
+    {
+      "id": "outfit_winter_sweater",
+      "slot": "outfit",
+      "name": "🧥 暖呼呼雪花毛衣",
+      "icon": "🧥",
+      "desc": "北歐風雪花圖騰針織毛衣，厚實領口與暖心配色，寒流來也不怕！",
+      "unlockType": "fish",
+      "price": 55,
+      "reqLevel": 1,
+      "releaseDate": "2026-11-25",
+      "tags": [
+        "冬季",
+        "新品"
+      ],
+      "reaction": "穿上北歐雪花針織毛衣～軟綿綿超保暖，像泡在溫熱牛奶裡一樣舒服喵！❄️🧶",
+      "svg": "<g id=\"acc_outfit_winter_sweater\"><path fill=\"#0284c7\" stroke=\"#075985\" d=\"M35 78q25 6 50 0l5 30q-30 7-60 0Z\"/><rect width=\"36\" height=\"7\" x=\"42\" y=\"74\" fill=\"#e0f2fe\" stroke=\"#075985\" stroke-width=\".8\" rx=\"3.5\"/><path fill=\"#e0f2fe\" stroke=\"#075985\" stroke-width=\".8\" d=\"M33 104q27 6 54 0l2 6q-29 6-58 0Z\"/><path fill=\"none\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.4\" d=\"m38 91 6-5 6 5 6-5 6 5 6-5 6 5 6-5\"/><circle cx=\"47\" cy=\"96\" r=\"1.4\" fill=\"#bae6fd\"/><circle cx=\"60\" cy=\"96\" r=\"1.8\" fill=\"#fff\"/><circle cx=\"73\" cy=\"96\" r=\"1.4\" fill=\"#bae6fd\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "冰晶藍",
+          "swatch": "#0284c7",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "cranberry",
+          "name": "聖誕紅",
+          "swatch": "#dc2626",
+          "price": 15,
+          "replace": {
+            "#0284c7": "#dc2626",
+            "#075985": "#991b1b",
+            "#e0f2fe": "#fee2e2",
+            "#bae6fd": "#fecaca"
+          }
+        },
+        {
+          "id": "pine",
+          "name": "松針綠",
+          "swatch": "#15803d",
+          "price": 15,
+          "replace": {
+            "#0284c7": "#15803d",
+            "#075985": "#14532d",
+            "#e0f2fe": "#dcfce7",
+            "#bae6fd": "#bbf7d0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hand_hot_cocoa",
+      "slot": "hand",
+      "name": "☕ 棉花糖熱可可",
+      "icon": "☕",
+      "desc": "冒著溫暖熱氣的濃郁熱可可，上面還漂浮著兩顆軟Ｑ白棉花糖！",
+      "unlockType": "fish",
+      "price": 25,
+      "reqLevel": 1,
+      "releaseDate": "2026-11-25",
+      "tags": [
+        "冬季",
+        "新品"
+      ],
+      "reaction": "呼～吹涼一口棉花糖熱可可！甜滋滋暖進心坎裡，再多背 20 個單字也沒問題喵！☕🍫",
+      "svg": "<g id=\"acc_hand_hot_cocoa\" transform=\"translate(36 91)\"><path fill=\"none\" stroke=\"#e11d48\" stroke-width=\"1.8\" d=\"M5 2c5 0 5 8 0 8\"/><rect width=\"12\" height=\"13\" x=\"-6\" fill=\"#f43f5e\" stroke=\"#be123c\" stroke-width=\".8\" rx=\"2.5\"/><ellipse cy=\"1\" fill=\"#78350f\" rx=\"5.2\" ry=\"1.8\"/><circle cx=\"-2\" cy=\".5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"2\" cy=\".8\" r=\"1.3\" fill=\"#fff7ed\"/><path fill=\"none\" stroke=\"#cbd5e1\" stroke-linecap=\"round\" d=\"M-2-3q-1-3 1-5m3 5q1-3-1-5\" opacity=\".8\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "暖紅馬克杯",
+          "swatch": "#f43f5e",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "mintcup",
+          "name": "薄荷馬克杯",
+          "swatch": "#14b8a6",
+          "price": 10,
+          "replace": {
+            "#f43f5e": "#14b8a6",
+            "#e11d48": "#0d9488",
+            "#be123c": "#0f766e"
+          }
+        }
+      ]
+    },
+    {
+      "id": "head_xmas_santa",
+      "slot": "head",
+      "name": "🎅 聖誕紅白毛絨帽",
+      "icon": "🎅",
+      "desc": "【12月排程限定】經典聖誕老公公紅白毛絨尖帽，帶著滿滿節慶祝福！",
+      "unlockType": "fish",
+      "price": 35,
+      "reqLevel": 1,
+      "releaseDate": "2026-12-01",
+      "tags": [
+        "聖誕節",
+        "季節限定"
+      ],
+      "reaction": "Ho Ho Ho～聖誕咪咪來送滿分祝福囉！祝妳單字通通一次記牢喵！🎅🎄",
+      "svg": "<g id=\"acc_head_xmas_santa\" transform=\"translate(60 26)\"><path fill=\"#dc2626\" stroke=\"#991b1b\" stroke-width=\".9\" d=\"M-24 4c6-18 30-26 46-14 4 4 2 10-2 12l-4-4C8-6-8-2-18 4Z\"/><rect width=\"52\" height=\"7\" x=\"-26\" y=\"1\" fill=\"#fff\" stroke=\"#cbd5e1\" stroke-width=\".8\" rx=\"3.5\"/><circle cx=\"23\" cy=\"-2\" r=\"4.5\" fill=\"#fff\" stroke=\"#cbd5e1\" stroke-width=\".8\"/></g>"
+    }
+  ]
+}

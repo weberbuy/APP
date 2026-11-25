@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-25",
+  "packs": [
+    {
+      "id": "core",
+      "name": "經典衣櫥",
+      "file": "core.json"
+    },
+    {
+      "id": "streak",
+      "name": "連續學習限定",
+      "file": "streak.json"
+    },
+    {
+      "id": "seasonal",
+      "name": "節慶與主題特輯",
+      "file": "seasonal.json"
+    }
+  ]
+}

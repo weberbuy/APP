@@ -1,0 +1,956 @@
+{
+  "packId": "core",
+  "items": [
+    {
+      "id": "head_sakura",
+      "slot": "head",
+      "name": "🌸 櫻花小花飾",
+      "icon": "🌸",
+      "desc": "【Lv.1 免費】粉嫩櫻花初春氣息",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵～耳朵邊夾了小櫻花，有沒有像花仙子一樣漂亮呀？🌸🐾",
+      "svg": "<g id=\"acc_head_sakura\"><g filter=\"drop-shadow(0 2px 3px rgba(0,0,0,0.2))\" transform=\"rotate(14 -84.237 357.563)\"><path fill=\"#22c55e\" stroke=\"#15803d\" stroke-width=\".5\" d=\"M4 4q7 4 4 8-5-3-4-8Z\"/><g><path fill=\"#f472b6\" stroke=\"#fb7185\" stroke-width=\".5\" d=\"M0-1c-4-3-6-9-2-10 1.5 0 2 2 2 2s.5-2 2-2c4 1 2 7-2 10Z\"/><g><path fill=\"#f472b6\" stroke=\"#fb7185\" stroke-width=\".5\" d=\"M.95-.3c1.62-4.74 6.7-8.5 8.9-5 .46 1.42-1.29 2.52-1.29 2.52s2.06-.14 2.52 1.28C11.37 2.62 5.04 2.57.95-.3Z\"/></g><g><path fill=\"#f472b6\" stroke=\"#fb7185\" stroke-width=\".5\" d=\"M.59.8c5 .09 10.14 3.76 7.5 6.92-1.22.89-2.8-.44-2.8-.44s.77 1.91-.44 2.8C1.02 11.61-.88 5.57.59.8Z\"/></g><g><path fill=\"#f472b6\" stroke=\"#fb7185\" stroke-width=\".5\" d=\"M-.59.8c1.49 4.8-.43 10.83-4.26 9.29-1.21-.89-.44-2.8-.44-2.8s-1.58 1.32-2.8.44C-10.72 4.56-5.58.88-.58.81Z\"/></g><g><path fill=\"#f472b6\" stroke=\"#fb7185\" stroke-width=\".5\" d=\"M-.95-.3c-4.1 2.87-10.41 2.92-10.13-1.2.46-1.42 2.52-1.28 2.52-1.28s-1.75-1.1-1.28-2.52c2.18-3.5 7.27.26 8.89 5Z\"/></g></g><circle cy=\"-.5\" r=\"4.5\" fill=\"#fbcfe8\" opacity=\".8\"/><circle cy=\"-.5\" r=\"2.8\" fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\".6\"/><circle cy=\"-.5\" r=\"1.2\" fill=\"#fff\"/><circle cx=\"-2\" cy=\"-2\" r=\".6\" fill=\"#ca8a04\"/><circle cx=\"2\" cy=\"-2\" r=\".6\" fill=\"#ca8a04\"/><circle cx=\"-1.5\" cy=\"1\" r=\".6\" fill=\"#ca8a04\"/><circle cx=\"1.5\" cy=\"1\" r=\".6\" fill=\"#ca8a04\"/></g></g>"
+    },
+    {
+      "id": "head_ribbon",
+      "slot": "head",
+      "name": "🎀 萌萌蝴蝶結",
+      "icon": "🎀",
+      "desc": "俏皮可愛的大粉紅蝴蝶結",
+      "unlockType": "fish",
+      "price": 15,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵嗚～大粉紅蝴蝶結！我今天就是全天下最可愛的小貓！🎀💖",
+      "svg": "<g id=\"acc_head_ribbon\"><g filter=\"drop-shadow(0 2px 3px rgba(0,0,0,0.22))\" transform=\"rotate(16 -64.73 313.846)\"><path fill=\"#9f1239\" d=\"m-2 3-7 14 4-2 3 2q1-8 2-14Z\"/><path fill=\"#f43f5e\" d=\"M-2 3q-3 7-5 12l2-1 2 1q2-7 3-12Z\"/><path fill=\"#9f1239\" d=\"m2 3 7 14-4-2-3 2Q1 9 0 3Z\"/><path fill=\"#f43f5e\" d=\"M2 3q3 7 5 12l-2-1-2 1Q1 8 0 3Z\"/><path fill=\"#9f1239\" d=\"M0 0c-6-10-19-9-18 0S-6 7 0 2Z\"/><path fill=\"#f43f5e\" d=\"M-1-1c-4-8-16-7-15 1 1 7 11 5 15 1Z\"/><path fill=\"#fda4af\" d=\"M-3-3c-4-5-12-4-11 2 3-3 7-4 11-2\" opacity=\".85\"/><ellipse cx=\"-7.5\" fill=\"#881337\" rx=\"3.5\" ry=\"2.2\" transform=\"rotate(-12 -7.5 0)\"/><path fill=\"#9f1239\" d=\"M0 0c6-10 19-9 18 0S6 7 0 2Z\"/><path fill=\"#f43f5e\" d=\"M1-1c4-8 16-7 15 1C15 7 5 5 1 1Z\"/><path fill=\"#fda4af\" d=\"M3-3c4-5 12-4 11 2-3-3-7-4-11-2\" opacity=\".85\"/><ellipse cx=\"7.5\" fill=\"#881337\" rx=\"3.5\" ry=\"2.2\" transform=\"rotate(12 7.5 0)\"/><ellipse cy=\".5\" fill=\"#be185d\" stroke=\"#881337\" stroke-width=\".5\" rx=\"4.2\" ry=\"3.6\"/><ellipse cy=\".5\" fill=\"#f43f5e\" rx=\"3.5\" ry=\"2.9\"/><ellipse cx=\"-.8\" cy=\"-.6\" fill=\"#ffe4e6\" opacity=\".9\" rx=\"1.8\" ry=\"1.2\"/><path fill=\"none\" stroke=\"#be185d\" stroke-width=\".7\" d=\"M-2.2 2.2q2.2 1.4 4.4 0\"/></g></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "甜心粉",
+          "swatch": "#f43f5e",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "sky",
+          "name": "晴空藍",
+          "swatch": "#38bdf8",
+          "price": 10,
+          "replace": {
+            "#f43f5e": "#0284c7",
+            "#be185d": "#0369a1",
+            "#9f1239": "#075985",
+            "#881337": "#0c4a6e",
+            "#fda4af": "#7dd3fc",
+            "#ffe4e6": "#e0f2fe"
+          }
+        },
+        {
+          "id": "lavender",
+          "name": "薰衣草紫",
+          "swatch": "#a855f7",
+          "price": 10,
+          "replace": {
+            "#f43f5e": "#9333ea",
+            "#be185d": "#7e22ce",
+            "#9f1239": "#6b21a8",
+            "#881337": "#581c87",
+            "#fda4af": "#d8b4fe",
+            "#ffe4e6": "#f3e8ff"
+          }
+        },
+        {
+          "id": "gold",
+          "name": "奶油金",
+          "swatch": "#f59e0b",
+          "price": 12,
+          "replace": {
+            "#f43f5e": "#d97706",
+            "#be185d": "#b45309",
+            "#9f1239": "#92400e",
+            "#881337": "#78350f",
+            "#fda4af": "#fcd34d",
+            "#ffe4e6": "#fef3c7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "head_bunny_hood",
+      "slot": "head",
+      "name": "🥟 小包子帽帽",
+      "icon": "🥟",
+      "desc": "雪白圓滾滾包覆小臉蛋，像軟萌小包子一樣超可愛",
+      "unlockType": "fish",
+      "price": 25,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵嗚～戴上雪白圓滾滾的小包子帽帽！咪咪的臉蛋看起來像剛出蒸籠的白嫩小包子一樣，是不是超可口、超萌呀？🥟🐾💖",
+      "svg": "<g id=\"acc_head_bunny_hood\" filter=\"drop-shadow(0 3px 6px rgba(0,0,0,0.16))\"><g transform=\"translate(60 15)\"><ellipse fill=\"#fff\" stroke=\"#e2e8f0\" stroke-width=\"1.1\" rx=\"6.5\" ry=\"4.5\"/><path fill=\"none\" stroke=\"#cbd5e1\" stroke-linecap=\"round\" stroke-width=\"1.1\" d=\"M-4.5 2q4.5-5.5 9 0\"/><path fill=\"none\" stroke=\"#cbd5e1\" stroke-linecap=\"round\" stroke-width=\".9\" d=\"M-2.5 3.2q2.5-4.2 5 0\"/><circle cy=\"-1.5\" r=\"1.3\" fill=\"#fde047\"/></g><path fill=\"#fff\" fill-rule=\"evenodd\" stroke=\"#e2e8f0\" stroke-width=\"1.2\" d=\"M60 18c-32 0-44 14-42 36s16 30 42 30 40-8 42-30-10-36-42-36Zm0 11c16 0 26 11 25 26-1 14-11 20-25 20s-24-6-25-20c-1-15 9-26 25-26Z\"/><path fill=\"none\" stroke=\"#f8fafc\" stroke-linecap=\"round\" stroke-width=\"3\" d=\"M48 24q12-3 24 0\"/><circle cx=\"22\" cy=\"52\" r=\"3.5\" fill=\"#f8fafc\" opacity=\".8\"/><circle cx=\"98\" cy=\"52\" r=\"3.5\" fill=\"#f8fafc\" opacity=\".8\"/><ellipse cx=\"28\" cy=\"60\" fill=\"#fbcfe8\" opacity=\".65\" rx=\"4.5\" ry=\"3\"/><ellipse cx=\"92\" cy=\"60\" fill=\"#fbcfe8\" opacity=\".65\" rx=\"4.5\" ry=\"3\"/><g transform=\"translate(60 26)\"><path fill=\"#facc15\" d=\"M0-3 .7-.8 3 0 .7.8 0 3-.7.8-3 0l2.3-.8Z\"/><circle r=\".7\" fill=\"#fff\"/></g></g>"
+    },
+    {
+      "id": "head_rabbit",
+      "slot": "head",
+      "name": "🐰 萌兔毛絨長耳",
+      "icon": "🐰",
+      "desc": "軟萌雪白長兔耳，蹦蹦跳跳超可愛",
+      "unlockType": "fish",
+      "price": 20,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵哈哈～戴上萌兔長長耳朵，我有沒有跳得跟小白兔一樣快呀？🐰🐾",
+      "svg": "<g id=\"acc_head_rabbit\"><ellipse cx=\"44\" cy=\"10\" fill=\"#fff\" stroke=\"#e2e8f0\" stroke-width=\".8\" rx=\"4.5\" ry=\"14\" transform=\"rotate(-10 44 10)\"/><ellipse cx=\"44\" cy=\"10\" fill=\"#fbcfe8\" rx=\"2.5\" ry=\"10\" transform=\"rotate(-10 44 10)\"/><ellipse cx=\"76\" cy=\"10\" fill=\"#fff\" stroke=\"#e2e8f0\" stroke-width=\".8\" rx=\"4.5\" ry=\"14\" transform=\"rotate(10 76 10)\"/><ellipse cx=\"76\" cy=\"10\" fill=\"#fbcfe8\" rx=\"2.5\" ry=\"10\" transform=\"rotate(10 76 10)\"/></g>"
+    },
+    {
+      "id": "head_cap",
+      "slot": "head",
+      "name": "🧢 活力運動帽",
+      "icon": "🧢",
+      "desc": "反戴潮流街頭風棒球帽",
+      "unlockType": "fish",
+      "price": 30,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵！棒球帽反戴超帥氣，今天背單字我也要全力打出全壘打！⚾🧢",
+      "svg": "<g id=\"acc_head_cap\"><g filter=\"drop-shadow(0 2px 4px rgba(0,0,0,0.25))\" transform=\"translate(60 24)\"><path fill=\"#1d4ed8\" d=\"M-25 4c-1-16 51-16 50 0Z\"/><path fill=\"#2563eb\" d=\"M-23 3c-1-13 47-13 46 0Z\"/><path fill=\"none\" stroke=\"#60a5fa\" stroke-width=\"1.8\" d=\"M-18-2c0-7 28-7 34 0\" opacity=\".8\"/><path fill=\"#1e40af\" d=\"M-22 4c7 0 38-1 50-3 8-1 6 6-6 7s-37 0-44-4\"/><path fill=\"#3b82f6\" d=\"M-18 4c8 0 33-1 44-2 6-1 4 4-6 5s-32 0-38-3\"/><circle cy=\"-11\" r=\"2.8\" fill=\"#1e40af\" stroke=\"#fff\" stroke-width=\".7\"/><g fill=\"#fff\" transform=\"matrix(.65 0 0 .65 0 -2)\"><ellipse rx=\"3\" ry=\"2.2\"/><circle cx=\"-3\" cy=\"-3.5\" r=\"1\"/><circle cy=\"-4.5\" r=\"1\"/><circle cx=\"3\" cy=\"-3.5\" r=\"1\"/></g></g></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "皇家藍",
+          "swatch": "#2563eb",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "crimson",
+          "name": "熱血紅",
+          "swatch": "#dc2626",
+          "price": 12,
+          "replace": {
+            "#2563eb": "#dc2626",
+            "#1d4ed8": "#b91c1c",
+            "#1e40af": "#991b1b",
+            "#3b82f6": "#ef4444",
+            "#60a5fa": "#f87171"
+          }
+        },
+        {
+          "id": "midnight",
+          "name": "酷黑潮",
+          "swatch": "#1e293b",
+          "price": 15,
+          "replace": {
+            "#2563eb": "#1e293b",
+            "#1d4ed8": "#0f172a",
+            "#1e40af": "#020617",
+            "#3b82f6": "#334155",
+            "#60a5fa": "#64748b"
+          }
+        }
+      ]
+    },
+    {
+      "id": "head_flower_tiara",
+      "slot": "head",
+      "name": "🧚‍♀️ 晶透精靈花冠",
+      "icon": "🧚‍♀️",
+      "desc": "翠綠藤蔓綴以晨露粉花，宛如森之妖精",
+      "unlockType": "fish",
+      "price": 35,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "呼嚕嚕～晶透的花冠散發著森林清香，咪咪是守護綠意的小仙子喵！🧚‍♀️🌸",
+      "svg": "<g id=\"acc_head_flower_tiara\"><path fill=\"none\" stroke=\"#4ade80\" stroke-linecap=\"round\" stroke-width=\"2\" d=\"M38 32q22-6 44 0\"/><circle cx=\"48\" cy=\"28\" r=\"3.2\" fill=\"#f472b6\"/><circle cx=\"48\" cy=\"28\" r=\"1.2\" fill=\"#fef08a\"/><circle cx=\"60\" cy=\"26\" r=\"3.8\" fill=\"#ec4899\"/><circle cx=\"60\" cy=\"26\" r=\"1.4\" fill=\"#fff\"/><circle cx=\"72\" cy=\"28\" r=\"3.2\" fill=\"#f472b6\"/><circle cx=\"72\" cy=\"28\" r=\"1.2\" fill=\"#fef08a\"/><circle cx=\"42\" cy=\"30\" r=\"1.5\" fill=\"#38bdf8\" opacity=\".8\"/><circle cx=\"78\" cy=\"30\" r=\"1.5\" fill=\"#38bdf8\" opacity=\".8\"/></g>"
+    },
+    {
+      "id": "head_grad",
+      "slot": "head",
+      "name": "🎓 學霸博士帽",
+      "icon": "🎓",
+      "desc": "【Lv.3 免費】掌握400字學霸象徵！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵哈哈～戴上學霸博士帽，1200 單字會考通通交給我吧！🎓✨",
+      "svg": "<g id=\"acc_head_grad\" transform=\"translate(60 18)\"><polygon fill=\"#1e293b\" points=\"0,-12 -28,-3 0,6 28,-3\"/><polygon fill=\"#334155\" points=\"-16,0 -16,8 16,8 16,0\"/><path fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"2\" d=\"m0-3 24 5 2 12\"/><circle cx=\"26\" cy=\"15\" r=\"2\" fill=\"#d97706\"/></g>"
+    },
+    {
+      "id": "head_cupcake",
+      "slot": "head",
+      "name": "🧁 草莓奶油蛋糕帽",
+      "icon": "🧁",
+      "desc": "頭頂甜點小蛋糕與紅櫻桃，甜蜜派對風",
+      "unlockType": "fish",
+      "price": 45,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "頂著草莓奶油蛋糕帽～甜滋滋的派對氣氛！背單字就像吃點心一樣開心喵！🧁🍓",
+      "svg": "<g id=\"acc_head_cupcake\" transform=\"rotate(12 -70.658 334.488)\"><path fill=\"#93c5fd\" stroke=\"#3b82f6\" stroke-width=\".6\" d=\"M-8 2H8l-2 8H-6Z\"/><path fill=\"#fdf2f8\" stroke=\"#f472b6\" stroke-width=\".6\" d=\"M-9 2Q0-6 9 2 0-3-9 2\"/><circle cy=\"-4\" r=\"2.2\" fill=\"#ef4444\"/><line x2=\"2\" y1=\"-6\" y2=\"-9\" stroke=\"#15803d\" stroke-linecap=\"round\" stroke-width=\".8\"/></g>"
+    },
+    {
+      "id": "head_wizard",
+      "slot": "head",
+      "name": "🧙 魔法巫師帽",
+      "icon": "🧙",
+      "desc": "蘊藏強大魔力的神秘巫師帽",
+      "unlockType": "fish",
+      "price": 60,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "（揮舞法杖）喵拉哩拉～把易錯單字通通變成小魚乾！🧙‍♀️✨",
+      "svg": "<g id=\"acc_head_wizard\" transform=\"translate(60 18)\"><ellipse cy=\"8\" fill=\"#312e81\" rx=\"30\" ry=\"6\"/><path fill=\"#4338ca\" d=\"M-20 7Q-8-8 10-24 2-6 20 7Z\"/><ellipse cy=\"6\" fill=\"#fbbf24\" rx=\"20\" ry=\"3\"/><polygon fill=\"#facc15\" points=\"10,-24 13,-21 16,-24 14,-21 17,-19 13,-19 12,-16 11,-19 7,-19 10,-21\"/></g>"
+    },
+    {
+      "id": "head_ranger",
+      "slot": "head",
+      "name": "🏹 冒險獵鷹羽毛帽",
+      "icon": "🏹",
+      "desc": "【Lv.4 免費】750字英勇旅伴專屬勳章！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 4,
+      "releaseDate": "2025-01-01",
+      "reaction": "呼嚕嚕～戴上冒險獵鷹羽毛帽，我們已經征服 750 個單字囉！英勇旅伴出發！🏹🐾",
+      "svg": "<g id=\"acc_head_ranger\" transform=\"translate(60 20)\"><ellipse cy=\"4\" fill=\"#15803d\" rx=\"30\" ry=\"7\"/><path fill=\"#16a34a\" d=\"M-22 4c6-14 38-14 44 0Z\"/><rect width=\"36\" height=\"3\" x=\"-18\" y=\"2\" fill=\"#ca8a04\"/><path fill=\"#ef4444\" d=\"M10 2c6-14 18-22 26-20L16 2Z\"/><line x1=\"12\" x2=\"32\" y1=\"2\" y2=\"-17\" stroke=\"#b91c1c\" stroke-width=\".8\"/></g>"
+    },
+    {
+      "id": "head_crown",
+      "slot": "head",
+      "name": "👑 傳奇璀璨皇冠",
+      "icon": "👑",
+      "desc": "【Lv.5 免費】1200會考傳奇守護神至高榮耀！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 5,
+      "releaseDate": "2025-01-01",
+      "reaction": "呼嚕嚕～頭戴璀璨皇冠，感謝妳一路陪我進化成 1200 單字傳奇神獸！👑🐾",
+      "svg": "<g id=\"acc_head_crown\"><g filter=\"drop-shadow(0 2px 4px rgba(0,0,0,0.3))\" transform=\"translate(60 16)\"><path fill=\"#facc15\" stroke=\"#b45309\" stroke-width=\"1.2\" d=\"m-22 8 2-14 10 7L0-11 10 1l10-7 2 14Z\"/><path fill=\"#fde047\" d=\"m-18 6 1-9 8 5L0-8 9 2l8-5 1 9Z\" opacity=\".6\"/><rect width=\"44\" height=\"5\" x=\"-22\" y=\"6\" fill=\"#ca8a04\" stroke=\"#854d0e\" stroke-width=\".8\" rx=\"1.5\"/><circle cx=\"-14\" cy=\"8.5\" r=\"1.6\" fill=\"#3b82f6\"/><circle cx=\"-7\" cy=\"8.5\" r=\"1.6\" fill=\"#fff\"/><circle cy=\"8.5\" r=\"2.2\" fill=\"#ef4444\" stroke=\"#fff\" stroke-width=\".5\"/><circle cx=\"7\" cy=\"8.5\" r=\"1.6\" fill=\"#fff\"/><circle cx=\"14\" cy=\"8.5\" r=\"1.6\" fill=\"#10b981\"/><circle cx=\"-20\" cy=\"-6\" r=\"2\" fill=\"#3b82f6\" stroke=\"#fff\" stroke-width=\".5\"/><circle cx=\"-10\" cy=\"1\" r=\"1.6\" fill=\"#fff\"/><circle cy=\"-11\" r=\"3\" fill=\"#ef4444\" stroke=\"#fff\" stroke-width=\".8\"/><circle cx=\"10\" cy=\"1\" r=\"1.6\" fill=\"#fff\"/><circle cx=\"20\" cy=\"-6\" r=\"2\" fill=\"#10b981\" stroke=\"#fff\" stroke-width=\".5\"/></g></g>"
+    },
+    {
+      "id": "face_blush",
+      "slot": "face",
+      "name": "✨ 星光微醺腮紅",
+      "icon": "✨",
+      "desc": "【Lv.1 免費】臉頰閃爍害羞星芒",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵...臉紅紅的被妳發現了！因為妳今天背單字好認真嘛～✨",
+      "svg": "<g id=\"acc_face_blush\"><style>@keyframes blushBreathe {\n      0%, 100% { opacity: 0.65; transform: scale(1); }\n      50% { opacity: 0.95; transform: scale(1.12); }\n    }\n    @keyframes starTwinkleLeft {\n      0%, 100% { transform: translate(34px, 58px) scale(0.85) rotate(0deg); opacity: 0.7; }\n      50% { transform: translate(34px, 58px) scale(1.3) rotate(45deg); opacity: 1; }\n    }\n    @keyframes starTwinkleRight {\n      0%, 100% { transform: translate(86px, 58px) scale(1.25) rotate(45deg); opacity: 1; }\n      50% { transform: translate(86px, 58px) scale(0.85) rotate(0deg); opacity: 0.7; }\n    }\n    @keyframes miniSparkleLeft {\n      0%, 100% { transform: translate(44px, 66px) scale(0.6) rotate(15deg); opacity: 0.5; }\n      50% { transform: translate(44px, 66px) scale(1.1) rotate(60deg); opacity: 0.95; }\n    }\n    @keyframes miniSparkleRight {\n      0%, 100% { transform: translate(76px, 66px) scale(1.1) rotate(60deg); opacity: 0.95; }\n      50% { transform: translate(76px, 66px) scale(0.6) rotate(15deg); opacity: 0.5; }\n    }</style><g style=\"transform-origin:38px 62px;animation:blushBreathe 2.4s ease-in-out infinite\"><ellipse cx=\"38\" cy=\"62\" fill=\"#f43f5e\" opacity=\".45\" rx=\"9\" ry=\"5.5\"/><ellipse cx=\"38\" cy=\"62\" fill=\"#fb7185\" opacity=\".6\" rx=\"5.5\" ry=\"3.5\"/><line x1=\"33\" x2=\"36\" y1=\"65\" y2=\"59\" stroke=\"#e11d48\" stroke-linecap=\"round\" stroke-width=\"1.2\" opacity=\".8\"/><line x1=\"37\" x2=\"40\" y1=\"65\" y2=\"59\" stroke=\"#e11d48\" stroke-linecap=\"round\" stroke-width=\"1.2\" opacity=\".8\"/><line x1=\"41\" x2=\"44\" y1=\"65\" y2=\"59\" stroke=\"#e11d48\" stroke-linecap=\"round\" stroke-width=\"1.2\" opacity=\".8\"/></g><g style=\"transform-origin:82px 62px;animation:blushBreathe 2.4s ease-in-out infinite\"><ellipse cx=\"82\" cy=\"62\" fill=\"#f43f5e\" opacity=\".45\" rx=\"9\" ry=\"5.5\"/><ellipse cx=\"82\" cy=\"62\" fill=\"#fb7185\" opacity=\".6\" rx=\"5.5\" ry=\"3.5\"/><line x1=\"77\" x2=\"80\" y1=\"65\" y2=\"59\" stroke=\"#e11d48\" stroke-linecap=\"round\" stroke-width=\"1.2\" opacity=\".8\"/><line x1=\"81\" x2=\"84\" y1=\"65\" y2=\"59\" stroke=\"#e11d48\" stroke-linecap=\"round\" stroke-width=\"1.2\" opacity=\".8\"/><line x1=\"85\" x2=\"88\" y1=\"65\" y2=\"59\" stroke=\"#e11d48\" stroke-linecap=\"round\" stroke-width=\"1.2\" opacity=\".8\"/></g><g style=\"animation:starTwinkleLeft 1.8s ease-in-out infinite\"><path fill=\"#fbbf24\" stroke=\"#f59e0b\" stroke-width=\".5\" d=\"M0-5.5Q.8-1 5.5 0 .8 1 0 5.5-.8 1-5.5 0-.8-1 0-5.5Z\"/><circle r=\"1.2\" fill=\"#fff\"/></g><g style=\"animation:miniSparkleLeft 2s ease-in-out infinite\"><path fill=\"#f472b6\" d=\"M0-3.5Q.5-.6 3.5 0 .5.6 0 3.5-.5.6-3.5 0q3-.6 3.5-3.5\"/></g><g style=\"animation:starTwinkleRight 1.8s ease-in-out infinite\"><path fill=\"#fbbf24\" stroke=\"#f59e0b\" stroke-width=\".5\" d=\"M0-5.5Q.8-1 5.5 0 .8 1 0 5.5-.8 1-5.5 0-.8-1 0-5.5Z\"/><circle r=\"1.2\" fill=\"#fff\"/></g><g style=\"animation:miniSparkleRight 2s ease-in-out infinite\"><path fill=\"#f472b6\" d=\"M0-3.5Q.5-.6 3.5 0 .5.6 0 3.5-.5.6-3.5 0q3-.6 3.5-3.5\"/></g></g>"
+    },
+    {
+      "id": "face_strawberry",
+      "slot": "face",
+      "name": "🍓 俏皮草莓小鼻貼",
+      "icon": "🍓",
+      "desc": "鼻樑上的粉嫩草莓小創可貼，元氣滿滿",
+      "unlockType": "fish",
+      "price": 15,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "臉頰貼了小草莓貼布～俏皮又可愛！背錯單字也不要氣餒，貼一貼就精神百倍喵！🍓✨",
+      "svg": "<g id=\"acc_face_strawberry\"><rect width=\"18\" height=\"5\" x=\"51\" y=\"53\" fill=\"#fbcfe8\" stroke=\"#f472b6\" stroke-width=\".6\" rx=\"2.5\"/><circle cx=\"60\" cy=\"55.5\" r=\"1.8\" fill=\"#ef4444\"/><polygon fill=\"#22c55e\" points=\"60,53.8 59,54.8 61,54.8\"/><circle cx=\"54\" cy=\"55.5\" r=\".4\" fill=\"#ec4899\"/><circle cx=\"66\" cy=\"55.5\" r=\".4\" fill=\"#ec4899\"/></g>"
+    },
+    {
+      "id": "face_glasses",
+      "slot": "face",
+      "name": "👓 知性圓圓眼鏡",
+      "icon": "👓",
+      "desc": "智慧加倍，背單字超專注！",
+      "unlockType": "fish",
+      "price": 25,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "推推眼鏡～看清楚了！forty 真的沒有 u，我都記在腦子裡了！👓📚",
+      "svg": "<g id=\"acc_face_glasses\" stroke=\"#78350f\"><circle cx=\"46\" cy=\"52\" r=\"9.5\" fill=\"none\" stroke-width=\"2.2\"/><circle cx=\"74\" cy=\"52\" r=\"9.5\" fill=\"none\" stroke-width=\"2.2\"/><path fill=\"none\" stroke-width=\"2.2\" d=\"M55.5 52q4.5-3.5 9 0\"/><line x1=\"36.5\" x2=\"26\" y1=\"51\" y2=\"48\" stroke-width=\"1.8\"/><line x1=\"83.5\" x2=\"94\" y1=\"51\" y2=\"48\" stroke-width=\"1.8\"/></g>"
+    },
+    {
+      "id": "face_star_sparkle",
+      "slot": "face",
+      "name": "⭐ 星芒閃爍貼紙",
+      "icon": "⭐",
+      "desc": "雙眼下方點綴耀眼金星，眨眼都在放電",
+      "unlockType": "fish",
+      "price": 25,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "閃亮亮的小星星貼紙！每次我眨眨眼，都會發射滿分幸運光波給妳喔！⭐✨",
+      "svg": "<g id=\"acc_face_star_sparkle\"><path fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\".4\" d=\"m40 56 1-3 1 3 3 1-3 1-1 3-1-3-3-1Z\"/><circle cx=\"36\" cy=\"62\" r=\".9\" fill=\"#38bdf8\"/><path fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\".4\" d=\"m80 56 1-3 1 3 3 1-3 1-1 3-1-3-3-1Z\"/><circle cx=\"84\" cy=\"62\" r=\".9\" fill=\"#38bdf8\"/></g>"
+    },
+    {
+      "id": "face_sunglasses",
+      "slot": "face",
+      "name": "🕶️ 酷黑潮流墨鏡",
+      "icon": "🕶️",
+      "desc": "街頭酷帥潮流，回頭率百分百",
+      "unlockType": "fish",
+      "price": 40,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵～戴上酷炫墨鏡，本喵就是夜市最拉風的街頭貓霸！🕶️😎",
+      "svg": "<g id=\"acc_face_sunglasses\"><path fill=\"#0f172a\" d=\"M34 46h22l-2 12q-9 5-18 0Z\"/><path fill=\"#0f172a\" d=\"M64 46h22l-2 12q-9 5-18 0Z\"/><line x1=\"56\" x2=\"64\" y1=\"48\" y2=\"48\" stroke=\"#0f172a\" stroke-width=\"3\"/><line x1=\"34\" x2=\"25\" y1=\"48\" y2=\"46\" stroke=\"#0f172a\" stroke-width=\"2.2\"/><line x1=\"86\" x2=\"95\" y1=\"48\" y2=\"46\" stroke=\"#0f172a\" stroke-width=\"2.2\"/><path fill=\"#fff\" d=\"M37 48h9l-6 7Z\" opacity=\".35\"/><path fill=\"#fff\" d=\"M67 48h9l-6 7Z\" opacity=\".35\"/></g>"
+    },
+    {
+      "id": "face_masquerade",
+      "slot": "face",
+      "name": "🎭 華麗金紋面具",
+      "icon": "🎭",
+      "desc": "紫金神秘假面眼罩，高雅宮廷舞會焦點",
+      "unlockType": "fish",
+      "price": 50,
+      "reqLevel": 4,
+      "releaseDate": "2025-01-01",
+      "reaction": "（輕輕遮臉）猜猜我是誰？我是充滿神秘魔法的假面貓俠喵！🎭✨",
+      "svg": "<g id=\"acc_face_masquerade\"><path fill=\"#581c87\" stroke=\"#fbbf24\" stroke-width=\"1.2\" d=\"M36 46q24-6 48 0 4 8-2 9-8 1-14-3-8 2-16 0-6 4-14 3-6-1-2-9Z\" opacity=\".95\"/><ellipse cx=\"48\" cy=\"49\" fill=\"#fff\" stroke=\"#fde047\" stroke-width=\".6\" opacity=\".2\" rx=\"5.5\" ry=\"3.5\"/><ellipse cx=\"72\" cy=\"49\" fill=\"#fff\" stroke=\"#fde047\" stroke-width=\".6\" opacity=\".2\" rx=\"5.5\" ry=\"3.5\"/><circle cx=\"60\" cy=\"45\" r=\"1.5\" fill=\"#fbbf24\"/></g>"
+    },
+    {
+      "id": "neck_bell",
+      "slot": "neck",
+      "name": "🔔 招財黃金鈴鐺",
+      "icon": "🔔",
+      "desc": "【Lv.1 免費】走動叮噹作響帶來好運",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "叮噹～叮噹～聽到了嗎？這是小魚乾快要來敲門的聲音喵！🔔",
+      "svg": "<g id=\"acc_neck_bell\"><path fill=\"none\" stroke=\"#dc2626\" stroke-linecap=\"round\" stroke-width=\"4\" d=\"M36 75q24 11 48 0\"/><path fill=\"none\" stroke=\"#ef4444\" stroke-linecap=\"round\" stroke-width=\"2.6\" d=\"M36 75q24 11 48 0\"/><g filter=\"drop-shadow(0 2px 3px rgba(0,0,0,0.25))\" transform=\"translate(60 83)\"><circle cy=\"-6\" r=\"2.2\" fill=\"none\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><circle r=\"6.2\" fill=\"#facc15\" stroke=\"#a16207\"/><ellipse cx=\"-1.5\" cy=\"-2\" fill=\"#fef08a\" opacity=\".9\" rx=\"3.5\" ry=\"2\"/><line x1=\"-5.6\" x2=\"5.6\" y1=\".5\" y2=\".5\" stroke=\"#854d0e\" stroke-width=\"1.2\"/><line y1=\".5\" y2=\"3.2\" stroke=\"#713f12\" stroke-width=\"1.2\"/><circle cy=\"3.8\" r=\"1.6\" fill=\"#713f12\"/><circle cy=\"3.8\" r=\"1\" fill=\"#facc15\"/></g></g>"
+    },
+    {
+      "id": "neck_strawberry",
+      "slot": "neck",
+      "name": "🍓 草莓甜心項圈",
+      "icon": "🍓",
+      "desc": "鮮紅項圈墜著紅潤草莓，走動一晃一晃",
+      "unlockType": "fish",
+      "price": 20,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "胸前掛著紅通通的小草莓項圈，走起路來一晃一晃的好可愛喵！🍓❤️",
+      "svg": "<g id=\"acc_neck_strawberry\" filter=\"drop-shadow(0 2px 4px rgba(220,38,38,0.3))\"><path fill=\"none\" stroke=\"#dc2626\" stroke-linecap=\"round\" stroke-width=\"4\" d=\"M36 76q24 12 48 0\"/><path fill=\"none\" stroke=\"#f87171\" stroke-linecap=\"round\" stroke-width=\"2\" d=\"M36 76q24 12 48 0\"/><circle cx=\"60\" cy=\"87\" r=\"2.2\" fill=\"none\" stroke=\"#fbbf24\" stroke-width=\"1.3\"/><g transform=\"translate(60 94)\"><path fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\".8\" d=\"M-7-4c-2 8 3 15 7 17 4-2 9-9 7-17C5-7-5-7-7-4Z\"/><ellipse cx=\"-2.8\" cy=\"-2\" fill=\"#fff\" opacity=\".8\" rx=\"2.4\" ry=\"1.4\" transform=\"rotate(-25 -2.8 -2)\"/><circle cx=\"-3\" cy=\"2\" r=\".6\" fill=\"#fef08a\"/><circle cx=\"3\" cy=\"2\" r=\".6\" fill=\"#fef08a\"/><circle cy=\"6\" r=\".6\" fill=\"#fef08a\"/><circle cx=\"-2\" cy=\"9\" r=\".5\" fill=\"#fef08a\"/><circle cx=\"2\" cy=\"9\" r=\".5\" fill=\"#fef08a\"/><polygon fill=\"#22c55e\" stroke=\"#15803d\" stroke-width=\".5\" points=\"0,-7 -4,-5 -2,-3 0,-4 2,-3 4,-5\"/><path fill=\"none\" stroke=\"#16a34a\" stroke-linecap=\"round\" stroke-width=\"1.2\" d=\"M0-7q-1-2-3-3\"/></g></g>"
+    },
+    {
+      "id": "neck_scarf",
+      "slot": "neck",
+      "name": "🧣 暖冬經典圍巾",
+      "icon": "🧣",
+      "desc": "冬日最溫暖厚實的紅色圍巾",
+      "unlockType": "fish",
+      "price": 25,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "好暖和喔～戴上紅色圍巾，就算外面吹冷風也能精神滿滿背單字！🧣❤️",
+      "svg": "<g id=\"acc_neck_scarf\"><g filter=\"drop-shadow(0 2px 4px rgba(0,0,0,0.22))\"><path fill=\"#b91c1c\" d=\"M28 73q32 16 64 0-32 21-64 0\"/><path fill=\"#ef4444\" d=\"M30 73q30 14 60 0-30 19-60 0\"/><path fill=\"none\" stroke=\"#fca5a5\" stroke-width=\"1.2\" d=\"M34 74q26 10 52 0\" opacity=\".7\"/><g transform=\"rotate(-12 403.06 -265.46)\"><rect width=\"12\" height=\"22\" fill=\"#b91c1c\" rx=\"3\"/><rect width=\"10\" height=\"21\" x=\"1\" fill=\"#dc2626\" rx=\"2\"/><line x1=\"1\" x2=\"11\" y1=\"6\" y2=\"6\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><line x1=\"1\" x2=\"11\" y1=\"12\" y2=\"12\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><line x1=\"2\" x2=\"2\" y1=\"21\" y2=\"26\" stroke=\"#fef2f2\" stroke-width=\"1.5\"/><line x1=\"4.5\" x2=\"4.5\" y1=\"21\" y2=\"26\" stroke=\"#fef2f2\" stroke-width=\"1.5\"/><line x1=\"7\" x2=\"7\" y1=\"21\" y2=\"26\" stroke=\"#fef2f2\" stroke-width=\"1.5\"/><line x1=\"9.5\" x2=\"9.5\" y1=\"21\" y2=\"26\" stroke=\"#fef2f2\" stroke-width=\"1.5\"/></g></g></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "經典紅",
+          "swatch": "#dc2626",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "forest",
+          "name": "森林綠",
+          "swatch": "#16a34a",
+          "price": 10,
+          "replace": {
+            "#dc2626": "#16a34a",
+            "#ef4444": "#22c55e",
+            "#b91c1c": "#15803d",
+            "#fca5a5": "#86efac",
+            "#fef2f2": "#dcfce7"
+          }
+        },
+        {
+          "id": "camel",
+          "name": "奶茶棕",
+          "swatch": "#d97706",
+          "price": 12,
+          "replace": {
+            "#dc2626": "#d97706",
+            "#ef4444": "#f59e0b",
+            "#b91c1c": "#b45309",
+            "#fca5a5": "#fcd34d",
+            "#fef2f2": "#fef3c7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "neck_lace",
+      "slot": "neck",
+      "name": "🎀 夢幻蕾絲荷葉領",
+      "icon": "🎀",
+      "desc": "雪白法式荷葉邊滾蕾絲，洋娃娃精緻感",
+      "unlockType": "fish",
+      "price": 30,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "哇～雪白夢幻的蕾絲荷葉領！像洋娃娃一樣精緻高雅，貓貓好喜歡！🎀🤍",
+      "svg": "<g id=\"acc_neck_lace\" filter=\"drop-shadow(0 2px 4px rgba(0,0,0,0.12))\"><path fill=\"#fff\" stroke=\"#e2e8f0\" d=\"M34 76q6 8 13 4 6 7 13 3 7 4 13-3 7 4 13-4c-4 14-26 19-52 0Z\"/><path fill=\"none\" stroke=\"#f472b6\" stroke-linecap=\"round\" stroke-width=\"1.6\" d=\"M36 77q24 9 48 0\"/><ellipse cx=\"56.5\" cy=\"84\" fill=\"#f43f5e\" stroke=\"#fff\" stroke-width=\".6\" rx=\"3.5\" ry=\"2.2\" transform=\"rotate(-20 56.5 84)\"/><ellipse cx=\"63.5\" cy=\"84\" fill=\"#f43f5e\" stroke=\"#fff\" stroke-width=\".6\" rx=\"3.5\" ry=\"2.2\" transform=\"rotate(20 63.5 84)\"/><circle cx=\"60\" cy=\"84\" r=\"1.8\" fill=\"#fff\" stroke=\"#db2777\" stroke-width=\".6\"/></g>"
+    },
+    {
+      "id": "neck_bowtie",
+      "slot": "neck",
+      "name": "👔 英倫貴族領結",
+      "icon": "👔",
+      "desc": "優雅俐落的小紳士風格領結",
+      "unlockType": "fish",
+      "price": 35,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵～英倫紳士領結！今天上英文課我有沒有特別有氣質呢？👔✨",
+      "svg": "<g id=\"acc_neck_bowtie\"><polygon fill=\"#1e3a8a\" stroke=\"#172554\" points=\"60,78 48,71 48,85\"/><polygon fill=\"#1e3a8a\" stroke=\"#172554\" points=\"60,78 72,71 72,85\"/><circle cx=\"60\" cy=\"78\" r=\"3.5\" fill=\"#2563eb\"/></g>"
+    },
+    {
+      "id": "neck_sapphire",
+      "slot": "neck",
+      "name": "💎 星辰藍寶石項圈",
+      "icon": "💎",
+      "desc": "金鏈鑲嵌深邃璀璨星藍寶石，貴氣非凡",
+      "unlockType": "fish",
+      "price": 45,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "晶瑩剔透的深藍星辰寶石！閃耀著知性與專注的光芒，會考高分勢在必得喵！💎🌟",
+      "svg": "<g id=\"acc_neck_sapphire\" filter=\"drop-shadow(0 2px 5px rgba(37,99,235,0.3))\"><path fill=\"none\" stroke=\"#fbbf24\" stroke-dasharray=\"3 1.5\" stroke-linecap=\"round\" stroke-width=\"2.2\" d=\"M36 76q24 11 48 0\"/><g transform=\"translate(60 93)\"><circle cy=\"-6\" r=\"1.8\" fill=\"none\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><polygon fill=\"#1d4ed8\" stroke=\"#fbbf24\" stroke-width=\"1.2\" points=\"0,-4 7,3 0,11 -7,3\"/><polygon fill=\"#2563eb\" points=\"0,-2.5 5,3 0,9.5 -5,3\"/><polygon fill=\"#60a5fa\" points=\"0,-2.5 4,3 0,3 -4,3\" opacity=\".8\"/><polygon fill=\"#93c5fd\" points=\"-4,3 0,3 0,9.5\" opacity=\".6\"/><circle cx=\"-1.5\" cy=\"1.5\" r=\".9\" fill=\"#fff\"/></g></g>"
+    },
+    {
+      "id": "neck_medal",
+      "slot": "neck",
+      "name": "🥇 會考榮譽金牌",
+      "icon": "🥇",
+      "desc": "【Lv.5 免費】征服1200單字最高榮譽勳章！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 5,
+      "releaseDate": "2025-01-01",
+      "reaction": "第一名金牌！這是我們一起努力征服 1200 單字的榮耀證書喵！🥇🌟",
+      "svg": "<g id=\"acc_neck_medal\"><path fill=\"none\" stroke=\"#2563eb\" stroke-width=\"3\" d=\"m52 74 8 8 8-8\"/><circle cx=\"60\" cy=\"86\" r=\"6.5\" fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/><text x=\"60\" y=\"89\" fill=\"#78350f\" font-size=\"7\" font-weight=\"900\" text-anchor=\"middle\">1</text></g>"
+    },
+    {
+      "id": "outfit_hoodie",
+      "slot": "outfit",
+      "name": "🐱 暖萌柴犬連帽衛衣",
+      "icon": "🐱",
+      "desc": "【Lv.1】溫暖芥末黃連帽T，胸前軟萌貓爪口袋與棉質抽繩",
+      "unlockType": "fish",
+      "price": 45,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "穿上軟綿綿的柴犬連帽衛衣～胸前的貓爪小口袋可以裝三條小魚乾耶！溫暖又好動喵！🐱💛",
+      "svg": "<g id=\"acc_outfit_hoodie\" filter=\"drop-shadow(0 2px 4px rgba(202,138,4,0.25))\"><path fill=\"#d97706\" d=\"M38 71q22-6 44 0-8-9-22-9t-22 9\"/><path fill=\"#f59e0b\" stroke=\"#d97706\" d=\"m37 72-7 16 11 1v19q19 2 38 0V89l11-1-7-16Z\"/><rect width=\"12\" height=\"3\" x=\"29\" y=\"86\" fill=\"#d97706\" rx=\"1.5\"/><rect width=\"12\" height=\"3\" x=\"79\" y=\"86\" fill=\"#d97706\" rx=\"1.5\"/><path fill=\"none\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-width=\"1.8\" d=\"m52 72 8 5 8-5\"/><path fill=\"none\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-width=\"1.2\" d=\"M56 76q-2 8-1 13\"/><circle cx=\"55\" cy=\"89.5\" r=\"1.2\" fill=\"#fff\"/><path fill=\"none\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-width=\"1.2\" d=\"M64 76q2 8 1 13\"/><circle cx=\"65\" cy=\"89.5\" r=\"1.2\" fill=\"#fff\"/><path fill=\"#fef3c7\" stroke=\"#d97706\" stroke-width=\".8\" d=\"m45 93 4-5h22l4 5-2 10q-13 2-26 0Z\"/><ellipse cx=\"60\" cy=\"97\" fill=\"#f59e0b\" rx=\"2.5\" ry=\"2\"/><circle cx=\"56.5\" cy=\"94\" r=\".9\" fill=\"#f59e0b\"/><circle cx=\"59\" cy=\"93\" r=\".9\" fill=\"#f59e0b\"/><circle cx=\"61.5\" cy=\"93\" r=\".9\" fill=\"#f59e0b\"/><circle cx=\"63.5\" cy=\"94\" r=\".9\" fill=\"#f59e0b\"/><path fill=\"#d97706\" d=\"M41 107q19 2 38 0v3q-19 2-38 0Z\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "柴犬芥末黃",
+          "swatch": "#f59e0b",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "mint",
+          "name": "薄荷蘇打",
+          "swatch": "#10b981",
+          "price": 15,
+          "replace": {
+            "#f59e0b": "#10b981",
+            "#d97706": "#059669",
+            "#fef3c7": "#d1fae5"
+          }
+        },
+        {
+          "id": "berry",
+          "name": "草莓牛奶",
+          "swatch": "#f472b6",
+          "price": 15,
+          "replace": {
+            "#f59e0b": "#ec4899",
+            "#d97706": "#db2777",
+            "#fef3c7": "#fce7f3"
+          }
+        },
+        {
+          "id": "lilac",
+          "name": "夢幻香芋",
+          "swatch": "#8b5cf6",
+          "price": 18,
+          "replace": {
+            "#f59e0b": "#8b5cf6",
+            "#d97706": "#7c3aed",
+            "#fef3c7": "#ede9fe"
+          }
+        }
+      ]
+    },
+    {
+      "id": "outfit_backpack",
+      "slot": "outfit",
+      "name": "🎒 探險雙肩包",
+      "icon": "🎒",
+      "desc": "【Lv.2 免費】背起小書包探索單字世界！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵！背起小探險背包，今天也要去單字森林挖掘好多新寶藏！🎒✨",
+      "svg": "<g id=\"acc_outfit_backpack\"><g filter=\"drop-shadow(0 2px 3px rgba(0,0,0,0.2))\"><rect width=\"12\" height=\"24\" x=\"25\" y=\"74\" fill=\"#dc2626\" rx=\"4\"/><rect width=\"10\" height=\"22\" x=\"26\" y=\"75\" fill=\"#ef4444\" rx=\"3\"/><rect width=\"12\" height=\"24\" x=\"83\" y=\"74\" fill=\"#dc2626\" rx=\"4\"/><rect width=\"10\" height=\"22\" x=\"84\" y=\"75\" fill=\"#ef4444\" rx=\"3\"/><path fill=\"none\" stroke=\"#b91c1c\" stroke-linecap=\"round\" stroke-width=\"3\" d=\"M52 72q8-5 16 0\"/><path stroke=\"#9a3412\" stroke-linecap=\"round\" stroke-width=\"3.6\" d=\"m40 75 3 23\"/><path stroke=\"#9a3412\" stroke-linecap=\"round\" stroke-width=\"3.6\" d=\"m80 75-3 23\"/><rect width=\"4.5\" height=\"5\" x=\"41\" y=\"86\" fill=\"#facc15\" stroke=\"#a16207\" stroke-width=\".5\" rx=\"1\"/><rect width=\"4.5\" height=\"5\" x=\"74.5\" y=\"86\" fill=\"#facc15\" stroke=\"#a16207\" stroke-width=\".5\" rx=\"1\"/></g></g>"
+    },
+    {
+      "id": "outfit_overalls",
+      "slot": "outfit",
+      "name": "👖 青春丹寧牛仔吊帶褲",
+      "icon": "👖",
+      "desc": "【Lv.2】紅白條紋T恤搭配水洗牛仔吊帶褲，胸前插著小鉛筆",
+      "unlockType": "fish",
+      "price": 60,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "丹寧牛仔吊帶褲穿好囉！胸前還插著考試專用小鉛筆，活力滿滿～今天一定要背完所有單字喵！👖✏️✨",
+      "svg": "<g id=\"acc_outfit_overalls\" filter=\"drop-shadow(0 2px 4px rgba(30,58,138,0.25))\"><path fill=\"#fff\" stroke=\"#cbd5e1\" stroke-width=\".8\" d=\"m37 72-6 14 12 1h34l12-1-6-14Z\"/><path stroke=\"#ef4444\" stroke-width=\"1.8\" d=\"M35 76h6\"/><path stroke=\"#ef4444\" stroke-width=\"1.8\" d=\"M33 80h9\"/><path stroke=\"#ef4444\" stroke-width=\"1.8\" d=\"M79 76h6\"/><path stroke=\"#ef4444\" stroke-width=\"1.8\" d=\"M78 80h9\"/><path stroke=\"#ef4444\" stroke-width=\"1.8\" d=\"M45 74h30\"/><path fill=\"#2563eb\" stroke=\"#1d4ed8\" stroke-width=\".9\" d=\"M42 83h36l6 29q-24 2-48 0Z\"/><path stroke=\"#1e40af\" stroke-linecap=\"round\" stroke-width=\"2.6\" d=\"m43 72 3 12\"/><path stroke=\"#1e40af\" stroke-linecap=\"round\" stroke-width=\"2.6\" d=\"m77 72-3 12\"/><rect width=\"4.5\" height=\"4\" x=\"44\" y=\"82\" fill=\"#facc15\" stroke=\"#a16207\" stroke-width=\".6\" rx=\"1\"/><rect width=\"4.5\" height=\"4\" x=\"71.5\" y=\"82\" fill=\"#facc15\" stroke=\"#a16207\" stroke-width=\".6\" rx=\"1\"/><path fill=\"#1d4ed8\" stroke=\"#facc15\" stroke-dasharray=\"2 1\" stroke-width=\".8\" d=\"M50 88h20l-2 10-8 4-8-4Z\"/><line x1=\"62\" x2=\"66\" y1=\"84\" y2=\"92\" stroke=\"#f59e0b\" stroke-linecap=\"round\" stroke-width=\"1.5\"/><polygon fill=\"#ef4444\" points=\"62,84 61,82 63,82\"/><path fill=\"none\" stroke=\"#facc15\" stroke-dasharray=\"2 1\" stroke-width=\".8\" d=\"M36 108q24 3 48 0\"/></g>"
+    },
+    {
+      "id": "outfit_sailor",
+      "slot": "outfit",
+      "name": "⚓ 可愛水手制服",
+      "icon": "⚓",
+      "desc": "正統日系海軍翻領雙白線，加長A字立體百褶裙與雙白飾線！",
+      "unlockType": "fish",
+      "price": 70,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "水手服套裝登場！加長的海軍藍A字百褶裙好飄逸，雙白線條紋超青春，今天模擬考一定能拿滿分喵！⚓💙",
+      "svg": "<g id=\"acc_outfit_sailor\" filter=\"drop-shadow(0 2px 5px rgba(30,58,138,0.22))\"><path fill=\"#fff\" stroke=\"#cbd5e1\" stroke-width=\".8\" d=\"m36 73-4 13 11 1h34l11-1-4-13Z\"/><path fill=\"#1e3a8a\" stroke=\"#172554\" stroke-width=\".8\" d=\"M42 72 32 85h14l8-9Z\"/><path fill=\"#1e3a8a\" stroke=\"#172554\" stroke-width=\".8\" d=\"m78 72 10 13H74l-8-9Z\"/><line x1=\"34\" x2=\"44\" y1=\"82\" y2=\"82\" stroke=\"#fff\" stroke-width=\".8\"/><line x1=\"86\" x2=\"76\" y1=\"82\" y2=\"82\" stroke=\"#fff\" stroke-width=\".8\"/><polygon fill=\"#fff\" points=\"60,84 55,76 65,76\"/><ellipse cx=\"56.5\" cy=\"80.5\" fill=\"#dc2626\" rx=\"3\" ry=\"1.8\" transform=\"rotate(-15 56.5 80.5)\"/><ellipse cx=\"63.5\" cy=\"80.5\" fill=\"#dc2626\" rx=\"3\" ry=\"1.8\" transform=\"rotate(15 63.5 80.5)\"/><polygon fill=\"#ef4444\" points=\"60,81 55,92 60,89 65,92\"/><circle cx=\"60\" cy=\"80.5\" r=\"1.5\" fill=\"#b91c1c\"/><path fill=\"#1e3a8a\" stroke=\"#172554\" stroke-width=\".9\" d=\"M37 86q23 2 46 0l11 27q-34 3-68 0Z\"/><rect width=\"46\" height=\"2.5\" x=\"37\" y=\"85.5\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\".5\" rx=\"1\"/><line x1=\"41\" x2=\"33\" y1=\"87\" y2=\"113\" stroke=\"#172554\" stroke-width=\"1.2\"/><line x1=\"47\" x2=\"42\" y1=\"87\" y2=\"114\" stroke=\"#172554\" stroke-width=\"1.2\"/><line x1=\"53\" x2=\"51\" y1=\"87\" y2=\"114.5\" stroke=\"#172554\" stroke-width=\"1.2\"/><line x1=\"60\" x2=\"60\" y1=\"87\" y2=\"115\" stroke=\"#172554\" stroke-width=\"1.2\"/><line x1=\"67\" x2=\"69\" y1=\"87\" y2=\"114.5\" stroke=\"#172554\" stroke-width=\"1.2\"/><line x1=\"73\" x2=\"78\" y1=\"87\" y2=\"114\" stroke=\"#172554\" stroke-width=\"1.2\"/><line x1=\"79\" x2=\"87\" y1=\"87\" y2=\"113\" stroke=\"#172554\" stroke-width=\"1.2\"/><path fill=\"none\" stroke=\"#fff\" stroke-width=\"1.4\" d=\"M28 107q32 3 64 0\"/><path fill=\"none\" stroke=\"#fff\" stroke-width=\"1.4\" d=\"M27 110q33 3 66 0\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "正統海軍藍",
+          "swatch": "#1e3a8a",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "sakura",
+          "name": "櫻花學院粉",
+          "swatch": "#db2777",
+          "price": 20,
+          "replace": {
+            "#1e3a8a": "#be185d",
+            "#172554": "#831843",
+            "#dc2626": "#f59e0b",
+            "#ef4444": "#fbbf24",
+            "#b91c1c": "#d97706"
+          }
+        },
+        {
+          "id": "emerald",
+          "name": "英倫森林綠",
+          "swatch": "#065f46",
+          "price": 20,
+          "replace": {
+            "#1e3a8a": "#065f46",
+            "#172554": "#064e3b"
+          }
+        },
+        {
+          "id": "obsidian",
+          "name": "酷黑金邊",
+          "swatch": "#1e293b",
+          "price": 25,
+          "replace": {
+            "#1e3a8a": "#1e293b",
+            "#172554": "#0f172a",
+            "#dc2626": "#ca8a04",
+            "#ef4444": "#facc15",
+            "#b91c1c": "#a16207"
+          }
+        }
+      ]
+    },
+    {
+      "id": "outfit_kimono",
+      "slot": "outfit",
+      "name": "👘 和風櫻花祭浴衣",
+      "icon": "👘",
+      "desc": "粉櫻和服搭配典雅紫腰帶，浪漫夏日祭典",
+      "unlockType": "fish",
+      "price": 65,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "穿上優雅粉紅和風櫻花祭浴衣～邁著小碎步一起去逛祭典吃烤魚喵！👘🌸",
+      "svg": "<g id=\"acc_outfit_kimono\"><path fill=\"#fbcfe8\" stroke=\"#ec4899\" d=\"m40 71-8 17 12 10h32l12-10-8-17Z\"/><path fill=\"#fff\" d=\"m46 71 17 17h-6L42 73Z\" opacity=\".8\"/><path fill=\"#f472b6\" d=\"M74 71 57 88h6l15-15Z\"/><rect width=\"36\" height=\"8\" x=\"42\" y=\"84\" fill=\"#7c3aed\" stroke=\"#6d28d9\" stroke-width=\".8\" rx=\"1.5\"/><line x1=\"43\" x2=\"77\" y1=\"88\" y2=\"88\" stroke=\"#fbbf24\"/><circle cx=\"60\" cy=\"88\" r=\"2.2\" fill=\"#fbbf24\"/><circle cx=\"60\" cy=\"88\" r=\"1\" fill=\"#dc2626\"/><circle cx=\"48\" cy=\"95\" r=\"1\" fill=\"#ec4899\"/><circle cx=\"72\" cy=\"95\" r=\"1\" fill=\"#ec4899\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "粉櫻祭典",
+          "swatch": "#f472b6",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "indigo",
+          "name": "夜空花火藍",
+          "swatch": "#3b82f6",
+          "price": 20,
+          "replace": {
+            "#f472b6": "#3b82f6",
+            "#fbcfe8": "#bfdbfe",
+            "#ec4899": "#2563eb",
+            "#7c3aed": "#f59e0b",
+            "#6d28d9": "#d97706"
+          }
+        },
+        {
+          "id": "matcha",
+          "name": "京都抹茶綠",
+          "swatch": "#10b981",
+          "price": 20,
+          "replace": {
+            "#f472b6": "#10b981",
+            "#fbcfe8": "#a7f3d0",
+            "#ec4899": "#059669",
+            "#7c3aed": "#f43f5e",
+            "#6d28d9": "#e11d48"
+          }
+        }
+      ]
+    },
+    {
+      "id": "outfit_maid",
+      "slot": "outfit",
+      "name": "☕ 萌系經典女僕裝",
+      "icon": "☕",
+      "desc": "【Lv.2】黑白女僕洋裝搭配雪白荷葉邊圍裙與俏麗紅蝴蝶結",
+      "unlockType": "fish",
+      "price": 75,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "主人，歡迎回來！萌系女僕咪咪今天為您準備了酥脆小魚乾與滿分英文筆記喵！☕🐾❤️",
+      "svg": "<g id=\"acc_outfit_maid\" filter=\"drop-shadow(0 2px 5px rgba(0,0,0,0.25))\"><path fill=\"#18181b\" stroke=\"#09090b\" stroke-width=\".8\" d=\"m38 72-7 14 11 1h36l11-1-7-14Z\"/><path fill=\"#27272a\" stroke=\"#18181b\" stroke-width=\".9\" d=\"M37 86q23 2 46 0l10 27q-33 3-66 0Z\"/><path fill=\"#fff\" stroke=\"#e4e4e7\" stroke-width=\".6\" d=\"M38 72q-5 4-4 12 4-2 8-8Z\"/><path fill=\"#fff\" stroke=\"#e4e4e7\" stroke-width=\".6\" d=\"M82 72q5 4 4 12-4-2-8-8Z\"/><path fill=\"#fff\" stroke=\"#e4e4e7\" stroke-width=\".6\" d=\"M47 74h26l-2 12H49Z\"/><path fill=\"#fafafa\" stroke=\"#e4e4e7\" stroke-width=\".7\" d=\"M44 86h32l6 25q-22 3-44 0Z\"/><path fill=\"none\" stroke=\"#d4d4d8\" stroke-width=\"1.2\" d=\"M38 110q5 3 11 0 6 3 11 0 5 3 11 0 6 3 11 0\"/><ellipse cx=\"56.5\" cy=\"76\" fill=\"#ef4444\" rx=\"2.8\" ry=\"1.6\" transform=\"rotate(-15 56.5 76)\"/><ellipse cx=\"63.5\" cy=\"76\" fill=\"#ef4444\" rx=\"2.8\" ry=\"1.6\" transform=\"rotate(15 63.5 76)\"/><circle cx=\"60\" cy=\"76\" r=\"1.3\" fill=\"#b91c1c\"/><path fill=\"#fff\" stroke=\"#e4e4e7\" stroke-width=\".6\" d=\"M44 86q-7 2-6 8 6-3 8-7\"/><path fill=\"#fff\" stroke=\"#e4e4e7\" stroke-width=\".6\" d=\"M76 86q7 2 6 8-6-3-8-7\"/></g>"
+    },
+    {
+      "id": "outfit_dress",
+      "slot": "outfit",
+      "name": "👗 夢幻粉紅蓬蓬裙",
+      "icon": "👗",
+      "desc": "修身高腰法式公主洋裝，微翹荷葉短袖與垂墜A字蕾絲裙擺！",
+      "unlockType": "fish",
+      "price": 80,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "哇～換上修身顯瘦的粉紅公主裙！微翹荷葉袖配上垂墜A字蕾絲裙擺好優雅，咪咪身材看起來超纖細苗條喵！👗✨",
+      "svg": "<g id=\"acc_outfit_dress\"><g filter=\"drop-shadow(0 3px 6px rgba(219,39,119,0.25))\"><path fill=\"#f472b6\" stroke=\"#db2777\" stroke-width=\".8\" d=\"M39 73c-6 2-7 9-2 11 3 0 4-4 3-9Z\"/><path fill=\"#f472b6\" stroke=\"#db2777\" stroke-width=\".8\" d=\"M81 73c6 2 7 9 2 11-3 0-4-4-3-9Z\"/><path fill=\"none\" stroke=\"#fff\" stroke-width=\".9\" d=\"M34 79q3 3 6 0\"/><path fill=\"none\" stroke=\"#fff\" stroke-width=\".9\" d=\"M86 79q-3 3-6 0\"/><path fill=\"#f472b6\" stroke=\"#db2777\" stroke-width=\".9\" d=\"M40 71c8 1 32 1 40 0 2 5 1 10-1 15-7 1-31 1-38 0-2-5-3-10-1-15Z\"/><path fill=\"none\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-width=\"1.6\" d=\"M45 71q7 2 15 0 8 2 15 0\"/><circle cx=\"60\" cy=\"74.5\" r=\"1.1\" fill=\"#fff\" stroke=\"#db2777\" stroke-width=\".4\"/><circle cx=\"60\" cy=\"78\" r=\"1.1\" fill=\"#fff\" stroke=\"#db2777\" stroke-width=\".4\"/><circle cx=\"60\" cy=\"81.5\" r=\"1.1\" fill=\"#fff\" stroke=\"#db2777\" stroke-width=\".4\"/><path fill=\"#db2777\" d=\"M40 85q20 2 40 0v3.5q-20 2-40 0Z\"/><line x1=\"41\" x2=\"79\" y1=\"86.8\" y2=\"86.8\" stroke=\"#fbcfe8\" stroke-width=\".7\" opacity=\".8\"/><path fill=\"#fbcfe8\" stroke=\"#db2777\" stroke-width=\".9\" d=\"M40 88q20 2 40 0l9 25q-29 3-58 0Z\"/><path fill=\"none\" stroke=\"#f472b6\" d=\"M46 88q-2 13-5 25\"/><path fill=\"none\" stroke=\"#f472b6\" d=\"M53 89q-1 13-2 25\"/><path fill=\"none\" stroke=\"#f472b6\" d=\"M67 89q1 13 2 25\"/><path fill=\"none\" stroke=\"#f472b6\" d=\"M74 88q2 13 5 25\"/><path fill=\"#fff\" stroke=\"#f472b6\" stroke-width=\".8\" d=\"M31 112q7 3 14 0 7 4 15 1 8 3 15-1 7 3 14 0c-2 2-11 4-29 4s-27-2-29-4Z\"/><ellipse cx=\"57\" cy=\"86.8\" fill=\"#f43f5e\" stroke=\"#fff\" stroke-width=\".5\" rx=\"3.2\" ry=\"2\" transform=\"rotate(-15 57 86.8)\"/><ellipse cx=\"63\" cy=\"86.8\" fill=\"#f43f5e\" stroke=\"#fff\" stroke-width=\".5\" rx=\"3.2\" ry=\"2\" transform=\"rotate(15 63 86.8)\"/><circle cx=\"60\" cy=\"86.8\" r=\"1.6\" fill=\"#fff\" stroke=\"#db2777\" stroke-width=\".5\"/></g></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "夢幻粉紅",
+          "swatch": "#f472b6",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "ice",
+          "name": "冰雪公主藍",
+          "swatch": "#38bdf8",
+          "price": 20,
+          "replace": {
+            "#f472b6": "#38bdf8",
+            "#db2777": "#0284c7",
+            "#fbcfe8": "#bae6fd",
+            "#f43f5e": "#0369a1"
+          }
+        },
+        {
+          "id": "lavender",
+          "name": "紫羅蘭仙子",
+          "swatch": "#a855f7",
+          "price": 20,
+          "replace": {
+            "#f472b6": "#a855f7",
+            "#db2777": "#7e22ce",
+            "#fbcfe8": "#e9d5ff",
+            "#f43f5e": "#6b21a8"
+          }
+        }
+      ]
+    },
+    {
+      "id": "outfit_witch",
+      "slot": "outfit",
+      "name": "🧹 萬聖星夜小魔女法袍",
+      "icon": "🧹",
+      "desc": "【Lv.3】午夜幽邃紫黑星紋魔法長袍，金色新月胸針與繁星金邊",
+      "unlockType": "fish",
+      "price": 85,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "（輕揮魔杖念咒）萬聖星夜小魔女咪咪登場！月牙胸針閃爍光芒，把所有的英文難題通通變不見喵！🧹🌙✨",
+      "svg": "<g id=\"acc_outfit_witch\" filter=\"drop-shadow(0 3px 6px rgba(88,28,135,0.35))\"><path fill=\"#3b0764\" stroke=\"#2e1065\" stroke-width=\".8\" d=\"m36 73-8 15h64l-8-15Z\"/><path fill=\"#581c87\" stroke=\"#3b0764\" stroke-width=\".9\" d=\"M37 86q23 3 46 0l13 28q-36 3-72 0Z\"/><path fill=\"#4c1d95\" stroke=\"#3b0764\" stroke-width=\".7\" d=\"M28 88c-4 8-2 16 5 13 3-5 3-11 8-13Z\"/><path fill=\"#4c1d95\" stroke=\"#3b0764\" stroke-width=\".7\" d=\"M92 88c4 8 2 16-5 13-3-5-3-11-8-13Z\"/><path fill=\"#701a75\" d=\"m52 73 8 11 8-11-5 42h-6Z\" opacity=\".9\"/><line x1=\"60\" x2=\"60\" y1=\"84\" y2=\"115\" stroke=\"#facc15\" stroke-width=\".9\"/><path fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\".5\" d=\"M58 76c-2-2-2-5 0-7-3 1-4 4-3 6s3 1 3 1Z\"/><circle cx=\"63\" cy=\"72.5\" r=\"1.3\" fill=\"#facc15\"/><path fill=\"none\" stroke=\"#facc15\" stroke-dasharray=\"3 2\" stroke-width=\"1.3\" d=\"M25 113q35 3 70 0\"/><polygon fill=\"#fde047\" points=\"42,104 43,106 45,106 43.5,107 44,109 42,108 40,109 40.5,107 39,106 41,106\" opacity=\".9\"/><polygon fill=\"#fde047\" points=\"76,102 77,104 79,104 77.5,105 78,107 76,106 74,107 74.5,105 73,104 75,104\" opacity=\".9\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "午夜星紫",
+          "swatch": "#581c87",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "crimson",
+          "name": "緋紅魔導",
+          "swatch": "#991b1b",
+          "price": 22,
+          "replace": {
+            "#581c87": "#991b1b",
+            "#4c1d95": "#b91c1c",
+            "#3b0764": "#7f1d1d",
+            "#2e1065": "#450a0a",
+            "#701a75": "#dc2626"
+          }
+        }
+      ]
+    },
+    {
+      "id": "outfit_cloak",
+      "slot": "outfit",
+      "name": "🧥 英勇冒險披風",
+      "icon": "🧥",
+      "desc": "【Lv.4 免費】750字英勇旅伴帥氣雙層紅披風！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 4,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵嗚～帥氣冒險披風！風吹起來好有大俠風範，我是妳最勇敢的旅伴！🧥⚔️",
+      "svg": "<g id=\"acc_outfit_cloak\"><path fill=\"#b91c1c\" d=\"M32 74c-12 12-16 38-7 42 11 2 17-11 21-21 8-3 20-3 28 0 4 10 10 23 21 21 9-4 5-30-7-42Z\"/><path fill=\"none\" stroke=\"#facc15\" stroke-width=\"2\" d=\"M25 116c11 2 17-11 21-21\"/><path fill=\"none\" stroke=\"#facc15\" stroke-width=\"2\" d=\"M74 95c4 10 10 23 21 21\"/><circle cx=\"60\" cy=\"76\" r=\"4.5\" fill=\"#facc15\"/><circle cx=\"60\" cy=\"76\" r=\"2.5\" fill=\"#ef4444\"/></g>"
+    },
+    {
+      "id": "outfit_princess",
+      "slot": "outfit",
+      "name": "👑 星空璀璨公主裙",
+      "icon": "👑",
+      "desc": "午夜深藍星河長裙與金星流蘇，至尊公主風",
+      "unlockType": "fish",
+      "price": 85,
+      "reqLevel": 4,
+      "releaseDate": "2025-01-01",
+      "reaction": "換上星空璀璨公主裙！午夜藍的裙擺綴滿星辰微光，今晚咪咪就是最美的公主殿下喵！👑✨",
+      "svg": "<g id=\"acc_outfit_princess\"><path fill=\"#1e1b4b\" stroke=\"#4338ca\" d=\"M42 71c6 1 30 1 36 0l4 15H38Z\"/><path fill=\"#312e81\" stroke=\"#4338ca\" d=\"M36 86q24 3 48 0l14 25q-38 3-76 0Z\"/><path fill=\"#6366f1\" d=\"M30 104q30 3 60 0-30 9-60 0\" opacity=\".5\"/><path fill=\"none\" stroke=\"#facc15\" stroke-dasharray=\"3 2\" stroke-width=\"1.4\" d=\"M23 111q37 3 74 0\"/><rect width=\"40\" height=\"3\" x=\"40\" y=\"85\" fill=\"#fbbf24\"/><circle cx=\"45\" cy=\"96\" r=\".9\" fill=\"#fde047\"/><circle cx=\"75\" cy=\"98\" r=\".9\" fill=\"#fde047\"/><circle cx=\"60\" cy=\"102\" r=\"1.2\" fill=\"#fff\"/></g>"
+    },
+    {
+      "id": "hand_fishbone",
+      "slot": "hand",
+      "name": "🐟 脆脆魚骨點心",
+      "icon": "🐟",
+      "desc": "現烤出爐的香脆金黃烤魚，熱氣騰騰一口口啃光！",
+      "unlockType": "fish",
+      "price": 20,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "嚼嚼嚼～現烤出爐的香脆金黃烤魚！熱騰騰好美味，背單字更有力氣了！🐟♨️😋",
+      "svg": "<g id=\"acc_hand_fishbone\"><style>@keyframes fishMouthChew {\n      0%, 100% { transform: translate(60px, 63px) rotate(-8deg); }\n      25% { transform: translate(60px, 61px) rotate(-2deg); }\n      50% { transform: translate(60px, 63px) rotate(-9deg); }\n      75% { transform: translate(60px, 61px) rotate(-3deg); }\n    }\n    @keyframes fishHeadBite {\n      0%, 22% { opacity: 1; transform: scale(1); }\n      25%, 88% { opacity: 0; transform: scale(0.4) translateX(-4px); }\n      92%, 100% { opacity: 1; transform: scale(1); }\n    }\n    @keyframes fishBellyBite {\n      0%, 48% { opacity: 1; transform: scale(1); }\n      52%, 88% { opacity: 0; transform: scale(0.4); }\n      92%, 100% { opacity: 1; transform: scale(1); }\n    }\n    @keyframes fishTailBite {\n      0%, 72% { opacity: 1; transform: scale(1); }\n      76%, 88% { opacity: 0; transform: scale(0); }\n      92%, 100% { opacity: 1; transform: scale(1); }\n    }\n    @keyframes fishBoneShow {\n      0%, 22% { opacity: 0; }\n      25%, 72% { opacity: 1; }\n      76%, 88% { opacity: 0; transform: scale(0); }\n      92%, 100% { opacity: 0; }\n    }\n    @keyframes fishCrumbsCrunch {\n      0%, 22% { opacity: 0; transform: scale(0); }\n      25%, 32% { opacity: 1; transform: scale(1.1); }\n      35%, 48% { opacity: 0; transform: scale(0); }\n      52%, 58% { opacity: 1; transform: scale(1.2); }\n      62%, 72% { opacity: 0; transform: scale(0); }\n      76%, 86% { opacity: 1; transform: scale(1.4); }\n      90%, 100% { opacity: 0; transform: scale(0); }\n    }\n    @keyframes grillSteamWisp1 {\n      0% { transform: translate(66px, 57px) scale(0.6); opacity: 0; }\n      25% { opacity: 0.75; }\n      60% { opacity: 0.5; }\n      100% { transform: translate(69px, 42px) scale(1.3); opacity: 0; }\n    }\n    @keyframes grillSteamWisp2 {\n      0% { transform: translate(54px, 58px) scale(0.5); opacity: 0; }\n      30% { opacity: 0.65; }\n      70% { opacity: 0.4; }\n      100% { transform: translate(51px, 44px) scale(1.2); opacity: 0; }\n    }</style><g pointer-events=\"none\"><path fill=\"none\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-width=\"1.2\" d=\"M0 0q2-4-1-8t1-8\" opacity=\".6\" style=\"animation:grillSteamWisp1 2.8s ease-out infinite 0.2s\"/><path fill=\"none\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-width=\"1.1\" d=\"M0 0q-2-4 1-7 2-4-1-8\" opacity=\".5\" style=\"animation:grillSteamWisp2 3.2s ease-out infinite 1.4s\"/></g><g style=\"animation:fishMouthChew 6s ease-in-out infinite\"><g filter=\"drop-shadow(0 2px 3px rgba(120,53,15,0.35))\"><g style=\"animation:fishTailBite 6s ease-in-out infinite\"><polygon fill=\"#92400e\" points=\"-12,-1 -21,-7 -18,0 -21,7\"/><polygon fill=\"#d97706\" points=\"-11,-1 -19,-5 -16,0 -19,5\"/><polygon fill=\"#b45309\" points=\"-6,-1 -10,-4 -8,0 -10,4\"/><line x1=\"-20\" x2=\"-18\" y1=\"-6\" y2=\"-1\" stroke=\"#78350f\" stroke-width=\".8\"/><line x1=\"-20\" x2=\"-18\" y1=\"6\" y2=\"1\" stroke=\"#78350f\" stroke-width=\".8\"/></g><g style=\"animation:fishBoneShow 6s ease-in-out infinite\"><line x1=\"-12\" x2=\"12\" stroke=\"#fefce8\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><line x1=\"-8\" x2=\"-6\" y1=\"-3.5\" y2=\"3.5\" stroke=\"#fde68a\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><line x1=\"-4\" x2=\"-2\" y1=\"-4\" y2=\"4\" stroke=\"#fde68a\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><line x2=\"2\" y1=\"-4\" y2=\"4\" stroke=\"#fde68a\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><line x1=\"4\" x2=\"6\" y1=\"-3.5\" y2=\"3.5\" stroke=\"#fde68a\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><circle cx=\"12\" r=\"3.2\" fill=\"#fef9c3\" stroke=\"#d97706\" stroke-width=\".8\"/><circle cx=\"12.5\" cy=\"-.5\" r=\"1.2\" fill=\"#92400e\"/></g><g style=\"animation:fishBellyBite 6s ease-in-out infinite\"><path fill=\"#d97706\" stroke=\"#92400e\" stroke-width=\".8\" d=\"M-11-3q9-4 17 0Q6 3-2 7q-9-4-9-10Z\"/><path fill=\"#fef3c7\" d=\"M-9 1q7 4 13 1Q0 0-9 1\" opacity=\".9\"/><line x1=\"-7\" x2=\"-4\" y1=\"-5\" y2=\"3.5\" stroke=\"#78350f\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><line x1=\"-2\" x2=\"1\" y1=\"-5.5\" y2=\"4\" stroke=\"#78350f\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><line x1=\"3\" x2=\"5.5\" y1=\"-4.5\" y2=\"2.5\" stroke=\"#78350f\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><ellipse cx=\"-2\" cy=\"-2.5\" fill=\"#fde68a\" opacity=\".6\" rx=\"2.5\" ry=\".8\"/></g><g style=\"animation:fishHeadBite 6s ease-in-out infinite\"><path fill=\"#f59e0b\" stroke=\"#b45309\" stroke-width=\".8\" d=\"M4-4q6-4 11 0 4 4 0 8-5 4-11 0Z\"/><line x1=\"7\" x2=\"9\" y1=\"-3\" y2=\"2\" stroke=\"#78350f\" stroke-linecap=\"round\"/><polygon fill=\"#b45309\" points=\"5,-4 10,-8 12,-4\"/><circle cx=\"12\" cy=\"-1.5\" r=\"2.2\" fill=\"#fff\"/><circle cx=\"12.6\" cy=\"-1.5\" r=\"1.3\" fill=\"#451a03\"/><circle cx=\"13\" cy=\"-1.8\" r=\".5\" fill=\"#fff\"/><path fill=\"none\" stroke=\"#78350f\" stroke-width=\".8\" d=\"M15 1q-1 1.5-3 1\"/></g><g style=\"animation:fishCrumbsCrunch 6s ease-out infinite\"><circle cx=\"16\" cy=\"-6\" r=\"1.3\" fill=\"#f59e0b\"/><circle cx=\"19\" cy=\"2\" r=\"1.5\" fill=\"#d97706\"/><circle cx=\"15\" cy=\"7\" r=\"1.1\" fill=\"#facc15\"/><circle cx=\"21\" cy=\"-3\" r=\".9\" fill=\"#78350f\"/><polygon fill=\"#f59e0b\" points=\"18,-1 19.5,1 22,1 20,2.5 20.8,5 18,3.5 15.2,5 16,2.5 14,1 16.5,1\" transform=\"matrix(.75 0 0 .75 6 -1.5)\"/></g></g></g></g>"
+    },
+    {
+      "id": "hand_boba",
+      "slot": "hand",
+      "name": "🧋 貓爪波霸珍珠奶茶",
+      "icon": "🧋",
+      "desc": "黑糖厚奶波霸珍珠，手搖杯吸管大口吸",
+      "unlockType": "fish",
+      "price": 25,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "吸一口甜甜的珍珠奶茶～波霸珍珠ＱＱ彈彈，背單字更有嚼勁了喵！🧋😋",
+      "svg": "<g id=\"acc_hand_boba\" transform=\"translate(36 88)\"><path fill=\"#fde68a\" stroke=\"#d97706\" stroke-width=\".8\" d=\"M-5 0H5L4 14h-8Z\"/><rect width=\"12\" height=\"3\" x=\"-6\" y=\"-2\" fill=\"#f472b6\" stroke=\"#db2777\" stroke-width=\".6\" rx=\"1.5\"/><line x2=\"2\" y1=\"-2\" y2=\"-9\" stroke=\"#ef4444\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"-1.5\" cy=\"10\" r=\"1.2\" fill=\"#451a03\"/><circle cx=\"1.5\" cy=\"10.5\" r=\"1.2\" fill=\"#451a03\"/><circle cx=\"-.5\" cy=\"7.5\" r=\"1.1\" fill=\"#451a03\"/><circle cx=\"2\" cy=\"7\" r=\"1.1\" fill=\"#451a03\"/></g>",
+      "variants": [
+        {
+          "id": "default",
+          "name": "黑糖厚奶",
+          "swatch": "#fde68a",
+          "price": 0,
+          "replace": {}
+        },
+        {
+          "id": "matcha",
+          "name": "宇治抹茶",
+          "swatch": "#86efac",
+          "price": 10,
+          "replace": {
+            "#fde68a": "#86efac",
+            "#d97706": "#16a34a"
+          }
+        },
+        {
+          "id": "taro",
+          "name": "香濃芋泥",
+          "swatch": "#d8b4fe",
+          "price": 10,
+          "replace": {
+            "#fde68a": "#d8b4fe",
+            "#d97706": "#9333ea"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hand_icecream",
+      "slot": "hand",
+      "name": "🍦 貓爪草莓甜筒",
+      "icon": "🍦",
+      "desc": "嘴裡咬著草莓甜筒，冰淇淋滴滴答答吃光光！",
+      "unlockType": "fish",
+      "price": 35,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "嘴裡咬著草莓冰淇淋甜筒！滴滴答答好消暑～吃完再來背十個單字喵！🍦🍓",
+      "svg": "<g id=\"acc_hand_icecream\"><style>@keyframes coneMouthChew {\n      0%, 100% { transform: translate(57px, 62px) rotate(14deg); }\n      50% { transform: translate(57px, 61px) rotate(18deg); }\n    }\n    @keyframes scoopMeltEat {\n      0%, 20% { transform: scale(1); opacity: 1; }\n      40% { transform: scale(0.75, 0.65); opacity: 0.95; }\n      60% { transform: scale(0.45, 0.35) translateY(4px); opacity: 0.9; }\n      75%, 88% { transform: scale(0) translateY(8px); opacity: 0; }\n      92% { transform: scale(1.15); opacity: 1; }\n      100% { transform: scale(1); opacity: 1; }\n    }\n    @keyframes creamDropFall1 {\n      0%, 18% { transform: translate(58px, 68px) scale(0); opacity: 0; }\n      22% { transform: translate(58px, 70px) scale(1); opacity: 1; }\n      38% { transform: translate(59px, 120px) scale(0.9, 1.4); opacity: 1; }\n      40%, 100% { transform: translate(59px, 120px) scale(1.8, 0.3); opacity: 0; }\n    }\n    @keyframes creamPuddle1 {\n      0%, 36% { transform: translate(59px, 120px) scale(0); opacity: 0; }\n      40% { transform: translate(59px, 120px) scale(1); opacity: 0.85; }\n      70% { transform: translate(59px, 120px) scale(1.1); opacity: 0.6; }\n      85%, 100% { transform: translate(59px, 120px) scale(0.4); opacity: 0; }\n    }</style><g class=\"icecream-puddle-anim\" style=\"animation:creamPuddle1 5.5s ease-out infinite\"><ellipse fill=\"#f472b6\" opacity=\".85\" rx=\"3.8\" ry=\"1.4\"/><circle cx=\"2.5\" cy=\"-.5\" r=\".7\" fill=\"#fb7185\"/><circle cx=\"-2.2\" cy=\".3\" r=\".6\" fill=\"#fda4af\"/></g><g class=\"icecream-drop-anim\" style=\"animation:creamDropFall1 5.5s cubic-bezier(0.45,0.05,0.55,0.95) infinite\"><path fill=\"#f472b6\" d=\"M0-2.5c1.2 1.5 1.2 4 0 5-1.2-1-1.2-3.5 0-5\"/></g><g style=\"animation:coneMouthChew 2.8s ease-in-out infinite\"><g filter=\"drop-shadow(0 2px 3px rgba(0,0,0,0.22))\"><polygon fill=\"#d97706\" stroke=\"#b45309\" stroke-width=\".7\" points=\"-4,2 6,2 1,18\"/><line x1=\"-2\" x2=\"3\" y1=\"2\" y2=\"14\" stroke=\"#92400e\" stroke-width=\".5\"/><line x1=\"4\" x2=\"-1\" y1=\"2\" y2=\"14\" stroke=\"#92400e\" stroke-width=\".5\"/><line x1=\"-3\" x2=\"4.5\" y1=\"6\" y2=\"6\" stroke=\"#92400e\" stroke-width=\".5\"/><line x1=\"-1.5\" x2=\"3\" y1=\"11\" y2=\"11\" stroke=\"#92400e\" stroke-width=\".5\"/><g style=\"transform-origin:1px 2px;animation:scoopMeltEat 5.5s ease-in-out infinite\"><ellipse cx=\"1\" cy=\"1\" fill=\"#f472b6\" rx=\"6.5\" ry=\"3.2\"/><circle cx=\"-2.5\" cy=\"3.5\" r=\"1.5\" fill=\"#f472b6\"/><circle cx=\"4\" cy=\"3\" r=\"1.3\" fill=\"#f472b6\"/><ellipse cx=\"1\" cy=\"-2.5\" fill=\"#fb7185\" rx=\"5\" ry=\"3.5\"/><circle cx=\"1\" cy=\"-6\" r=\"3.2\" fill=\"#fda4af\"/><circle cx=\"1\" cy=\"-9\" r=\"1.8\" fill=\"#dc2626\"/><path fill=\"none\" stroke=\"#15803d\" stroke-width=\".7\" d=\"M1-10.5q2-2 3.5-.5\"/><ellipse cx=\"-.8\" cy=\"-4\" fill=\"#fff\" opacity=\".6\" rx=\"1.5\" ry=\".8\"/></g></g></g></g>"
+    },
+    {
+      "id": "hand_lollipop",
+      "slot": "hand",
+      "name": "🍭 彩虹旋轉大棒棒糖",
+      "icon": "🍭",
+      "desc": "七彩螺旋波浪糖，咬一口甜入心坎",
+      "unlockType": "fish",
+      "price": 30,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "舔一口彩虹旋轉大棒棒糖～甜入心坎！今天也要開開心心拿滿分喵！🍭🌈",
+      "svg": "<g id=\"acc_hand_lollipop\" transform=\"rotate(-15 347.915 -89.426)\"><line y1=\"2\" y2=\"20\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><circle r=\"7\" fill=\"#f43f5e\" stroke=\"#e11d48\" stroke-width=\".8\"/><path fill=\"none\" stroke=\"#facc15\" stroke-width=\"1.5\" d=\"M0-6a6 6 0 0 1 6 6 4 4 0 0 1-4 4 2 2 0 0 1-2-2\"/><path fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.5\" d=\"M0 6a6 6 0 0 1-6-6 4 4 0 0 1 4-4\"/></g>"
+    },
+    {
+      "id": "hand_book",
+      "slot": "hand",
+      "name": "📘 智慧英文字典",
+      "icon": "📘",
+      "desc": "【Lv.3 免費】隨身攜帶會考必備英文字典！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "抱著英漢小字典，隨時隨地查單字，學霸貓不是叫假的喵！📘🎓",
+      "svg": "<g id=\"acc_hand_book\" transform=\"rotate(15 -327.096 332.84)\"><rect width=\"18\" height=\"22\" fill=\"#2563eb\" stroke=\"#1d4ed8\" rx=\"2\"/><rect width=\"14\" height=\"18\" x=\"2\" y=\"2\" fill=\"#fff\" rx=\"1\"/><text x=\"9\" y=\"14\" fill=\"#1e3a8a\" font-size=\"8\" font-weight=\"bold\" text-anchor=\"middle\">EN</text></g>"
+    },
+    {
+      "id": "hand_teddy",
+      "slot": "hand",
+      "name": "🧸 軟萌泰迪小熊布偶",
+      "icon": "🧸",
+      "desc": "軟綿綿的棕色泰迪熊，抱在懷裡超安心",
+      "unlockType": "fish",
+      "price": 45,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "抱著毛茸茸的泰迪小熊布偶～軟綿綿好安心，跟著小熊一起陪妳背單字喵！🧸🤎",
+      "svg": "<g id=\"acc_hand_teddy\" transform=\"translate(34 91)\"><circle cy=\"4\" r=\"5.5\" fill=\"#b45309\" stroke=\"#78350f\" stroke-width=\".7\"/><circle cy=\"-2\" r=\"4.2\" fill=\"#b45309\" stroke=\"#78350f\" stroke-width=\".7\"/><circle cx=\"-3.5\" cy=\"-5\" r=\"1.6\" fill=\"#b45309\"/><circle cx=\"-3.5\" cy=\"-5\" r=\".9\" fill=\"#fde68a\"/><circle cx=\"3.5\" cy=\"-5\" r=\"1.6\" fill=\"#b45309\"/><circle cx=\"3.5\" cy=\"-5\" r=\".9\" fill=\"#fde68a\"/><ellipse cy=\"-1.5\" fill=\"#fde68a\" rx=\"2\" ry=\"1.4\"/><circle cy=\"-2\" r=\".7\" fill=\"#451a03\"/><circle cx=\"-1.4\" cy=\"-3\" r=\".6\" fill=\"#451a03\"/><circle cx=\"1.4\" cy=\"-3\" r=\".6\" fill=\"#451a03\"/><circle cy=\"2\" r=\".9\" fill=\"#ef4444\"/></g>"
+    },
+    {
+      "id": "hand_wand",
+      "slot": "hand",
+      "name": "🪄 傳奇星月魔法杖",
+      "icon": "🪄",
+      "desc": "【Lv.5 免費】揮動星星法杖，單字通通滿分！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 5,
+      "releaseDate": "2025-01-01",
+      "reaction": "星星魔法杖發光了！點石成金，祝福妳所有的英文考試都順利通過！🪄⭐",
+      "svg": "<g id=\"acc_hand_wand\"><g filter=\"drop-shadow(0 2px 4px rgba(0,0,0,0.25))\" transform=\"rotate(22 -193.505 240.493)\"><line y1=\"2\" y2=\"30\" stroke=\"#475569\" stroke-linecap=\"round\" stroke-width=\"2.8\"/><line y1=\"2\" y2=\"10\" stroke=\"#facc15\" stroke-linecap=\"round\" stroke-width=\"3\"/><polygon fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\".8\" points=\"0,-9 2.5,-3 8.5,-3 4,1 6,7 0,3.5 -6,7 -4,1 -8.5,-3 -2.5,-3\"/><polygon fill=\"#fef08a\" points=\"0,-7 1.8,-2.5 6,-2.5 3,0.5 4.5,5 0,2.5 -4.5,5 -3,0.5 -6,-2.5 -1.8,-2.5\"/><circle r=\"1.5\" fill=\"#fff\"/><circle cx=\"-7\" cy=\"-8\" r=\"1\" fill=\"#facc15\" opacity=\".9\"/><circle cx=\"7\" cy=\"-7\" r=\"1.2\" fill=\"#facc15\" opacity=\".9\"/><circle cx=\"9\" cy=\"4\" r=\".8\" fill=\"#fde047\" opacity=\".8\"/><circle cx=\"-6\" cy=\"6\" r=\".8\" fill=\"#fde047\" opacity=\".8\"/></g></g>"
+    },
+    {
+      "id": "aura_sparkle",
+      "slot": "aura",
+      "name": "✨ 璀璨星光微芒",
+      "icon": "✨",
+      "desc": "【Lv.1 免費】周圍閃爍璀璨的金色呼吸光芒",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 1,
+      "releaseDate": "2025-01-01",
+      "reaction": "哇～閃閃發光的金色星芒！咪咪周圍都在發光耶！✨",
+      "svg": "<g id=\"acc_aura_sparkle\" class=\"animate-pulse\"><path fill=\"#facc15\" d=\"M16 25q6 0 6-6 0 6 6 6-6 0-6 6 0-6-6-6\"/><path fill=\"#facc15\" d=\"M96 22q6 0 6-6 0 6 6 6-6 0-6 6 0-6-6-6\"/><path fill=\"#fde047\" d=\"M8 82q4 0 4-4 0 4 4 4-4 0-4 4 0-4-4-4\"/><path fill=\"#fde047\" d=\"M104 85q4 0 4-4 0 4 4 4-4 0-4 4 0-4-4-4\"/></g>"
+    },
+    {
+      "id": "aura_bubbles",
+      "slot": "aura",
+      "name": "🫧 夢幻彩虹泡泡雨",
+      "icon": "🫧",
+      "desc": "身旁漂浮折射七彩虹光的晶瑩泡泡",
+      "unlockType": "fish",
+      "price": 45,
+      "reqLevel": 2,
+      "releaseDate": "2025-01-01",
+      "reaction": "啵啵啵～身邊漂浮著七彩泡泡雨！輕輕一碰就會化成幸運星光喔！🫧🌈",
+      "svg": "<g id=\"acc_aura_bubbles\" pointer-events=\"none\"><circle cx=\"20\" cy=\"45\" r=\"5\" fill=\"#38bdf8\" stroke=\"#38bdf8\" stroke-width=\".8\" opacity=\".35\"/><ellipse cx=\"18.5\" cy=\"43.5\" fill=\"#fff\" opacity=\".8\" rx=\"1.5\" ry=\".9\"/><circle cx=\"98\" cy=\"38\" r=\"6\" fill=\"#ec4899\" stroke=\"#f472b6\" stroke-width=\".8\" opacity=\".3\"/><ellipse cx=\"96\" cy=\"36\" fill=\"#fff\" opacity=\".8\" rx=\"1.8\" ry=\"1.1\"/><circle cx=\"15\" cy=\"85\" r=\"6.5\" fill=\"#a855f7\" stroke=\"#c084fc\" stroke-width=\".8\" opacity=\".3\"/><ellipse cx=\"13\" cy=\"83\" fill=\"#fff\" opacity=\".8\" rx=\"2\" ry=\"1.2\"/><circle cx=\"104\" cy=\"80\" r=\"5.5\" fill=\"#38bdf8\" stroke=\"#38bdf8\" stroke-width=\".8\" opacity=\".35\"/><ellipse cx=\"102\" cy=\"78\" fill=\"#fff\" opacity=\".8\" rx=\"1.6\" ry=\"1\"/><circle cx=\"25\" cy=\"115\" r=\"4\" fill=\"#22c55e\" stroke=\"#4ade80\" stroke-width=\".7\" opacity=\".3\"/><circle cx=\"95\" cy=\"112\" r=\"4.5\" fill=\"#fbbf24\" stroke=\"#facc15\" stroke-width=\".7\" opacity=\".3\"/></g>"
+    },
+    {
+      "id": "aura_sakura",
+      "slot": "aura",
+      "name": "🌸 飛舞落櫻花瓣",
+      "icon": "🌸",
+      "desc": "浪漫櫻花瓣在身邊翩翩起舞",
+      "unlockType": "fish",
+      "price": 50,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵～花瓣飄飄好浪漫喔，一邊賞花一邊背單字最幸福了～🌸",
+      "svg": "<g id=\"acc_aura_sakura\" pointer-events=\"none\"><style>@keyframes sakuraFallTrack1 {\n      0% { transform: translate(25px, -10px) rotate(0deg) scale(0.7); opacity: 0; }\n      12% { opacity: 0.95; }\n      50% { transform: translate(14px, 58px) rotate(135deg) scale(1); }\n      85% { opacity: 0.9; }\n      100% { transform: translate(32px, 128px) rotate(270deg) scale(0.9); opacity: 0; }\n    }\n    @keyframes sakuraFallTrack2 {\n      0% { transform: translate(75px, -12px) rotate(45deg) scale(0.8); opacity: 0; }\n      15% { opacity: 0.9; }\n      55% { transform: translate(88px, 62px) rotate(190deg) scale(1.1); }\n      85% { opacity: 0.85; }\n      100% { transform: translate(72px, 130px) rotate(340deg) scale(1); opacity: 0; }\n    }\n    @keyframes sakuraFallTrack3 {\n      0% { transform: translate(102px, -8px) rotate(-30deg) scale(0.65); opacity: 0; }\n      12% { opacity: 0.95; }\n      48% { transform: translate(112px, 52px) rotate(110deg) scale(0.95); }\n      85% { opacity: 0.9; }\n      100% { transform: translate(96px, 126px) rotate(240deg) scale(0.85); opacity: 0; }\n    }\n    @keyframes sakuraFallTrack4 {\n      0% { transform: translate(8px, -6px) rotate(50deg) scale(0.75); opacity: 0; }\n      10% { opacity: 0.85; }\n      52% { transform: translate(2px, 56px) rotate(210deg) scale(0.9); }\n      88% { opacity: 0.8; }\n      100% { transform: translate(16px, 124px) rotate(350deg) scale(0.8); opacity: 0; }\n    }</style><g style=\"animation:sakuraFallTrack1 5.2s cubic-bezier(0.37,0,0.63,1) infinite\"><path fill=\"#f472b6\" d=\"M0-4.5c2.5 0 4 2.5 3.2 5-.7 2.3-2 4-3.2 4.5-1.2-.5-2.5-2.2-3.2-4.5-.8-2.5.7-5 3.2-5\" opacity=\".9\"/><path fill=\"#fda4af\" d=\"M0-3.5c1.2 0 2 2 1.5 4C1 2 0 3.5 0 3.5Z\"/></g><g style=\"animation:sakuraFallTrack2 6.0s cubic-bezier(0.37,0,0.63,1) infinite 1.4s\"><path fill=\"#fb7185\" d=\"M0-5C2.8-5 4.5-2.2 3.6.6 2.8 3.2 1.4 5 0 5.5-1.4 5-2.8 3.2-3.6.6-4.5-2.2-2.8-5 0-5\" opacity=\".88\"/><path fill=\"#fecdd3\" d=\"M0-4C1.4-4 2.2-1.8 1.8.5 1.2 2.2 0 4 0 4Z\"/></g><g style=\"animation:sakuraFallTrack3 5.5s cubic-bezier(0.37,0,0.63,1) infinite 2.6s\"><path fill=\"#f472b6\" d=\"M0-4.2c2.4 0 3.8 2.4 3 4.7-.8 2.1-2 3.7-3 4.1-1-.4-2.2-2-3-4.1-.8-2.3.6-4.7 3-4.7\" opacity=\".92\"/><circle cx=\".5\" cy=\"-.5\" r=\"1\" fill=\"#fff\" opacity=\".5\"/></g><g style=\"animation:sakuraFallTrack4 6.2s cubic-bezier(0.37,0,0.63,1) infinite 0.8s\"><path fill=\"#fda4af\" d=\"M0-4.5c2.5 0 4 2.5 3.2 5-.7 2.3-2 4-3.2 4.5-1.2-.5-2.5-2.2-3.2-4.5-.8-2.5.7-5 3.2-5\" opacity=\".85\"/></g><g style=\"animation:sakuraFallTrack1 5.6s cubic-bezier(0.37,0,0.63,1) infinite 3.5s\"><path fill=\"#fbcfe8\" d=\"M0-3.8c2.2 0 3.5 2.2 2.8 4.2C2 2.2.8 3.8 0 4.2c-.8-.4-2-2-2.8-3.8-.7-2 .6-4.2 2.8-4.2\" opacity=\".9\"/></g><g style=\"animation:sakuraFallTrack2 5.8s cubic-bezier(0.37,0,0.63,1) infinite 4.2s\"><path fill=\"#f472b6\" d=\"M0-4.5c2.5 0 4 2.5 3.2 5-.7 2.3-2 4-3.2 4.5-1.2-.5-2.5-2.2-3.2-4.5-.8-2.5.7-5 3.2-5\" opacity=\".9\"/></g></g>"
+    },
+    {
+      "id": "aura_fish",
+      "slot": "aura",
+      "name": "🐟 游動小魚乾群",
+      "icon": "🐟",
+      "desc": "小魚乾環繞身旁，貓咪的天堂！",
+      "unlockType": "fish",
+      "price": 65,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "好多小魚乾在身邊游來游去！天啊～這是貓咪的天堂喵！🐟🐟🐟",
+      "svg": "<g id=\"acc_aura_fish\" pointer-events=\"none\"><style>@keyframes fishTailWag1 {\n      0%, 100% { transform: rotate(-22deg); }\n      50% { transform: rotate(22deg); }\n    }\n    @keyframes fishTailWag2 {\n      0%, 100% { transform: rotate(24deg); }\n      50% { transform: rotate(-24deg); }\n    }\n    @keyframes fishSwimOrbit1 {\n      0% { transform: translate(10px, 32px) rotate(-18deg); }\n      25% { transform: translate(24px, 22px) rotate(4deg); }\n      50% { transform: translate(32px, 36px) rotate(-10deg); }\n      75% { transform: translate(20px, 44px) rotate(-26deg); }\n      100% { transform: translate(10px, 32px) rotate(-18deg); }\n    }\n    @keyframes fishSwimOrbit2 {\n      0% { transform: translate(96px, 24px) rotate(22deg); }\n      25% { transform: translate(108px, 38px) rotate(-4deg); }\n      50% { transform: translate(98px, 50px) rotate(16deg); }\n      75% { transform: translate(86px, 36px) rotate(32deg); }\n      100% { transform: translate(96px, 24px) rotate(22deg); }\n    }\n    @keyframes fishSwimOrbit3 {\n      0% { transform: translate(8px, 86px) rotate(14deg); }\n      30% { transform: translate(22px, 76px) rotate(-8deg); }\n      60% { transform: translate(16px, 98px) rotate(20deg); }\n      100% { transform: translate(8px, 86px) rotate(14deg); }\n    }\n    @keyframes fishSwimOrbit4 {\n      0% { transform: translate(94px, 82px) rotate(-12deg); }\n      35% { transform: translate(106px, 94px) rotate(15deg); }\n      70% { transform: translate(90px, 102px) rotate(-18deg); }\n      100% { transform: translate(94px, 82px) rotate(-12deg); }\n    }\n    @keyframes bubbleFloat {\n      0% { transform: translateY(0) scale(0.6); opacity: 0.2; }\n      50% { opacity: 0.8; }\n      100% { transform: translateY(-26px) scale(1.1); opacity: 0; }\n    }</style><g style=\"animation:fishSwimOrbit1 4.8s ease-in-out infinite\"><g filter=\"drop-shadow(0 1px 2px rgba(2,132,199,0.3))\"><path fill=\"#38bdf8\" d=\"M0 0q8-5 15 0Q8 5 0 0\"/><circle cx=\"11.5\" cy=\"-1\" r=\"1.2\" fill=\"#fff\"/><circle cx=\"12\" cy=\"-1\" r=\".7\" fill=\"#0369a1\"/><polygon fill=\"#0284c7\" points=\"6,-3 9,-6 11,-2\"/><g style=\"transform-origin:0px 0px;animation:fishTailWag1 0.45s ease-in-out infinite\"><polygon fill=\"#0284c7\" points=\"0,0 -5,-4 -4,0 -5,4\"/></g></g></g><g style=\"animation:fishSwimOrbit2 5.2s ease-in-out infinite 0.5s\"><g filter=\"drop-shadow(0 1px 2px rgba(2,132,199,0.3))\"><path fill=\"#38bdf8\" d=\"M0 0q8-5 15 0Q8 5 0 0\"/><circle cx=\"11.5\" cy=\"-1\" r=\"1.2\" fill=\"#fff\"/><circle cx=\"12\" cy=\"-1\" r=\".7\" fill=\"#0369a1\"/><polygon fill=\"#0284c7\" points=\"6,-3 9,-6 11,-2\"/><g style=\"transform-origin:0px 0px;animation:fishTailWag2 0.4s ease-in-out infinite\"><polygon fill=\"#0284c7\" points=\"0,0 -5,-4 -4,0 -5,4\"/></g></g></g><g style=\"animation:fishSwimOrbit3 4.4s ease-in-out infinite 1.2s\"><g filter=\"drop-shadow(0 1px 2px rgba(2,132,199,0.25))\"><path fill=\"#7dd3fc\" d=\"M0 0q7-4 13 0Q7 4 0 0\"/><circle cx=\"10\" cy=\"-.8\" r=\"1\" fill=\"#fff\"/><circle cx=\"10.4\" cy=\"-.8\" r=\".6\" fill=\"#0369a1\"/><polygon fill=\"#38bdf8\" points=\"5,-2.5 7.5,-5 9,-1.5\"/><g style=\"transform-origin:0px 0px;animation:fishTailWag1 0.5s ease-in-out infinite\"><polygon fill=\"#38bdf8\" points=\"0,0 -4.5,-3.5 -3.5,0 -4.5,3.5\"/></g></g></g><g style=\"animation:fishSwimOrbit4 4.6s ease-in-out infinite 0.8s\"><g filter=\"drop-shadow(0 1px 2px rgba(2,132,199,0.25))\"><path fill=\"#7dd3fc\" d=\"M0 0q7-4 13 0Q7 4 0 0\"/><circle cx=\"10\" cy=\"-.8\" r=\"1\" fill=\"#fff\"/><circle cx=\"10.4\" cy=\"-.8\" r=\".6\" fill=\"#0369a1\"/><polygon fill=\"#38bdf8\" points=\"5,-2.5 7.5,-5 9,-1.5\"/><g style=\"transform-origin:0px 0px;animation:fishTailWag2 0.42s ease-in-out infinite\"><polygon fill=\"#38bdf8\" points=\"0,0 -4.5,-3.5 -3.5,0 -4.5,3.5\"/></g></g></g><circle cx=\"18\" cy=\"20\" r=\"1.5\" fill=\"#bae6fd\" style=\"animation:bubbleFloat 2.8s ease-in infinite 0.4s\"/><circle cx=\"102\" cy=\"22\" r=\"1.8\" fill=\"#bae6fd\" style=\"animation:bubbleFloat 3.2s ease-in infinite 1.1s\"/><circle cx=\"28\" cy=\"80\" r=\"1.3\" fill=\"#bae6fd\" style=\"animation:bubbleFloat 2.6s ease-in infinite 1.8s\"/><circle cx=\"92\" cy=\"88\" r=\"1.6\" fill=\"#bae6fd\" style=\"animation:bubbleFloat 3.0s ease-in infinite 0.9s\"/></g>"
+    },
+    {
+      "id": "aura_butterflies",
+      "slot": "aura",
+      "name": "🦋 幻光藍蝶飛舞",
+      "icon": "🦋",
+      "desc": "發光的魔幻蔚藍彩蝶在身邊環繞起舞",
+      "unlockType": "fish",
+      "price": 60,
+      "reqLevel": 3,
+      "releaseDate": "2025-01-01",
+      "reaction": "微光的幻蝶在身邊翩翩起舞～好夢幻的魔幻仙境，祝福女孩考試順利過關喵！🦋✨",
+      "svg": "<g id=\"acc_aura_butterflies\" pointer-events=\"none\"><g transform=\"rotate(-20 150.782 -26.042)\"><ellipse cx=\"-3\" cy=\"-2\" fill=\"#38bdf8\" opacity=\".85\" rx=\"3.5\" ry=\"2.2\"/><ellipse cx=\"3\" cy=\"-2\" fill=\"#38bdf8\" opacity=\".85\" rx=\"3.5\" ry=\"2.2\"/><ellipse cx=\"-2\" cy=\"2\" fill=\"#60a5fa\" opacity=\".75\" rx=\"2.5\" ry=\"1.6\"/><ellipse cx=\"2\" cy=\"2\" fill=\"#60a5fa\" opacity=\".75\" rx=\"2.5\" ry=\"1.6\"/><line y1=\"-3\" y2=\"4\" stroke=\"#1e3a8a\" stroke-width=\".7\"/></g><g transform=\"rotate(25 -52.49 243.525)\"><ellipse cx=\"-3\" cy=\"-2\" fill=\"#818cf8\" opacity=\".85\" rx=\"4\" ry=\"2.5\"/><ellipse cx=\"3\" cy=\"-2\" fill=\"#818cf8\" opacity=\".85\" rx=\"4\" ry=\"2.5\"/><ellipse cx=\"-2\" cy=\"2\" fill=\"#a78bfa\" opacity=\".75\" rx=\"2.8\" ry=\"1.8\"/><ellipse cx=\"2\" cy=\"2\" fill=\"#a78bfa\" opacity=\".75\" rx=\"2.8\" ry=\"1.8\"/><line y1=\"-3\" y2=\"4\" stroke=\"#312e81\" stroke-width=\".7\"/></g><g transform=\"rotate(15 -352.798 108.266)\"><ellipse cx=\"-2.5\" cy=\"-1.8\" fill=\"#38bdf8\" opacity=\".85\" rx=\"3\" ry=\"1.8\"/><ellipse cx=\"2.5\" cy=\"-1.8\" fill=\"#38bdf8\" opacity=\".85\" rx=\"3\" ry=\"1.8\"/><ellipse cx=\"-1.8\" cy=\"1.6\" fill=\"#60a5fa\" opacity=\".75\" rx=\"2\" ry=\"1.3\"/><ellipse cx=\"1.8\" cy=\"1.6\" fill=\"#60a5fa\" opacity=\".75\" rx=\"2\" ry=\"1.3\"/></g></g>"
+    },
+    {
+      "id": "aura_wings",
+      "slot": "aura",
+      "name": "🪽 英勇天使羽翼",
+      "icon": "🪽",
+      "desc": "【Lv.4 免費】雙倍身長星空大天使羽翼，三層次羽毛展翅高飛！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 4,
+      "releaseDate": "2025-01-01",
+      "reaction": "展開兩倍身長星空大天使羽翼！如夢幻之翼般展翅翱翔，守護著會考全滿分喵！🪽🌟",
+      "svg": "<g id=\"acc_aura_wings\" pointer-events=\"none\"><style>@keyframes angelWingFlapLeft {\n      0%, 100% { transform: rotate(0deg); }\n      50% { transform: rotate(-3.5deg) scale(1.02, 0.98); }\n    }\n    @keyframes angelWingFlapRight {\n      0%, 100% { transform: rotate(0deg); }\n      50% { transform: rotate(3.5deg) scale(1.02, 0.98); }\n    }</style><g style=\"filter:drop-shadow(0 4px 10px rgba(56,189,248,0.55)) drop-shadow(0 0 3px rgba(255,255,255,0.9))\"><ellipse cx=\"60\" cy=\"55\" fill=\"#38bdf8\" opacity=\".16\" rx=\"55\" ry=\"40\"/><g style=\"transform-origin:42px 90px;animation:angelWingFlapLeft 4s ease-in-out infinite\"><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M38 91c-10 3-20 1-28-4-2-2 0-6 4-4 8 3 18 3 25 5Z\"/><path fill=\"#e0f2fe\" d=\"M36 90c-10 2-18 0-24-4 6 1 14 2 24 2Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M37 87c-13 1-25-5-33-12-2-2 0-6 4-4 10 4 20 7 30 11Z\"/><path fill=\"#e0f2fe\" d=\"M35 85c-11 0-21-5-28-11 8 3 17 5 28 8Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M36 81C20 80 6 71-2 62c-2-3 0-6 4-4 12 6 24 12 35 18Z\"/><path fill=\"#e0f2fe\" d=\"M34 79C20 77 8 70 1 62c10 4 21 9 33 13Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M35 74C16 71 0 59-7 48c-2-3 0-6 4-4 13 7 27 16 39 24Z\"/><path fill=\"#e0f2fe\" d=\"M33 72C16 68 2 58-4 48c10 6 22 13 37 19Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M34 66C14 60-3 46-10 32c-2-3 1-6 5-4 13 9 27 20 40 31Z\"/><path fill=\"#e0f2fe\" d=\"M32 64C14 57-1 45-7 32c11 8 25 18 39 26Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M34 56C12 47-4 31-11 15c-2-4 2-7 6-4C7 22 22 36 35 50Z\"/><path fill=\"#bae6fd\" d=\"M32 54C12 44-2 30-8 15 4 25 18 38 32 48Z\" opacity=\".6\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.2\" d=\"M33 46C12 33-3 14-7-2c-2-4 2-6 6-3C10 8 24 24 34 40Z\"/><path fill=\"#bae6fd\" d=\"M31 44C12 30-1 13-4-2 6 10 19 26 31 39Z\" opacity=\".6\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.2\" d=\"M32 38C16 24 4 3 2-10c0-4 4-4 7 0 7 13 17 30 24 43Z\"/><path fill=\"#e0f2fe\" d=\"M30 36C16 22 6 4 4-8c7 12 17 27 26 39Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.2\" d=\"M32 42C22 28 14 12 14-2c0-4 4-4 6 0 5 14 10 30 14 40Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M34 48c-8-12-13-26-11-38 1-4 4-4 6 0 3 12 6 26 8 35Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M36 56c-6-10-8-22-5-32 1-4 4-4 5 0 2 10 3 22 4 30Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M39 83c-11 1-21-3-27-9-2-2 0-5 3-4 8 3 16 6 24 8Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M38 77c-13-1-25-8-31-15-2-2 0-5 3-4 10 4 20 10 29 14Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M38 71C24 68 11 58 6 49c-2-2 0-5 3-4 10 5 20 14 30 21Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M37 64C23 58 12 46 8 36c-2-2 0-5 3-4 9 6 18 16 27 26Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M37 56c-11-8-19-20-22-30-1-3 1-5 4-4 6 7 13 18 19 28Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M42 91c-6 3-14 3-20-1-2-2 0-5 3-4 5 2 11 2 16 1Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M42 87c-8 2-15 0-19-4-2-2 0-5 3-4 5 2 10 3 15 4Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M41 83c-8 0-15-4-18-9-2-2 1-5 4-4 5 3 10 5 14 8Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M41 78c-7-2-13-8-15-14-1-2 1-5 4-4 4 4 8 8 11 12Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M41 72c-6-4-10-11-11-17-1-2 1-4 4-3 3 4 6 10 8 15Z\"/><ellipse cx=\"42\" cy=\"89\" fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.2\" rx=\"3.5\" ry=\"4.5\"/><circle cx=\"41.2\" cy=\"87.8\" r=\"1.2\" fill=\"#38bdf8\"/></g><g style=\"transform-origin:78px 90px;animation:angelWingFlapRight 4s ease-in-out infinite\"><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M82 91c10 3 20 1 28-4 2-2 0-6-4-4-8 3-18 3-25 5Z\"/><path fill=\"#e0f2fe\" d=\"M84 90c10 2 18 0 24-4-6 1-14 2-24 2Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M83 87c13 1 25-5 33-12 2-2 0-6-4-4-10 4-20 7-30 11Z\"/><path fill=\"#e0f2fe\" d=\"M85 85c11 0 21-5 28-11-8 3-17 5-28 8Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M84 81c16-1 30-10 38-19 2-3 0-6-4-4-12 6-24 12-35 18Z\"/><path fill=\"#e0f2fe\" d=\"M86 79c14-2 26-9 33-17-10 4-21 9-33 13Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M85 74c19-3 35-15 42-26 2-3 0-6-4-4-13 7-27 16-39 24Z\"/><path fill=\"#e0f2fe\" d=\"M87 72c17-4 31-14 37-24-10 6-22 13-37 19Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M86 66c20-6 37-20 44-34 2-3-1-6-5-4-13 9-27 20-40 31Z\"/><path fill=\"#e0f2fe\" d=\"M88 64c18-7 33-19 39-32-11 8-25 18-39 26Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M86 56c22-9 38-25 45-41 2-4-2-7-6-4-12 11-27 25-40 39Z\"/><path fill=\"#bae6fd\" d=\"M88 54c20-10 34-24 40-39-12 10-26 23-40 33Z\" opacity=\".6\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.2\" d=\"M87 46c21-13 36-32 40-48 2-4-2-6-6-3-11 13-25 29-35 45Z\"/><path fill=\"#bae6fd\" d=\"M89 44c19-14 32-31 35-46-10 12-23 28-35 41Z\" opacity=\".6\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.2\" d=\"M88 38c16-14 28-35 30-48 0-4-4-4-7 0-7 13-17 30-24 43Z\"/><path fill=\"#e0f2fe\" d=\"M90 36c14-14 24-32 26-44-7 12-17 27-26 39Z\" opacity=\".7\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.2\" d=\"M88 42c10-14 18-30 18-44 0-4-4-4-6 0-5 14-10 30-14 40Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M86 48c8-12 13-26 11-38-1-4-4-4-6 0-3 12-6 26-8 35Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.1\" d=\"M84 56c6-10 8-22 5-32-1-4-4-4-5 0-2 10-3 22-4 30Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M81 83c11 1 21-3 27-9 2-2 0-5-3-4-8 3-16 6-24 8Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M82 77c13-1 25-8 31-15 2-2 0-5-3-4-10 4-20 10-29 14Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M82 71c14-3 27-13 32-22 2-2 0-5-3-4-10 5-20 14-30 21Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M83 64c14-6 25-18 29-28 2-2 0-5-3-4-9 6-18 16-27 26Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M83 56c11-8 19-20 22-30 1-3-1-5-4-4-6 7-13 18-19 28Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M78 91c6 3 14 3 20-1 2-2 0-5-3-4-5 2-11 2-16 1Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M78 87c8 2 15 0 19-4 2-2 0-5-3-4-5 2-10 3-15 4Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M79 83c8 0 15-4 18-9 2-2-1-5-4-4-5 3-10 5-14 8Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M79 78c7-2 13-8 15-14 1-2-1-5-4-4-4 4-8 8-11 12Z\"/><path fill=\"#fff\" stroke=\"#0284c7\" d=\"M79 72c6-4 10-11 11-17 1-2-1-4-4-3-3 4-6 10-8 15Z\"/><ellipse cx=\"78\" cy=\"89\" fill=\"#fff\" stroke=\"#0284c7\" stroke-width=\"1.2\" rx=\"3.5\" ry=\"4.5\"/><circle cx=\"78.8\" cy=\"87.8\" r=\"1.2\" fill=\"#38bdf8\"/></g></g></g>"
+    },
+    {
+      "id": "aura_rainbow",
+      "slot": "aura",
+      "name": "🌈 傳奇幸運彩虹",
+      "icon": "🌈",
+      "desc": "【Lv.5 免費】1200字會考傳奇守護神七彩光暈！",
+      "unlockType": "level",
+      "price": 0,
+      "reqLevel": 5,
+      "releaseDate": "2025-01-01",
+      "reaction": "喵嗚～！七彩祥雲彩虹光芒！我是守護會考的傳奇神獸咪咪！🌈👑",
+      "svg": "<g id=\"acc_aura_rainbow\" fill=\"none\" stroke-width=\"2.5\"><path stroke=\"#f43f5e\" d=\"M12 45a50 50 0 0 1 96 0\" opacity=\".6\"/><path stroke=\"#f59e0b\" d=\"M15 43a47 47 0 0 1 90 0\" opacity=\".6\"/><path stroke=\"#10b981\" d=\"M18 41a44 44 0 0 1 84 0\" opacity=\".6\"/><path stroke=\"#3b82f6\" d=\"M21 39a41 41 0 0 1 78 0\" opacity=\".6\"/><path stroke=\"#8b5cf6\" d=\"M24 37a38 38 0 0 1 72 0\" opacity=\".6\"/></g>"
+    }
+  ]
+}

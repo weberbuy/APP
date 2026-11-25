@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordChecking | 1200 單字小幫手 (v2.15.1)</title>
+  <title>WordChecking | 1200 單字小幫手 (v2.16.0)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -167,7 +167,7 @@
               <span>WordChecking</span>
               <span class="text-sm">🐾</span>
             </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">v2.15.1 (2026-11-06)</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800" id="versionTag">v2.16.0 (2026-11-25)</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">國中 1200 單字 🐾 喵喵學伴多主題背單字系統</p>
         </div>
@@ -1348,9 +1348,9 @@
             <div>
               <div class="flex items-center gap-2">
                 <h3 class="text-base font-bold text-slate-800 dark:text-white">咪咪紙娃娃換裝室</h3>
-                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-950/60 dark:text-pink-300">Phase 2</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-950/60 dark:text-pink-300">Wardrobe 2.0</span>
               </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400">背單字賺小魚乾兌換造型，或提升貓咪等級免費解鎖喔！🐾</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">背單字賺魚乾、連續學習或升級解鎖造型，支援多色變體與套裝收藏喔！🐾</p>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -1364,8 +1364,13 @@
             </button>
           </div>
         </div>
+        <div id="wardrobeStreakBanner"></div>
         <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
           <div class="md:col-span-5 bg-gradient-to-b from-amber-50/90 via-pink-50/60 to-purple-50/80 dark:from-slate-700/80 dark:via-slate-700/60 dark:to-slate-800/90 p-4 rounded-3xl border border-pink-200/80 dark:border-slate-600 flex flex-col items-center text-center shadow-inner relative">
+            <div id="wardrobePreviewBanner" class="hidden w-full mb-2 px-2.5 py-1.5 rounded-xl bg-purple-100/95 dark:bg-purple-950/70 border border-purple-300 dark:border-purple-700 flex items-center justify-between gap-2 text-[11px] font-bold text-purple-800 dark:text-purple-200">
+              <span>👁️ 試穿預覽中（未存檔）</span>
+              <button onclick="clearWardrobePreview()" class="px-2 py-0.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-black transition cursor-pointer">還原穿搭</button>
+            </div>
             <div class="w-36 h-36 sm:w-40 sm:h-40 relative flex items-center justify-center">
               <svg viewBox="0 0 120 130" id="wardrobeCatSvg" class="w-full h-full overflow-visible drop-shadow-md">
                 <g id="wardrobeCatAccAura"></g>
@@ -1432,8 +1437,12 @@
                 卸下全部
               </button>
             </div>
+            <div class="w-full mt-3 pt-3 border-t border-pink-200/60 dark:border-slate-600/60">
+              <div class="text-[10px] font-bold text-slate-400 dark:text-slate-400 mb-1.5">✨ 我的穿搭套裝</div>
+              <div id="wardrobePresetsBar" class="flex flex-wrap items-center justify-center gap-1.5"></div>
+            </div>
           </div>
-          <div class="md:col-span-7 space-y-3">
+          <div class="md:col-span-7 space-y-2.5">
             <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-700/70 rounded-2xl overflow-x-auto text-xs font-bold">
               <button onclick="switchWardrobeTab('head')" id="tabBtn_head" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs">
                 🎀 頭部
@@ -1452,6 +1461,15 @@
               </button>
               <button onclick="switchWardrobeTab('aura')" id="tabBtn_aura" class="wardrobe-tab-btn flex-1 py-1.5 px-2 rounded-xl transition text-center cursor-pointer whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-slate-900">
                 ✨ 光環
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap px-0.5">
+              <button onclick="setWardrobeFilter('all')" id="filterBtn_all" class="px-2.5 py-1 rounded-full text-[11px] font-black bg-pink-500 text-white shadow-2xs transition cursor-pointer">全部</button>
+              <button onclick="setWardrobeFilter('unlocked')" id="filterBtn_unlocked" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-pink-100 dark:hover:bg-slate-600 transition cursor-pointer">已擁有</button>
+              <button onclick="setWardrobeFilter('locked')" id="filterBtn_locked" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-pink-100 dark:hover:bg-slate-600 transition cursor-pointer">未解鎖</button>
+              <button onclick="setWardrobeFilter('new')" id="filterBtn_new" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-pink-100 dark:hover:bg-slate-600 transition cursor-pointer inline-flex items-center gap-1">
+                <span>✨ 新品</span>
+                <span id="wardrobeNewCountBadge" class="hidden px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[9px] font-black">0</span>
               </button>
             </div>
             <div id="wardrobeItemsGrid" class="grid grid-cols-2 gap-2.5 max-h-[380px] overflow-y-auto p-1 pr-2">
@@ -1705,7 +1723,7 @@
     </div>
   </div>
   <script>
-window.APP_VERSION = "v2.15.1 (2026-11-06)";
+window.APP_VERSION = "v2.16.0 (2026-11-25)";
 let sharedAudioCtx = null;
 function getSharedAudioContext() {
   try {
@@ -2305,6 +2323,7 @@ if (typeof window !== 'undefined') {
       document.getElementById('fishCount').innerText = fishCount;
       updateCatGrowthUI();
       loadCatWardrobe();
+      if (typeof recordDailyStudyStreak === 'function') recordDailyStudyStreak(true);
       renderCatAccessories();
       if (typeof window !== 'undefined' && window.WordCheckingRain && typeof window.WordCheckingRain.isRainRunning === 'function' && window.WordCheckingRain.isRainRunning()) {
         window.WordCheckingRain.markPendingSync();
@@ -4014,7 +4033,7 @@ if (typeof window !== 'undefined') {
     function getExportPayload() {
       return {
         app: "WordChecking",
-        version: window.APP_VERSION || "v2.15.1 (2026-11-06)",
+        version: window.APP_VERSION || "v2.16.0 (2026-11-25)",
         account: piAccount || "default",
         exportDate: new Date().toISOString(),
         fishCount: fishCount,
@@ -4312,7 +4331,9 @@ if (typeof window !== 'undefined') {
         localStorage.setItem('wordchecking_cat_level_v1', lastKnownCatLevel);
         if (payload.catGamification.wardrobe) {
           catWardrobe = payload.catGamification.wardrobe;
+          if (typeof ensureWardrobeDefaults === 'function') ensureWardrobeDefaults();
           localStorage.setItem(WARDROBE_STORAGE_KEY, JSON.stringify(catWardrobe));
+          if (typeof checkStreakUnlocks === 'function') checkStreakUnlocks(false);
           renderCatAccessories();
         }
         checkMimiHungerState();
