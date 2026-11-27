@@ -518,6 +518,7 @@ function clearPlaintextLocalStorage() {
         'my_financial_templates',
         'my_blocked_slots',
         'my_category_order',
+        'my_ai_privacy_config',
         'pi_api_key',
         'gas_api_key',
         'gemini_api_key'
@@ -536,6 +537,7 @@ function buildLocalVaultPlainObject() {
         financialTemplates: financialTemplates || { active: [], passive: [], expenses: [] },
         blockedSlots: Array.isArray(blockedSlots) ? blockedSlots : [],
         categoryOrder: Array.isArray(categoryOrder) ? categoryOrder : [],
+        aiPrivacyConfig: (typeof getAiPrivacyConfigForVault === 'function' ? getAiPrivacyConfigForVault() : undefined),
         apiKeys: {
             pi_api_key: _unlockedApiKeys.pi_api_key || piApiKey || '',
             gas_api_key: _unlockedApiKeys.gas_api_key || '',
@@ -573,6 +575,9 @@ function applyDecryptedLocalVault(vaultData) {
     }
     if (Array.isArray(vaultData.blockedSlots)) blockedSlots = vaultData.blockedSlots;
     if (Array.isArray(vaultData.categoryOrder)) categoryOrder = vaultData.categoryOrder;
+    if (vaultData.aiPrivacyConfig && typeof applyAiPrivacyConfigFromVault === 'function') {
+        applyAiPrivacyConfigFromVault(vaultData.aiPrivacyConfig);
+    }
     if (vaultData.apiKeys && typeof vaultData.apiKeys === 'object') {
         _unlockedApiKeys = {
             pi_api_key: (vaultData.apiKeys.pi_api_key || '').trim(),
@@ -641,6 +646,9 @@ function wipeInMemorySensitiveDataForLock() {
     categoryOrder = [];
     _unlockedApiKeys = { pi_api_key: '', gas_api_key: '', gemini_api_key: '' };
     piApiKey = '';
+    if (typeof wipeAiMemoryForLock === 'function') {
+        wipeAiMemoryForLock();
+    }
     render();
 }
 
@@ -832,6 +840,9 @@ async function onToggleAppLockSetting(checked) {
                     localStorage.setItem('my_financial_templates', JSON.stringify(financialTemplates || {}));
                     localStorage.setItem('my_blocked_slots', JSON.stringify(blockedSlots || []));
                     localStorage.setItem('my_category_order', JSON.stringify(categoryOrder || []));
+                    if (typeof getAiPrivacyConfigForVault === 'function') {
+                        localStorage.setItem('my_ai_privacy_config', JSON.stringify(getAiPrivacyConfigForVault()));
+                    }
                     localStorage.setItem('pi_api_key', _unlockedApiKeys.pi_api_key || piApiKey || '');
                     localStorage.setItem('gas_api_key', _unlockedApiKeys.gas_api_key || '');
                     localStorage.setItem('gemini_api_key', _unlockedApiKeys.gemini_api_key || '');

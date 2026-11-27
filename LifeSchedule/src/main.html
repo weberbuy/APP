@@ -323,12 +323,20 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.3.4 (2026-11-23)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.4.0 (2026-11-27)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap justify-end">
                 <div id="piSyncStatusBadge" onclick="handlePiBadgeClick()" class="text-xs px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 cursor-pointer hover:opacity-80 transition-all" title="點擊檢查樹莓派同步狀態或開啟設定">⚪ 未設定伺服器 (點擊設定)</div>
+                <button type="button" id="headerAiPartnerBtn" onclick="openGlobalAiPartnerModal()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl border border-indigo-500 font-bold transition-all flex items-center gap-1.5 shadow-2xs hover:shadow-xs cursor-pointer" title="開啟 AI 戰略夥伴（全局長程規劃 / 單卡步驟健檢 / 本機脫敏保護）">
+                    <span>🤖</span>
+                    <span>AI 戰略夥伴</span>
+                </button>
+                <button type="button" id="headerAiUndoBtn" onclick="undoLastAiMutation()" class="hidden text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl border border-amber-300 font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer" title="一鍵退回剛才套用的 AI 修改提案">
+                    <span>↩️</span>
+                    <span>復原 AI 修改</span>
+                </button>
                 <button type="button" id="headerPrivacyBlurBtn" onclick="togglePrivacyBlur()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-300 font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer" title="公共場所一鍵模糊遮罩財務金額">
                     <span id="headerPrivacyBlurIcon">👁️</span>
                     <span id="headerPrivacyBlurText">遮罩金額</span>
@@ -652,22 +660,27 @@
                 </div>
 
 
-                <!-- 新增區塊：Gemini AI 思維教練 API 設定 -->
+                <!-- 新增區塊：Gemini AI 戰略夥伴與思維教練 API 設定 -->
                 <div class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-700">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between flex-wrap gap-1.5">
                         <span class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                            <span>🤖 Gemini AI 思維教練 (第一性原理)</span>
+                            <span>🤖 Gemini AI 戰略夥伴與思維教練</span>
                         </span>
-                        <button type="button" onclick="testGeminiApiKey()" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 shadow-2xs" title="立即連線 Google 探測此金鑰可用的真實模型清單">
-                            <span>⚡ 檢測金鑰與可用模型</span>
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="closePiSettingsModal(); openGlobalAiPartnerModal(true);" class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 shadow-2xs" title="設定傳給 AI 前自動替換的人名/公司名代號表">
+                                <span>🛡️ 管理脫敏詞庫</span>
+                            </button>
+                            <button type="button" onclick="testGeminiApiKey()" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 shadow-2xs" title="立即連線 Google 探測此金鑰可用的真實模型清單">
+                                <span>⚡ 檢測金鑰與可用模型</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="space-y-2.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Google Gemini API Key：</label>
                             <input type="password" id="geminiApiKeyInput" placeholder="請輸入自 Google AI Studio 取得之 API Key" class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                             <div id="geminiKeyStatusText" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono"></div>
-                            <p class="text-[10px] text-slate-400 mt-0.5">💡 金鑰僅儲存於本機瀏覽器。請至 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline font-bold">Google AI Studio</a> 建立免付費 API Key。</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">💡 金鑰與脫敏詞庫僅儲存在本機（啟用最高防護時自動加密入庫）。建議至 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline font-bold">Google AI Studio</a> 使用綁定計費的付費專案金鑰，確保對話不被用於模型訓練。</p>
                         </div>
                         <!-- 【v5.4.6 模型自選與檢測清單可複製區塊】 -->
                         <div id="geminiModelConfigBlock" class="hidden space-y-2 bg-slate-100/70 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
@@ -1130,36 +1143,112 @@
         <!-- 主顯示區塊 -->
 
 
-        <!-- 🤖 第一性原理 AI 思考教練彈窗 -->
-        <div id="aiCoachModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 hidden">
-            <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col h-[85vh] sm:h-[75vh] max-h-[800px] animate-in fade-in zoom-in duration-200">
-                <div class="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-700 pb-3 shrink-0">
-                    <div class="flex items-center gap-2.5">
-                        <div class="bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 p-2 rounded-2xl text-xl font-bold select-none">🤖</div>
-                        <div>
-                            <h3 class="text-base font-black text-slate-900 dark:text-white">第一性原理．思維教練</h3>
-                            <p id="aiCoachTargetTitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-[200px] sm:max-w-xs"></p>
+        <!-- 🤖 【v6.4.0 整合升級】：AI 戰略夥伴 & 第一性原理思維教練彈窗 -->
+        <div id="aiCoachModal" class="fixed inset-0 bg-slate-900/65 flex items-center justify-center p-2.5 sm:p-4 z-50 hidden" onclick="if(event.target && event.target.id === 'aiCoachModal') closeAiCoachModal()">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full p-4 sm:p-5 shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col h-[90vh] sm:h-[84vh] max-h-[860px] animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
+                <!-- 標題列 -->
+                <div class="flex items-start justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-2.5 shrink-0">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 p-2 rounded-2xl text-lg font-bold select-none shrink-0">🤖</div>
+                        <div class="min-w-0">
+                            <h3 id="aiCoachModalMainTitle" class="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">AI 戰略夥伴 · 單卡步驟健檢</h3>
+                            <p id="aiCoachTargetTitle" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate"></p>
                         </div>
                     </div>
-                    <button type="button" onclick="closeAiCoachModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg p-1 cursor-pointer">✕</button>
-                </div>
-                
-                <div id="aiChatHistory" class="flex-1 overflow-y-auto py-4 space-y-3 px-1 scroll-smooth">
-                    <!-- 聊天記錄動態插入處 -->
-                </div>
-
-
-                <div class="border-t border-slate-100 dark:border-slate-700 pt-3 shrink-0 space-y-3">
-                    <div class="flex gap-2">
-                        <textarea id="aiChatInput" rows="2" placeholder="請描述你目前卡住的地方或假設..." class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 resize-none"></textarea>
-                        <button type="button" onclick="sendAiMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 rounded-xl shadow-md transition-colors cursor-pointer self-end py-3">
-                            送出
-                        </button>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" id="modalAiUndoBtn" onclick="undoLastAiMutation()" class="hidden text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg border border-amber-300 cursor-pointer transition-colors" title="退回上一次套用的 AI 修改">↩️ 復原上次修改</button>
+                        <button type="button" onclick="closeAiCoachModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg px-1.5 py-0.5 cursor-pointer">✕</button>
                     </div>
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-[10px] text-slate-400">💡 當討論出具體小行動後，點擊右側轉換</span>
-                        <button type="button" onclick="convertAiConclusionToStep()" class="text-xs font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shadow-2xs">
-                            ⚡ 將結論轉為新步驟
+                </div>
+
+                <!-- 三模式切換分頁列 -->
+                <div class="mt-2.5 bg-slate-100 dark:bg-slate-900/80 p-1 rounded-2xl flex items-center gap-1 border border-slate-200/80 dark:border-slate-700 shrink-0 overflow-x-auto">
+                    <button type="button" id="aiModeTab_diagnose" onclick="switchAiPartnerMode('diagnose')" class="flex-1 py-1.5 px-2 text-xs font-extrabold rounded-xl bg-indigo-600 text-white shadow-xs transition-all cursor-pointer whitespace-nowrap">🩺 單卡步驟健檢</button>
+                    <button type="button" id="aiModeTab_global" onclick="switchAiPartnerMode('global')" class="flex-1 py-1.5 px-2 text-xs font-bold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-all cursor-pointer whitespace-nowrap">🧭 全局長程戰略</button>
+                    <button type="button" id="aiModeTab_socratic" onclick="switchAiPartnerMode('socratic')" class="flex-1 py-1.5 px-2 text-xs font-bold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-all cursor-pointer whitespace-nowrap">⚡ 第一性原理拷問</button>
+                </div>
+
+                <!-- 單卡目標快速切換列 (僅單卡模式顯示) -->
+                <div id="aiTargetSelectRow" class="mt-2 flex items-center gap-2 shrink-0">
+                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">🎯 分析卡片：</span>
+                    <select id="aiTargetThoughtSelect" onchange="onAiTargetThoughtChange(this.value)" class="flex-1 min-w-0 px-2.5 py-1 text-xs font-bold border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"></select>
+                </div>
+
+                <!-- 本機隱私脫敏狀態與工具列 -->
+                <div class="mt-2 flex items-center justify-between gap-2 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 px-3 py-1.5 rounded-xl shrink-0 flex-wrap">
+                    <span id="aiPrivacyStatusSummary" class="text-[11px] font-bold text-emerald-900 dark:text-emerald-300">🛡️ 詞庫 0 筆 · 自動遮罩開 · 私密排除 0 卡</span>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="toggleAiPrivacyDrawer()" class="text-[11px] font-bold bg-white dark:bg-slate-800 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 px-2 py-0.5 rounded-lg cursor-pointer transition-colors">🛡️ 脫敏詞庫</button>
+                        <button type="button" onclick="toggleAiPayloadPreview()" class="text-[11px] font-bold bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 px-2 py-0.5 rounded-lg cursor-pointer transition-colors">🔍 預覽傳送內容</button>
+                    </div>
+                </div>
+
+                <!-- 可收折：本機私密脫敏詞庫設定面板 -->
+                <div id="aiPrivacyDrawer" class="hidden mt-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700 space-y-2.5 shrink-0 max-h-48 overflow-y-auto">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <label class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none">
+                            <input type="checkbox" id="aiAutoMaskPiiCheckbox" checked onchange="onToggleAiAutoMaskPii(this.checked)" class="w-3.5 h-3.5 accent-emerald-600 rounded cursor-pointer">
+                            <span>自動遮罩電話、Email、證號帳號與精確金額（轉為量級代號）</span>
+                        </label>
+                        <button type="button" onclick="toggleAiPrivacyDrawer()" class="text-[11px] text-slate-400 hover:text-slate-600 font-bold cursor-pointer">收合 ▲</button>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-1.5">
+                        <input type="text" id="aiDictRealInput" placeholder="真實名稱（如：王大明、台積電）" class="flex-1 px-2.5 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                        <input type="text" id="aiDictAliasInput" placeholder="替換代號（選填，如：主管A、客戶B）" class="flex-1 px-2.5 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                        <button type="button" onclick="addAiPrivacyDictEntry()" class="px-3 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg cursor-pointer whitespace-nowrap">＋ 加入詞庫</button>
+                    </div>
+                    <div id="aiDictEntriesContainer" class="flex flex-wrap gap-1.5"></div>
+                </div>
+
+                <!-- 可收折：實際傳送給 Gemini 的脫敏原文預覽面板 -->
+                <div id="aiPayloadPreviewPanel" class="hidden mt-2 p-2.5 rounded-2xl bg-slate-900 text-slate-100 border border-slate-700 space-y-1.5 shrink-0">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-emerald-400">🔍 傳送至 Gemini API 之實際脫敏內容預覽（Google 僅會收到以下代號化文字）：</span>
+                        <button type="button" onclick="toggleAiPayloadPreview()" class="text-[11px] text-slate-400 hover:text-white font-bold cursor-pointer">收合 ▲</button>
+                    </div>
+                    <textarea id="aiPayloadPreviewTextarea" rows="4" readonly class="w-full p-2 text-[11px] font-mono bg-slate-950 text-emerald-200 border border-slate-700 rounded-xl focus:outline-none"></textarea>
+                </div>
+
+                <!-- 主對話區塊 (與修改提案面板擇一顯示) -->
+                <div id="aiChatMainBodyWrap" class="flex-1 min-h-0 flex flex-col">
+                    <div id="aiChatHistory" class="flex-1 overflow-y-auto py-3 space-y-3 px-1 scroll-smooth">
+                        <!-- 聊天記錄動態插入處 -->
+                    </div>
+
+                    <div class="border-t border-slate-100 dark:border-slate-700 pt-2.5 shrink-0 space-y-2">
+                        <!-- 快捷追問建議膠囊列 -->
+                        <div id="aiQuickPromptBar" class="flex items-center gap-1.5 overflow-x-auto pb-1"></div>
+
+                        <div class="flex gap-2">
+                            <textarea id="aiChatInput" rows="2" oninput="updateAiPayloadPreviewUI()" onkeydown="if((event.ctrlKey || event.metaKey) && event.key === 'Enter'){ event.preventDefault(); sendAiMessage(); }" placeholder="輸入你的想法、補充限制，或請 AI 調整建議方向 (Ctrl+Enter 送出)..." class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 resize-none"></textarea>
+                            <button type="button" onclick="sendAiMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 rounded-xl shadow-md transition-colors cursor-pointer self-end py-3 whitespace-nowrap">
+                                送出
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <span class="text-[11px] text-slate-400">💡 討論出滿意方向後，點擊右側整理成勾選清單直接寫入卡片</span>
+                            <button type="button" id="aiGenerateProposalBtn" onclick="generateAiActionProposal()" class="text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl transition-colors cursor-pointer shadow-xs flex items-center gap-1">
+                                <span>✨ 整理為可套用的修改提案</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 勾選微調式修改提案面板 (Diff Proposal UI) -->
+                <div id="aiProposalPanel" class="hidden flex-1 min-h-0 flex flex-col pt-2.5">
+                    <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-700 shrink-0 flex-wrap">
+                        <button type="button" onclick="hideAiProposalPanel()" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer flex items-center gap-1">← 返回對話繼續討論</button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="setAllAiProposalsChecked(true)" class="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 cursor-pointer">全選</button>
+                            <button type="button" onclick="setAllAiProposalsChecked(false)" class="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 cursor-pointer">全取消</button>
+                        </div>
+                    </div>
+                    <p id="aiProposalSummaryText" class="text-xs font-bold text-slate-700 dark:text-slate-200 py-2 shrink-0"></p>
+                    <div id="aiProposalItemsList" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                    <div class="pt-3 mt-2 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2 shrink-0">
+                        <span class="text-[11px] text-slate-400">🛡️ 套用前會自動建立還原快照，隨時可一鍵復原</span>
+                        <button type="button" id="aiApplyProposalsConfirmBtn" onclick="applySelectedAiProposals()" class="text-xs font-extrabold bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer">
+                            ✅ 確認套用勾選修改
                         </button>
                     </div>
                 </div>
@@ -1192,7 +1281,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.3.4 (2026-11-23)";
+window.APP_VERSION = "v6.4.0 (2026-11-27)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
@@ -5692,6 +5781,11 @@ const card = document.createElement('div');
                                     }" title="${thought.isMainFocus ? '點擊取消主推進' : '點擊設為主推進 (上限 3 個)'}">
                                         ${thought.isMainFocus ? '⭐ 主推進中' : (isFrozen ? '⚡ 設為主推進 (喚醒)' : '☆ 設為主推進')}
                                     </button>
+                                    <button type="button" onclick="toggleThoughtAiPrivate(${thought.id}, event)" class="text-xs font-bold px-2.5 py-1 rounded-md transition-all border cursor-pointer select-none ${
+                                        thought.isAiPrivate ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-300 dark:bg-rose-950/70 dark:text-rose-300 dark:border-rose-800' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600'
+                                    }" title="${thought.isAiPrivate ? '目前已排除於全局 AI 戰略之外，點擊解除' : '點擊將此卡片設為私密（全局 AI 戰略將自動略過不傳送）'}">
+                                        ${thought.isAiPrivate ? '🔒 AI排除中' : '🔓 AI可讀'}
+                                    </button>
                                     <button onclick="duplicateThought(${thought.id})" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-medium border border-slate-200">📋 複製</button>
                                     <button onclick="startEdit(${thought.id})" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-medium border border-slate-200">✏️ 編輯卡片</button>
                                     <button onclick="deleteThought(${thought.id})" class="text-xs text-slate-400 hover:text-red-500 px-1 py-1">刪除</button>
@@ -5699,10 +5793,16 @@ const card = document.createElement('div');
                             </div>
                             <div class="ml-0 sm:ml-10 space-y-2 mt-2">
                                 ${thought.detail ? `<p class="text-xs text-slate-600 bg-white/80 p-2.5 rounded-xl whitespace-pre-wrap leading-relaxed border border-slate-200/60">📝 ${escapeHtml(thought.detail)}</p>` : ''}
-                                <button type="button" onclick="openAiCoachModal(${thought.id})" class="w-full text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-2 rounded-xl transition-all cursor-pointer shadow-2xs flex items-center justify-center gap-1.5 active:scale-[0.98]">
-                                    <span class="text-sm">🤖</span>
-                                    <span>卡關了？呼叫第一性原理 AI 教練帶你拆解</span>
-                                </button>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <button type="button" onclick="openAiCoachModal(${thought.id}, 'diagnose')" class="sm:col-span-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-2 rounded-xl transition-all cursor-pointer shadow-2xs flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                                        <span class="text-sm">🩺</span>
+                                        <span>呼叫 AI 戰略夥伴：診斷現有步驟・拆解目標</span>
+                                    </button>
+                                    <button type="button" onclick="openAiCoachModal(${thought.id}, 'socratic')" class="text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600 px-3 py-2 rounded-xl transition-all cursor-pointer shadow-2xs flex items-center justify-center gap-1 active:scale-[0.98]">
+                                        <span>⚡</span>
+                                        <span>第一性原理拷問</span>
+                                    </button>
+                                </div>
                                 <div class="flex flex-wrap gap-2 text-xs">
                                     <!-- 【v5.0.0 階段接力目標鏈】：單卡多階段生命週期管理 -->
                                 <div class="space-y-1.5 bg-slate-50/70 dark:bg-slate-750/50 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700">
