@@ -519,6 +519,7 @@ function clearPlaintextLocalStorage() {
         'my_blocked_slots',
         'my_category_order',
         'my_ai_privacy_config',
+        'my_ai_chat_drafts',
         'pi_api_key',
         'gas_api_key',
         'gemini_api_key'
@@ -538,6 +539,7 @@ function buildLocalVaultPlainObject() {
         blockedSlots: Array.isArray(blockedSlots) ? blockedSlots : [],
         categoryOrder: Array.isArray(categoryOrder) ? categoryOrder : [],
         aiPrivacyConfig: (typeof getAiPrivacyConfigForVault === 'function' ? getAiPrivacyConfigForVault() : undefined),
+        aiChatDrafts: (typeof getAiChatDraftsForVault === 'function' ? getAiChatDraftsForVault() : {}),
         apiKeys: {
             pi_api_key: _unlockedApiKeys.pi_api_key || piApiKey || '',
             gas_api_key: _unlockedApiKeys.gas_api_key || '',
@@ -577,6 +579,9 @@ function applyDecryptedLocalVault(vaultData) {
     if (Array.isArray(vaultData.categoryOrder)) categoryOrder = vaultData.categoryOrder;
     if (vaultData.aiPrivacyConfig && typeof applyAiPrivacyConfigFromVault === 'function') {
         applyAiPrivacyConfigFromVault(vaultData.aiPrivacyConfig);
+    }
+    if (vaultData.aiChatDrafts && typeof applyAiChatDraftsFromVault === 'function') {
+        applyAiChatDraftsFromVault(vaultData.aiChatDrafts);
     }
     if (vaultData.apiKeys && typeof vaultData.apiKeys === 'object') {
         _unlockedApiKeys = {
@@ -842,6 +847,9 @@ async function onToggleAppLockSetting(checked) {
                     localStorage.setItem('my_category_order', JSON.stringify(categoryOrder || []));
                     if (typeof getAiPrivacyConfigForVault === 'function') {
                         localStorage.setItem('my_ai_privacy_config', JSON.stringify(getAiPrivacyConfigForVault()));
+                    }
+                    if (typeof getAiChatDraftsForVault === 'function') {
+                        localStorage.setItem('my_ai_chat_drafts', JSON.stringify(getAiChatDraftsForVault()));
                     }
                     localStorage.setItem('pi_api_key', _unlockedApiKeys.pi_api_key || piApiKey || '');
                     localStorage.setItem('gas_api_key', _unlockedApiKeys.gas_api_key || '');

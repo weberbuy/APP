@@ -323,7 +323,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.4.1 (2026-11-27)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.4.2 (2026-11-28)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1143,21 +1143,24 @@
         <!-- 主顯示區塊 -->
 
 
-        <!-- 🤖 【v6.4.0 整合升級】：AI 戰略夥伴 & 第一性原理思維教練彈窗 -->
-        <div id="aiCoachModal" class="fixed inset-0 bg-slate-900/65 flex items-center justify-center p-2.5 sm:p-4 z-50 hidden" onclick="if(event.target && event.target.id === 'aiCoachModal') closeAiCoachModal()">
-            <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full p-4 sm:p-5 shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col h-[90vh] sm:h-[84vh] max-h-[860px] animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
+        <!-- 🤖 【v6.4.2 整合升級】：AI 戰略夥伴 & 第一性原理思維教練彈窗（大視窗閱讀 + 滿版切換 + 跨裝置對話暫存） -->
+        <div id="aiCoachModal" class="fixed inset-0 bg-slate-900/65 flex items-center justify-center p-2 sm:p-4 z-50 hidden" onclick="if(event.target && event.target.id === 'aiCoachModal') closeAiCoachModal()">
+            <div id="aiCoachModalDialog" class="bg-white dark:bg-slate-800 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col h-[94vh] sm:h-[90vh] max-h-[960px] transition-all duration-200" onclick="event.stopPropagation()">
                 <!-- 標題列 -->
-                <div class="flex items-start justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-2.5 shrink-0">
-                    <div class="flex items-center gap-2.5 min-w-0">
+                <div class="flex items-start justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-2.5 shrink-0 flex-wrap">
+                    <div class="flex items-center gap-2.5 min-w-0 flex-1">
                         <div class="bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 p-2 rounded-2xl text-lg font-bold select-none shrink-0">🤖</div>
                         <div class="min-w-0">
                             <h3 id="aiCoachModalMainTitle" class="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">AI 戰略夥伴 · 單卡步驟健檢</h3>
                             <p id="aiCoachTargetTitle" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate"></p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <button type="button" id="modalAiUndoBtn" onclick="undoLastAiMutation()" class="hidden text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg border border-amber-300 cursor-pointer transition-colors" title="退回上一次套用的 AI 修改">↩️ 復原上次修改</button>
-                        <button type="button" onclick="closeAiCoachModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg px-1.5 py-0.5 cursor-pointer">✕</button>
+                    <div class="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                        <button type="button" id="modalAiUndoBtn" onclick="undoLastAiMutation()" class="hidden text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg border border-amber-300 cursor-pointer transition-colors" title="退回上一次套用的 AI 修改">↩️ 復原修改</button>
+                        <button type="button" onclick="saveCurrentAiChatDraft({ silent: false, triggerCloudSync: true })" class="text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800 cursor-pointer transition-colors" title="立即暫存目前對話並同步雲端，方便回來或換裝置接著談">💾 暫存</button>
+                        <button type="button" onclick="clearCurrentAiChatDraftAndRestart()" class="text-[11px] font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-colors" title="清空目前暫存並以最新卡片狀態重新盤點">🆕 重來</button>
+                        <button type="button" id="aiFullscreenToggleBtn" onclick="toggleAiCoachFullscreen()" class="text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-800 cursor-pointer transition-colors" title="切換全螢幕寬闊閱讀模式">⛶ 滿版</button>
+                        <button type="button" onclick="closeAiCoachModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg px-1.5 py-0.5 cursor-pointer" title="關閉並自動暫存對話">✕</button>
                     </div>
                 </div>
 
@@ -1281,7 +1284,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.4.1 (2026-11-27)";
+window.APP_VERSION = "v6.4.2 (2026-11-28)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';

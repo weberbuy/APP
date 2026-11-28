@@ -1,24 +1,31 @@
 // ============================================================
-// 🤖 AI 戰略夥伴與第一性原理思維教練 (v6.4.0 雙模式 + 本機脫敏 + 勾選式修改提案)
+// 🤖 AI 戰略夥伴與第一性原理思維教練 (v6.4.2 雙模式 + 本機脫敏 + 跨裝置對話暫存 + 大視窗閱讀)
 // ============================================================
 
 const AI_PRIVACY_STORAGE_KEY = 'my_ai_privacy_config';
+const AI_CHAT_DRAFTS_STORAGE_KEY = 'my_ai_chat_drafts';
+const AI_MAX_DRAFTS_COUNT = 12;
+const AI_MAX_TURNS_PER_DRAFT = 40;
 const AI_VALID_SLOTS = ['全天', '上午', '下午', '晚上', '夜間'];
 const AI_VALID_RECURRENCES = ['none', 'daily', 'weekdays', 'weekly', 'monthly'];
 
 let currentAiCoachThoughtId = null;
 let currentAiMode = 'diagnose'; // 'diagnose' | 'global' | 'socratic'
 let aiChatContext = [];
+let aiDisplayMessages = []; // [{ role: 'user'|'model'|'system', text: string }]
 let activeSanitizerSession = null;
 let lastOutboundPreviewText = '';
 let currentAiProposals = [];
 let _lastAiMutationSnapshot = null; // { createdAt, summary, count, thoughtsJson }
 let _aiEntityIdSeed = 0;
+let _isAiModalFullscreen = false;
 
 let aiPrivacyConfig = {
     autoMaskPii: true,
     dictionary: [] // [{ id, real, alias }]
 };
+
+let aiChatDrafts = {}; // { [draftKey]: { key, mode, thoughtId, thoughtTitle, updatedAt, apiContext, displayMessages, outboundPreview } }
 
 function genUniqueAiEntityId() {
     const now = Date.now();
@@ -26,7 +33,7 @@ function genUniqueAiEntityId() {
     return _aiEntityIdSeed;
 }
 
-// ---------- 1. 本機脫敏設定存取與最高防護保險箱橋接 ----------
+// ---------- 1. 本機脫敏設定與跨裝置對話暫存存取 (支援最高防護加密保險箱與 E2EE 雲端同步) ----------
 function normalizeAiPrivacyConfig(raw) {
     if (!raw || typeof raw !== 'object') {
         return { autoMaskPii: true, dictionary: [] };
@@ -55,9 +62,62 @@ function normalizeAliasToken(rawAlias, fallbackIndex = 1) {
     return `[${clean}]`;
 }
 
+function getAiDraftKey(mode, thoughtId) {
+    if (mode === 'global') return 'global';
+    const tid = Number(thoughtId);
+    if (!tid) return '';
+    return `${mode}_${tid}`;
+}
+
+function normalizeAiChatDrafts(raw) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+    const entries = Object.values(raw)
+        .filter(d => d && typeof d === 'object' && typeof d.key === 'string' && Array.isArray(d.apiContext) && d.apiContext.length >= 2)
+        .map(d => {
+            // 保留開頭系統提示 + 最近對話輪次，避免長期對話讓備份檔膨脹
+            let trimmedApi = d.apiContext;
+            if (trimmedApi.length > AI_MAX_TURNS_PER_DRAFT) {
+                trimmedApi = [trimmedApi[0], ...trimmedApi.slice(-(AI_MAX_TURNS_PER_DRAFT - 1))];
+            }
+            const rawDisp = Array.isArray(d.displayMessages) ? d.displayMessages : [];
+            const trimmedDisp = rawDisp.slice(-AI_MAX_TURNS_PER_DRAFT).map(m => ({
+                role: m && m.role ? String(m.role) : 'model',
+                text: m && m.text !== undefined ? String(m.text) : ''
+            }));
+            return {
+                key: String(d.key),
+                mode: ['diagnose', 'global', 'socratic'].includes(d.mode) ? d.mode : 'diagnose',
+                thoughtId: d.thoughtId ? Number(d.thoughtId) : null,
+                thoughtTitle: String(d.thoughtTitle || '').slice(0, 120),
+                updatedAt: Number(d.updatedAt) || Date.now(),
+                apiContext: trimmedApi,
+                displayMessages: trimmedDisp,
+                outboundPreview: String(d.outboundPreview || '').slice(0, 12000)
+            };
+        })
+        .sort((a, b) => b.updatedAt - a.updatedAt)
+        .slice(0, AI_MAX_DRAFTS_COUNT);
+
+    const normalized = {};
+    entries.forEach(item => { normalized[item.key] = item; });
+    return normalized;
+}
+
+function formatAiDraftTime(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mi = String(d.getMinutes()).padStart(2, '0');
+    return `${mm}/${dd} ${hh}:${mi}`;
+}
+
 function initAiPrivacyConfigOnBoot() {
     if (typeof _bootAppLockProtected !== 'undefined' && _bootAppLockProtected) {
         aiPrivacyConfig = { autoMaskPii: true, dictionary: [] };
+        aiChatDrafts = {};
         return;
     }
     try {
@@ -67,6 +127,14 @@ function initAiPrivacyConfigOnBoot() {
         }
     } catch (e) {
         aiPrivacyConfig = { autoMaskPii: true, dictionary: [] };
+    }
+    try {
+        const rawDrafts = localStorage.getItem(AI_CHAT_DRAFTS_STORAGE_KEY);
+        if (rawDrafts) {
+            aiChatDrafts = normalizeAiChatDrafts(JSON.parse(rawDrafts));
+        }
+    } catch (e) {
+        aiChatDrafts = {};
     }
 }
 initAiPrivacyConfigOnBoot();
@@ -84,7 +152,70 @@ function saveAiPrivacyConfig() {
             localStorage.setItem(AI_PRIVACY_STORAGE_KEY, JSON.stringify(aiPrivacyConfig));
         } catch (e) {}
     }
+    if (typeof triggerAutoSaveToPi === 'function') triggerAutoSaveToPi();
     refreshAiPrivacyStatusUI();
+}
+
+function saveAiChatDraftsStore(triggerCloudSync = true) {
+    if (typeof isAppLockActiveAndLocked === 'function' && isAppLockActiveAndLocked()) return;
+    aiChatDrafts = normalizeAiChatDrafts(aiChatDrafts);
+    if (typeof isAppLockEnabled === 'function' && isAppLockEnabled()) {
+        try { localStorage.removeItem(AI_CHAT_DRAFTS_STORAGE_KEY); } catch (e) {}
+        if (typeof persistEncryptedLocalVault === 'function') {
+            persistEncryptedLocalVault();
+        }
+    } else {
+        try {
+            localStorage.setItem(AI_CHAT_DRAFTS_STORAGE_KEY, JSON.stringify(aiChatDrafts));
+        } catch (e) {}
+    }
+    if (triggerCloudSync && typeof triggerAutoSaveToPi === 'function') {
+        triggerAutoSaveToPi();
+    }
+}
+
+function saveCurrentAiChatDraft(options = {}) {
+    const { silent = false, triggerCloudSync = true } = options;
+    const key = getAiDraftKey(currentAiMode, currentAiCoachThoughtId);
+    if (!key || !Array.isArray(aiChatContext) || aiChatContext.length < 2) {
+        if (!silent && typeof showToast === 'function') {
+            showToast('目前尚無可暫存的對話內容。', 'info');
+        }
+        return false;
+    }
+    const t = Array.isArray(thoughts) ? thoughts.find(x => x.id === currentAiCoachThoughtId) : null;
+    aiChatDrafts[key] = {
+        key,
+        mode: currentAiMode,
+        thoughtId: currentAiMode === 'global' ? null : (t ? t.id : currentAiCoachThoughtId),
+        thoughtTitle: currentAiMode === 'global' ? '全局長程戰略' : (t ? (t.goal || t.text || '') : ''),
+        updatedAt: Date.now(),
+        apiContext: aiChatContext.slice(),
+        displayMessages: aiDisplayMessages.slice(),
+        outboundPreview: lastOutboundPreviewText || ''
+    };
+    saveAiChatDraftsStore(triggerCloudSync);
+    refreshAiModeTabsUI();
+    populateAiTargetSelect();
+    if (!silent && typeof showToast === 'function') {
+        showToast('💾 已暫存對話並同步至雲端，可隨時回來或換裝置接著談！', 'success');
+    }
+    return true;
+}
+
+function clearCurrentAiChatDraftAndRestart() {
+    const key = getAiDraftKey(currentAiMode, currentAiCoachThoughtId);
+    if (key && aiChatDrafts[key]) {
+        if (!confirm('確定要清除目前這份暫存對話，並重新發起最新一次 AI 盤點嗎？')) return;
+        delete aiChatDrafts[key];
+        saveAiChatDraftsStore(true);
+    } else if (aiChatContext.length > 0) {
+        if (!confirm('確定要清空目前畫面並重新發起最新一次 AI 盤點嗎？')) return;
+    }
+    hideAiProposalPanel();
+    populateAiTargetSelect();
+    refreshAiModeTabsUI();
+    startAiSessionForCurrentMode(false, true);
 }
 
 function getAiPrivacyConfigForVault() {
@@ -95,13 +226,23 @@ function applyAiPrivacyConfigFromVault(cfg) {
     aiPrivacyConfig = normalizeAiPrivacyConfig(cfg);
 }
 
+function getAiChatDraftsForVault() {
+    return normalizeAiChatDrafts(aiChatDrafts);
+}
+
+function applyAiChatDraftsFromVault(draftsObj) {
+    aiChatDrafts = normalizeAiChatDrafts(draftsObj);
+}
+
 function wipeAiMemoryForLock() {
     aiChatContext = [];
+    aiDisplayMessages = [];
     activeSanitizerSession = null;
     lastOutboundPreviewText = '';
     currentAiProposals = [];
     _lastAiMutationSnapshot = null;
     aiPrivacyConfig = { autoMaskPii: true, dictionary: [] };
+    aiChatDrafts = {};
     updateAiUndoButtonsUI();
 }
 
@@ -493,22 +634,29 @@ function switchAiPartnerMode(newMode) {
         }
         currentAiCoachThoughtId = candidate.id;
     }
+    // 切換模式前先自動暫存當前已有進展的對話，不遺失進度
+    if (aiChatContext.length >= 2) {
+        saveCurrentAiChatDraft({ silent: true, triggerCloudSync: true });
+    }
     currentAiMode = newMode;
     hideAiProposalPanel();
     populateAiTargetSelect();
     refreshAiModeTabsUI();
     renderAiQuickPrompts();
-    startAiSessionForCurrentMode(false);
+    startAiSessionForCurrentMode(false, false);
 }
 
 function onAiTargetThoughtChange(val) {
     const id = Number(val);
     if (!id) return;
+    if (aiChatContext.length >= 2) {
+        saveCurrentAiChatDraft({ silent: true, triggerCloudSync: true });
+    }
     currentAiCoachThoughtId = id;
     hideAiProposalPanel();
     refreshAiModeTabsUI();
     if (currentAiMode === 'diagnose' || currentAiMode === 'socratic') {
-        startAiSessionForCurrentMode(false);
+        startAiSessionForCurrentMode(false, false);
     }
 }
 
@@ -528,10 +676,12 @@ function populateAiTargetSelect() {
     list.forEach(t => {
         const opt = document.createElement('option');
         opt.value = String(t.id);
+        const draftKey = getAiDraftKey(currentAiMode, t.id);
+        const hasDraftTag = (draftKey && aiChatDrafts[draftKey]) ? '💾 ' : '';
         const privTag = isThoughtEffectivelyAiPrivate(t) ? '🔒 ' : '';
         const doneTag = t.goalDone ? '[已達成] ' : '';
-        const label = `${privTag}${doneTag}[${t.category || '未分類'}] ${t.goal || t.text || '未命名'}`;
-        opt.textContent = label.length > 52 ? label.slice(0, 52) + '…' : label;
+        const label = `${hasDraftTag}${privTag}${doneTag}[${t.category || '未分類'}] ${t.goal || t.text || '未命名'}`;
+        opt.textContent = label.length > 56 ? label.slice(0, 56) + '…' : label;
         if (t.id === currentAiCoachThoughtId) opt.selected = true;
         sel.appendChild(opt);
     });
@@ -545,15 +695,18 @@ function refreshAiModeTabsUI() {
     const modeMeta = {
         diagnose: {
             title: 'AI 戰略夥伴 · 單卡步驟健檢',
-            sub: t ? `目標：${t.goal || t.text}` : '請選擇要健檢的目標卡片'
+            sub: t ? `目標：${t.goal || t.text}` : '請選擇要健檢的目標卡片',
+            tabLabel: '🩺 單卡步驟健檢'
         },
         global: {
             title: 'AI 戰略夥伴 · 全局長程戰略',
-            sub: '跨領域盤點進行中目標、抓出執行斷層與規劃長程目標'
+            sub: '跨領域盤點進行中目標、抓出執行斷層與規劃長程目標',
+            tabLabel: '🧭 全局長程戰略'
         },
         socratic: {
             title: '第一性原理 · 思維拷問教練',
-            sub: t ? `目標：${t.goal || t.text}` : '剝除表象假設，逼出基本事實'
+            sub: t ? `目標：${t.goal || t.text}` : '剝除表象假設，逼出基本事實',
+            tabLabel: '⚡ 第一性原理拷問'
         }
     };
 
@@ -564,6 +717,9 @@ function refreshAiModeTabsUI() {
     ['diagnose', 'global', 'socratic'].forEach(m => {
         const btn = document.getElementById(`aiModeTab_${m}`);
         if (!btn) return;
+        const dKey = getAiDraftKey(m, currentAiCoachThoughtId);
+        const hasDraft = Boolean(dKey && aiChatDrafts[dKey]);
+        btn.textContent = modeMeta[m].tabLabel + (hasDraft ? ' 💾' : '');
         if (m === currentAiMode) {
             btn.className = 'flex-1 py-1.5 px-2 text-xs font-extrabold rounded-xl bg-indigo-600 text-white shadow-xs transition-all cursor-pointer whitespace-nowrap';
         } else {
@@ -615,9 +771,10 @@ function sendQuickAiPrompt(chipIndex) {
     }
 }
 
-function startAiSessionForCurrentMode(forceOverridePrivate = false) {
+function startAiSessionForCurrentMode(forceOverridePrivate = false, forceFresh = false) {
     activeSanitizerSession = createAiSanitizerSession();
     aiChatContext = [];
+    aiDisplayMessages = [];
     currentAiProposals = [];
 
     const historyContainer = document.getElementById('aiChatHistory');
@@ -626,8 +783,47 @@ function startAiSessionForCurrentMode(forceOverridePrivate = false) {
     if (inputEl) {
         inputEl.value = '';
         inputEl.placeholder = currentAiMode === 'global'
-            ? '詢問全局優先級、長程目標規劃，或補充你的近期限制...'
-            : '輸入你的想法、補充條件，或請 AI 調整建議方向...';
+            ? '詢問全局優先級、長程目標規劃，或補充你的近期限制 (Ctrl+Enter 送出)...'
+            : '輸入你的想法、補充條件，或請 AI 調整建議方向 (Ctrl+Enter 送出)...';
+    }
+
+    // 優先檢查是否有該模式／卡片的跨裝置暫存對話，若有且非強制重開則無縫接續
+    const draftKey = getAiDraftKey(currentAiMode, currentAiCoachThoughtId);
+    const existingDraft = (!forceFresh && draftKey && aiChatDrafts[draftKey]) ? aiChatDrafts[draftKey] : null;
+    if (existingDraft && Array.isArray(existingDraft.apiContext) && existingDraft.apiContext.length >= 2) {
+        aiChatContext = existingDraft.apiContext.map(turn => ({
+            role: turn.role,
+            parts: Array.isArray(turn.parts) ? turn.parts.map(p => ({ text: String(p.text || '') })) : []
+        }));
+        lastOutboundPreviewText = existingDraft.outboundPreview || (aiChatContext[0]?.parts?.[0]?.text || '');
+        refreshAiPrivacyStatusUI();
+        updateAiPayloadPreviewUI();
+
+        const timeLabel = formatAiDraftTime(existingDraft.updatedAt);
+        appendSystemProtectionBanner(
+            `💾 已自動接續上次暫存對話${timeLabel ? `（更新於 ${timeLabel}）` : ''} · 已透過 E2EE 支援跨裝置接續。您可以直接繼續輸入，或點擊右上角「🆕 重來」以最新卡片內容重新盤點。`,
+            false
+        );
+
+        if (Array.isArray(existingDraft.displayMessages) && existingDraft.displayMessages.length > 0) {
+            existingDraft.displayMessages.forEach(msg => {
+                if (msg.role === 'system') {
+                    appendSystemProtectionBanner(msg.text, true);
+                } else {
+                    const displayTxt = activeSanitizerSession ? activeSanitizerSession.desanitizeText(msg.text) : msg.text;
+                    appendChatMessage(msg.role, displayTxt, true);
+                }
+            });
+        } else {
+            // 相容 fallback：由 apiContext 第 2 則起還原對話泡泡
+            for (let i = 1; i < aiChatContext.length; i++) {
+                const turn = aiChatContext[i];
+                const rawTxt = turn.parts?.[0]?.text || '';
+                const displayTxt = activeSanitizerSession ? activeSanitizerSession.desanitizeText(rawTxt) : rawTxt;
+                appendChatMessage(turn.role === 'user' ? 'user' : 'model', displayTxt, true);
+            }
+        }
+        return;
     }
 
     if (currentAiMode === 'global') {
@@ -658,7 +854,7 @@ function startAiSessionForCurrentMode(forceOverridePrivate = false) {
                     </div>
                     <p class="leading-relaxed">為保護您的隱私，系統已攔截自動傳送。在全局戰略模式中此卡片會被完全略過；若您希望現在針對此卡片進行<strong>本機脫敏後</strong>的單卡健檢，請點擊下方按鈕確認。</p>
                     <div class="flex items-center gap-2 pt-1 flex-wrap">
-                        <button type="button" onclick="startAiSessionForCurrentMode(true)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2 rounded-xl cursor-pointer transition-colors shadow-2xs">
+                        <button type="button" onclick="startAiSessionForCurrentMode(true, true)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2 rounded-xl cursor-pointer transition-colors shadow-2xs">
                             🛡️ 確認以脫敏模式進行本次單卡分析
                         </button>
                         <button type="button" onclick="toggleAiPayloadPreview(true)" class="bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 font-bold px-3 py-2 rounded-xl cursor-pointer transition-colors">
@@ -681,13 +877,17 @@ function startAiSessionForCurrentMode(forceOverridePrivate = false) {
     invokeGeminiAPI();
 }
 
-function appendSystemProtectionBanner(msg) {
+function appendSystemProtectionBanner(msg, recordToDraft = true) {
+    if (recordToDraft) {
+        aiDisplayMessages.push({ role: 'system', text: String(msg || '') });
+    }
     const historyContainer = document.getElementById('aiChatHistory');
     if (!historyContainer) return;
     const banner = document.createElement('div');
     banner.className = 'text-[11px] text-emerald-800 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70 rounded-xl px-3 py-2 leading-relaxed';
     banner.textContent = msg;
     historyContainer.appendChild(banner);
+    historyContainer.scrollTop = historyContainer.scrollHeight;
 }
 
 // ---------- 6. 脫敏詞庫設定抽屜與傳送預覽面板 ----------
@@ -819,24 +1019,51 @@ function renderAiPrivacyDictionaryList() {
     `).join('');
 }
 
-// ---------- 7. 關閉視窗與一般聊天訊息收發 ----------
+// ---------- 7. 視窗滿版切換、關閉自動暫存與聊天訊息收發 ----------
+function toggleAiCoachFullscreen() {
+    _isAiModalFullscreen = !_isAiModalFullscreen;
+    const dialog = document.getElementById('aiCoachModalDialog');
+    const btn = document.getElementById('aiFullscreenToggleBtn');
+    if (dialog) {
+        if (_isAiModalFullscreen) {
+            dialog.classList.remove('max-w-4xl', 'h-[94vh]', 'sm:h-[90vh]', 'max-h-[960px]', 'rounded-3xl');
+            dialog.classList.add('max-w-[98vw]', 'h-[97vh]', 'max-h-none', 'rounded-2xl');
+        } else {
+            dialog.classList.remove('max-w-[98vw]', 'h-[97vh]', 'max-h-none', 'rounded-2xl');
+            dialog.classList.add('max-w-4xl', 'h-[94vh]', 'sm:h-[90vh]', 'max-h-[960px]', 'rounded-3xl');
+        }
+    }
+    if (btn) {
+        btn.textContent = _isAiModalFullscreen ? '🗗 縮回' : '⛶ 滿版';
+        btn.title = _isAiModalFullscreen ? '恢復標準大視窗尺寸' : '切換全螢幕寬闊閱讀模式';
+    }
+}
+
 function closeAiCoachModal() {
+    // 離開前若有進行中的有效對話，自動靜默暫存並同步至雲端，方便回來或換裝置接續
+    if (Array.isArray(aiChatContext) && aiChatContext.length >= 2) {
+        saveCurrentAiChatDraft({ silent: true, triggerCloudSync: true });
+    }
     const modal = document.getElementById('aiCoachModal');
     if (modal) modal.classList.add('hidden');
     hideAiProposalPanel();
     aiChatContext = [];
+    aiDisplayMessages = [];
     activeSanitizerSession = null;
     lastOutboundPreviewText = '';
     currentAiProposals = [];
 }
 
-function appendChatMessage(role, text) {
+function appendChatMessage(role, text, recordToDraft = true) {
+    if (recordToDraft) {
+        aiDisplayMessages.push({ role: role === 'user' ? 'user' : 'model', text: String(text || '') });
+    }
     const historyContainer = document.getElementById('aiChatHistory');
     if (!historyContainer) return;
     const wrapper = document.createElement('div');
     wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
     const bubble = document.createElement('div');
-    bubble.className = `max-w-[88%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed shadow-sm ${role === 'user' ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-tl-sm'}`;
+    bubble.className = `max-w-[92%] sm:max-w-[88%] rounded-2xl px-4 py-3 text-sm sm:text-[15px] whitespace-pre-wrap leading-relaxed shadow-sm ${role === 'user' ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-tl-sm'}`;
     bubble.textContent = text;
     wrapper.appendChild(bubble);
     historyContainer.appendChild(wrapper);
@@ -1266,6 +1493,7 @@ async function invokeGeminiAPI() {
             }
             const displayReply = activeSanitizerSession ? activeSanitizerSession.desanitizeText(res.text) : res.text;
             appendChatMessage('model', displayReply);
+            saveCurrentAiChatDraft({ silent: true, triggerCloudSync: true });
         } else {
             appendChatErrorWithRetry(`[API 錯誤] ${res.error}`);
         }
@@ -1950,6 +2178,11 @@ window.wipeAiMemoryForLock = wipeAiMemoryForLock;
 window.createAiSanitizerSession = createAiSanitizerSession;
 window.isThoughtEffectivelyAiPrivate = isThoughtEffectivelyAiPrivate;
 window.retryLastGeminiCall = retryLastGeminiCall;
+window.toggleAiCoachFullscreen = toggleAiCoachFullscreen;
+window.saveCurrentAiChatDraft = saveCurrentAiChatDraft;
+window.clearCurrentAiChatDraftAndRestart = clearCurrentAiChatDraftAndRestart;
+window.getAiChatDraftsForVault = getAiChatDraftsForVault;
+window.applyAiChatDraftsFromVault = applyAiChatDraftsFromVault;
 window.testGeminiApiKey = testGeminiApiKey;
 window.copyGeminiDetectedModels = copyGeminiDetectedModels;
 window.onGeminiModelSelectChange = onGeminiModelSelectChange;

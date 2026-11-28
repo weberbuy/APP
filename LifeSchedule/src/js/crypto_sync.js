@@ -842,6 +842,14 @@ function hasRemoteBackupContentDiff(remoteData) {
             JSON.stringify(remoteData.blockedSlots) !== JSON.stringify(blockedSlots || [])) {
             return true;
         }
+        if (remoteData.aiChatDrafts !== undefined && typeof getAiChatDraftsForVault === 'function' &&
+            JSON.stringify(remoteData.aiChatDrafts) !== JSON.stringify(getAiChatDraftsForVault() || {})) {
+            return true;
+        }
+        if (remoteData.aiPrivacyConfig !== undefined && typeof getAiPrivacyConfigForVault === 'function' &&
+            JSON.stringify(remoteData.aiPrivacyConfig) !== JSON.stringify(getAiPrivacyConfigForVault() || {})) {
+            return true;
+        }
         return false;
     } catch (e) {
         return false;
@@ -943,7 +951,10 @@ function getExportPayload() {
         // 【v5.4.0 新增】：月度財務收支與範本全量備份
         monthlyFinancials: monthlyFinancials,
         financialTemplates: financialTemplates,
-        fortellerShowFinancials: fortellerShowFinancials
+        fortellerShowFinancials: fortellerShowFinancials,
+        // 【v6.4.2 新增】：AI 對話暫存與脫敏詞庫（隨 E2EE 端對端加密跨裝置同步，換裝置無縫接續）
+        aiChatDrafts: (typeof getAiChatDraftsForVault === 'function' ? getAiChatDraftsForVault() : {}),
+        aiPrivacyConfig: (typeof getAiPrivacyConfigForVault === 'function' ? getAiPrivacyConfigForVault() : undefined)
     };
 }
 
@@ -1020,6 +1031,20 @@ function applyImportedData(backupData, fileName) {
     if (backupData.fortellerShowFinancials !== undefined) {
         fortellerShowFinancials = backupData.fortellerShowFinancials;
         try { localStorage.setItem('forteller_show_financials', String(fortellerShowFinancials)); } catch(e) {}
+    }
+
+    // 【v6.4.2 還原 AI 對話暫存與脫敏詞庫】
+    if (backupData.aiPrivacyConfig !== undefined && typeof applyAiPrivacyConfigFromVault === 'function') {
+        applyAiPrivacyConfigFromVault(backupData.aiPrivacyConfig);
+        if (!_useEncryptedVault) {
+            try { localStorage.setItem('my_ai_privacy_config', JSON.stringify(getAiPrivacyConfigForVault())); } catch (e) {}
+        }
+    }
+    if (backupData.aiChatDrafts !== undefined && typeof applyAiChatDraftsFromVault === 'function') {
+        applyAiChatDraftsFromVault(backupData.aiChatDrafts);
+        if (!_useEncryptedVault) {
+            try { localStorage.setItem('my_ai_chat_drafts', JSON.stringify(getAiChatDraftsForVault())); } catch (e) {}
+        }
     }
 
 
