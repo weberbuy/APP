@@ -323,7 +323,7 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🧠 思緒卡片與目標拆解</h1>
-<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.4.0 (2026-11-27)</span>
+<span id="app-version" class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs">v6.4.1 (2026-11-27)</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">100% 本地儲存 · 雙擊目標/步驟精密區分跳轉編輯</p>
             </div>
@@ -1281,7 +1281,7 @@
         </button>
     </div>
     <script>
-window.APP_VERSION = "v6.4.0 (2026-11-27)";
+window.APP_VERSION = "v6.4.1 (2026-11-27)";
 const _bootAppLockProtected = (function() {
     try {
         return localStorage.getItem('ls_applock_enabled') === 'true' && localStorage.getItem('ls_e2ee_enabled') === 'true';
@@ -10915,14 +10915,110 @@ let _geminiWorkingVersion = (function() {
 })();
 let _geminiCachedUsableModels = [];
 
+function isTextChatGeminiModel(modelName) {
+    if (!modelName) return false;
+    const m = String(modelName).toLowerCase();
+    if (!m.includes('gemini')) return false;
+    const excludedKeywords = [
+        'embedding', 'aqa', 'imagen', 'veo', 'tts', 'audio', 'image',
+        'robotics', 'computer-use', 'deep-research', 'transcribe', 'live', 'vision'
+    ];
+    return !excludedKeywords.some(k => m.includes(k));
+}
+
+function isTransientGeminiError(status, errMsg) {
+    if ([429, 500, 502, 503, 504].includes(Number(status))) return true;
+    const msg = String(errMsg || '').toLowerCase();
+    return msg.includes('high demand') ||
+           msg.includes('overloaded') ||
+           msg.includes('unavailable') ||
+           msg.includes('try again later') ||
+           msg.includes('resource exhausted') ||
+           msg.includes('rate limit') ||
+           msg.includes('quota exceeded');
+}
+
+function sleepMs(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function updateChatLoadingText(label) {
+    const loading = document.getElementById('aiChatLoading');
+    if (loading && loading.firstElementChild) {
+        loading.firstElementChild.textContent = label;
+    } else {
+        appendChatLoading(label);
+    }
+}
+
+function appendChatErrorWithRetry(errText) {
+    const historyContainer = document.getElementById('aiChatHistory');
+    if (!historyContainer) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'flex justify-start';
+    const bubble = document.createElement('div');
+    bubble.className = 'max-w-[88%] rounded-2xl rounded-tl-sm px-4 py-3 text-xs bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-800 shadow-sm space-y-2';
+    bubble.innerHTML = `
+        <div class="whitespace-pre-wrap leading-relaxed font-medium">${escapeHtml(errText)}</div>
+        <div class="flex items-center gap-2 pt-0.5 flex-wrap">
+            <button type="button" onclick="retryLastGeminiCall(this)" class="text-[11px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg shadow-2xs cursor-pointer transition-colors">🔄 立即重試</button>
+            <button type="button" onclick="closeAiCoachModal(); if(typeof openPiSettingsModal==='function') openPiSettingsModal();" class="text-[11px] font-bold bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 px-2.5 py-1 rounded-lg cursor-pointer transition-colors">⚙️ 切換預設模型</button>
+        </div>
+    `;
+    wrapper.appendChild(bubble);
+    historyContainer.appendChild(wrapper);
+    historyContainer.scrollTop = historyContainer.scrollHeight;
+}
+
+function retryLastGeminiCall(btnEl) {
+    if (btnEl) {
+        const bubbleWrap = btnEl.closest ? btnEl.closest('.flex') : null;
+        if (bubbleWrap && bubbleWrap.remove) bubbleWrap.remove();
+    }
+    if (aiChatContext && aiChatContext.length > 0) {
+        invokeGeminiAPI();
+    }
+}
+
 function pickBestGeminiModel(models) {
     if (!models || models.length === 0) return null;
-    return models.find(m => m.match(/gemini-3.*flash/i)) ||
-           models.find(m => m.match(/gemini-3/i)) ||
-           models.find(m => m.match(/gemini-2.*flash/i)) ||
-           models.find(m => m.match(/gemini-2/i)) ||
-           models.find(m => m.includes('flash')) ||
-           models[0];
+    const chatModels = models.filter(isTextChatGeminiModel);
+    const pool = chatModels.length > 0 ? chatModels : models;
+    // 優先挑選非 preview/exp 的穩定版 Flash，降低尖峰時段 503 high demand 機率
+    const stablePool = pool.filter(m => !/preview|exp/i.test(m));
+    return stablePool.find(m => m.match(/gemini-2\.5-flash$/i)) ||
+           stablePool.find(m => m.match(/gemini-3.*flash/i)) ||
+           stablePool.find(m => m.match(/gemini-2.*flash/i)) ||
+           pool.find(m => m.match(/gemini-2\.5-flash/i)) ||
+           pool.find(m => m.match(/gemini-3.*flash/i)) ||
+           pool.find(m => m.match(/gemini-2.*flash/i)) ||
+           pool.find(m => m.includes('flash')) ||
+           pool[0];
+}
+
+function buildOrderedFallbackModels(primaryModel, cachedModels) {
+    const rawList = [];
+    if (primaryModel) rawList.push(primaryModel);
+    // 內建高穩定度備援梯隊（避免首選預覽版 503 時無備援可切）
+    const stableBackups = [
+        'gemini-2.5-flash',
+        'gemini-2.5-flash-lite',
+        'gemini-2.0-flash',
+        'gemini-2.0-flash-lite',
+        'gemini-2.5-pro',
+        'gemini-3-flash',
+        'gemini-3.1-pro'
+    ];
+    if (Array.isArray(cachedModels)) {
+        const validCached = cachedModels.filter(isTextChatGeminiModel);
+        // 優先將穩定版排在預覽版之前作為備援
+        const stableCached = validCached.filter(m => !/preview|exp/i.test(m));
+        const previewCached = validCached.filter(m => /preview|exp/i.test(m));
+        rawList.push(...stableCached, ...stableBackups, ...previewCached);
+    } else {
+        rawList.push(...stableBackups);
+    }
+    return [...new Set(rawList.filter(Boolean))];
 }
 
 async function detectAvailableGeminiModel(apiKey) {
@@ -10938,9 +11034,11 @@ async function detectAvailableGeminiModel(apiKey) {
             if (res.ok) {
                 const data = await res.json();
                 if (data.models && Array.isArray(data.models)) {
-                    const usable = data.models
+                    const allGen = data.models
                         .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
                         .map(m => m.name.replace('models/', ''));
+                    const chatOnly = allGen.filter(isTextChatGeminiModel);
+                    const usable = chatOnly.length > 0 ? chatOnly : allGen;
                     if (usable.length > 0) {
                         const preferred = pickBestGeminiModel(usable);
                         return { model: preferred, version: ver, allUsable: usable };
@@ -11046,97 +11144,153 @@ async function testGeminiApiKey() {
     }
 }
 
-async function requestGeminiGenerateContent(contentsPayload, requestJsonMime = false) {
+async function requestGeminiGenerateContent(contentsPayload, requestJsonMime = false, onStatusUpdate = null) {
     const rawKey = (typeof getVaultedApiKey === 'function' ? getVaultedApiKey('gemini_api_key') : localStorage.getItem('gemini_api_key'));
     if (!rawKey || !rawKey.trim()) {
         throw new Error('尚未設定 Google Gemini API Key');
     }
     const apiKey = rawKey.trim();
 
-    let candidateList = [];
-    if (_geminiWorkingModel) candidateList.push(_geminiWorkingModel);
-
+    let cachedModels = [];
     try {
         const cachedRaw = localStorage.getItem('gemini_cached_models');
         if (cachedRaw) {
             const arr = JSON.parse(cachedRaw);
-            if (Array.isArray(arr)) candidateList.push(...arr);
+            if (Array.isArray(arr)) cachedModels = arr;
         }
     } catch (e) {}
 
-    if (candidateList.length === 0) {
+    if (!_geminiWorkingModel && cachedModels.length === 0) {
         const detected = await detectAvailableGeminiModel(apiKey);
         if (detected) {
             _geminiWorkingModel = detected.model;
             _geminiWorkingVersion = detected.version;
+            cachedModels = detected.allUsable;
             try {
                 localStorage.setItem('gemini_preferred_model', detected.model);
                 localStorage.setItem('gemini_preferred_version', detected.version);
                 localStorage.setItem('gemini_cached_models', JSON.stringify(detected.allUsable));
             } catch (e) {}
-            candidateList = detected.allUsable;
         }
     }
 
-    candidateList.push('gemini-3.1-pro', 'gemini-3-flash', 'gemini-2.5-flash', 'gemini-2.0-flash');
-    const uniqueCandidates = [...new Set(candidateList.filter(Boolean))];
+    const primaryModel = _geminiWorkingModel || cachedModels[0] || 'gemini-2.5-flash';
+    // 最多嘗試 6 個不同候選模型（首選 + 5 個高穩定度備援），避免尖峰壅塞卡死
+    const uniqueCandidates = buildOrderedFallbackModels(primaryModel, cachedModels).slice(0, 6);
     const versions = [_geminiWorkingVersion, 'v1beta', 'v1'].filter(Boolean);
     const uniqueVersions = [...new Set(versions)];
 
     let lastErrorMsg = '';
-    for (const model of uniqueCandidates) {
-        for (const ver of uniqueVersions) {
-            try {
-                const u = `https://generativelanguage.googleapis.com/${ver}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-                const bodyObj = { contents: contentsPayload };
-                if (requestJsonMime && ver === 'v1beta') {
-                    bodyObj.generationConfig = { responseMimeType: 'application/json' };
-                }
-                const response = await fetch(u, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-goog-api-key': apiKey
-                    },
-                    body: JSON.stringify(bodyObj)
-                });
+    let hadTransientSpike = false;
 
-                if (response.ok) {
-                    const data = await response.json();
-                    const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                    _geminiWorkingModel = model;
-                    _geminiWorkingVersion = ver;
-                    try {
-                        localStorage.setItem('gemini_preferred_model', model);
-                        localStorage.setItem('gemini_preferred_version', ver);
-                    } catch (e) {}
-                    return { ok: true, text: aiText };
-                } else {
-                    const err = await response.json().catch(() => ({}));
-                    lastErrorMsg = err.error?.message || `HTTP ${response.status}`;
-                    // 若部分模型在 v1beta 不支援 responseMimeType，自動降級為純文字重試一次
-                    if (requestJsonMime && response.status === 400) {
-                        const fallbackRes = await fetch(u, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-                            body: JSON.stringify({ contents: contentsPayload })
-                        });
-                        if (fallbackRes.ok) {
-                            const fbData = await fallbackRes.json();
-                            return { ok: true, text: fbData.candidates?.[0]?.content?.parts?.[0]?.text || '' };
-                        }
+    for (let mIdx = 0; mIdx < uniqueCandidates.length; mIdx++) {
+        const model = uniqueCandidates[mIdx];
+        const isPrimary = (mIdx === 0);
+        if (!isPrimary && typeof onStatusUpdate === 'function') {
+            onStatusUpdate(`⚡ 主模型壅塞，自動切換備援模型 (${model}) 推演中...`);
+        }
+
+        for (const ver of uniqueVersions) {
+            // 首選模型若遇 503/429 尖峰壅塞，短暫退避 1.2 秒重試一次；仍壅塞則立即切往備援模型
+            const maxAttempts = isPrimary ? 2 : 1;
+            let shouldSwitchModel = false;
+
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                try {
+                    const u = `https://generativelanguage.googleapis.com/${ver}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+                    const bodyObj = { contents: contentsPayload };
+                    if (requestJsonMime && ver === 'v1beta') {
+                        bodyObj.generationConfig = { responseMimeType: 'application/json' };
                     }
-                    if (response.status === 404 || lastErrorMsg.includes('not found')) {
-                        continue;
+                    const response = await fetch(u, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': apiKey
+                        },
+                        body: JSON.stringify(bodyObj)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                        // 僅在首選模型成功或原本未指定模型時更新預設記憶；備援成功不覆寫使用者偏好的主模型
+                        if (isPrimary || !_geminiWorkingModel) {
+                            _geminiWorkingModel = model;
+                            _geminiWorkingVersion = ver;
+                            try {
+                                localStorage.setItem('gemini_preferred_model', model);
+                                localStorage.setItem('gemini_preferred_version', ver);
+                            } catch (e) {}
+                        }
+                        return {
+                            ok: true,
+                            text: aiText,
+                            usedModel: model,
+                            usedFallback: !isPrimary,
+                            primaryModel
+                        };
                     } else {
+                        const err = await response.json().catch(() => ({}));
+                        lastErrorMsg = err.error?.message || `HTTP ${response.status}`;
+
+                        // 若部分模型在 v1beta 不支援 responseMimeType，自動降級為純文字重試一次
+                        if (requestJsonMime && response.status === 400) {
+                            const fallbackRes = await fetch(u, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+                                body: JSON.stringify({ contents: contentsPayload })
+                            });
+                            if (fallbackRes.ok) {
+                                const fbData = await fallbackRes.json();
+                                return {
+                                    ok: true,
+                                    text: fbData.candidates?.[0]?.content?.parts?.[0]?.text || '',
+                                    usedModel: model,
+                                    usedFallback: !isPrimary,
+                                    primaryModel
+                                };
+                            }
+                        }
+
+                        // 404 Not Found：嘗試下一個 API 版本或下一個模型
+                        if (response.status === 404 || lastErrorMsg.toLowerCase().includes('not found')) {
+                            break;
+                        }
+
+                        // 503 High Demand / 429 Quota / 500 暫時壅塞：退避重試後自動切換備援模型
+                        if (isTransientGeminiError(response.status, lastErrorMsg)) {
+                            hadTransientSpike = true;
+                            if (attempt < maxAttempts) {
+                                if (typeof onStatusUpdate === 'function') {
+                                    onStatusUpdate(`⏳ ${model} 尖峰壅塞，1 秒後自動重試...`);
+                                }
+                                await sleepMs(1200);
+                                continue;
+                            }
+                            shouldSwitchModel = true;
+                            break;
+                        }
+
+                        // 401/403 API Key 無效等非暫時性錯誤，立即回報
                         return { ok: false, error: lastErrorMsg };
                     }
+                } catch (error) {
+                    lastErrorMsg = '網路連線異常';
+                    shouldSwitchModel = true;
+                    break;
                 }
-            } catch (error) {
-                lastErrorMsg = '網路連線異常';
-                break;
             }
+
+            if (shouldSwitchModel) break;
         }
+    }
+
+    if (hadTransientSpike) {
+        return {
+            ok: false,
+            error: `Google 伺服器目前多組模型皆處於尖峰高負載狀態（已自動重試並嘗試 ${uniqueCandidates.length} 組備援模型仍壅塞）。\n最後回應：${lastErrorMsg}\n\n💡 建議：點擊下方「🔄 立即重試」，或至「⚙️ 設定」改選較穩定的模型（如 gemini-2.5-flash）。`
+        };
     }
 
     return {
@@ -11148,19 +11302,22 @@ async function requestGeminiGenerateContent(contentsPayload, requestJsonMime = f
 async function invokeGeminiAPI() {
     appendChatLoading();
     try {
-        const res = await requestGeminiGenerateContent(aiChatContext, false);
+        const res = await requestGeminiGenerateContent(aiChatContext, false, updateChatLoadingText);
         removeChatLoading();
         if (res.ok) {
             // 模型原始回覆保留代號存入 aiChatContext，顯示給使用者時在本機記憶體自動還原真實名稱
             aiChatContext.push({ role: 'model', parts: [{ text: res.text }] });
+            if (res.usedFallback && res.usedModel) {
+                appendSystemProtectionBanner(`⚡ 主模型 (${res.primaryModel}) 目前尖峰壅塞，已自動無縫切換備援模型 (${res.usedModel}) 完成本次回覆。`);
+            }
             const displayReply = activeSanitizerSession ? activeSanitizerSession.desanitizeText(res.text) : res.text;
             appendChatMessage('model', displayReply);
         } else {
-            appendChatMessage('model', `[API 錯誤] ${res.error}`);
+            appendChatErrorWithRetry(`[API 錯誤] ${res.error}`);
         }
     } catch (e) {
         removeChatLoading();
-        appendChatMessage('model', `[連線錯誤] ${e.message || '未知的連線異常'}`);
+        appendChatErrorWithRetry(`[連線錯誤] ${e.message || '未知的連線異常'}`);
     }
 }
 
@@ -11417,7 +11574,7 @@ JSON 格式規範如下：
             ...aiChatContext,
             { role: 'user', parts: [{ text: schemaInstruction }] }
         ];
-        const res = await requestGeminiGenerateContent(tempContents, true);
+        const res = await requestGeminiGenerateContent(tempContents, true, updateChatLoadingText);
         removeChatLoading();
         if (genBtn) genBtn.disabled = false;
 
@@ -11838,6 +11995,7 @@ window.applyAiPrivacyConfigFromVault = applyAiPrivacyConfigFromVault;
 window.wipeAiMemoryForLock = wipeAiMemoryForLock;
 window.createAiSanitizerSession = createAiSanitizerSession;
 window.isThoughtEffectivelyAiPrivate = isThoughtEffectivelyAiPrivate;
+window.retryLastGeminiCall = retryLastGeminiCall;
 window.testGeminiApiKey = testGeminiApiKey;
 window.copyGeminiDetectedModels = copyGeminiDetectedModels;
 window.onGeminiModelSelectChange = onGeminiModelSelectChange;

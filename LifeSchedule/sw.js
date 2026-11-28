@@ -1,5 +1,5 @@
 // LifeSchedule PWA Service Worker (Network-First for HTML, Cache-Fallback for Offline)
-const LS_CACHE_NAME = 'lifeschedule-pwa-v6.4.0';
+const LS_CACHE_NAME = 'lifeschedule-pwa-v6.4.1';
 const LS_CORE_ASSETS = [
   './LifeSchedule.html',
   './manifest.json',
